@@ -1,0 +1,483 @@
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+<div class="main">
+    <div class="main-inner">
+        <div class="container">
+
+            <div class="row">
+
+                <div class="span12">
+
+                    <div class="widget ">
+
+                        <div class="widget-header">
+                            <i class="icon-user"></i>
+                            <h3>修改客户</h3>
+                        </div>
+                        <!-- /widget-header -->
+
+                        <div class="widget-content">
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="formcontrols">
+                                    <form id="edit-profile" class="form-horizontal">
+                                        <fieldset>
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="username">公司名称</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6 " id="company" name="company" value="{%if t_customer.company%}{{t_customer.company}}{%end%}">
+                                                    <p id="msg_company" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            <!-- /control-group -->
+
+                                            <!-- /control-group -->
+                                            <div class="control-group">
+                                                <label class="control-label" for="lastname">法人</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="reg_person" name="reg_person" value="{%if t_customer.reg_person%}{{t_customer.reg_person}}{%end%}">
+                                                    <p id="msg_reg_person" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                                                  <!-- /control-group -->
+                                            <div class="control-group">
+                                                <label class="control-label" for="company_reguid">统一社会信用代码</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="company_reguid" name="company_reguid" value="{%if t_customer.company_reguid%}{{t_customer.company_reguid}}{%end%}">
+                                                    <p id="msg_company_reguid" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                          <div class="control-group">
+                                                <label class="control-label" for="industry_name">行业性质
+</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="industry_name" name="industry_name" value="{%if t_customer.industry_name%}{{t_customer.industry_name}}{%end%}">
+                                                    <p id="msg_industry_name" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+
+
+
+
+                                            <!-- /control-group -->
+                                            <div class="control-group">
+                                                <label class="control-label" for="lastname">开户行</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="reg_bank" name="reg_bank" value="{%if t_customer.reg_bank%}{{t_customer.reg_bank}}{%end%}">
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            <div class="control-group">
+                                                <label class="control-label" for="lastname">银行账号</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="reg_bank_account" name="reg_bank_account" value="{%if t_customer.reg_bank_account%}{{t_customer.reg_bank_account}}{%end%}">
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="lastname">供应商</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="addr_cp" name="addr_cp" value="{%if t_customer.addr_cp%}{{t_customer.addr_cp}}{%end%}">
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                                            
+                                         <div class="control-group">
+                                                <label class="control-label" for="acc_uid">客服会计</label>
+                                                <div class="controls">
+                                                <select name="acc_uid" id="acc_uid">
+                                                   <option value="0">选择客服会计</option>
+                                                 {%for item in t_user%}
+                                                        <option value="{{item.id}}"   {%if t_customer.acc_uid==item.id%}selected{%end%}>{{item.name}}</option>
+
+
+                                                 {%end%}
+                                                                                                        <option value="210" {%if t_customer.acc_uid==210%}selected{%end%}>陈月娇</option>
+
+                                                </select>
+
+                                                    <p id="msg_acc_uid" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            
+                                            <div class="control-group">
+                                                <label for="promo_id" class="control-label">优惠活动:
+                                                </label>
+                                                <div class="controls">
+                                                <select name="promo_id" id="promo_id" class="form-control">
+                                                    <option value="0">==请选择优惠活动==</option>
+                                                    {% for idx, item in enumerate(t_promo_types) %}
+                                            
+                                                    <option value="{{item.id}}|{{item.income_name}}" {%if t_customer.promo_id==item.id%}selected{%end%}>
+                                                        {{item.income_name}}
+                                                    </option>
+                                                    {% end %}
+                                                </select>
+                                            </div>
+                                            </div>
+
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="is_general">是否一般纳税人</label>
+                                                <div class="controls">
+                                                    <input type="radio" name="is_general" value="1"  {%if t_customer.is_general==0%}checked="true"{%end%} /> 是
+                                                    <input type="radio" name="is_general" value="0" {%if t_customer.is_general==1%}checked="true"{%end%}/> 否
+                                                    <p id="msg_is_general" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="is_general">注册地址</label>
+                                                <div class="controls">
+                                                    <select name="city" id="city">
+                                                                                                                <option value="">选择城市</option>
+
+                                                    {%for item in t_city%}
+                                                        <option value="{{item.name}}">{{item.name}}</option>
+                                                    {%end%}
+
+                                                    </select>
+                                                     <select name="zone" id="zone">
+                                                                                                                    <option value="">选择区域</option>
+
+                                                    {%for item in t_zone%}
+                                                        <option value="{{item.name}}">{{item.name}}</option>
+                                                    {%end%}
+
+                                                    </select>
+                                                    <p id="msg_is_general" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="firstname"></label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="reg_addr" name="reg_addr" value="">
+                                                    <p id="msg_reg_addr" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            <!-- /control-group -->
+                                            <div class="control-group">
+                                                <label class="control-label" for="is_general">信用评级
+</label>
+                                                <div class="controls">
+                                                {%for item in t_credit_type%}
+                                                    <input type="radio" {%if t_customer.credit_rating==item.id%}checked="true"{%end%} name="credit_rating" value="{{item.id}}" title="{{item.name}}"/> {{item.name}}
+                                                {%end%}
+                                                    <p id="msg_credit_rating" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            <div class="control-group">
+                                                <label class="control-label" for="is_general">客户评级
+</label>
+                                                <div class="controls">
+                                                {%for item in t_customer_rating%}
+                                                    <input {%if t_customer.customer_rating==item.id%}checked="true"{%end%} type="radio" name="customer_rating" value="{{item.id}}" title="{{item.name}}"/> {{item.name}}
+                                                {%end%}
+                                                    <p id="msg_customer_rating" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+
+                            <div class="control-group">
+                                         <label class="control-label" for="is_general">客户类型
+</label>
+                                                <div class="controls">
+                                                {%for item in t_customer_type%}
+                                                    <input type="checkbox" name="customer_type" 
+                                                    {%if t_customer.customer_type%}
+                                                    {%for s in t_customer.customer_type.split(",")%}
+                                                        {%if s==str(item.id)%}
+                                                        checked="true"
+                                                        {%break%}
+                                                        {%end%}
+                                                    {%end%}
+                                                     {%end%}
+                                                    value="{{item.id}}" title="{{item.name}}"/> {{item.name}}
+                                                {%end%}
+                                                    <p id="msg_t_customer_type" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            <div class="control-group">
+                                                <label class="control-label" for="lastname">地址类型</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="addr_type" name="addr_type" value="{%if t_customer.addr_cp%}{{t_customer.addr_cp}}{%end%}" >
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="control-group">
+                                                <label class="control-label" for="lastname">地址期限</label>
+                                                <div class="controls">
+                                                    <input type="text" aria-controls="dataTable"  class="span6" id="addr_expire" name="addr_expire"  value="{%if t_customer.addr_expire%}{{t_customer.addr_expire}}{%end%}" >
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+
+                                           
+                                             <div class="control-group">
+                                                <label class="control-label" for="lastname">成立日期</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="reg_date" name="reg_date"  value="{%if t_customer.reg_date%}{{t_customer.reg_date}}{%end%}" >
+                                                    <p id="msg_reg_date" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                                           <div class="control-group">
+                                                <label class="control-label" for="lastname">执照期限</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="end_date" name="end_date"  value="{%if t_customer.end_date%}{{t_customer.end_date}}{%end%}" >
+                                                    <p id="msg_end_date" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+
+
+                         
+
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="lastname">注册号</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="reg_number" name="reg_number"  value="{%if t_customer.reg_number%}{{t_customer.reg_number}}{%end%}" >
+                                                    <p id="msg_reg_number" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+
+                                                                                         <div class="control-group">
+                                                <label class="control-label" for="lastname">工商分局</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="saic" name="saic"  value="{%if t_customer.saic%}{{t_customer.saic}}{%end%}" >
+                                                    <p id="msg_saic" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                     
+
+                                                                                         <div class="control-group">
+                                                <label class="control-label" for="lastname">地税分局</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="land_tax" name="land_tax"  value="{%if t_customer.land_tax%}{{t_customer.land_tax}}{%end%}" >
+                                                    <p id="msg_land_tax" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                                                                                         <div class="control-group">
+                                                <label class="control-label" for="lastname">国税分局</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="national_tax" name="national_tax"  value="{%if t_customer.national_tax%}{{t_customer.national_tax}}{%end%}" >
+                                                    <p id="msg_national_tax" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                   
+
+                        
+
+
+
+
+                                  
+
+
+                <div class="control-group">
+                    <label class="control-label" for="lastname">备注</label>
+                    <div class="controls">
+                        <textarea type="text" class="span6" id="remark" name="remark"   style="height: 50px;">{%if t_customer.remark%}{{t_customer.remark}}{%end%}</textarea>
+                    </div>
+                    <!-- /controls -->
+                </div>
+                <!-- /control-group -->
+
+
+                                            <br>
+
+
+                                            <div class="form-actions">
+                                                <a href="javascript:void(0)" id="btn_save_customer" class="btn btn-primary">保存</a>
+                                            </div>
+                                            <!-- /form-actions -->
+                                        </fieldset>
+                                    </form>
+                                </div>
+
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+                    </div>
+                    <!-- /widget-content -->
+
+                </div>
+                <!-- /widget -->
+
+            </div>
+            <!-- /span8 -->
+
+
+
+
+        </div>
+        <!-- /row -->
+
+    </div>
+    <!-- /container -->
+
+</div>
+<!-- /main-inner -->
+
+</div>
+
+{%end%} {%block js%}
+<script>
+    $(function () {
+
+                 laydate.render({
+                    elem: '#reg_date' //指定元素
+           });
+
+             laydate.render({
+                    elem: '#end_date' //指定元素
+           });
+
+             laydate.render({
+                    elem: '#addr_expire' //指定元素
+           });
+           
+        _xsrf = getCookie("_xsrf")
+        $("#btn_save_customer").on("click", function () {
+            $("#msg_company").text("")
+            $("#msg_reg_addr").text("")
+            $("#msg_msg_reg_number").text("")
+            $("#msg_reg_person").text("")
+            var company = $("#company").val()
+            var reg_addr = $("#reg_addr").val()
+            var reg_number = $("#reg_number").val()
+            var reg_person = $("#reg_person").val()
+            var reg_bank = $("#reg_bank").val()
+            var reg_bank_account = $("#reg_bank_account").val()
+            var addr_type = $("#addr_type").val()
+            var addr_expire = $("#addr_expire").val()
+            var addr_cp = $("#addr_cp").val()
+            var remark = $("#remark").val()
+            var reg_tel = $("#reg_tel").val()
+            var land_tax =  $("#land_tax").val()
+            var national_tax = $("#national_tax").val()
+            
+            var saic = $("#saic").val()
+            var reg_date = $("#reg_date").val()
+            var end_date = $("#end_date").val()
+
+            var company_reguid= $("#company_reguid").val()
+            var industry_name = $("#industry_name").val()
+            var is_general = $("input[name=is_general]:checked").val()
+            var credit_rating = $("input[name=credit_rating]:checked").val()
+            var customer_rating = $("input[name=customer_rating]:checked").val()
+            var credit_rating_name = $("input[name=credit_rating]:checked").attr("title")
+            var customer_rating_name = $("input[name=customer_rating]:checked").attr("title") 
+            var customer_type = ""  //$("input[name=customer_type]:checked").val()
+            var customer_type_name ="" //$("input[name=customer_type]:checked").attr("title") 
+            var promo_id=$("#promo_id").val()
+            var acc_uid = $("#acc_uid").val()
+            var acc_uid_name = $("#acc_uid option:selected").text()
+            var zone = $("#zone").val()
+            var city = $("#city").val()
+            if(acc_uid=="0"){
+                acc_uid_name = "待安排"
+            }
+           
+            $("#msg_company").text("")
+            $("#msg_is_general").text("")
+            $("#msg_credit_rating").text("")
+            $("#msg_customer_rating").text("")
+                       $("input[name=customer_type]").each(function(){
+                 if (this.checked) {
+                            customer_type_name= customer_type_name +$(this).attr("title")+","
+                            customer_type = customer_type+$(this).val()+","
+                    }
+                
+            })
+           customer_type_name = customer_type_name.slice(0, -1);
+            customer_type = customer_type.slice(0, -1);   
+
+            if (company==""){
+                 $("#msg_company").text("公司名称不能为空哦。")
+                 $("#company").focus()
+            }
+
+
+            else{
+                $.post("/customer?tag=add",{
+                    "customer_id":{{t_customer.id}},
+                    "customer_guid":"{{t_customer.guid}}",                    
+                    "zone":zone,
+                    "city":city,
+                    "acc_uid":acc_uid,
+                    "acc_uid_name":acc_uid_name,
+                    "company_reguid":company_reguid,
+                    "industry_name":industry_name,
+                    "is_general":is_general,
+                    "credit_rating":credit_rating,
+                    "credit_rating_name":credit_rating_name,
+                    "customer_rating":customer_rating,
+                    "customer_type_name":customer_type_name,
+                    "customer_type":customer_type,
+                    "customer_rating_name":customer_rating_name,                    
+                    "land_tax":land_tax,
+                    "national_tax":national_tax,
+                    "saic":saic,"promo_id":promo_id,
+                    "company": company,
+                "reg_tel": reg_tel,"reg_person": reg_person,
+                "reg_date":reg_date,"end_date":end_date,
+                "reg_addr":reg_addr,"reg_number": reg_number,
+                "reg_bank": reg_bank,"reg_bank_account": reg_bank_account,
+                "addr_type": addr_type,"addr_expire": addr_expire,
+                "addr_cp": addr_cp,"remark": remark,"_xsrf": _xsrf},function(result){
+                    if(result=="0"){
+                                alert("保存成功！")
+                        location.href=result
+                    }
+                    else if(result=="-100"){
+                         alert("该客户不存在！")
+                    }
+                    else{
+                        location.href=result
+                    }
+                    
+                    console.log(result)
+                })
+
+            }
+        })
+
+
+    })
+
+</script> {%end%}

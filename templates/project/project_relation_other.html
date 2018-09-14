@@ -1,0 +1,238 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+<style>
+        .faye-table {width: 100%; height: auto; /*background-color: purple;*/ margin: 0% auto; font-weight: bold;}
+        .faye-table ul {overflow: hidden; margin: 0; padding: 0;}
+        .faye-table ul li {width: 100%; list-style: none; box-sizing: border-box; border-bottom: 1px solid #dedede; width: 100%; height:40px; overflow: hidden;}
+        .faye-table ul li div {float: left; height: 40px; line-height: 40px; text-align: center; border-left: 1px solid #dedede;}
+        .faye-table ul li div.fayet {width:8%; background-color:#eee; border-bottom: 1px solid #dedede; }
+        .faye-table ul li div.fayet1 {width:12%;}
+        .faye-table ul li div.fayet11 {width:22%;}
+        .faye-table ul li div.fayet3 {width:92%;}
+        .faye-table ul li div.fayet4 {width:10%;}
+        .faye-table ul li div.fayet5 {width:15%;}
+        .faye-table ul li div.fayet60 { height: 180px; border-left: 1px solid #dedede; }
+        .faye-table ul li div.fayet70 {width:34%;  height: 180px; border-left: 1px solid #dedede;}
+        .faye-table ul li div.fayet6 {width:33%; height: 180px; border-left: 1px solid #dedede; }
+        .faye-table ul li div.fayet7 {width:34%; height: 180px; border-left: 1px solid #dedede;}
+        .faye-table ul li.gaodu {height: 180px;}
+        .faye-table ul li div.direction {text-align: left; padding-left: 10px; box-sizing: border-box;}
+        .faye-table ul li div.fayet6 span {display: block; width: 100%; height: 40px; border-bottom: 1px solid #dedede;  background-color:#eee; }
+        .faye-table ul li div.fayet7 span {display: block; width: 100%; height: 40px; border-bottom: 1px solid #dedede;  background-color:#eee; }
+        .faye-table ul li div.fayet6 i {display: block; width: 100%; height: 140px; line-height: 22px; font-style: normal; padding-top:8px; box-sizing: border-box;}
+        .faye-table ul li div.fayet7 i {display: block; width: 100%; height: 140px; line-height: 22px; font-style: normal; padding-top:8px; box-sizing: border-box;}
+        #box{ margin:10px auto; width:100%; min-height:0; background:#FF9}
+        #demo{ margin:10px auto; width:100%; min-height:0; background:#CF9}
+        
+        .message-item {
+        margin-bottom: 5px;
+        margin-left: 40px;
+        position: relative;
+        }
+        .message-item .message-inner {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        padding: 10px;
+        position: relative;
+        }
+        .message-item .message-inner:before {
+        border-right: 10px solid #ddd;
+        border-style: solid;
+        border-width: 10px;
+        color: rgba(0,0,0,0);
+        content: "";
+        display: block;
+        height: 0;
+        position: absolute;
+        left: -20px;
+        top: 6px;
+        width: 0;
+        }
+        .message-item .message-inner:after {
+        border-right: 10px solid #fff;
+        border-style: solid;
+        border-width: 10px;
+        color: rgba(0,0,0,0);
+        content: "";
+        display: block;
+        height: 0;
+        position: absolute;
+        left: -18px;
+        top: 6px;
+        width: 0;
+        }
+        .message-item:before {
+        background: #fff;
+        border-radius: 2px;
+        bottom: -30px;
+        box-shadow: 0 0 3px rgba(0,0,0,0.2);
+        content: "";
+        height: 100%;
+        left: -30px;
+        position: absolute;
+        width: 3px;
+        }
+        .message-item:after {
+        background: #fff;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        content: "";
+        height: 15px;
+        left: -36px;
+        position: absolute;
+        top: 10px;
+        width: 15px;
+        }
+        .clearfix:before, .clearfix:after {
+        content: " ";
+        display: table;
+        }
+        .message-item .message-head {
+        border-bottom: 1px solid #eee;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        }
+        .message-item .message-head .avatar {
+        margin-right: 20px;
+        }
+        .message-item .message-head .user-detail {
+        overflow: hidden;
+        }
+        .message-item .message-head .user-detail h5 {
+        font-size: 16px;
+        font-weight: bold;
+        margin: 0;
+        }
+        .message-item .message-head .post-meta {
+        float: left;
+        padding: 0 15px 0 0;
+        }
+        .message-item .message-head .post-meta >div {
+        color: #333;
+        font-weight: bold;
+        text-align: right;
+        }
+        .post-meta > div {
+        color: #777;
+        font-size: 12px;
+        line-height: 22px;
+        }
+        .message-item .message-head .post-meta >div {
+        color: #333;
+        font-weight: bold;
+        text-align: right;
+        }
+        .post-meta > div {
+        color: #777;
+        font-size: 12px;
+        line-height: 22px;
+        }
+        .message-item img {
+         min-height: 25px;
+         max-height: 25px;
+        }
+        .modal-ku {
+          width: 1750px;
+          margin: auto;
+        }
+        #nav {
+        height: 30px;
+        width: 100%;
+        background-color: #007bff;
+        }
+        #nav ul {
+        margin: 0 0 0 30px;
+        padding: 0px;
+        font-size: 12px;
+        color: #FFF;
+        line-height: 30px;
+        white-space: nowrap;
+        }
+        #nav li {
+        list-style-type: none;
+        display: inline;
+        }
+        #nav li a {
+        cursor: pointer;
+        text-decoration: none;
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 7px 10px;
+        color: #FFF;
+        }
+        #nav li a:hover {
+        color: #ff0;
+        background-color: #007bff;
+        }
+        </style>
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">
+            {{t_project.project_name}}
+        </li>
+
+      </ol>
+
+    
+<div class="row">
+    <div class="col-lg-12">
+    <div class="card mb-3">
+    <div class="faye-table" style="font-size:12px;">
+        <ul>
+            <li>
+                <div class="fayet" style="border-left: none;">主订单 {{t_project.id}}</div>
+                <div class="fayet3">
+                           <a href="/project?tag=show&guid= {{t_project.guid}}&id= {{t_project.id}}">
+                            {{t_project.project_name}}</a>
+                        </div>
+                      </li>
+                {%if t_relation_projects%}
+                {%for idx,item in enumerate(t_relation_projects)%}
+                {%if item[0].split('|')[1]!=str(t_project.id)%}
+                <li>
+                <div class="fayet" style="border-left: none;">关联订单{{item[0].split('|')[1]}}</div>
+                <div class="fayet3">
+                           <a href="/project?tag=show&guid={{item[0].split('|')[0]}}&id={{item[0].split('|')[1]}}">{{item[0].split('|')[2]}}</a>
+                          <a class="delete_relation_ids" href="javascript:void(0)" style="color: red"
+                          id="{%if t_projects_relation.id%}{{t_projects_relation.id}}{%end%}" relation_id="{{item[0].split('|')[1]}}">删除</a>
+                          {%for idx1,i in enumerate(item)%}
+                            {%if idx1>0%}
+                              | {{i.split('|')[0]}} 关联 {{i.split('|')[1]}}
+                            {%end%}
+                          {%end%}
+                        </div>
+                      </li>
+                          {%end%}
+                    {%end%}
+                    {%else%}
+                    <li>
+                    <div class="fayet" style="border-left: none;">关联订单</div>
+                    <div class="fayet3" style="background-color: rgb(238, 235, 235)">
+                      还没有关联订单~
+                    </div>
+                  </li>
+                    {%end%}
+        </ul>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Modal -->
+
+
+
+{%end%}
+
+
+
+ {%block js%}
+
+<script>
+$(function () {
+    _xsrf =  getCookie("_xsrf")
+ })
+</script>
+{%end%}

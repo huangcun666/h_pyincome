@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>开收据系统-客户管理</title>
+  <!-- Bootstrap core CSS-->
+  
+  <link href="/static/css/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+</head>
+
+<body class="fixed-nav sticky-footer" id="page-top">
+  <!-- Navigation-->
+  <div class="content">
+    <div class="container-fluid">
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-table"></i> <a href='/' style="font-size:20px;color: gray;text-decoration:none;" id='receipt_btn'>收据</a>
+          <span style="font-size:24px"> |</span> 
+          <a href='/customer' style="font-size: 24px;text-decoration:none;" id='customer_btn'>客户</a>
+          <span style="font-size:24px"> |</span> 
+          <a href='/out' style="font-size: 20px;color: gray;text-decoration:none;" id='customer_btn'>出库</a>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <div class="pull-right" id='select_date' >
+                {%if 'time_list' in globals()%}
+              <form action="/searchdate",method="GET" class="form-inline">
+                <div class="form-group">
+              <select name="select_date">
+                {% if time_list[0]=='end_hetong'%}
+                  <option value="end_hetong" selected='selected'>合同到期</option>
+                  {%else%}
+                  <option value="end_hetong">合同到期</option>                 
+                  {%end%}
+                  {% if time_list[0]=='date_zhizhao'%}
+                  <option value="date_zhizhao" selected='selected'>执照期限</option>
+                  {%else%}
+                  <option value="date_zhizhao">执照期限</option>
+                  {%end%}
+                  {% if time_list[0]=='date_address'%}
+                  <option value="date_address" selected='selected'>地址期限</option>
+                  {%else%}
+                  <option value="date_address">地址期限</option>
+                  {%end%}
+                </select>
+         
+                <input value="{{time_list[1]}}" placeholder="起始时间" aria-controls="dataTable" type="date" name="start_time">
+             
+                <p style='margin-top: 10px;'>至</p>
+                <input value="{{time_list[2]}}" placeholder="结束时间" aria-controls="dataTable" type="date" name="end_time">
+                <input type="submit" class="insert" value="查询">
+                </div>
+                </form>
+                {%else%}
+                <form action="/searchdate",method="GET" class="form-inline">
+                  <div class="form-group">
+                  <select name="select_date">
+                      <option value="end_hetong">合同到期</option>                 
+                      <option value="date_zhizhao">执照期限</option>
+                      <option value="date_address">地址期限</option>
+                    </select>
+                    <input  placeholder="起始时间" aria-controls="dataTable" type="date" name="start_time">
+                    <p style='margin-top: 10px;'>至</p>
+                    <input placeholder="结束时间" aria-controls="dataTable" type="date" name="end_time">
+                    <input type="submit" class="insert" value="查询">
+                    </div>
+                    </form>
+                    {%end%}
+              </div>
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <th>客户编号</th>
+                  <th>公司名称</th>
+                  <th style="min-width:40px;">联系人</th>
+                  <th style="min-width:30px;">电话</th>
+                  <th>业务内容</th>
+                  <th>地址类型</th>
+                  <th>合同起始</th>
+                  <th>合同到期</th>
+                  <th>成立日期</th>
+                  <th>执照期限</th>
+                  <th>地址期限</th>
+                  <th>客服顾问</th>
+                  <th>销售顾问</th>
+                  <th>工商专员</th>
+                  <th>会计</th>
+                  <th style="min-width:67px;">地址供应商</th>
+                  <th>操作</th>
+                  <th>操作</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {%for customer in customers%}
+                    <tr id={{customer.id}}>
+                        <td>{{customer.customer_id}}</td>
+                        <td>{{customer.company}}</td>
+                        <td>{{customer.linkman}}</td>
+                        <td>{{customer.phone}}</td>
+                        <td>{{customer.yewu_content}}</td>
+                        <td>{{customer.address_style}}</td>
+                        <td>
+                          {%if customer.start_hetong == None%}
+                          {%else%}
+                          {{customer.start_hetong}}
+                          {%end%}
+                        </td>
+                        <td>
+                          {%if customer.end_hetong == None%}
+                          {%else%}
+                          {{customer.end_hetong}}
+                          {%end%}
+                        </td>
+                        <td>
+                          {%if customer.date_chengli == None%}
+                          {%else%}
+                          {{customer.date_chengli}}
+                          {%end%}
+                        </td>
+                        <td>
+                          {%if customer.date_zhizhao == None%}
+                          {%else%}
+                          {{customer.date_zhizhao}}
+                          {%end%}
+                        </td>
+                        <td>
+                          {%if customer.date_address == None%}
+                          {%else%}
+                          {{customer.date_address}}
+                          {%end%}
+                        </td>
+                        <td>{{customer.kf_name}}</td>
+                        <td>{{customer.sale_name}}</td>
+                        <td>{{customer.zhuanshang}}</td>
+                        <td>{{customer.kuaiji}}</td>
+                        <td>{{customer.address_gongying}}</td>
+                        <td><a class="btn customer_detail btn-sm" type='button' href="/customer_detail/{{customer.id}}">查看</a></td>
+                        <td><a class="btn customer_change btn-sm" type="button" id="change" href="/changecustomer/{{customer.id}}" >修改</a></td>
+                        <td><a class="btn btn-danger btn-sm delete customer_delete "  type="button" name={{customer.customer_id}}
+                            id={{customer.id}} data-toggle="modal" data-target="#delete_modle">删除</a></td>
+                    </tr>
+                    {%end%}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="new_insert">
+            <form action="/insert_customer" method="GET">
+            <input type="submit" class="btn search_btn" value="新增">
+            </form>
+            </div>
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fa fa-angle-up"></i>
+    </a>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">退出登录</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">退出登录？</div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+            <a class="btn btn-primary" href="/logout">退出</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="delete_modle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">删除客户</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body" id="alert"></div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="customer_close_btn" type="button" data-dismiss="modal">关闭</button>
+            <input type="button" class="btn btn-danger customer_delete_btn" value="删除">
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div class="guidely-popup">
+      <div class="guidely-guide-pad">
+        <h4>Welcome to the guided tour!</h4>Click to start a brief tour of our site. Here we'll point out important features and
+        tips to make your experience easier. </div>
+      <div class="guidely-controls">
+        <button>Start Tour</button>
+        <button>No Thanks</button>
+      </div>
+    </div>
+    <script src="/static/js/vendor/jquery/jquery.min.js"></script>
+    <script src="/static/js/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/static/js/myjquery.js"></script>
+    <script src="/static/css/datatables/jquery.dataTables1.js"></script>
+    <script src="/static/css/datatables/dataTables.bootstrap4.js"></script>
+    <script src="/static/js/sb-admin.min.js"></script>
+    <script src="/static/js/sb-admin-datatables.min.js"></script>
+
+    <!--Dynamica
+  </div>
+</body>
+</html>

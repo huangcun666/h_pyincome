@@ -1,0 +1,68 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">工商办结统计
+        </li>
+
+      </ol>
+
+      <div class="card mb-3">
+            <div class="card-body">
+
+            <div class="table-responsive">
+            <form>
+            <input type="text" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
+                    至
+            <input type="text" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+            <select name="cq">
+                    <option  value="0">工商专员</option>
+                      {%for idx,item in enumerate(t_user_cq)%}
+                          <option value="{{item.id}}"  {%if params["cq"]==str(item.id)%}selected{%end%} >{{item.name}}</option>
+                      {%end%}
+                  </select>
+            <input type="hidden" name="tag" value="{{tag}}"/>
+            <input type="submit" value="检索" />
+        </form>
+            <table class="table table-bordered" id="dataTable"  cellspacing="0">
+            <thead style="background-color:#000;color:#fff">
+                <tr>
+                    <th width="100">排名</th>
+                    <th width="100">工商专员</th>
+                    <th width="100">办结数量</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for idx,item in enumerate(t_projects_milepost)%}
+                <tr>
+                    <td>{{idx+1}}</td>
+                    <td>{{item.uid_name}}</td>
+                    <td>{{item.count}}</td>
+                </tr>
+                {%end%}
+            </tbody>
+            </table>
+
+            </div>
+
+        </div>
+    </div>
+
+{%end%}
+
+{%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+    $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+    $("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+
+})
+</script>
+{%end%}

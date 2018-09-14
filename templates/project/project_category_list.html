@@ -1,0 +1,173 @@
+
+ {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+ <ol class="breadcrumb">
+   <li class="breadcrumb-item">
+    主面板
+   </li>
+   <li class="breadcrumb-item active">查看业务类型 
+    </li>
+
+ </ol>
+
+
+<div class="card mb-3">
+   <div class="card-body">
+  <div>
+        {%if tag==None%}
+        <a href="/checkprojectcategory" 
+        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
+        所有类型</a>
+        {%else%}
+        <a href="/checkprojectcategory" 
+        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
+        所有类型</a>
+        {%end%}
+      {%for category in categorys%}
+      {%if category.category_name==tag%}
+      <a href="/checkprojectcategory?tag={{category.category_name}}" 
+      class="btn btn-info btn-sm" id="btn_check" 
+      style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
+      {{category.category_name}}</a>
+      {%else%}
+      <a href="/checkprojectcategory?tag={{category.category_name}}" 
+      class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
+      {{category.category_name}}</a>
+      {%end%}
+      {%end%}
+    </div>
+<div class="table-responsive">
+
+
+             <table class="table table-bordered" id="dataTable" width="2000"  cellspacing="0">
+               <thead style="background-color:#000;color:#fff">
+                   <tr>
+                    <th width="60">业务</th>
+                    <th width="60">创建人</th>
+                    <th width="60">类型</th>
+                    <th width="60">排序</th>
+                    <th width="120">创建时间</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   {%for projectcategory in allprojectcategorys%}
+                   
+                    <tr>
+                        <td>{{projectcategory[0]}}</td>
+                        <td>{{projectcategory[1]}}</td>
+                        <td>{{projectcategory[2]}}</td>
+                        <td>{{projectcategory[3]}}</td>
+                        <td>{{projectcategory[4]}}</td>
+                    </tr>
+                  
+                    {%end%}
+               </tbody>
+           </table>
+
+<div class="col-sm-12 col-md-7">
+<div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+ <ul class="pagination">
+{% if pagination.has_prev %}
+    <li class="paginate_button page-item previous " id="dataTable_previous">
+    <a href="?tag=my&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+
+
+   {% end %}
+   {%for page in pagination.iter_pages() %}
+    {% if page %}
+    {% if page != pagination.page %}
+    <li class="paginate_button page-item "><a href="?tag=my&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+    {% else %}
+     <li class="paginate_button page-item active">
+       <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+     {% end %}
+     {% end %} {%end %}
+
+    {% if pagination.has_next %}
+    <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+{% end %} </ul>
+</div>
+</div>
+
+    </div>
+   </div>
+   <div class="card-footer small text-muted"></div>
+ </div>
+
+{% end %}
+
+
+{%block js%}
+
+<script>
+$(function () {
+_xsrf =  getCookie("_xsrf")
+$('#recommend_staff').typeahead({
+ source: function (query, process) {
+   return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+       return process(JSON.parse(data));
+   });
+}
+});
+$('#addr_type').typeahead({
+ source: function (query, process) {
+   return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"addr"}, function (data) {
+       return process(JSON.parse(data));
+   });
+}
+});
+
+
+$("#div_building").hide()
+$("#div_recommend_by").hide()
+$("#div_recommend_staff").hide()
+
+   $("#btn_add").on("click",function(){
+       $("#insert_category_modal").modal("show")
+
+   })
+   $(".choose_type").on("click",function(){
+        var uid=$(this).attr('id');
+        $('.btn_save_project1').attr('id',uid);
+       $("#project_category_modal").modal("show")
+
+   })
+
+       $("#btn_save_project").click(function(){
+           var name=$('#category_name').val();
+           $.post(
+               '/insertcategory',
+               {
+                category:name,
+                "_xsrf":_xsrf
+               },
+               function(data,status){
+                $("#insert_category_modal").modal("hide")
+                $('.group1').append('<input value="'+data['category_id']+'" '+
+                'id="category_id" name="category_name" type="radio">'+name);
+               }
+           )
+       })
+       $(".btn_save_project1").click(function(){
+           var uid=$(this).attr('id');
+           var categoryid=$('input[name="category_name"]:checked').val();
+           $.post(
+               '/.',
+               {
+                category_id:categoryid,
+                id:uid,
+                "_xsrf":_xsrf
+               },
+               function(data,status){
+                $("#project_category_modal").modal("hide")
+                $('p[id='+uid+']').text(data['category_name']);
+               }
+           )
+
+       })
+   })
+</script>
+
+{%end%}

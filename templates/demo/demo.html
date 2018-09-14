@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CKEditor 5 - Inline editor</title>
+    <link href="/static/js/jquery.fancybox.min.css" rel="stylesheet" type="text/css" />
+    <script src="/static/js/jquery.js"></script>
+
+</head>
+<body >
+<div style="display: none;" id="hidden-content">
+    <h2>Hello</h2>
+    <p>You are awesome.</p>
+</div>
+<a data-fancybox data-src="#hidden-content" href="javascript:;">
+    Hidden div {{name}}
+</a>
+    <span class="context-menu-one btn btn-neutral">left click me</span>
+
+   <div id="editor1" contenteditable="true" ><h2>关于发业集团</h2></div>
+    <div id="editor" contenteditable="true" >
+
+        <p>广州发业集团是一家集知识产权sadsadasdasdasd、财务、工商登记、法律服务、网站服务于一体企业综合服务企业集团，集团位于广州珠江新城。发业一直致力于为广大企业提供专业的服务，创办至今已经积累了丰富的行业经验，为众多创业者提供简便专业的支持服务，为众多企业提供一站式系统化的解决方案。</p>
+  </div>
+<div id="editor2" contenteditable="true"  >
+
+    {% module xsrf_form_html() %}
+        <img src="https://via.placeholder.com/1000x300/02c7cd/fff?text=Placeholder image" alt="CKEditor 5 rocks!">
+</div>
+
+    <div id="msg" style="color:red;"></div><br/>
+    <input type="button" value="保存" id="btnsave"/>
+
+<script src="/static/js/jquery.contextmenu.js"></script>
+       <script type="text/javascript" src="/static/js/jquery.fancybox.min.js"></script>
+<div  id="txtContent" class="context-menu-one btn btn-neutral">right click me<br/>
+
+
+fdfadsfsaf
+asfadf<br/></div >
+
+            <div class="contextMenu" id="sysMenu">
+                <ul>
+                    <li id="Li1"><img src="images/new.png" /> 新建</li>
+                    <li id="Li2"><img src="images/folder.png" /> 打开</li>
+                    <li id="Li3"><img src="images/disk.png" /> 保存</li>
+                    <hr />
+                    <li id="Li4"><img src="images/cross.png" /> 退出</li>
+                </ul>
+            </div>
+            <!--end-->
+
+
+
+
+
+<script type="text/javascript">
+$(function() {
+                $('#txtContent').contextMenu('sysMenu',
+                { bindings:
+                    {
+                        'Li1': function(Item) {
+                            alert("在ID号为：" + Item.id + "编辑框中，您点击了“新建”项");
+                        },
+                        'Li2': function(Item) {
+                            alert("在ID号为：" + Item.id + "编辑框中，您点击了“打开”项");
+                        }
+                        //设置其它选项事件
+                        //...
+                    }
+                });
+            })
+
+</script>
+<!--
+function ckeditorUpload(file){
+   $('#cke_91_textInput').val(file);
+   $('#cke_92_label').click();
+}
+
+function getCookie(name) {
+    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    return r ? r[1] : undefined;
+}
+
+
+
+CKEDITOR.inline("editor1", {
+toolbar: [
+['Bold','Italic','Underline','Strike'], ['Cut','Copy','Paste'],
+['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'],
+['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']
+]
+});
+
+CKEDITOR.inline("editor", {
+toolbar: [
+['Bold','Italic','Underline','Strike'], ['Cut','Copy','Paste'],
+['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'],
+['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']
+]
+});
+
+CKEDITOR.inline("editor2", {
+
+            filebrowserBrowseUrl: '/ckfinder/ckfinder.html',
+            filebrowserImageBrowseUrl: '/ckfinder/ckfinder.html?type=Images',
+            // filebrowserUploadUrl: '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+            filebrowserImageUploadUrl: '/upload?_xsrf='+getCookie("_xsrf")
+        ,
+toolbar: [
+['Maximize', 'Image']
+]
+});
+
+
+
+</script> -->
+    <script>
+
+    //  InlineEditor
+    //         .create( document.querySelector( '#editor2' ) )
+    //         .catch( error => {
+    //             console.error( error );
+    //         } , {
+    //     // Add Image to the plugin list.
+    //       removePlugins: [ 'Heading', 'Link' ],
+    //     toolbar: [ 'EasyImage', 'italic', 'bulletedList', 'numberedList', 'blockQuote' ]
+
+    //     // ...
+    // } );
+
+    //     InlineEditor
+    //         .create( document.querySelector( '#editor' ) )
+    //         .catch( error => {
+    //             console.error( error );
+    //         }, {
+    //     // Add Image to the plugin list.
+    //       removePlugins: [ 'Heading', 'Link' ],
+    //     toolbar: [ 'EasyImage', 'italic', 'bulletedList', 'numberedList', 'blockQuote' ]
+
+    //     // ...
+    // }  );
+
+    //         InlineEditor
+    //         .create( document.querySelector( '#editor1' ) )
+    //         .catch( error => {
+    //             console.error( error );
+    //         } , {
+    //     // Add Image to the plugin list.
+    //       removePlugins: [ 'Heading', 'Link' ],
+    //     toolbar: [ 'EasyImage', 'italic', 'bulletedList', 'numberedList', 'blockQuote' ]
+
+    //     // ...
+    // }  );
+    //     $(function(){
+    //         $("#editor").on('blur',function(){
+    //             // alert("当前已保存")
+    //             var newDate = new Date();
+    //             $("#msg").text("最后保存时间: " + new Date().toLocaleString())
+    //         })
+    //          $("#editor1").on('blur',function(){
+    //             // alert("当前已保存")
+    //               var newDate = new Date();
+    //               $("#msg").text("最后保存时间:" + new Date().toLocaleString())
+    //         })
+    //          $("#btnsave").on('click', function(event) {
+    //              description = $("#editor").html()
+    //             alert(description)
+    //         });
+
+    //         })
+
+
+    </script>
+</body>
+</html>

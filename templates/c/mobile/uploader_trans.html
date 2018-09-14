@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>上传文件</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+    ">
+
+    <link rel="stylesheet" href="/static/lib/weui.min.css">
+    <link rel="stylesheet" href="/static/css/jquery-weui.css">
+    <link rel="stylesheet" href="/static/css/demos.css">
+
+  </head>
+
+  <body ontouchstart>
+    <header class='demos-header'>
+      <h1 class="demos-title">{{t_customer.company}}</h1>
+    </header>
+
+<div id="toast" style="display: none;">
+   <div class="weui_mask_transparent"></div>
+   <div class="weui_toast">
+       <i class="weui_icon_toast"></i>
+       <p class="weui_toast_content">已完成</p>
+   </div>
+</div>
+
+<div id="loadingToast" class="weui_loading_toast" style="display:none;">
+   <div class="weui_mask_transparent"></div>
+   <div class="weui_toast">
+       <div class="weui_loading">
+           <!-- :) -->
+           <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+           <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+       </div>
+       <p class="weui_toast_content">数据加载中</p>
+   </div>
+</div>
+
+<div class="weui-gallery" id="gallery">  
+    <span class="weui-gallery__img" id="galleryImg"></span>  
+    <div class="weui-gallery__opr">  
+        <a href="javascript:" class="weui-gallery__del">  
+            <i class="weui-icon-delete weui-icon_gallery-delete"></i>  
+        </a>  
+    </div>  
+</div>  
+    <div class="weui-cells weui-cells_form">
+      <div class="weui-cell">
+        <div class="weui-cell__bd">
+          <div class="weui-uploader">
+            <div class="weui-uploader__hd">
+              <p class="weui-uploader__title">文件上传 </p>
+              <div class="weui-uploader__info">0/2</div>
+            </div>
+            <div class="weui-uploader__bd">
+                <ul class="weui-uploader__files" id="uploaderFiles">  
+                                  
+                </ul>
+                <form action="/uploadpic?tag=add_pic&trans_id={{trans_id}}" enctype="multipart/form-data"  method="POST">
+              <div class="weui-uploader__input-box">     
+                <input id="uploaderInput" name="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+            </div>
+            <input type="submit" class="weui-btn weui-btn_mini weui-btn_primary" value="上传">
+            {% module xsrf_form_html() %} 
+            </form>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+<script src="/static/lib/jquery-2.1.4.js"></script>
+<script src="/static/lib/fastclick.js"></script>
+<script src="/static/js/jquery-weui.js"></script>
+<script>    
+function getCookie(name) {
+    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    return r ? r[1] : undefined;
+}
+  $(function() {
+    
+    FastClick.attach(document.body);
+
+   
+    _xsrf = getCookie("_xsrf")
+      var tmpl = '<li class="weui-uploader__file" style="background-image:url(#url#)"></li>',
+    $gallery = $("#gallery"),  
+    $galleryImg = $("#galleryImg"),  
+    $uploaderInput = $("#uploaderInput"),  
+    $uploaderFiles = $("#uploaderFiles");  
+    $uploaderInput.on("change", function(e) {  
+                var src, url = window.URL || window.webkitURL || window.mozURL,  
+                files = e.target.files;  
+                for(var i = 0, len = files.length; i < len; ++i) {  
+                    var file = files[i];  
+  
+                    if(url) {  
+                        src = url.createObjectURL(file);  
+                    } else {  
+                        src = e.target.result;  
+                    }  
+  
+                    $uploaderFiles.append($(tmpl.replace('#url#', src)));  
+                }  
+            });
+        var index; //第几张图片  
+        $uploaderFiles.on("click", "li", function() {  
+            index = $(this).index();  
+            $galleryImg.attr("style", this.getAttribute("style"));  
+            $gallery.fadeIn(100);  
+        });  
+        $gallery.on("click", function() {  
+            $gallery.fadeOut(100);  
+        });  
+        //删除图片  
+        $(".weui-gallery__del").click(function() {  
+            $uploaderFiles.find("li").eq(index).remove();
+            $uploaderInput.eq(index).val('');
+        });
+
+  });
+  
+</script>
+
+  </body>
+</html>

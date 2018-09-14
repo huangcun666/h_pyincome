@@ -1,0 +1,35 @@
+<table class="table">
+<thead>
+        <th>编号</th>
+         <th>业务内容</th>
+          <th>客户名称</th>
+          
+                 <th>公司名字</th>
+            <th></th>
+</thead>
+{%for item in projects_order%}
+<tr>
+   <td>{{item.id}}</td>
+ <td>{{item.project_name.replace(key,'<font color="red">'+key+'</font>')}}</td>
+ <td>{{item.customer_name}}</td>
+
+  <td><input type="radio" value="{{item.id}}" name="project_choice"> </td>
+</tr>
+{%end%}
+{%for item in projects%}
+<tr>
+   <td>{{item.id}}</td>
+ <td>{{item.project_name}}</td>
+ <td>{{item.customer_name}}</td>
+
+  <td>{{item.customer_company}}</td>
+
+  
+  <td><input type="radio" value="{{item.id}}" name="project_choice"> </td>
+</tr>
+{%end%}
+
+
+
+
+</table>

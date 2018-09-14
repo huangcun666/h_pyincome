@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>开收据系统-出库</title>
+  <!-- Bootstrap core CSS-->
+  
+  <link href="/static/css/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+</head>
+
+<body class="fixed-nav sticky-footer" id="page-top">
+  <!-- Navigation-->
+  <div class="content">
+    <div class="container-fluid">
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-table"></i> <a href='/' style="font-size:20px;color: gray;text-decoration:none;" id='receipt_btn'>收据</a>
+          <span style="font-size:24px"> |</span> 
+          <a href='/customer' style="font-size: 20px;color: gray;text-decoration:none;" id='customer_btn'>客户</a>
+          <span style="font-size:24px"> |</span> 
+          <a href='/out' style="font-size: 24px;text-decoration:none;" id='customer_btn'>出库</a>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+     
+         
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <th style="min-width:27px;">序号</th>
+                  <th style="min-width:27px;">编号</th>
+                  <th style="min-width:80px;">收入确认时间</th>
+                  <th>分配时间(跟单)</th>
+                  <th style="min-width:40px;">业务员</th>
+                  <th style="min-width:27px;">电销</th>
+                  <th style="min-width:27px;">组长</th>
+                  <th style="min-width:27px;">跟单</th>
+                  <th>商机来源</th>
+                  <th >客户姓名</th>
+                  <th>企业名称</th>
+                  <th style="min-width:40px;">注册号</th>
+                  <th>业务内容</th>
+                  <th>公司类型</th>
+                  <th style="min-width:27px;">法人</th>
+                  <th style="min-width:27px;">监事</th>
+                  <th style="min-width:27px;">股东</th>
+                  <th>注册资金</th>
+                  <th>地址类型</th>
+                  <th>办理进度</th>
+                  <th>是否记账</th>
+                  <th>总服务费</th>
+                  <th>实收定金</th>
+                  <th>合同确认</th>
+                  <th>办结时间</th>
+                  <th style="min-width:27px;">备注</th>
+                  <th style="min-width:80px;">移交资料时间</th>
+                  <th style="min-width:200px;text-align: center;">执照交接明细</th>
+                  <th style="min-width:70px;">接受人签名</th>
+                  <th style="min-width:27px;">备注</th>
+                  <th>出库时间</th>
+                  <th>开票地址租凭合同日期</th>
+                  <th>联系方式</th>
+                  <th style="min-width:70px;">是否有尾款</th>
+                  <th style="min-width:75px;">办结周期(天)</th>
+                  <th>操作</th>
+                  <th>操作</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for out in outs %}
+                <tr id={{out.id}}>
+                  <td>{{out.serial_num}}</td>
+                  <td>{{out.num}}</td>
+                  <td>{%if out.rev_time!=None%}
+                        {{out.rev_time}}
+                      {%end%}
+                </td>
+                  <td>
+                    {%if out.dis_time!=None%}
+                      {{out.dis_time}}
+                    {%end%}
+                  </td>
+                  <td>{{out.saleman}}</td>
+                  <td>{{out.telemark}}</td>
+                  <td>{{out.group_leader}}</td>
+                  <td>{{out.gen_dan}}</td>
+                  <td>{{out.source_bus}}</td>
+                  <td>{{out.customer_name}}</td>
+                  <td>{{out.company_name}}</td>
+                  <td>{{out.regist_id}}</td>
+                  <td>{{out.bus_content}}</td>
+                  <td>{{out.company_type}}</td>
+                  <td>{{out.legal_person}}</td>
+                  <td>{{out.supervisor}}</td>
+                  <td>{{out.share_holder}}</td>
+                  <td>{{out.regist_money}}</td>
+                  <td>{{out.address_type}}</td>
+                  <td>{{out.progress}}</td>
+                  <td>{{out.tally}}</td>
+                  <td>{{out.server_money}}</td>
+                  <td>{{out.rec_money}}</td>
+                  <td>{{out.contract_confirm}}</td>
+                  <td>
+                    {%if out.baijie_time!=None%}
+                      {{out.baijie_time}}
+                    {%end%}
+                  </td>
+                  <td>{{out.remarks}}</td>
+                  <td>
+                    {%if out.move_time!=None%}
+                      {{out.move_time}}
+                    {%end%}
+                  </td>
+                  <td>{{out.zhizhao_detail}}</td>
+                  <td>{{out.accept_man}}</td>
+                  <td>{{out.other_remarks}}</td>
+                  <td>
+                    {%if out.out_time!=None%}
+                    {{out.out_time}}
+                    {%end%}
+                  </td>
+                  <td>
+                    {%if out.date_kaipiao!=None%}
+                    {{out.date_kaipiao}}
+                    {%end%}
+                  </td>
+                  <td>{{out.phone}}</td>
+                  <td>{{out.retainage}}</td>
+                  <td>{{out.banjie_cycle}}</td>
+                  <td><a class="btn btn-sm customer_detail" type='button' href="/outdetail/{{out.id}}">查看</a></td>
+                  <td><a class="btn btn-sm customer_change" type="button" id="change" href="/out_change/{{out.id}}">修改</a></td>
+                  <td><a class="btn btn-danger btn-sm out_delete" name='{{out.num}}' type="button" id="{{out.id}}" data-toggle="modal" data-target="#delete_modle">删除</a></td>
+                  </tr>
+                {%end%}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="new_insert">
+            <form action="/insert_out" method="GET">
+            <input type="submit" class="btn search_btn" value="新增">
+            </form>
+            </div>
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fa fa-angle-up"></i>
+    </a>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">退出登录</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">退出登录？</div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+            <a class="btn btn-primary" href="/logout">退出</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="delete_modle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">删除出库单</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body" id="alert"></div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="customer_close_btn" type="button" data-dismiss="modal">关闭</button>
+            <input type="button" class="btn btn-danger out_delete_btn" value="删除">
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <script src="/static/js/vendor/jquery/jquery.min.js"></script>
+    <script src="/static/js/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/static/js/myjquery.js"></script>
+    <script src="/static/css/datatables/jquery.dataTables2.js"></script>
+    <script src="/static/css/datatables/dataTables.bootstrap4.js"></script>
+    <script src="/static/js/sb-admin.min.js"></script>
+    <script src="/static/js/sb-admin-datatables.min.js"></script>
+  </div>
+</body>
+</html>

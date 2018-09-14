@@ -1,0 +1,84 @@
+ {% extends "../base.html" %} {%block title%}终端管理{%end%} {% block body %}
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/sites">主面板</a>
+        </li>
+        <li class="breadcrumb-item active">{{t_user_site.site_name}} 静态文件</li>
+
+      </ol>
+   <div class="card mb-3">
+
+
+        <div class="card-body">
+          <div class="table-responsive">
+                <p>
+                        <a href="/static_file?tag=add&site_id={{t_user_site.id}}" class="btn btn-info" id="add_new_file">新建</a>
+                </p>
+                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>文件名</th>
+                               <th width="150">文件备注</th>
+                            <th width="220">建立时间</th>
+                          <th width="120"></th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for item in t_static_files%}
+                        <tr id="{{item.id}}">
+                            <td>
+                                {{item.fname}}
+                            </td>
+                                <td>
+                                {{item.fname_remark}}
+                            </td>
+                            <td>
+                                {{item.created_at}}
+                            </td>
+                            <td>
+                                <a href="static_file?tag=edit&sf_id={{item.id}}&site_id={{item.site_id}}">管理</a> |
+
+                                <a href="http://{{t_user_site.site_domain}}/{{item.fname}}" target="_blank">查看</a>
+                            </td>
+                        </tr>
+                        {%end%}
+                    </tbody>
+                </table>
+                <div class="span12">
+                    <div class="pagination">
+                        <ul>
+                            {% if pagination.has_prev %}
+                            <li><a href="?page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li>
+                                <a href="?page={{ page }}">{{ page }}</a></li>
+                            {% else %}
+                            <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                            {% end %} {% else %}
+                            <li><span class="active"><a href="#">....</a></span></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li><a href="?page={{pagination.page+1}}">下页 &raquo;</a></li>
+                            {% end %}
+                        </ul>
+                    </div>
+                </div>
+         </div>
+        </div>
+        <div class="card-footer small text-muted"></div>
+      </div>
+
+
+
+
+{% end %} {%block js%}
+<script>
+$(document).ready(function() {
+   $("#add_new_file").on('click',function(){
+        $("#manage_modal1").modal("show")
+   })
+
+
+})
+</script>
+{%end%}

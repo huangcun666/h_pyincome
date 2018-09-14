@@ -1,0 +1,233 @@
+
+ {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+<!-- Modal -->
+<div class="modal fade" id="manage_modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">网站配置 </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="site_mod">
+
+      </div>
+
+      <div class="modal-body">
+      <a   href="/sites?tag=edit&site_id=59" class="btn btn-info" target="_blank" id="site_edit">站点信息</a>
+        <a   href="/sites?tag=nav&site_id=85" class="btn btn-info" target="_blank" id="nav_edit">导航配置</a>
+
+            <a  href="/sites?articles?site_id=59" class="btn btn-info" target="_blank" id="site_article">文章管理</a>
+
+
+
+  <a  href="/staticfile?site_id=59" class="btn btn-info" target="_blank" id="site_staticfile">静态文件</a>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                 <a  href="/?preview2?site_id=59" class="btn btn-primary" target="_blank" id="site_preview">查看站点</a>
+
+      </div>
+    </div>
+  </div>
+</div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/sites">主面板</a>
+        </li>
+        <li class="breadcrumb-item active">站点列表 </li>
+      </ol>
+   <div class="card mb-3">
+        <div class="card-body">
+          <div class="table-responsive">
+                <p>
+                        <a href="/sites?tag=new&form_tag={{form_tag}}" class="btn btn-info" name="btn_add">新建</a>
+
+
+                </p>
+                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>站点名称</th>
+                            {%if role=="2"%}    <th>所有者</th>{%end%}
+                            <th width="220">当前绑定域名</th>
+
+                            <th width="100"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for item in t_projects%}
+                        <tr id="{{item.id}}">
+                            <td>
+                                {{item.site_name}}
+                            </td>
+                             {%if role=="2"%} <td>
+                            {{item.name}}
+                            </td>{%end%}
+                            <td>
+                               {%if item.site_domain%} <a href="http://{{item.site_domain}}" target="_blank">{{item.site_domain}}</a>
+                                <br/> {%end%} {%if item.site_domain1%} {{item.site_domain1}}
+                                <br/> {%end%} {%if item.site_domain2%} {{item.site_domain2}} {%end%}
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" class="manage_site" title="{{item.id}}">管理</a>
+
+                            </td>
+                        </tr>
+                        {%end%}
+                    </tbody>
+                </table>
+                <div class="span12">
+                    <div class="pagination">
+                        <ul>
+                            {% if pagination.has_prev %}
+                            <li><a href="/sites?page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li>
+                                <a href="/sites?page={{ page }}">{{ page }}</a></li>
+                            {% else %}
+                            <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                            {% end %} {% else %}
+                            <li><span class="active"><a href="#">....</a></span></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li><a href="/sites?page={{pagination.page+1}}">下页 &raquo;</a></li>
+                            {% end %}
+                        </ul>
+                    </div>
+                </div>
+         </div>
+        </div>
+        <div class="card-footer small text-muted"></div>
+      </div>
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">新建站点 - 选择模板</h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group info hide" id="input_siteinfo">
+            <label class="control-label" for="site_name">站点名称 </label>
+            <div class="controls">
+                <input type="text" name="site_name" id="site_name" class="span5">
+            </div>
+            <label class="control-label" for="site_title">首页标题</label>
+            <div class="controls">
+                <input type="text" name="site_title" id="site_title" class="span5">
+            </div>
+            <label class="control-label" for="site_keyword">SEO关键词</label>
+            <div class="controls">
+                <textarea name="site_keyword" id="site_keyword" class="span5"></textarea>
+            </div>
+            <label class="control-label" for="site_desc">SEO站点描述</label>
+            <div class="controls">
+                <textarea name="site_desc" id="site_desc" class="span5"></textarea>
+            </div>
+            <label class="control-label" for="remark">第三方统计</label>
+            <div class="controls">
+                <textarea name="site_tongji" id="site_tongji" class="span5"></textarea>
+            </div>
+        </div>
+        <div class="span8" id="choice_temp">
+            <ul class="thumbnails">
+                {%for item in t_temp%}
+                <li class="span2">
+                    <div class="thumbnail">
+                        <img src="{{item.temp_preview}}" alt="">
+                        <hr/>
+                        <div class="caption" style="border-bottom: 1px #ccc;">
+                            <h5>       {{item.temp_name}}</h5>
+                            <p>
+                                <a href="#" value="{{item.id}}" name="btn_choice_temp" class="btn ">选择</a>
+                             <!--    <a href="#" value="{{item.id}}" name="btn_choice_pre" class="btn btn-primary">预览</a> -->
+                            </p>
+                        </div>
+                    </div>
+                </li>
+                {%end%}
+            </ul>
+         </div>
+    </div>
+    <div class="modal-footer hide" id="modal_save">
+        <input type="hidden" name="tag" value="">
+        </button>
+        <button class="btn" data-dismiss="modal" id="btn_cancal" aria-hidden="true">取消</button>
+        <button class="btn btn-primary" value="" name="btn_save" id="btn_save">保存修改</button>
+    </div>
+</div>
+<input id="choice_temp_id" type="hidden" value="0" /> {% end %} {%block js%}
+<script>
+       function getCookie(name) {
+            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+            return r ? r[1] : undefined;
+        }
+$(document).ready(function() {
+    window.prettyPrint && prettyPrint();
+
+    $(".manage_site").on("click",function() {
+        site_id = $(this).attr("title")
+        $("#site_edit").attr("href","/sites?form_tag={{form_tag}}&tag=edit&site_id="+site_id)
+        $("#site_article").attr("href","/articles?site_id="+site_id)
+        $("#site_preview").attr("href","/?site_id="+site_id)
+    $("#nav_edit").attr("href","/sites?tag=nav&site_id="+site_id)
+    $("#site_staticfile").attr("href","/static_file?site_id="+site_id)
+        $("#site_mod").html("")
+        $.get("/sites?tag=get",{"site_id":site_id},function(result){
+            $("#site_mod").append(result)
+        })
+        $("#manage_modal1").modal("show")
+
+    })
+
+     _xsrf = getCookie("_xsrf");
+
+    $("a[name=btn_choice_temp]").click(function() {
+
+        tmp_id = $(this).attr("value")
+
+        $("#choice_temp_id").val(tmp_id)
+        $("#modal_save").show()
+        $("#input_siteinfo").show()
+        $("#choice_temp").hide()
+        $("#myModalLabel").text("配置站点信息")
+    })
+
+
+    $("#btn_save").click(function() {
+        _xsrf = getCookie("_xsrf");
+        temp_id = $("#choice_temp_id").val()
+        site_name = $("#site_name").val()
+        site_title = $("#site_title").val()
+        site_keyword = $("#site_keyword").val()
+        site_desc = $("#site_desc").val()
+        site_tongji = $("#site_tongji").val()
+        $.post("", {
+            "_xsrf": _xsrf,
+            "site_name": site_name,
+            "temp_id": temp_id,
+            "site_title": site_title,
+            "site_desc": site_desc,
+            "site_tongji": site_tongji,
+            "site_keyword": site_keyword
+        }, function(result) {
+            location.reload()
+        })
+
+    })
+
+    $("#btn_cancal").click(function() {
+        $("#input_siteinfo").hide()
+        $("#modal_save").hide()
+        $("#choice_temp").show()
+    })
+
+
+
+})
+</script>
+{%end%}

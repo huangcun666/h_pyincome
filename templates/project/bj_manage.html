@@ -1,0 +1,354 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">业务报价
+                {%if is_bj_manage=='1'%}
+            <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add_manage" >新 建 </a>
+            {%end%}
+        </li>
+
+      </ol>
+
+      <div class="card mb-3">
+            <div class="card-body">
+
+            <div class="table-responsive">
+            <form>
+                <table>
+                    <thread>
+                        <tr>
+                            <th>区域</th>
+                            <th>业务类型</th>
+                            <th>开票/非开票地址&nbsp;</th>
+                            <th>&nbsp;孵化/非孵化器</th>
+                        </tr>
+                    </thread>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select name="area_search" class="form-control">
+                                    <option value="">选择区域</option>
+                                    {%for item in area_type%}
+                                    <option value="{{item.income_name}}" {% if params['area_search']==item.income_name %} selected{%end%}>{{item.income_name}}</option>
+                                    {%end%}
+                                </select>
+                            </td>
+                            <td><input type="text" name="project_type_search" placeholder="业务类型" class="form-control"  value="{{params['project_type_search']}}"></td>
+                        <td>&nbsp;<input type="radio" name="is_kp_addr_search"value="1" {% if params['is_kp_addr_search']=='1' %} checked{%end%}>&nbsp;&nbsp;&nbsp;
+                            <input type="radio" name="is_kp_addr_search"value="0" {% if params['is_kp_addr_search']=='0' %} checked{%end%}></td>
+                    
+                        <td>&nbsp;<input type="radio" name="is_fhq_search"   value="1" {% if params['is_fhq_search']=='1' %} checked{%end%}>&nbsp;&nbsp;&nbsp;
+                            <input type="radio" name="is_fhq_search"   value="0" {% if params['is_fhq_search']=='0' %} checked{%end%}></td>
+                        <td><input type="hidden" name="tag" value="{{tag}}"/>
+                            <input type="submit" value="检索" /></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+            
+            <table class="table table-bordered" id="dataTable"  cellspacing="0">
+            <thead style="background-color:#000;color:#fff">
+                <tr>
+                    <th width="100">区域 
+                        <a href="javascript:void(0)" style="color: #fff;text-decoration:none;" id="asc_desc" order='1'>&uarr;&darr;</a></th>
+                    <th >业务类型</th>
+                    <th width="100">报价</th>
+                    <th>是否开票地址</th>
+                    <th>是否孵化器</th>
+                    <th width="100">发票限量</th>
+                    <th >注意事项</th>
+              
+                    <th width="100">创建人</th>
+                    <th width="100">更新时间</th>
+                    <th width="100">历史报价</th>
+                    {%if is_bj_manage=='1'%}
+                    <th width="100"></th>
+                    {%end%}
+                </tr>
+            </thead>
+            <tbody>
+                {%if bj_manage%}
+                    {% for idx,item in enumerate(bj_manage)%}
+                    <tr>
+                        <td>{{item.area}}</td>
+                        <td>{{item.project_type}}</td>
+                        <td>{{item.c}}</td>
+                        <td>{%if item.is_kp_addr==1%}是{%else%}否{%end%}</td>
+                        <td>{%if item.is_fhq==1%}是{%else%}否{%end%}</td>
+                        <td>{{item.invoice_limited}}</td>
+                        <td>{{item.note}}</td>
+                   
+                        <td>{{item.uid_name}}</td>
+                        <td>{% if item.updated_at%}{{item.updated_at.strftime("%Y-%m-%d")}}{%else%}{{item.created_at.strftime("%Y-%m-%d")}}{%end%}</td>
+                        <td><a class="btn btn-info price_history"  href="javascript:void(0);" price_history="{{item.b}}">查看</a></td>
+                        {%if is_bj_manage=='1'%}
+                        <td><a class="btn btn-info change_price" 
+                         href="javascript:void(0);" bj_id="{{item.id}}" area="{{item.area}}"
+                        project_type="{{item.project_type}}" is_kp_addr="{{item.is_kp_addr}}"
+                        is_fhq="{{item.is_fhq}}" price="{{item.c}}" invoice_limited="{{item.invoice_limited}}" 
+                         note="{{item.note}}">修改</a></td>
+                        {%end%}
+                    </tr>
+                    {%end%}
+                {%else%}
+                <tr>
+                     <td colspan="15">
+                        还没有数据哦    
+                       </td>
+                     </tr>
+                     {%end%}
+            </tbody>
+            </table>
+            <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                    <ul class="pagination">
+                        {% if pagination.has_prev %}
+                        <li class="paginate_button page-item previous " id="dataTable_previous">
+                        <a href="/project?tag=bj_manage{%if order%}&order={{order}}{%end%}{%if params['area_search']%}&area_search={{params['area_search']}}{%end%}{%if params['project_type_search']%}&project_type_search={{params['project_type_search']}}{%end%}{% if params['is_kp_addr_search']%}&is_kp_addr_search={{params['is_kp_addr_search']}}{%end%}{% if params['is_fhq_search']%}&is_fhq_search={{params['is_fhq_search']}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                        <li class="paginate_button page-item ">
+                            <a href="/project?tag=bj_manage{%if order%}&order={{order}}{%end%}{%if params['area_search']%}&area_search={{params['area_search']}}{%end%}{%if params['project_type_search']%}&project_type_search={{params['project_type_search']}}{%end%}{% if params['is_kp_addr_search']%}&is_kp_addr_search={{params['is_kp_addr_search']}}{%end%}{% if params['is_fhq_search']%}&is_fhq_search={{params['is_fhq_search']}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                        {% else %}
+                        <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                        {% end %} {% else %}
+                        <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
+                        {% end %} {%end %} {% if pagination.has_next %}
+                        <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=bj_manage{%if order%}&order={{order}}{%end%}{%if params['area_search']%}&area_search={{params['area_search']}}{%end%}{%if params['project_type_search']%}&project_type_search={{params['project_type_search']}}{%end%}{% if params['is_kp_addr_search']%}&is_kp_addr_search={{params['is_kp_addr_search']}}{%end%}{% if params['is_fhq_search']%}&is_fhq_search={{params['is_fhq_search']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                        {% end %}
+                    </ul>
+                </div>
+            </div>
+
+
+            </div>
+  
+        </div>
+    </div>
+<!-- <modal> -->
+      
+
+<div class="modal fade" id="add_bz_manage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                    <div class="modal-dialog" role="document" >
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="bj_title">新建
+                
+                      </h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                
+                
+                        <div class="modal-body" id="site_mod">
+                            <div class="form-group">
+                            <div class="col-sm-12">
+                                <label for="recode">区域</label>
+                                <select id="area" class="form-control">
+                                    <option value="">选择区域</option>
+                                    {%for item in area_type%}
+                                    <option value="{{item.income_name}}">{{item.income_name}}</option>
+                                    {%end%}
+                                </select>
+                                <div class="alert alert-danger" role="alert" id="save_to_area" style="display:none;"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label for="money">业务类型</label>
+                                    <input class="form-control" name="project_type" id="project_type" type="text">
+                                    <div class="alert alert-danger" role="alert" id="save_to_project_type" style="display:none;"></div>
+                                </div>
+                            </div>
+                                <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label for="dingjin">报价</label>
+                                    <input class="form-control" name="price" id="price" type="text">
+                                    <div class="alert alert-danger" role="alert" id="save_to_price" style="display:none;"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                       
+                                        <input name="kp_addr" id="kp_addr" type="radio" value="1">开票地址
+                                    <input name="kp_addr" id="kp_addr" type="radio" value="0">非开票地址
+                              
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <input  name="fhq" id="fhq" type="radio" value="1">孵化器
+                                        <input  name="fhq" id="fhq" type="radio" value="0">非孵化器
+                                </div>
+                            </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                            <label for="dingjin">发票限量</label>
+                                            <input class="form-control" name="invoice_limited" id="invoice_limited" type="text">
+                                            <div class="alert alert-danger" role="alert" id="save_to_invoice_limited" style="display:none;"></div>
+                                </div>
+                            </div>
+                                <div class="form-group">
+                                <div class="col-sm-12">
+                                        <label for="dingjin">注意事项</label>
+                                        <textarea class="form-control" name="note" id="note" type="text">
+                                            </textarea>
+                                    </div>
+                                
+                        </div>
+                
+                
+                        <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                         <button class="btn btn-primary" target="_blank" id="btn_save_bj">保 存</button>
+                              </div>
+                      </div>
+                    </div>
+            </div>
+</div>
+<div class="modal fade" id="price_history_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document" >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="income_title_type">历史报价
+    
+          </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+    
+    
+            <div class="modal-body" id="site_mod">
+                <div class="form-group">
+                <div class="col-sm-10 price_box">
+                    
+                </div>
+                </div>
+          
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                  </div>
+          </div>
+        </div>
+</div>
+</div>        
+{%end%}
+
+{%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+   $('#btn_add_manage').on('click',function () {
+    $('#bj_id').val('')
+        $('#area').val('')
+        $('#project_type').val('')
+        $('#is_kp_addr').val('')
+        $('#is_fhq').val('')
+        $('#price').val('')
+        $('#invoice_limited').val('')
+        $('#note').val('')
+        $('#bj_title').text('新建')
+        $('#btn_save_bj').attr('bj_id','') 
+       $('#add_bz_manage').modal('show')
+    })
+    $('#btn_save_bj').on('click',function () { 
+        var area=$('#area').val()
+        var project_type=$('#project_type').val()
+        var price=$('#price').val()
+        var is_kp_addr=$('#kp_addr:checked').val()
+        var is_fhq=$('#fhq:checked').val()
+        var invoice_limited=$('#invoice_limited').val()
+        var note=$('#note').val()
+        var bj_id=$(this).attr('bj_id')
+        if( area==''){
+            $('#save_to_area').html('区域不能为空')
+            $('#save_to_area').show()
+        }
+        else if(project_type==''){
+            $('#save_to_project_type').html('业务类型不能为空')
+            $('#save_to_project_type').show()
+        }
+        else if(price==''){
+            $('#save_to_price').html('报价不能为空')
+            $('#save_to_price').show()
+        }
+        else if(price!='' & isNaN(price)){
+            $('#save_to_price').html('请填写数字')
+            $('#save_to_price').show()
+        }
+        else if(invoice_limited==''){
+            $('#save_to_invoice_limited').html('发票限量不能为空')
+            $('#save_to_invoice_limited').show()
+        }
+        else{
+        $.post(
+            'project?tag=add_bj_manage',
+            {
+                '_xsrf':_xsrf,
+                'area':area,
+                'bj_id':bj_id,
+                'project_type':project_type,
+                'price':price,
+                'is_kp_addr':is_kp_addr,
+                'is_fhq':is_fhq,
+                'invoice_limited':invoice_limited,
+                'note':note
+            },function (result) { 
+                location.reload()
+             }
+        )
+    }
+     })
+
+    $('.price_history').on('click',function () { 
+        var price_history=$(this).attr('price_history')
+        price_history=price_history.split(',')
+        var text=''
+        for(var i=0;i<price_history.length;++i){
+            text+='<p>'+price_history[i]+'</p>'
+        }
+        $('.price_box').html(text)
+        $('#price_history_modal').modal('show')
+     })
+    $('.change_price').on('click',function () { 
+        var bj_id=$(this).attr('bj_id')
+        var area=$(this).attr('area')
+        var project_type=$(this).attr('project_type')
+        var price=$(this).attr('price')
+        var is_kp_addr=$(this).attr('is_kp_addr')
+        var is_fhq=$(this).attr('is_fhq')
+        var feifuhuaqi=$(this).attr('feifuhuaqi')
+        var invoice_limited=$(this).attr('invoice_limited')
+        var note=$(this).attr('note')
+        $('#bj_id').val(bj_id)
+        $('#area').val(area)
+        $('#project_type').val(project_type)
+        $('#price').val(price)
+        $('input:radio[name=kp_addr]').removeAttr('checked')
+        $('input:radio[name=fhq]').removeAttr('checked')
+        $('input:radio[name=kp_addr][value='+is_kp_addr+']').attr('checked',true);
+        $('input:radio[name=fhq][value='+is_fhq+']').attr('checked',true);
+
+        $('#invoice_limited').val(invoice_limited)
+        $('#note').val(note)
+        $('#bj_title').text('修改')
+        $('#btn_save_bj').attr('bj_id',bj_id)
+        $('#add_bz_manage').modal('show')
+     })
+     $('#asc_desc').on('click',function () { 
+         var order=''
+         if('{{order}}'=='0'){
+             order='1'
+         }else{
+             order='0'
+         }
+         location.href='/project?tag=bj_manage&order='+order
+      })
+})
+</script>
+{%end%}

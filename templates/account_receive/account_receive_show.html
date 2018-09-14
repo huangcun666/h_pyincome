@@ -1,0 +1,858 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {%block head%}
+<link href="/static/vendor/bootstrap/css/style.css" rel="stylesheet">
+<link href="/static/vendor/bootstrap/css/dashboard.css" rel="stylesheet"> {%end%} {% block body %}
+
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        主面板
+    </li>
+    <li class="breadcrumb-item active">记账应收
+            <a href='javascript:void(0)' id="btn_modify"> <img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
+    </li>
+</ol>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-3">
+
+<style>
+.faye-table {
+width: 100%;
+height: auto;
+/*background-color: purple;*/
+margin: 0% auto;
+font-weight: bold;
+}
+.faye-table ul {
+overflow: hidden;
+margin: 0;
+padding: 0;
+}
+.faye-table ul li {
+width: 100%;
+list-style: none;
+box-sizing: border-box;
+border-bottom: 1px solid #dedede;
+width: 100%;
+height: 40px;
+overflow: hidden;
+}
+.faye-table ul li div {
+float: left;
+height: 40px;
+line-height: 40px;
+text-align: center;
+border-left: 1px solid #dedede;
+}
+.faye-table ul li div.fayet {
+width: 8%;
+background-color: #eee;
+border-bottom: 1px solid #dedede;
+}
+.faye-table ul li div.fayet1 {
+width: 12%;
+}
+.faye-table ul li div.fayet2 {
+width: 25%;
+}
+.faye-table ul li div.fayet3 {
+width: 92%;
+}
+.faye-table ul li div.fayet4 {
+width: 10%;
+}
+.faye-table ul li div.fayet5 {
+width: 15%;
+}
+.faye-table ul li div.fayet60 {
+height: 180px;
+border-left: 1px solid #dedede;
+}
+.faye-table ul li div.fayet70 {
+width: 34%;
+height: 180px;
+border-left: 1px solid #dedede;
+}
+.faye-table ul li div.fayet6 {
+width: 33%;
+height: 180px;
+border-left: 1px solid #dedede;
+}
+.faye-table ul li div.fayet7 {
+width: 34%;
+height: 180px;
+border-left: 1px solid #dedede;
+}
+.faye-table ul li.gaodu {
+height: 180px;
+}
+.faye-table ul li div.direction {
+text-align: left;
+padding-left: 10px;
+box-sizing: border-box;
+}
+.faye-table ul li div.fayet6 span {
+display: block;
+width: 100%;
+height: 40px;
+border-bottom: 1px solid #dedede;
+background-color: #eee;
+}
+.faye-table ul li div.fayet7 span {
+display: block;
+width: 100%;
+height: 40px;
+border-bottom: 1px solid #dedede;
+background-color: #eee;
+}
+.faye-table ul li div.fayet6 i {
+display: block;
+width: 100%;
+height: 140px;
+line-height: 22px;
+font-style: normal;
+padding-top: 8px;
+box-sizing: border-box;
+}
+.faye-table ul li div.fayet7 i {
+display: block;
+width: 100%;
+height: 140px;
+line-height: 22px;
+font-style: normal;
+padding-top: 8px;
+box-sizing: border-box;
+}
+#box {
+margin: 10px auto;
+width: 100%;
+min-height: 0;
+background: #FF9
+}
+#demo {
+margin: 10px auto;
+width: 100%;
+min-height: 0;
+background: #CF9
+}
+.message-item {
+margin-bottom: 5px;
+margin-left: 40px;
+position: relative;
+}
+.message-item .message-inner {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 10px;
+position: relative;
+}
+.message-item .message-inner:before {
+border-right: 10px solid #ddd;
+border-style: solid;
+border-width: 10px;
+color: rgba(0, 0, 0, 0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -20px;
+top: 6px;
+width: 0;
+}
+.message-item .message-inner:after {
+border-right: 10px solid #fff;
+border-style: solid;
+border-width: 10px;
+color: rgba(0, 0, 0, 0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -18px;
+top: 6px;
+width: 0;
+}
+.message-item:before {
+background: #fff;
+border-radius: 2px;
+bottom: -30px;
+box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+content: "";
+height: 100%;
+left: -30px;
+position: absolute;
+width: 3px;
+}
+.message-item:after {
+background: #fff;
+border: 2px solid #ccc;
+border-radius: 50%;
+box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+content: "";
+height: 15px;
+left: -36px;
+position: absolute;
+top: 10px;
+width: 15px;
+}
+.clearfix:before,
+.clearfix:after {
+content: " ";
+display: table;
+}
+.message-item .message-head {
+border-bottom: 1px solid #eee;
+margin-bottom: 8px;
+padding-bottom: 8px;
+}
+.message-item .message-head .avatar {
+margin-right: 20px;
+}
+.message-item .message-head .user-detail {
+overflow: hidden;
+}
+.message-item .message-head .user-detail h5 {
+font-size: 16px;
+font-weight: bold;
+margin: 0;
+}
+.message-item .message-head .post-meta {
+float: left;
+padding: 0 15px 0 0;
+}
+.message-item .message-head .post-meta>div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta>div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item .message-head .post-meta>div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta>div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item img {
+min-height: 25px;
+max-height: 25px;
+}
+.modal-ku {
+width: 1750px;
+margin: auto;
+}
+#nav {
+height: 30px;
+width: 100%;
+background-color: #007bff;
+}
+#nav ul {
+margin: 0 0 0 30px;
+padding: 0px;
+font-size: 12px;
+color: #FFF;
+line-height: 30px;
+white-space: nowrap;
+}
+#nav li {
+list-style-type: none;
+display: inline;
+}
+#nav li a {
+cursor: pointer;
+text-decoration: none;
+font-family: Arial, Helvetica, sans-serif;
+padding: 7px 10px;
+color: #FFF;
+}
+#nav li a:hover {
+color: #ff0;
+background-color: #007bff;
+}
+</style>
+
+<div class="faye-table" style="font-size:14px;">
+  <ul>
+    <li>
+      <div class="fayet">公司名称</div>
+      <div class="fayet3">{{account_receive.company}}</div>
+    </li>
+    <li>
+      <div class="fayet">客服会计</div>
+      <div class="fayet2">{{account_receive.kf_kuaiji}}</div>
+      <div class="fayet">销售顾问</div>
+      <div class="fayet2">{{account_receive.sale_guwen}}</div>
+      <div class="fayet">客服顾问</div>
+      <div class="fayet2">{{account_receive.kf_guwen}}</div>
+    </li>
+    <li>
+        <div class="fayet">结算周期</div>
+        <div class="fayet1">{{account_receive.jiesuan_cycle}}</div>
+        <div class="fayet">年度费用</div>
+        <div class="fayet1">{{account_receive.year_charge}}</div>
+        <div class="fayet">月度费用</div>
+        <div class="fayet1">{{account_receive.month_charge}}</div>
+        <div class="fayet">账册费</div>
+        <div class="fayet1">{{account_receive.zhangce_charge}}</div>
+    </li>
+    <li>
+      <div class="fayet">客服类型</div>
+      <div class="fayet1">{%if account_receive.is_loupan==1%}楼盘{%elif account_receive.is_loupan==0%}非楼盘{%end%}</div>
+      <div class="fayet">注册地址类型</div>
+      <div class="fayet1">{%if account_receive.register_addr_type%}{{account_receive.register_addr_type}}{%end%}</div>
+      <div class="fayet">开票地址租赁合同日期</div>
+      <div class="fayet2">{%if account_receive.kp_addr_date_start%}{{account_receive.kp_addr_date_start.strftime("%Y-%m-%d")}}-{{account_receive.kp_addr_date_end.strftime("%Y-%m-%d")}}{%end%}</div>
+      <div class="fayet">成立日期</div>
+      <div class="fayet1">{{account_receive.chengli_date.strftime("%Y-%m-%d")}}</div>
+    </li>
+  </ul>
+</div>
+
+
+        </div>
+</div>
+        <div class="col-lg-12">
+                <div class="card-columns">
+
+                        <div class="card mb-12">
+                            <div class="card-body">
+                                <h6 class="card-title mb-1">
+                            <a href="javascript:void(0);" class="btn btn-info" id="add_account_receive_record">新增</a>
+                        </h6>
+                        <table class="table table-striped">
+                        <thead>
+                        <tr>
+                                <th width="100">结算周期</th>
+                                <th width="100"> 年度费用
+                                <th width="100">月度费用</th>
+                                <th width="100">账册费</th>
+                                <th width="150">记账费到期时间</th>
+                                <th width="150">账册费到期时间</th>
+                                <th  width="120">最新已收明细</th>
+                                <th  width="120">应收明细</th>
+                                <th width="50"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {%if account_receive_record%}
+                            {%for item in account_receive_record%}
+                            <tr>
+                                <td>{{item.jiesuan_cycle}}</td>
+                                <td>{{item.year_charge}}</td>   
+                                <td>{{item.month_charge}}</td>   
+                                <td>{{item.zhangce_charge}}</td>   
+                                <td>{%if item.account_charge_end_date%}{{item.account_charge_end_date.strftime("%Y-%m-%d")}}{%end%}</td>
+                                <td>{%if item.zhangce_charge_end_date%}{{item.zhangce_charge_end_date.strftime("%Y-%m-%d")}}{%end%}</td> 
+                                <td>{{item.new_yishou_detail}}</td>   
+                                <td>{{item.yingshou_detail}}</td>
+                                <td><a class="btn btn-info edit_account_receive_record" href="javascript:void(0);" id="{{item.id}}"
+                                    jiesuan_cycle="{{item.jiesuan_cycle}}" year_charge="{{item.year_charge}}"
+                                    month_charge="{{item.month_charge}}" zhangce_charge="{{item.zhangce_charge}}"
+                                    account_charge_end_date="{%if item.account_charge_end_date%}{{item.account_charge_end_date}}{%end%}" new_yishou_detail="{{item.new_yishou_detail}}"
+                                    zhangce_charge_end_date="{%if item.zhangce_charge_end_date%}{{item.zhangce_charge_end_date}}{%end%}" yingshou_detail="{{item.yingshou_detail}}">修改</a></td>   
+
+                            </tr>
+                            {%end%}
+                            {%else%}
+                            <td colspan="10">还没有哦~</td>
+                            {%end%}
+                        </tbody>
+                      </table>
+                      </div>
+                      </div>
+                      </div>
+      
+
+        </div>
+        <div class="col-lg-12">
+
+                        <div class="card-columns">
+
+                            <div class="card mb-12">
+
+                                <div class="card-body">
+                                    <h6 class="card-title mb-1">
+                                    <a href="#">跟进记录</a>
+                                    </h6>
+                                    <textarea style="width:100%" class="form-control" id="txt_msg">
+
+                                    </textarea>
+                                    <button id="btn_save_msg">确定添加</button>
+                                </div>
+                                <div class="card-body">
+                                
+                                {%for item in account_receive_msg%}
+                            <div style="margin-top:10px;margin-bottom:40px">
+                                <div class="qa-message-list" id="wallmessages">
+                                        <div class="message-item" id="msg_{{item.id}}">
+                                                <div class="message-inner">
+                                                    <div class="message-head clearfix">
+                                                        <div class="avatar pull-left">
+                                                            <img src="/static/images/avatar.jpeg">
+                                                        </div>
+                                                        <div class="user-detail">
+                                                            <h5 class="handle">{{item.uid_name}} 
+                                                                <span style="font-size:13px;"> {{item.created_at}}
+                                                                </span>
+                                                            </h5>
+                                                        </div>
+                                                    </div>
+                                                {{item.msg}}
+                                                </div>
+                                            </div>
+
+
+                                </div>
+                            </div>
+                            {%end%}
+                        </div>
+
+    </div>
+</div>
+</div>
+
+<div id="add_account_receive_record_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="myModalLabel_linkman">增加记账
+
+                    <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                        <i class="btn-icon-only icon-remove">×</i>
+                        </i>
+                    </a>
+
+                </h5>
+            </div>
+            <div class="modal-body form-horizontal" id="site_mod">
+                    <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="col-sm-4 control-label">结算周期：</label>
+                            <input type="radio" name="jiesuan_cycle1" value="年付">年付</option>
+                            <input type="radio" name="jiesuan_cycle1" value="半年付">半年付</option>
+                            <input type="radio" name="jiesuan_cycle1" value="季付">季付</option>
+                            <input type="radio" name="jiesuan_cycle1" value="月付">月付</option>
+                        <div class="alert alert-danger" id="e_jiesuan_cycle1" style="display:none;"></div>
+                    </div>
+                    </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label>年度费用</label>
+                    <input type="text" placeholder="年度费用" class="form-control" id="year_charge1">
+                    <div class="alert alert-danger" id="e_year_charge1" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label>月度费用</label>
+                    <input type="text" placeholder="月度费用" class="form-control" id="month_charge1">
+                    <div class="alert alert-danger" id="e_month_charge1" style="display:none;"></div>
+                </div>
+            </div>
+  
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label>账册费</label>
+                    <input type="text" placeholder="账册费" class="form-control" id="zhangce_charge1">
+                    <div class="alert alert-danger" id="e_zhangce_charge1" style="display:none;"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label>记账费到期时间</label>
+                    <input type="text" readonly class="form-control" id="account_charge_end_date1">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label>账册费到期时间</label>
+                    <input type="text" readonly class="form-control" id="zhangce_charge_end_date1">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label>最新已收明细</label>
+                    <textarea type="text" placeholder="最新已收明细" class="form-control" id="new_yishou_detail1">
+                        </textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label>应收明细</label>
+                    <textarea type="text" placeholder="应收明细" class="form-control" id="yingshou_detail1"></textarea>
+                </div>
+            </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <button class="btn btn-primary" id="btn_account_receive_record">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="account_receive_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document" >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="income_title_type">修改记账
+    
+          </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+    
+    
+            <div class="modal-body" id="site_mod">
+                <div class="form-group">
+                <div class="col-sm-12">
+                    <label>公司名称</label>
+                    <input class="form-control" type="text" id="company" placeholder="公司名称" value="{{account_receive.company}}">
+                    <div class="alert alert-danger" id="e_company" style="display:none;"></div>
+                </div>
+                </div>
+                        <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label>客服会计</label>
+                                    <input type="text" id="kf_kuaiji" class="form-control" placeholder="客服会计"  value="{{account_receive.kf_kuaiji}}">
+                                    <div class="alert alert-danger" id="e_kf_kuaiji" style="display:none;"></div>
+                                </div>
+                                </div>
+
+                        <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label>销售顾问</label>
+                                    <input id="sale_guwen" type="text" class="form-control" placeholder="销售顾问" value="{{account_receive.sale_guwen}}">
+                                    <div class="alert alert-danger" id="e_sale_guwen" style="display:none;"></div>
+                                </div>
+                                </div>
+
+                        <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label>客服顾问</label>
+                                    <input id="kf_guwen" type="text" class="form-control" placeholder="客服顾问" value="{{account_receive.kf_guwen}}">
+                                    <div class="alert alert-danger" id="e_kf_guwen" style="display:none;"></div>
+                                </div>
+                                </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="col-sm-4 control-label">客户类型：</label>
+                                    <input type="radio" name="loupan" value="1" >楼盘
+                                    <input type="radio" name="loupan" value="0">非楼盘
+                                    <div class="alert alert-danger" id="e_loupan" style="display:none;"></div>
+                            </div>
+                            </div>
+                            <div class="form-group">
+                            <div class="col-sm-12">
+                                    <label>注册地址类型	</label>
+                                    <input type="text" placeholder="注册地址类型" class="form-control" id="register_addr_type">
+                                    <div class="alert alert-danger" id="e_register_addr_type" style="display:none;"></div>
+                                </div>
+                            </div>
+                            
+                        <div class="form-group">
+                                <label class="col-sm-5 control-label" >开票地址租赁合同日期</label>
+                                <div class="col-sm-12">
+                                        
+                                        <input type="text" style="width:48% ;display:inline-block;" placeholder="开始日期" readonly class="form-control" id="kp_addr_date_start">
+                                        - <input type="text" style="width:48% ;display:inline-block;" placeholder="结束日期" readonly class="form-control" id="kp_addr_date_end">
+                                        <div class="alert alert-danger" id="e_register_addr_type" style="display:none;"></div>
+                                    </div>
+                        </div>
+                    <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="col-sm-4 control-label">结算周期：</label>
+                                    <input type="radio" name="jiesuan_cycle" value="年付">年付</option>
+                                    <input type="radio" name="jiesuan_cycle" value="半年付">半年付</option>
+                                    <input type="radio" name="jiesuan_cycle" value="季付">季付</option>
+                                    <input type="radio" name="jiesuan_cycle" value="月付">月付</option>
+                                </select>
+                            </div>
+                            </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>年度费用</label>
+                            <input type="text" placeholder="年度费用" class="form-control" id="year_charge">
+                            <div class="alert alert-danger" id="e_year_charge" style="display:none;"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>月度费用</label>
+                            <input type="text" placeholder="月度费用" class="form-control" id="month_charge">
+                            <div class="alert alert-danger" id="e_month_charge" style="display:none;"></div>
+                        </div>
+                    </div>
+          
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>账册费</label>
+                            <input type="text" placeholder="账册费" class="form-control" id="zhangce_charge">
+                            <div class="alert alert-danger" id="e_zhangce_charge" style="display:none;"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                    <div class="col-sm-12">
+                            <label>成立日期</label>
+                            <input type="text" readonly="" class="form-control" id="chengli_date">
+                            <div class="alert alert-danger" id="e_chengli_date" style="display:none;"></div>
+                            </div>
+                    </div>
+                    <!-- <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>记账费到期时间</label>
+                            <input type="text" readonly class="form-control" id="account_charge_end_date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>账册费到期时间</label>
+                            <input type="text" readonly class="form-control" id="zhangce_charge_end_date">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>应收明细</label>
+                            <textarea type="text" placeholder="应收明细" class="form-control" id="yingshou_detail"></textarea>
+                        </div>
+                    </div> -->
+
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-danger delete_account_receive">删除</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary save_account_receive">保存</button>
+                  </div>
+          </div>
+        </div>
+</div>
+</div> 
+{%end%} {%block js%}
+
+<script>
+    $(function () {
+
+    _xsrf = getCookie("_xsrf")
+    account_id = "{{account_receive.id}}"
+    account_guid = "{{account_receive.guid}}"
+    $("#account_charge_end_date1").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#zhangce_charge_end_date1").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#chengli_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#kp_addr_date_start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#kp_addr_date_end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+      $('#add_account_receive_record').on('click',function () {
+        $('#e_jiesuan_cycle1').hide() 
+        $('#e_year_charge1').hide()
+        $('#e_month_charge1').hide()
+        $('#e_zhangce_charge1').hide()
+        $('input[name="jiesuan_cycle1"]').removeAttr('checked')
+        $('#btn_account_receive_record').removeAttr('account_receive_record')
+        $('#year_charge1').val('')
+        $('#month_charge1').val('')
+        $('#zhangce_charge1').val('')
+        $('#account_charge_end_date1').val('')
+        $('#zhangce_charge_end_date1').val('')
+        $('#new_yishou_detail1').val('')
+        $('#yingshou_detail1').val('')
+          $('#add_account_receive_record_modal').modal('show')
+        })
+       
+       $('.edit_account_receive_record').on('click',function () {
+        $('#e_jiesuan_cycle1').hide() 
+        $('#e_year_charge1').hide()
+        $('#e_month_charge1').hide()
+        $('#e_zhangce_charge1').hide()
+        $('input[name="jiesuan_cycle1"][value="'+$(this).attr('jiesuan_cycle')+'"]').attr('checked','checked');
+        $('#year_charge1').val($(this).attr('year_charge'))
+        $('#month_charge1').val($(this).attr('month_charge'))
+        $('#zhangce_charge1').val($(this).attr('zhangce_charge'))
+        $('#account_charge_end_date1').val($(this).attr('account_charge_end_date'))
+        $('#zhangce_charge_end_date1').val($(this).attr('zhangce_charge_end_date'))
+        $('#new_yishou_detail1').val($(this).attr('new_yishou_detail'))
+        $('#yingshou_detail1').val($(this).attr('yingshou_detail'))
+        $('#btn_account_receive_record').attr('account_receive_record_id',$(this).attr('id'))
+        $('#add_account_receive_record_modal').modal('show')
+       })
+    $('#btn_account_receive_record').on('click',function () { 
+        var jiesuan_cycle=$('input[name="jiesuan_cycle1"]:checked').val()
+        var year_charge=$('#year_charge1').val()
+        var month_charge=$('#month_charge1').val()
+        var zhangce_charge=$('#zhangce_charge1').val()
+        var account_charge_end_date=$('#account_charge_end_date1').val()
+        var zhangce_charge_end_date=$('#zhangce_charge_end_date1').val()
+        var new_yishou_detail=$('#new_yishou_detail1').val()
+        var yingshou_detail=$('#yingshou_detail1').val()
+        var id=$(this).attr('account_receive_record_id')
+        if(jiesuan_cycle==undefined){
+            $('#e_jiesuan_cycle1').text('请选择结算周期')
+            $('#e_jiesuan_cycle1').show()
+        }
+          else if(isNaN(year_charge)){
+        $('#e_year_charge1').text('费用必须为数字')
+        $('#e_year_charge1').show()
+    }
+    else if(isNaN(month_charge)){
+        $('#e_month_charge1').text('费用必须为数字')
+        $('#e_month_charge1').show()
+    }
+    else if(isNaN(zhangce_charge)){
+        $('#e_zhangce_charge1').text('费用必须为数字')
+        $('#e_zhangce_charge1').show()
+    }
+        else{
+            $.post('/account_receive?tag=account_receive_record',
+            {
+                '_xsrf':_xsrf,
+                'jiesuan_cycle':jiesuan_cycle,
+                'year_charge':year_charge,
+                'month_charge':month_charge,
+                'zhangce_charge':zhangce_charge,
+                'account_charge_end_date':account_charge_end_date,
+                'zhangce_charge_end_date':zhangce_charge_end_date,
+                'new_yishou_detail':new_yishou_detail,
+                'yingshou_detail':yingshou_detail,
+                'account_id':account_id,
+                "account_guid": account_guid,
+                "id":id
+            },function (result) { 
+                location.reload()
+             })
+        }
+     })
+     $("#btn_save_msg").on("click",function(){
+            msg = $("#txt_msg").val()
+            if(msg==""){
+                alert("跟进记录不能为空哦.")
+                return false
+            }else{
+                $.post("/account_receive?tag=account_receive_msg", 
+                { "_xsrf": _xsrf, "msg": msg, "account_id": account_id, "account_guid": account_guid }, function (result) {
+
+                    location.reload()
+                })
+            }
+        })
+    $('#btn_modify').on('click',function () {
+         $('#company').val('{{account_receive.company}}')
+         $('#kf_kuaiji').val('{{account_receive.kf_kuaiji}}')
+         $('#sale_guwen').val('{{account_receive.sale_guwen}}')
+         $('#kf_guwen').val('{{account_receive.kf_guwen}}')
+         $('input[name=loupan][value='+'{{account_receive.is_loupan}}'+']').attr('checked',true)
+         $('#chengli_date').val('{{account_receive.chengli_date}}')
+         $('#register_addr_type').val('{{account_receive.register_addr_type}}')
+         $('#kp_addr_date_start').val('{%if account_receive.kp_addr_date_start%}{{account_receive.kp_addr_date_start}}{%end%}')
+         $('#kp_addr_date_end').val('{%if account_receive.kp_addr_date_end%}{{account_receive.kp_addr_date_end}}{%end%}')
+         $('input[name="jiesuan_cycle"][value="'+"{{account_receive.jiesuan_cycle}}"+'"]').attr('checked','checked');
+         $('#year_charge').val('{{account_receive.year_charge}}')
+         $('#month_charge').val('{{account_receive.month_charge}}')
+         $('#zhangce_charge').val('{{account_receive.zhangce_charge}}')
+         $('#account_receive_modal').modal('show')
+     })
+    $('.save_account_receive').on('click',function () { 
+        var company=$('#company').val()
+        var kf_kuaiji=$('#kf_kuaiji').val()
+        var sale_guwen=$('#sale_guwen').val()
+        var kf_guwen=$('#kf_guwen').val()
+        var is_loupan=$('input[name="loupan"]:checked').val()
+        var kp_addr_date_start=$('#kp_addr_date_start').val()
+        var kp_addr_date_end=$('#kp_addr_date_end').val()
+        var register_addr_type=$('#register_addr_type').val()
+        var jiesuan_cycle=$('input[name="jiesuan_cycle"]:checked').val()
+        var year_charge=$('#year_charge').val()
+        var month_charge=$('#month_charge').val()
+        var zhangce_charge=$('#zhangce_charge').val()
+        var chengli_date=$('#chengli_date').val()
+        // var account_charge_end_date=$('#account_charge_end_date').val()
+        // var zhangce_charge_end_date=$('#zhangce_charge_end_date').val()
+        // var new_yishou_detail=$('#new_yishou_detail').val()
+        // var yingshou_detail=$('#yingshou_detail').val()
+        if(company==''){
+        $('#e_company').text('公司名不能为空')
+        $('#e_company').show()
+    }
+    else if(isNaN(year_charge)){
+        $('#e_year_charge').text('费用必须为数字')
+        $('#e_year_charge').show()
+    }
+    else if(isNaN(month_charge)){
+        $('#e_month_charge').text('费用必须为数字')
+        $('#e_month_charge').show()
+    }
+    else if(isNaN(zhangce_charge)){
+        $('#e_zhangce_charge').text('费用必须为数字')
+        $('#e_zhangce_charge').show()
+    }
+    else if(chengli_date==''){
+        $('#e_chengli_date').text('成立时间不能为空')
+        $('#e_chengli_date').show()
+    }else{
+        $(this).attr('disabled','disabled')
+        $(this).text('保存中...')
+        $.post('/account_receive?tag=account_receive',
+        {
+            'account_id':account_id,
+            'account_guid':account_guid,
+            '_xsrf':_xsrf,
+            'company':company,
+            'kf_kuaiji':kf_kuaiji,
+            'sale_guwen':sale_guwen,
+            'kf_guwen':kf_guwen,
+            'is_loupan':is_loupan,
+            'kp_addr_date_start':kp_addr_date_start,
+            'kp_addr_date_end':kp_addr_date_end,
+            'register_addr_type':register_addr_type,
+            'jiesuan_cycle':jiesuan_cycle,
+            'zhangce_charge':zhangce_charge,
+            'year_charge':year_charge,
+            'month_charge':month_charge,
+            // 'jiesuan_cycle':jiesuan_cycle,
+            // 'year_charge':year_charge,
+            // 'month_charge':month_charge,
+            // 'zhangce_charge':zhangce_charge,
+            'chengli_date':chengli_date,
+            // 'account_charge_end_date':account_charge_end_date,
+            // 'zhangce_charge_end_date':zhangce_charge_end_date,
+            // 'new_yishou_detail':new_yishou_detail,
+            // 'yingshou_detail':yingshou_detail   
+        },function (result) { 
+            location.reload()
+         }
+        )
+    }
+     })
+    $('.delete_account_receive').on('click',function () {
+        if(confirm('是否删除？')){
+            if(confirm('确定删除？')){
+                $.post('/account_receive?tag=account_receive',{
+                    '_xsrf':_xsrf,
+                    'delete_id':account_id,
+                    'delete_guid':account_guid
+                },function (res) { 
+                    location.reload()
+         })
+            }
+        } 
+  
+     })
+    })
+</script> {%end%}

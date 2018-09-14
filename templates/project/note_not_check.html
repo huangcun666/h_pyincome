@@ -1,0 +1,126 @@
+{% extends "../base.html" %} {%block title%}资料交接{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">审核事项
+            {%if not_check%}
+            <a class="btn btn-sm btn-info " href="/project?tag=note_check">返回</a>
+            {%else%}
+            <a class="btn btn-sm btn-info " href="/project?tag=note_check&is_check=1">未审核</a>
+            {%end%}
+        </li>
+
+      </ol>
+<form>
+    <table>
+        <thead>
+            <tr>
+                <th>业务内容</th>
+                <th>发起人</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input class="form-control" name="project_name" placeholder="业务内容" value="{%if params['project_name']%}{{params['project_name']}}{%end%}"></td>
+                <td><input class="form-control" name="fq_uid_name" id="fq_uid_name" placeholder="发起人" style="width:120px;" value="{%if params['fq_uid_name']%}{{params['fq_uid_name']}}{%end%}"></td>
+                <td><input type="hidden" name="tag" value="{{tag}}"/>
+                    {%if not_check%}
+                    <input type="hidden" name="is_check" value="{{not_check}}"/>
+                    {%end%}
+                    <input type="submit" value="检索"/>
+                    </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<div class="table-responsive">
+
+
+                  <table class="table table-bordered" id="dataTable">
+                    <thead style="background-color:#000;color:#fff ; font-size:12px;">
+                        <tr>
+                     
+                            
+                         <th>业务内容</th>
+                         <th width="200">交代内容</th>
+                         <th>状态</th>
+                          <th width="80">发起人</th>
+                          <th></th>
+                        </tr>
+                    </thead>
+                    <tbody style=" font-size:12px;">
+                            {% for item in t_projects_note_check%}
+                        <tr>
+                            <td>{{item.project_name}}</td>
+                            <td>{{item.msg}}</td>
+                            <td>
+                                    
+                                    {%if item.state_id==0%} <span class="badge badge-info">已通过</span>{%elif item.state_id==1%} 
+                                    <span class="badge badge-danger">未通过</span>{%elif item.is_check==1%}<span class="badge badge-dark">待审核</span>{%end%}
+
+                            </td>
+                            <td>{{item.uid_name}}</td>
+                            <td><a class="btn btn-info" href="/project?tag=not_check_detail&id={{item.id}}">查看</a></td>
+                        </tr>
+                        {%end%}
+                    </tbody>
+                </table>
+
+
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=not_check&page={{ pagination.page - 1}}{%if params['project_name']%}&project_name={{params['project_name']}}{%end%}{%if params['fq_uid_name']%}&fq_uid_name={{params['fq_uid_name']}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+
+
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=note_check&page={{page}}{%if params['project_name']%}&project_name={{params['project_name']}}{%end%}{%if params['fq_uid_name']%}&fq_uid_name={{params['fq_uid_name']}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% else %}
+          <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+          {% end %} 
+          
+          {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=note_check&page={{pagination.page+1}}{%if params['project_name']%}&project_name={{params['project_name']}}{%end%}{%if params['fq_uid_name']%}&fq_uid_name={{params['fq_uid_name']}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>
+
+<!-- Modal -->
+
+
+{%end%}
+
+
+
+ {%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+    $('#fq_uid_name').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
+        })
+ </script>
+
+{%end%}

@@ -1,0 +1,62 @@
+{% extends "../base.html" %} {%block title%}资料交接明细{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">资料交接明细
+        </li>
+
+      </ol>
+
+
+<ul class="list-group">
+  <li class="list-group-item active">订单编号:{{t_projects.id}}</li>
+  <li class="list-group-item"><h4>发起人:</h4>{{t_projects.uid_name}}</li>
+  <li class="list-group-item"><h4>公司名称:</h4>{{t_projects.customer_company}}</li>
+  <li class="list-group-item"><h4>业务内容:</h4>{{t_projects.project_name}}</li>
+  <li class="list-group-item"><h4>交接明细:</h4>{{t_projects.type_names}}</li>
+  <li class="list-group-item"><h4>其他资料:</h4>{{t_projects.remark}}</li>
+  <li class="list-group-item"><h4>资料用途:</h4>{%if t_projects.use_type%}{{t_projects.use_type}}{%end%}</li>
+  <li class="list-group-item"><h4>交接日期:</h4>{{t_projects.tran_at}}</li>  
+  <li class="list-group-item"><h4>附件</h4>
+    {%if t_projects.file_name%}
+  <a href="{{t_projects.file_name}}" class="btn" target="_blank">查看</a>
+{%end%}</li>
+{%if not t_projects.rec_by_uid_at%}
+<li class="list-group-item" style="background-color:#D6EAF8;"><h4>确认状态:</h4>待确认</li>
+{%else%}
+<li class="list-group-item" style="background-color:#D6EAF8;"><h4>确认状态:</h4><span class="alert alert-info">已确认 {{t_projects.rec_by_uid_at}} {{t_projects.uid_name}}</span></li>
+{%end%}
+{% if not t_projects.rec_by_uid_at%}
+<li class="list-group-item"><button class="btn btn-info" id="confirm_btn" rec_by_uid_at="{%if t_projects.rec_by_uid_at%}{{t_projects.rec_by_uid_at}}{%end%}">
+  待确认</button></li>
+  {%end%}
+</ul>
+    
+
+
+{%end%}
+
+
+
+ {%block js%}
+<script>
+  _xsrf =  getCookie("_xsrf")
+  $('#confirm_btn').on('click',function () {
+    var rec_by_uid_at=$(this).attr('rec_by_uid_at') 
+    $.post(
+      '/project?tag=confirm_transition',
+      {
+        'id':'{{t_projects.pt_id}}',
+        '_xsrf':_xsrf,
+        'rec_by_uid_at':rec_by_uid_at
+      },function (res) { 
+        location.reload()
+       }
+      )
+   })
+</script>
+
+{%end%}

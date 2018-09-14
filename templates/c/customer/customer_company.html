@@ -1,0 +1,108 @@
+
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>待创建客户 </h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+
+<fieldset>
+<form class="form-search" id="query_form" >
+        <input type="text" name="keyword1" class="input-medium search-query" placeholder="公司名称/电话/姓名">
+
+        <select name="qtype">
+          
+              <option value="comfirm_id" >确认单系统编号</option>
+              <option value="company" >公司名称</option>
+        </select>
+        <button type="submit" class="btn">检 索</button>
+        <input value="company" name="tag" type="hidden">
+</form>
+            
+              <table class="table" style="margin:5px;">
+                     <thead>
+                                <tr style="background-color: black; color:#fff;">
+                                <th style="min-width:60px;">确认单系统编号</th>
+                                <th style="min-width:130px;">公司名称</th>
+        
+                                <th style="min-width:100px;">创建时间</th>
+                                <th></th>
+                                </tr>
+                            </thead>
+                <tbody>
+     {%for customer in customers%}
+                    <tr>
+                       <td>{{customer.id}}</td>
+                        <td>{{customer.customer_company}}</td>
+                        
+                    
+                        <td>{{customer.created_at.strftime("%Y-%m-%d")}}</td>
+                        <td><a class="btn customer_detail btn-sm control"  
+                         href="/customer?tag=add&company_id={{customer.id}}">加入客户管理系统</a></td>
+
+                     
+                    </tr>
+                    {%end%}
+                
+                </tbody>
+              </table>
+              <div class="pagination">
+                    <ul>
+                        {% if pagination.has_prev %}
+
+                        <li><a href="/customer?tag={{tag}}{%if keyword%}&keyword1={{keyword}}{%end%}{%if qtype%}&qtype={{qtype}}{%end%}&page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %}
+                       
+                        {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+             
+                        <li> 
+                            <a href="/customer?tag={{tag}}{%if keyword%}&keyword1={{keyword}}{%end%}{%if qtype%}&qtype={{qtype}}{%end%}&page={{ page }}">{{ page }}</a></li>
+                       
+                        {% else %}
+                        <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                        {% end %} {% else %}
+                        <li><span class="active"><a href="#">....</a></span></li>
+                        {% end %} {%end %} {% if pagination.has_next %}
+                    
+                        <li><a href="/customer?tag={{tag}}{%if keyword%}&keyword1={{keyword}}{%end%}{%if qtype%}&qtype={{qtype}}{%end%}&page={{pagination.page+1}}">下页 &raquo;</a></li>
+                        {%end%}
+                        
+                    </ul>
+                </div>   
+</fieldset>
+
+</div>
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+ 
+
+    {%end%} 
+
+    {%block js%}
+
+<script>
+
+$(function () {
+	
+
+});
+
+</script>
+
+
+    {%end%}

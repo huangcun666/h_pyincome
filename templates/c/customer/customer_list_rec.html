@@ -1,0 +1,300 @@
+
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>
+    
+     
+    待接单客户
+
+
+
+        {%if not my%}
+                <a href="/customer?tag=customer_list_rec&my=1">
+                    <i class="icon-list-alt"></i>
+                    <span>我的待接单</span>
+                </a>
+
+
+        {%else%}
+ {%if kj_manage=="1"%}
+
+<a href="/customer?tag=customer_list_rec">
+    <i class="icon-list-alt"></i>
+    <span>接单确认管理</span>
+</a>
+
+{%end%}
+
+                
+        {%end%}
+</h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+
+<fieldset>
+
+<form class="form-search" id="query_form">
+  <input type="text" value="{{keyword}}" name="keyword" class="input-medium search-query" placeholder="公司名称/电话/姓名">
+
+  <select name="qtype">
+    
+        <option value="company" {%if qtype=="company"%}selected{%end%}>公司名称</option>
+        <option value="lname" {%if qtype=="lname"%}selected{%end%}>联系人姓名</option>
+              <option value="tel" {%if qtype=="tel"%}selected{%end%}>电话</option>
+  </select>
+  <input type="text" name="kj" class="input-medium" style="width:80px;" placeholder="会计" value="{%if kj %}{{kj}}{%end%}">
+  <input type="checkbox" value="记账" name="jz" {%if jz%}checked{%end%}/> 记账
+    <input type="checkbox" value="楼盘"  name="lp" {%if lp%}checked{%end%}/> 楼盘客户
+    
+  <button type="submit" class="btn">检 索</button>
+  <input type="hidden" value="{{tag}}" name="tag"/>
+  {%if my%}
+  <input type="hidden" value="{{my}}" name="my"/>
+{%end%}
+<input type="hidden" value="{{curr}}" name="curr" />
+</form>
+
+{%if keyword%}
+<div class="alert fade in">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>  共找到 {{pagination.total_count}} 条记录</strong> 
+          </div>
+
+{%end%}
+
+
+<ul class="nav nav-tabs" id="myTab">
+   {%if my%}
+    <li {%if curr=="customer_tab"%} class="active"{%end%}>
+        <a href="/customer?my=1&tag=customer_list_rec&curr=customer_tab" id="customer_tab">待接单客户</a>
+    </li>
+    <li {%if curr=="tab_confirm"%} class="active"{%end%}>
+        <a href="/customer?my=1&tag=customer_list_rec&curr=tab_confirm" id="tab_confirm">已接单,待确认</a>
+    </li>
+    <li {%if curr=="tb_manager_confirm" %} class="active" {%end%}>
+        <a href="/customer?my=1&tag=customer_list_rec&curr=tb_manager_confirm" id="tb_manager_confirm">主管已确认</a>
+    </li>
+
+    {%else%}
+    {%if kj_manage=='1' %}
+    <li  {%if curr=="customer_todo" %} class="active" {%end%}>
+         <a href="/customer?&tag=customer_list_rec&curr=customer_todo" id="customer_todo">待安排</a>
+     </li>
+ {%end%}
+    <li {%if curr=="customer_tab" %} class="active" {%end%}>
+        <a href="/customer?tag=customer_list_rec&curr=customer_tab" id="customer_tab">已接单,待确认</a>
+    </li>
+    <li {%if curr=="tb_manager_confirm" %} class="active" {%end%}>
+        <a href="/customer?tag=customer_list_rec&curr=tb_manager_confirm" id="tb_manager_confirm">已确认</a>
+    </li>
+
+
+    {%end%}
+
+     
+</ul>
+
+    <div class="tab-pane" id="customer_tab">
+     {%if customers%} 
+     {%if kj_manage=='1' and not my%}
+    <a class="btn btn-primary btn-sm " id="btn_group_manager_confirm">批量确认已接单</a>
+    {%elif curr=="customer_tab"%}
+
+    <a href="javascript:void(0)" class="btn btn-info btn_rec_confirm" id="btn_group_rec">批量接单</a>
+    {%end%}
+    <table class="table" style="margin:5px;">
+        <thead>
+            <tr style="background-color: black; color:#fff;">
+    
+    
+                <th style="min-width:30px;">
+                    <input type="checkbox" id="choose_all">全选
+                </th>
+    
+                <th style="min-width:60px;">编号</th>
+                <th style="min-width:180px;">公司名称</th>
+                <th>客户类型</th>
+    
+                <th style="min-width:60px;">社会信用代码</th>
+                <th>客服会计</th>
+                <th style="min-width:100px;">接单状态</th>
+    
+            </tr>
+        </thead>
+        <tbody>
+            {%for customer in customers%}
+            <tr>
+                <td>
+                    <input type="checkbox" value="{{customer.id}}" name="check_customer">
+                </td>
+                <td>{{customer.id}}</td>
+                <td>
+                    <a class="btn customer_detail btn-sm control" href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}">{{customer.company}}</a>
+                </td>
+                <td>
+                    {{customer.customer_type_name}}
+                </td>
+                <td>{%if customer.company_reguid%}{{customer.company_reguid}}{%end%}</td>
+                <td>
+                    {{customer.acc_uid_name}}
+                </td>
+                <td>
+                    {%if customer.manager_confirm_at%}
+                    <font color='green'>部门经理{{customer.manager_confirm_name}} 于 {{customer.manager_confirm_at}}确认已接单</font>
+                    {%elif customer.acc_confirm_at%}
+                    <font color='blue'> {{customer.acc_uid_name}} 于 {{customer.acc_confirm_at}}接单,待部门经理确认</font>
+                 
+                    
+                    {%else%}
+                    <font color='red'>待客服会计({{customer.acc_uid_name}}) 接单</font>
+    
+                    {%end%}
+                </td>
+            </tr>
+            {%end%}
+    
+    
+    
+        </tbody>
+    </table>
+    
+    {%else%} 还没有数据哦。 {%end%}
+    
+    
+    <div class="pagination">
+        <ul>
+            {% if pagination.has_prev %} {%if kj%}
+            <li>
+                <a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if curr%}&curr={{curr}}{%end%}">&laquo; 上页</a>
+            </li>
+            {%else%}
+            <li>
+                <a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if curr%}&curr={{curr}}{%end%}">&laquo; 上页</a>
+            </li> {% end %} {%end%} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %} {%if kj%}
+            <li>
+                <a href="/customer?tag={{tag}}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if curr%}&curr={{curr}}{%end%}">{{ page }}</a>
+            </li>
+            {%else%}
+            <li>
+                <a href="/customer?tag={{tag}}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if curr%}&curr={{curr}}{%end%}">{{ page }}</a>
+            </li>
+            {%end%} {% else %}
+            <li>
+                <span class="active">
+                    <a href="#">{{ page }}</a>
+                </span>
+            </li>
+            {% end %} {% else %}
+            <li>
+                <span class="active">
+                    <a href="#">....</a>
+                </span>
+            </li>
+            {% end %} {%end %} {% if pagination.has_next %} {%if kj%}
+            <li>
+                <a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if curr%}&curr={{curr}}{%end%}">下页 &raquo;</a>
+            </li>
+            {%else%}
+            <li>
+                <a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if curr%}&curr={{curr}}{%end%}">下页 &raquo;</a>
+            </li>
+            {%end%} {% end %}
+        </ul>
+    </div>
+        
+         
+        
+ 
+
+
+
+</div>
+
+</fieldset>
+
+</div>
+   
+
+               
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+ 
+
+    {%end%} 
+
+    {%block js%}
+
+<script>
+
+$(function () {
+    _xsrf = getCookie("_xsrf")
+	{%if my%}
+            $("#customer_list_rec").attr('class',"active")
+    {%else%}
+            $("#customer_list_rec").attr('class',"active")
+    {%end%}
+
+
+    
+    $('#btn_group_manager_confirm').on('click', function (param) {
+
+        var id_array = new Array();
+        $('input[name="check_customer"]:checked').each(function () {
+            id_array.push($(this).val());//向数组中添加元素  
+        });
+        var idstr = id_array.join(',');//将数组元素连接起来以构建一个字符串  
+        $.post(
+            'customer?tag=group_confirm_manager',
+            {
+                "_xsrf": _xsrf,
+                "idstr": idstr
+            }, function (result) {
+               location.reload()
+            }
+        )
+    })
+
+    $('#btn_group_rec').on('click',function (param) { 
+        var id_array=new Array();  
+        $('input[name="check_customer"]:checked').each(function(){  
+        id_array.push($(this).val());//向数组中添加元素  
+            });  
+        var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串  
+        $.post(
+            'customer?tag=group_confirm_kj',
+            {
+                "_xsrf":_xsrf,
+                "idstr":idstr
+            },function (result) { 
+                location.reload()
+             }
+        )  
+     })
+     $('#choose_all').on('change',function () { 
+         $('input[name=check_customer]').not(this).prop('checked',this.checked);
+      })
+
+
+});
+
+</script>
+
+
+    {%end%}

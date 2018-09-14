@@ -1,0 +1,450 @@
+
+
+
+ {% extends "../base.html" %} {%block title%}我的业务{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          主面板
+        </li>
+        <li class="breadcrumb-item active">我的业务</li>
+      </ol>
+
+    <div class="category_projects">
+        {%if style==''%}
+        <a href="/project?tag=projects_qc" 
+        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
+        所有分组</a>
+        {%else%}
+        <a href="/project?tag=projects_qc" 
+        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
+        所有分组</a>
+        {%end%}
+      {%for category in categorys%}
+      {%if category.category_name==style%}
+
+      <a href="/project?tag=projects_qc&style={{category.category_name}}" 
+      class="btn btn-info btn-sm" id="btn_check" 
+      style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
+      {{category.category_name}}</a>
+      {%else%}
+      <a href="/project?tag=projects_qc&style={{category.category_name}}" 
+      class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
+      {{category.category_name}}</a>
+      {%end%}
+      {%end%}
+    </div>
+     
+ <form>
+ <table>
+    <tr>
+      <td>业务类型</td>
+      <td>销售顾问</td>
+      <td>客服顾问</td>
+      <td>来源渠道</td>
+      <td>楼盘</td>
+          <td>
+时间段
+       </td>
+    </tr>
+
+        <tr>
+      <td>
+
+<select name="income_bussniss" class="form-control">
+  <option  value="0">请选择业务类型</option>
+    {%for idx,item in enumerate(t_project_bussniss)%}
+    
+        <option value="{{item.id}}"   {%if params["income_bussniss"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+    {%end%}
+</select></td>
+
+      <td>
+<select name="sales" class="form-control" >
+  <option  value="0">销售顾问</option>
+    {%for idx,item in enumerate(t_user_sales)%}
+        <option value="{{item.id}}" {%if params["sales"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+    {%end%}
+</select>
+      </td>
+
+       <td>
+<select name="kefu" class="form-control">
+  <option  value="0">请选择客服顾问</option>
+    {%for idx,item in enumerate(t_users)%}
+    {%if item.team_id==2%}
+        <option value="{{item.id}}"  {%if params["kefu"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+ {%end%}
+    {%end%}
+</select>
+       </td>
+       <td>
+<select name="from_id" class="form-control">
+  <option  value="0">请选择来源渠道</option>
+    {%for idx,item in enumerate(t_income_type)%}
+        <option value="{{item.id}}"  {%if params["from_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+    {%end%}
+</select>
+       </td>
+   
+      <td>
+        <select name="building_id" class="form-control" >
+          <option value="0">请选择楼盘</option>
+            {%for idx,item in enumerate(t_building)%}
+                <option value="{{item.id}}"  {%if params["building_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+            {%end%}
+        </select>
+      </td>
+          <td>
+<input type="text" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}"  />
+至
+<input type="text" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+<input type="hidden" name="tag" value="{{tag}}"/>
+<input type="submit" value="检索" />
+
+       </td>
+    </tr>
+ </table>
+
+
+
+
+
+
+
+
+
+
+</form><br/>
+             <div class="alert alert-info">
+
+                共 {{pagination.total_count}} 条记录
+
+             </div>
+
+             <div class="table-responsive">
+    <table class="table table-bordered" cellspacing="0" style="font-size:12px;width:1200px;;">
+    
+        <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                    <thead>
+                        <tr>
+                            <!-- <th width="100">客户分组</th> -->
+                            <th width="50">编号</th> 
+                            <th>业务名称</th> 
+                            <th  width="150">公司名称</th>  
+                             <th  width="100">客户名称</th>  
+                            <th  width="100">联系方式</th> 
+                            
+                            {%if role=="9"%}
+                             <th width="100">
+                            工商专员
+                            </th>
+                            {%end%}
+                              <th width="120">合同金额</th>
+                               
+                             <th width="80">创建者</th>
+                        <th width="120">创建时间</th>
+                         
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {%if t_projects%}
+                        {%for item in t_projects%}
+                        <tr id="{{item.id}}">
+       <td>
+                                {{item.id}}
+
+                            </td>  
+                              <td title="{{item.project_name}}">
+                              
+                    <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" title="{{item.project_name}}"> {%if len(item.project_name) > 58%} {{item.project_name[:58]}}....... {%else%} {{item.project_name}} {%end%}
+                        </a>    </td>  
+                            <td>
+                                {{item.customer_company}}
+                            </td>  
+                                    <td>
+                                    {{item.customer_name}}
+                                
+                            </td>   
+                          <td>
+                                {{item.customer_tel}}
+                            </td>         {%if role=="9"%}
+                             <td>
+                             {%if item.member_name%}
+                                    <font color='blue'>{{item.member_name}}</font>
+                            {%else%}
+
+                            {%if item.wait_set_state==1%}
+                                     <font color='green'>请设置跟单员</font>
+                            {%else%}
+                                      <font color='red'>待客户到款确认</font>
+                             {%end%}
+
+
+
+                             {%end%}
+                          
+                            </td>   {%end%}
+                             <td>
+                                    {{item.all_income}}
+                            </td>
+                          <td>
+                            {{item.uid_name}}
+                            </td>
+                                <td>
+                            {{item.created_at.strftime("%Y-%m-%d")}}
+                            </td>
+                     
+                        </tr>
+                        {%end%}
+
+    {%else%}
+<tr>
+ <td colspan="20">
+    您还没有数据哦       </td>
+
+ </tr>
+                        {%end%}
+                    </tbody>
+                </table>
+            </div>
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+        {%if loupan%}
+         <a href="?tag=projects_qc_loupan&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+        {%else%}
+        <a href="?tag=projects_qc&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+        {%end%}
+
+
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item ">
+            {%if loupan%}
+             <a href="?tag=projects_qc_loupan&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
+            {%else%}
+            <a href="?tag=projects_qc&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
+            {%end%}
+            </li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% end %} {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button page-item next" id="dataTable_next">
+            {%if loupan%}
+             <a href="?tag=projects_qc_loupan&page={{ pagination.page + 1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
+            {%else%}
+            <a href="?tag=projects_qc&page={{ pagination.page + 1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
+            {%end%}
+            </li>
+     {% end %} </ul>
+   </div>
+</div>
+       
+
+         {%if style%}
+<div class="modal fade" id="project_category_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    
+  <div class="modal-dialog" role="document" >
+  <div class="modal-content">
+   <div class="modal-header">
+     <h5 class="modal-title" id="exampleModalLongTitle_license">选择分组 </h5>
+     <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+       <span aria-hidden="true">&times;</span>
+     </button>
+   </div>
+        <div class="form-group group1">
+         <p class="col-sm-3 control-label">所有分组：</p>
+         {%for category in categorys%}
+         <div style="text-align: left; margin-left: 40%;">
+          <input value="{{category.id}}" id="category_id" name="category_name" type="radio">{{category.category_name}}</div>
+          {%end%}
+       </div>
+  
+   <div class="modal-footer" style="margin-right: 20px;">
+     <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+              <button class="btn btn-primary btn_save_project_cagetory1">保 存</button>
+   </div>
+  </div>
+  </div>
+  </div>
+{%else%}
+<div class="modal fade" id="project_category_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    
+            <div class="modal-dialog" role="document" >
+            <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLongTitle_license">选择分组 </h5>
+               <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+                  <div class="form-group group1">
+                   <p class="col-sm-3 control-label">所有分组：</p>
+                   {%for category in categorys%}
+                    <div style="text-align: left; margin-left: 40%;">
+                    <input value="{{category.id}}"  id="category_id" name="category_name" type="radio">
+                   {{category.category_name}}
+                    </div>
+                    {%end%}
+                 </div>
+            
+             <div class="modal-footer" style="margin-right: 20px;">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button class="btn btn-primary btn_save_project_cagetory">保 存</button>
+             </div>
+            </div>
+            </div>
+            </div>
+{%end%}
+      {% end %} {%block js%}
+<script>
+       function getCookie(name) {
+            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+            return r ? r[1] : undefined;
+        }
+$(document).ready(function() {
+    window.prettyPrint && prettyPrint();
+    $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+    $("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59',
+language: 'zh-CN',initialDate: new Date()});
+    $(".manage_site").on("click",function() {
+        site_id = $(this).attr("title")
+        $("#site_edit").attr("href","/sites?form_tag={{form_tag}}&tag=edit&site_id="+site_id)
+        $("#site_article").attr("href","/articles?site_id="+site_id)
+        $("#site_preview").attr("href","/?site_id="+site_id)
+    $("#nav_edit").attr("href","/sites?tag=nav&site_id="+site_id)
+    $("#site_staticfile").attr("href","/static_file?site_id="+site_id)
+        $("#site_mod").html("")
+        $.get("/sites?tag=get",{"site_id":site_id},function(result){
+            $("#site_mod").append(result)
+        })
+        $("#manage_modal1").modal("show")
+
+    })
+
+     _xsrf = getCookie("_xsrf");
+
+            $(".choose_type").on("click",function(){
+        var uid=$(this).attr('id');
+        $('.btn_save_project_cagetory').attr('id',uid);
+        $('.btn_save_project_cagetory1').attr('id',uid);
+       $("#project_category_modal").modal("show")
+
+   })
+
+
+       $("#btn_save_cagetory").click(function(){
+           var name=$('#category_name').val();
+           if(name!=''){
+                $.post(
+                    '/insertcategory',
+                    {
+                        category:name,
+                        "_xsrf":_xsrf
+                    },
+                    function(data,status){
+                        $("#insert_category_modal").modal("hide")
+                        $('.group1').append('<div style="text-align: left; margin-left: 20%;"><input value="'+data['category_id']+'" '+
+                        'id="category_id" style="margin-left:25%;" name="category_name" type="radio">'+name+'</div>');
+                        $('.category_projects').append('<a href="/project?tag=my&style='+name+'"'+
+                        'class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">'+name+'</a>');
+                    }
+                )
+           }else{
+               $('#category_name').css({border:'2px solid #ff8480','border-radius':'5px'});
+               
+               
+           }
+       })
+       $(".btn_save_project_cagetory").click(function(){
+           var uid=$(this).attr('id');
+           var categoryid=$('input[name="category_name"]:checked').val();
+           $.post(
+               '/insertupdateprojectcategory',
+               {
+                category_id:categoryid,
+                id:uid,
+                "_xsrf":_xsrf
+               },
+               function(data,status){
+                $("#project_category_modal").modal("hide")
+                $('p[id='+uid+']').text(data['category_name']);
+               }
+           )
+
+       })
+       $(".btn_save_project_cagetory1").click(function(){
+           var uid=$(this).attr('id');
+           var categoryid=$('input[name="category_name"]:checked').val();
+           $.post(
+               '/insertupdateprojectcategory',
+               {
+                category_id:categoryid,
+                id:uid,
+                "_xsrf":_xsrf
+               },
+               function(data,status){
+                window.location.reload()
+               }
+           )
+
+       })
+
+
+
+    $("a[name=btn_choice_temp]").click(function() {
+
+        tmp_id = $(this).attr("value")
+
+        $("#choice_temp_id").val(tmp_id)
+        $("#modal_save").show()
+        $("#input_siteinfo").show()
+        $("#choice_temp").hide()
+        $("#myModalLabel").text("配置站点信息")
+    })
+
+
+    $("#btn_save").click(function() {
+        _xsrf = getCookie("_xsrf");
+        temp_id = $("#choice_temp_id").val()
+        site_name = $("#site_name").val()
+        site_title = $("#site_title").val()
+        site_keyword = $("#site_keyword").val()
+        site_desc = $("#site_desc").val()
+        site_tongji = $("#site_tongji").val()
+        $.post("", {
+            "_xsrf": _xsrf,
+            "site_name": site_name,
+            "temp_id": temp_id,
+            "site_title": site_title,
+            "site_desc": site_desc,
+            "site_tongji": site_tongji,
+            "site_keyword": site_keyword
+        }, function(result) {
+            location.reload()
+        })
+
+    })
+
+    $("#btn_cancal").click(function() {
+        $("#input_siteinfo").hide()
+        $("#modal_save").hide()
+        $("#choice_temp").show()
+    })
+
+
+
+})
+</script>
+{%end%}

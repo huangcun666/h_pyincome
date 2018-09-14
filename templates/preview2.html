@@ -1,0 +1,60 @@
+{%if t_user_site%}
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>{%if t_user_site.site_title%}{{t_user_site.site_title}}{%else%}{{t_user_site.site_name}}{%end%}</title>
+<link href="/static/theme/default/css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="/static/theme/default/js/jquery-1.11.0.min.js"></script>
+<!-- Custom Theme files -->
+<link href="/static/theme/default/css/style.css" rel="stylesheet" type="text/css" media="all"/>
+<!-- Custom Theme files -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="{{t_user_site.site_keyword}}" />
+<meta name="description" content="{{t_user_site.site_desc}}" />
+
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <link href="/static/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+     <link href="/static/js/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/js/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+<!-- start-smoth-scrolling -->
+<script type="text/javascript" src="/static/theme/default/js/move-top.js"></script>
+<script type="text/javascript" src="/static/theme/default/js/easing.js"></script>
+  <script type="text/javascript">
+      jQuery(document).ready(function($) {
+        $(".scroll").click(function(event){
+          event.preventDefault();
+          $('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+        });
+      });
+  </script>
+<!-- //end-smoth-scrolling -->
+<link rel="stylesheet" type="text/css" href="/static/theme/default/css/style_common.css" />
+<link rel="stylesheet" type="text/css" href="/static/theme/default/css/style4.css" />
+
+
+</head>
+<body>
+<!--fayecontent1Donotdelete-->
+
+
+{%for item in t_temp_mods%}
+
+    {%raw trim_string1(item.code,item.mod_id,t_articles,t_user_site.id,t_user_site,t_temp_nav)%}
+
+{%end %}
+
+
+
+
+<!--fayecontent2Donotdelete-->
+<script type="text/javascript" src="/static/js/froala_editor.pkgd.min.js"></script>
+<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+</html>
+{%else%}
+
+  站点域名不存在.{{domain}}
+{%end%}

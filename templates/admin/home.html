@@ -1,0 +1,296 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>移动定位</title>
+<style type="text/css">
+html{height:100%}
+body{height:100%;margin:0px;padding:0px;font-family:Tahoma; font-size:12px;}
+#toolbar{height:30px;line-height:30px;
+overflow:hidden;
+color:#fff;width:100%;
+background-color:#2D2D2D;border-bottom:solid 1px #000 ;
+z-index:999;position:absolute;top:0;
+filter:alpha(opacity=90);-moz-opacity:0.9;opacity: 0.9;}
+#phoneid{border:1px #000 solid;width:120px;height:18px;margin:0 0 0 20px;color:#000;}
+#wdate{border:1px #000 solid;width:120px;height:18px;margin:0 0 0 20px;color:#000;}
+#search_local,#search_phoneid,#btn_tracker,#btn_runtracker{border:1px #2F5BB7 solid;background-color:#4889F1;color:#fff;padding:2px 10px;}
+#localsearch{border:1px #000 solid;width:200px;height:18px;margin:0 0 0 20px;}
+#title{margin-left:20px;font-weight:bold;}
+#container{height:100%}
+#tips{z-index:998;
+	text-align:center;
+	width:200px;
+	height:40px;
+	line-height:40px;
+	color:#fff;
+	font-size:12px;
+	position:absolute;left:50%;top:50%;margin-left:-100px;margin-top:-20px;
+	filter:alpha(opacity=70);-moz-opacity:0.7;opacity: 0.7;
+	background-color: #4889F1;}
+</style>
+<script language="javascript" type="text/javascript" src="/static/js/WdatePicker.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/CityList/1.2/src/CityList_min.js"></script>
+<script type="text/javascript" src="/static/js/RichMarker_min.js"></script>
+<script type="text/javascript" src="/static/css/jquery-1.7.1.min.js"></script>
+
+</head>
+<body>
+<div id="toolbar"><span id="title">移动定位</span>
+            <select  class="span12"  name="mobile_list" id="mobile_list" size="1">
+              {%for item in t_mobile%}
+              <option value="{{item.f_id}}">{{item.f_name}}</option>
+              {%end%}
+            </select>
+
+<input type="button" id="search_phoneid"  value="最新定位"/>
+<input id="wdate" class="Wdate" type="text" onClick="WdatePicker();" />
+<input type="button" id="btn_tracker" onclick="getLocation(1);" value="显示轨迹"/>
+<input id="localsearch" type ="text" onKeyDown="search_local_keysend(event);"/>
+<input type="button" id="search_local" onclick="search_local()" value="搜索地名"/>
+</div>
+<div id="container"></div>
+<div id="tips">正在加载地图数据...</div>
+<script type="text/javascript">
+	var DEF_PI = 3.14159265359; // PI
+	var DEF_2PI= 6.28318530712; // 2*PI
+	var DEF_PI180= 0.01745329252; // PI/180.0
+	var DEF_R = 6370693.5; // radius of earth
+	function GetShortDistance(lon1,lat1,lon2,lat2){
+		// 角度转换为弧度
+		var ew1 = lon1 * DEF_PI180;
+		var ns1 = lat1 * DEF_PI180;
+		var ew2 = lon2 * DEF_PI180;
+		var ns2 = lat2 * DEF_PI180;
+		// 经度差
+		var dew = ew1 - ew2;
+		// 若跨东经和西经180 度，进行调整
+		if (dew > DEF_PI){
+			dew = DEF_2PI - dew;
+		}else if (dew < -DEF_PI){
+			dew = DEF_2PI + dew;
+		}
+		var dx = DEF_R * Math.cos(ns1) * dew; // 东西方向长度(在纬度圈上的投影长度)
+		var dy = DEF_R * (ns1 - ns2); // 南北方向长度(在经度圈上的投影长度)
+		// 勾股定理求斜边长
+		var distance = Math.sqrt(dx * dx + dy * dy);
+		return distance;
+}
+</script>
+<script type="text/javascript">
+	var jsonobj;
+	var gpslng;
+	var gpslat;
+	var gpstime;
+	var oldgpslng;
+	var oldgpslat;
+	var TrackPre;
+	var arr_track = new Array();
+	var map = new BMap.Map("container"); // 创建地图实例
+	map.centerAndZoom("江门",13);// 初始化地图,设置中心点坐标和地图级别(郑州)。
+	var opts = {type:BMAP_NAVIGATION_CONTROL_LARGE,offset: new BMap.Size(10,50)}
+	map.addControl(new BMap.NavigationControl(opts));
+	map.addControl(new BMap.ScaleControl());
+	map.addControl(new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:1}));
+	map.addControl(new BMap.MapTypeControl({offset: new BMap.Size(10,50)}));
+	map.addEventListener("tilesloaded",function(){document.getElementById('tips').style.display = "none";});
+
+	/*回调函数*/
+	/*last_translateCallback = function (point){
+	    setTimeout(function(){map.panTo(point);},1000); //平移到目前位置
+		var marker = new BMap.Marker(point);
+		map.addOverlay(marker);
+		marker.setAnimation(BMAP_ANIMATION_BOUNCE); //动画
+	}*/
+
+	/*回调函数*/
+	/*track_translateCallback = function (point){
+		if (typeof(TrackPre)=="undefined"){
+			TrackPre = point;
+			return false;
+		}
+		var polyline = new BMap.Polyline([
+				  TrackPre,
+				  point
+				], {strokeColor:"blue", strokeWeight:6, strokeOpacity:0.5});
+			TrackPre = point;
+			map.addOverlay(polyline);
+			map.panTo(point); //平移到目前位置
+	}*/
+
+	/*显示轨迹*/
+	function gpstrack(){
+		//根据提供的phoneid查询
+		map.clearOverlays();
+		var json_track = eval(document.getElementById('json_track').value);
+		var json_markpois_str = "";
+		if (typeof(json_track) != "undefined"){
+		      arr_track.length = 0;
+			  for(var i=0;i<json_track.length;i++){
+				var tracklng = json_track[i][0];
+				var tracklat = json_track[i][1];
+				var tracktime = json_track[i][2];
+				json_markpois_str += "{lng:"+tracklng+",lat:"+tracklat+",html:'到达时间："+          tracktime.substr(11,8)+"'},";
+				var trackPoint = new BMap.Point(tracklng,tracklat);
+				arr_track.push(trackPoint); //写入数组供画路书
+				if (typeof(TrackPre)=="undefined"){
+					TrackPre = trackPoint;
+					continue;
+				}
+				if (GetShortDistance(TrackPre.lng,TrackPre.lat,trackPoint.lng,trackPoint.lat) > 200){
+				var polyline = new BMap.Polyline([
+						  TrackPre,
+						  trackPoint
+						], {strokeColor:"#111", strokeWeight:3, strokeOpacity:0.3,strokeStyle:"dashed"});
+					TrackPre = trackPoint;
+					map.addOverlay(polyline);
+					continue;
+				}
+				var polyline = new BMap.Polyline([
+						  TrackPre,
+						  trackPoint
+						], {strokeColor:"blue", strokeWeight:6, strokeOpacity:0.5});
+					TrackPre = trackPoint;
+					map.addOverlay(polyline);
+					//map.panTo(trackPoint); //平移到目前位置
+				}
+				//alert(json_markpois_str);
+				var json_markpois = eval("["+json_markpois_str.substr(0,json_markpois_str.length-1)+"]");
+				arr_track.reverse(); //反转数组
+				var lushu = new BMapLib.LuShu(map,arr_track,{
+					speed:600,
+					landmarkPois:json_markpois});
+				lushu.start();
+			}
+		}
+
+	/*定时器*/
+	setInterval("update_last()",5000);//5秒钟更新一次坐标
+
+
+
+
+	/*更新GPS数值*/
+	function update_last(){
+	  getLocation(0); //根据提供的phoneid查询
+	  alert("hi")
+	  var json_last = eval(document.getElementById('json_last').value);
+	  if (typeof(json_last) != "undefined" && json_last.length==1){
+			gpslng = json_last[0][0];
+			gpslat = json_last[0][1];
+			gpstime = json_last[0][2];
+			if (oldgpslng != gpslng || oldgpslat != gpslat){
+				 map.clearOverlays();
+				 var gpsPoint = new BMap.Point(gpslng,gpslat);
+				 oldgpslng = gpslng;
+				 oldgpslat = gpslat;
+				 document.getElementById('tips').style.display = "";
+				 setTimeout(function(){map.panTo(gpsPoint);},1000); //平移到目前位置
+				 var marker = new BMap.Marker(gpsPoint);
+				 map.addOverlay(marker);
+				 marker.setAnimation(BMAP_ANIMATION_BOUNCE); //动画
+				 //BMap.Convertor.translate(gpsPoint,0,last_translateCallback);
+				 var label = new BMap.Label("当前位置跟踪时间：<br/>"+gpstime,{offset:new BMap.Size(30,-20)});
+				 label.setStyle({
+					border:"solid 1px #ccc",
+					width:"auto",
+					minwidth:"50px",
+					textalign:"center",
+					position:"absolute",
+					background:"#fff",
+					color:"#000",
+					fontsize:"12px",
+					borderradius:"10px",
+					padding:"5px",
+					whitespace:"nowrap"});
+				 marker.setLabel(label);
+		   }
+	  }
+	}
+
+	function search_local(){
+		 document.getElementById('search_local').disabled = true;
+		 var local = new BMap.LocalSearch(map, {
+			  renderOptions:{map: map}
+		});
+		map.clearOverlays();
+		local.search(document.getElementById('localsearch').value);
+		document.getElementById('search_local').disabled = false;
+		return false;
+	}
+
+	function phoneid_keysend(event){
+	  if (event.keyCode==13) {search_local();}
+	}
+
+	function search_local_keysend(event){
+	  if (event.keyCode==13) {getLocation();}
+	}
+
+	 function date2str(d){
+            var   ret=d.getFullYear()+"-"
+            ret+=("00"+(d.getMonth()+1)).slice(-2)+"-"
+            ret+=("00"+d.getDate()).slice(-2)
+            return ret;
+      }
+	 document.getElementById('wdate').value = date2str(new Date());
+
+
+	 	$(function(){
+	 	$("#search_phoneid").click(function(){
+	 		map.clearOverlays();
+	 		id = $("#mobile_list option:selected").val()
+	 		$.get("/AjaxQuery?tag=position_last_by_id&mobileid="+id,function(data){
+
+		             var beginPoint = new BMap.Point(data.f_longitude,data.f_latitude);
+		              map.centerAndZoom(beginPoint,15)
+		              createMarketPoint(data,"/static/ico/3/7.png")},"json")
+	 		 //添加gps marker和label
+    var markergg = new BMap.Marker(ggPoint);
+    bm.addOverlay(markergg); //添加GPS marker
+    var labelgg = new BMap.Label("未转换的GPS坐标（错误）",{offset:new BMap.Size(20,-10)});
+    markergg.setLabel(labelgg); //添加GPS label
+
+    //坐标转换完之后的回调函数
+    translateCallback = function (data){
+      if(data.status === 0) {
+        var marker = new BMap.Marker(data.points[0]);
+        bm.addOverlay(marker);
+        var label = new BMap.Label("转换后的百度坐标（正确）",{offset:new BMap.Size(20,-10)});
+        marker.setLabel(label); //添加百度label
+        bm.setCenter(data.points[0]);
+      }
+    }
+
+    setTimeout(function(){
+        var convertor = new BMap.Convertor();
+        var pointArr = [];
+        pointArr.push(ggPoint);
+        convertor.translate(pointArr, 1, 5, translateCallback)
+    }, 1000);
+	 	})
+function createMarketPoint(loc,img){
+
+  var pt = new BMap.Point(loc.f_longitude,loc.f_latitude);
+  var myIcon = new BMap.Icon(img,new BMap.Size(40, 40),{offset: new BMap.Size(0, -1),   imageOffset: new BMap.Size(0, 0)});
+  var marker = new BMap.Marker(pt,{icon:myIcon});  // 创建标注
+  map.addOverlay(marker);                    // 将标注添加到地图中
+  var label = new BMap.Label(loc.f_name+" "+loc.f_addtime+" "+loc.f_type_name ,{offset:new BMap.Size(20,-10)});
+  marker.setLabel(label);
+
+ var content = "<h4 style='margin:0 0 0px 0;padding:0.2em 0'>" + loc.f_name + "(" + loc.f_type_name + ")</h4>" + "<p>地址:" + loc.f_addr + "<br/>记录时间："+loc.f_addtime+"<br/><a href='MobileLocus?id=" + loc.f_mobileid + "'>详细</a></p></div>";
+
+  var infoWindow = new BMap.InfoWindow(content);
+  marker.addEventListener("click", function(e){
+
+    this.openInfoWindow(infoWindow);});
+}
+
+	})
+
+</script>
+</body>
+</html>

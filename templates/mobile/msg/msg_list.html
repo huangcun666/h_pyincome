@@ -1,0 +1,37 @@
+{% extends "../mobile_base.html" %} {%block title%}收入管理{%end%} 
+{% block body %}
+<div class="weui-panel weui-panel_access">
+  <div class="weui-panel__hd">信息箱</div>
+
+  
+  <div class="weui-panel__bd">
+     
+        {%for idx,item in enumerate(t_user_msg)%}
+
+        
+    <a class="weui-media-box weui-media-box_appmsg" href="{%raw item.txt.split("href='")[1].replace("'>查看</a>",'')%}">
+    <div class="weui-media-box__hd">
+        <img class="weui-media-box__thumb" src="/static/images/systemPreferences.png">
+      </div>
+    
+      <div class="weui-media-box__bd" >
+        <h4 class="weui-media-box__title" ><strong>{%raw item.txt.split("<")[0]%}</strong></h4>
+        <p class="weui-media-box__desc"> 发送时间： {{item.created_at}} </p>
+      </div>
+    </a>
+    {%end%}
+  </div>
+</div>
+
+<a href="javascript:void(0);" class="weui-cell weui-cell_link" id='see_more'>
+<div class="weui-cell__bd">查看更多</div>
+</a>
+
+{%end%}
+
+
+{%block js%}
+<script>
+
+</script>
+  {%end%}

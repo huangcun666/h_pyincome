@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>开收据系统-修改收据</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+</head>
+
+<body class="bg-dark">
+  <div class="container">
+    <div class="card card-register mx-auto mt-5">
+      <div class="card-header">修改收据</div>
+      <div class="card-body">
+        <form action="/change/{{indent.id}}" method="POST">
+          {% raw xsrf_form_html() %}
+          <div class="form-group">
+            <div class="form-row">
+                <div class="col-md-6">
+                    <label for="cus_id">订单编号</label>
+                    <input value="{{indent.cus_id}}" class="form-control" name="cus_id" 
+                    id="cus_id" type="text" aria-describedby="nameHelp" placeholder="输入订单编号">
+                  </div>
+              <div class="col-md-6">
+                <label for="customer_name">客户名称</label>
+                <input value="{{indent.customer_name}}" class="form-control" name="customer_name" 
+                id="customer_name" type="text" aria-describedby="nameHelp" placeholder="输入客户名称">
+              </div>
+
+            </div>
+          </div>
+          <div class="form-group">
+              <div class="form-row">
+                <div class="col-md-6">
+                  <label for="customer_company">公司名称</label>
+                  <input value="{{indent.customer_company}}" class="form-control" 
+                  id="customer_company" name="customer_company" type="text" aria-describedby="nameHelp" placeholder="输入公司名称">
+                </div>
+                <div class="col-md-6">
+            <label for="project_name">收款内容</label>
+            <input value="{{indent.project_name}}" class="form-control" 
+                  id="project_name" name="project_name" type="text" aria-describedby="nameHelp" placeholder="输入收款内容">
+            </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-row">
+              <div class="col-md-4">
+                <label for="all_income">收款金额</label>
+                {% if indent.all_income !=None %}
+                <input value="{{indent.all_income}}" class="form-control" id="all_income"
+                 name="all_income" type="text" placeholder="收款金额">
+                 {%else%}
+                 <input class="form-control" id="all_income"
+                 name="all_income" type="text" placeholder="收款金额">
+                 {%end%}
+              </div>
+              <div class="col-md-4">
+                <label for="income_type">收款帐号</label>
+                <input value="{{indent.income_type}}" class="form-control" id="income_type"
+                 name="income_type" type="text" placeholder="收款帐号">
+              </div>
+              <div class="col-md-4">
+                <label for="income_name">出纳
+                </label>
+                <input value="{{indent.income_name}}" class="form-control" name="income_name" id="income_name" 
+                type="text" placeholder="出纳">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-row">
+              <div class="col-md-4">
+                <label for="sale_name">销售顾问</label>
+                <input value="{{indent.sale_name}}" class="form-control" id="sale_name" 
+                name="sale_name" type="text" placeholder="销售顾问">
+              </div>
+              <div class="col-md-4">
+                  <label for="kf_name">客服顾问</label>
+                  <input value="{{indent.kf_name}}" class="form-control" id="kf_name" 
+                  name="kf_name" type="text" placeholder="客服顾问">
+                </div>
+                <div class="col-md-4">
+                    <label for="craeted_at">收款日期</label>
+                    <input value="{{indent.craeted_at}}" class="form-control" id="craeted_at" 
+                    name="craeted_at" type="text" placeholder="收款日期">
+                  </div>
+            </div>
+
+          </div>
+          <input type="submit" value="提交" class="btn btn-primary btn-block">
+        </form>
+        <div class="text-center">
+          <a class="d-block small mt-3" href="/">返回</a>
+          {% if 'error_id' in globals()%}
+              <p class="repeat_id" style="display:none;">{{error_id}}</p>
+          {%end%}
+          </div>
+      </div>
+    </div>
+  </div>
+  <!-- Bootstrap core JavaScript-->
+  <script src="/static/js/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/js/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <!-- Core plugin JavaScript-->
+  <script src="/static/js/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="/static/js/myjquery.js"></script>
+  
+</body>
+
+</html>

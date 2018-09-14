@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{%if t_user_site.site_title%}{{t_user_site.site_title}}{%else%}{{t_user_site.site_name}}{%end%}|文章列表</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+
+<meta name="keywords" content="{{t_user_site.site_keyword}}" />
+<meta name="description" content="{{t_user_site.site_desc}}" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<link href="/static/theme/default/css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href="/static/theme/default/css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
+<!-- js -->
+<script src="js/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- js -->
+<!-- start-smoth-scrolling -->
+<script type="text/javascript" src="js/move-top.js"></script>
+<script type="text/javascript" src="js/easing.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    $(".scroll").click(function(event){
+        event.preventDefault();
+    $('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+});
+});
+</script>
+<!-- start-smoth-scrolling -->
+</head>
+    <body>
+        <div class="container">
+                 <ol class="breadcrumb">
+                  <li><a href="/">首页</a></li>
+                  <li class="">新闻资讯</li>
+                 </ol>
+        </div>
+        <!-- blog -->
+        <div class="blog">
+            <!-- container -->
+            <div class="container">
+                <div class="blog-text">
+                    <h3></h3>
+                </div>
+                <div class="col-md-8 blog-top-left-grid">
+                    <div class="left-blog">
+                        {%if articles%}
+                        {%for item in articles%}
+                        <div class="blog-left">
+                            <div class="blog-left-left">
+                                <p>{{item.post_by}} - {{item.created_at}}</p>
+
+                            </div>
+                            <div class="blog-left-right">
+                                <a href="post_{{item.id}}.html">{{item.title}} </a>
+                                <p>{{trim_string(item.description)}}
+                            </p>
+                            </div>
+                            <div class="clearfix"> </div>
+                        </div>
+                        {%end%}
+                    {%else%}
+
+                        还没发布记录.
+                    {%end%}
+                    </div>
+
+
+
+
+                    <nav>
+                        <ul class="pagination">
+                             {% if pagination.has_prev %} <li>
+                                <a href="news{{t_user_site.id}}_{{ pagination.page - 1}}.html" aria-label="Previous">
+                                    <span aria-hidden="true"><</span>
+                                </a>
+                            </li>
+                            {% end %}
+                            {%for page in pagination.iter_pages() %}
+
+                            {% if page != pagination.page %}
+                            <li><a href="news85_{{ page }}.html">{{page}}</a></li>
+                            {% else %}
+                                <li><a href="news85_{{ page }}.html">{{ page }}</a></li>
+                            {% end %}
+                               {% end %}
+                            {% if pagination.has_next %}
+                            <li>
+                                <a href="news{{t_user_site.id}}_{{ pagination.page + 1}}.html" aria-label="Next">
+                                    <span aria-hidden="true">></span>
+                                </a>
+                            </li>
+
+                            {% end %}
+                        </ul>
+                    </nav>
+
+
+                </div>
+                <div class="col-md-4 blog-top-right-grid">
+                    <div class="Categories">
+                        <h3>热门资讯</h3>
+                        <ul>
+                            {%for item in articles_random%}
+                            <li> <a href="post_{{item.id}}.html">{{item.title}}</a></li>
+                            {%end%}
+                        </ul>
+                    </div>
+                <div class="Categories">
+                        <h3>最新资讯</h3>
+                        <ul>
+                            {%for item in articles_new%}
+                            <li> <a href="post_{{item.id}}.html">{{item.title}}</a></li>
+                            {%end%}
+                        </ul>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+            <!-- //container -->
+        </div>
+        <!-- //blog -->
+        <script type="text/javascript">
+                                    $(document).ready(function() {
+                                        /*
+                                        var defaults = {
+                                            containerID: 'toTop', // fading element id
+                                            containerHoverID: 'toTopHover', // fading element hover id
+                                            scrollSpeed: 1200,
+                                            easingType: 'linear'
+                                        };
+                                        */
+
+                                        $().UItoTop({ easingType: 'easeOutQuart' });
+
+                                    });
+                                </script>    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https'){
+           bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+          }
+          else{
+          bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+          }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+        </script>
+                                    <a href="#" id="toTop" style="display: block;"> <span id="toTopHover" style="opacity: 1;"> </span></a>
+    <!-- content-Get-in-touch -->
+    </body>
+</html>

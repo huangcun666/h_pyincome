@@ -1,0 +1,2362 @@
+{% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+<!--<a class="btn btn-danger btn-sm delete  " id="customer_delete" type="button" title="{{customer.id}}">删除</a>-->
+<style>
+.faye-table {width: 100%; height: auto; /*background-color: purple;*/ margin: 0% auto; font-weight: bold;}
+.faye-table ul {overflow: hidden; margin: 0; padding: 0;}
+.faye-table ul li {width: 100%; list-style: none; box-sizing: border-box; border-bottom: 1px solid #dedede; width: 100%; height:40px; overflow: hidden;}
+.faye-table ul li div {float: left; height: 40px; line-height: 40px; text-align: center; border-left: 1px solid #dedede;}
+.faye-table ul li div.fayet {width:10%; background-color:#eee; border-bottom: 1px solid #dedede; }
+.faye-table ul li div.fayet1 {width:13%;}
+.faye-table ul li div.fayet3 {width:92%;}
+.faye-table ul li div.fayet4 {width:10%;}
+.faye-table ul li div.fayet5 {width:15%;}
+.faye-table ul li div.fayet6 {width:33%; height: 180px; border-left: 1px solid #dedede; }
+.faye-table ul li div.fayet7 {width:34%; height: 180px; border-left: 1px solid #dedede;}
+.faye-table ul li.gaodu {height: 180px;}
+.faye-table ul li div.direction {text-align: left; padding-left: 10px; box-sizing: border-box;}
+.faye-table ul li div.fayet6 span {display: block; width: 100%; height: 40px; border-bottom: 1px solid #dedede; background-color:#eee; }
+.faye-table ul li div.fayet7 span {display: block; width: 100%; height: 40px; border-bottom: 1px solid #dedede; background-color:#eee; }
+.faye-table ul li div.fayet6 i {display: block; width: 100%; height: 140px; line-height: 22px; font-style: normal; padding-top:8px; box-sizing: border-box;}
+.faye-table ul li div.fayet7 i {display: block; width: 100%; height: 140px; line-height: 22px; font-style: normal; padding-top:8px; box-sizing: border-box;}
+.message-item {
+margin-bottom: 5px;
+margin-left: 40px;
+position: relative;
+}
+.message-item .message-inner {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 10px;
+position: relative;
+}
+.message-item .message-inner:before {
+border-right: 10px solid #ddd;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -20px;
+top: 6px;
+width: 0;
+}
+.message-item .message-inner:after {
+border-right: 10px solid #fff;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -18px;
+top: 6px;
+width: 0;
+}
+.message-item:before {
+background: #fff;
+border-radius: 2px;
+bottom: -30px;
+box-shadow: 0 0 3px rgba(0,0,0,0.2);
+content: "";
+height: 100%;
+left: -30px;
+position: absolute;
+width: 3px;
+}
+.message-item:after {
+background: #fff;
+border: 2px solid #ccc;
+border-radius: 50%;
+box-shadow: 0 0 5px rgba(0,0,0,0.1);
+content: "";
+height: 15px;
+left: -36px;
+position: absolute;
+top: 10px;
+width: 15px;
+}
+.clearfix:before, .clearfix:after {
+content: " ";
+display: table;
+}
+.message-item .message-head {
+border-bottom: 1px solid #eee;
+margin-bottom: 8px;
+padding-bottom: 8px;
+}
+.message-item .message-head .avatar {
+margin-right: 20px;
+}
+.message-item .message-head .user-detail {
+overflow: hidden;
+}
+.message-item .message-head .user-detail h5 {
+font-size: 16px;
+font-weight: bold;
+margin: 0;
+}
+.message-item .message-head .post-meta {
+float: left;
+padding: 0 15px 0 0;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item img {
+min-height: 25px;
+max-height: 25px;
+}
+.modal-ku {
+width: 1750px;
+margin: auto;
+}
+</style>
+
+<div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>客户详情
+</h3>
+</div>
+<div class="widget-content">
+		<div class="tabbable">
+						<ul class="nav nav-tabs" id="myTab">
+						  <li>
+						    <a href="#customer_tab" id="a_customer_tab" data-toggle="tab">基础信息</a>
+						  </li>
+              <li ><a href="#finance_tab" id="a_finance_tab" data-toggle="tab">财务信息</a></li>
+              <li><a href="#exchange_tab" id="a_exchange_tab" data-toggle="tab">联系记录</a></li>
+                <li><a href="/payment?tag=customer&customer_id={{customer.id}}&to_tag=payment_tab" id="a_payment_tab" >应收记录</a></li>
+
+						</ul>
+
+						<br>
+
+<div class="tab-content">
+    <div class="tab-pane " id="exchange_tab">
+
+        <div class="widget widget-table action-table">
+
+
+
+
+                    <div class="widget-content">
+                      <div style="width:80%; margin:10px 10px 10px 10%">
+                        <textarea class="form-control" id="txt_msg" style="width:100%">
+                          </textarea>
+
+                          <button id="btn_save_msg">确定添加</button>&nbsp;&nbsp;&nbsp;
+                          <input type="file" value="上传附件" style=margin-top:10px;" name="record_file" id="record_file" class="form-control"/>
+                          <hr class="my-0">
+                          {%for item in t_customer_exchange%}
+                          <div class="message-item" id="msg_{{item.id}}">
+                              <div class="message-inner">
+                                  <div class="message-head clearfix">
+                                      <div class="avatar pull-left">
+                                          <img src="/static/images/avatar.jpeg">
+                                      </div>
+                                      <div class="user-detail">
+                                          <h5 class="handle">{{item.uid_name}}
+                                              <span style="font-size:13px;"> {{item.created_at}}
+                                              </span>
+                                              {%if item.file_path%}
+                                              <a href="{{item.file_path}}" target="_blank"> 查看附件</a>
+                                              {%end%}
+                                          </h5>
+                                      </div>
+                                  </div>
+                                  {{item.msg}}
+                              </div>
+                          </div>
+                          {%end%}
+                        </div>
+                    </div>
+                    <!-- /widget-content -->
+
+
+
+                  </div>
+        </div>
+<div class="tab-pane " id="finance_tab">
+
+
+
+<div class="widget widget-table action-table">
+            <div class="widget-header"> <i class="icon-th-list"></i>
+              <h3>办理业务记录 </h3>
+            </div>
+
+
+
+
+            <div class="widget-content">
+              <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+      <th width="40">业务编号</th>
+      <th>业务内容</th>
+      <th width="80">客户名称</th>
+        <th  width="40">联系方式</th>
+      <th  width="40">总服务费</th>
+<th  width="40">已收款</th>
+<th  width="40">欠款</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {%if t_projects_query%}
+
+                {%for item in t_projects_query%}
+                    <tr>
+                          <td>{{item.id}}</td>
+                          <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" style=" font-size:14px;">{{item.project_name}}</a>
+                          <br/>
+                          <b style="color:#777; font-size:12px;">{{item.team_view}}</b>
+                          </td>
+                          <td>{{item.customer_name}}</td>
+
+                          <td>{{item.customer_tel}}</td>
+                          <td>{{item.all_income}}</td>
+                          <td>{{item.dd}}</td>
+                          <td  {%if  item.dd%} {%if (item.all_income - item.dd) > 0 %} style="background-color:red;" {%else%} style="background-color:green;"{%end%}{%end%}>
+
+                   {%if  item.dd%}
+                          {{(item.all_income - item.dd)}}{%end%}
+
+
+                       </td>
+
+                </tr>
+
+
+
+
+
+                {%end%}
+
+
+
+
+                                 {%else%}
+                                <tr>
+                                  <td colspan="7">还没有合同哦。</td>
+
+                                </tr>
+                                {%end%}
+
+                </tbody>
+              </table>
+            </div>
+            <!-- /widget-content -->
+
+
+
+          </div>
+<div class="widget widget-table action-table">
+  <div class="widget-header">
+    <i class="icon-th-list"></i>
+    <h3>到款信息
+
+    </h3>
+  </div>
+  <!-- /widget-header -->
+  <div class="widget-content">
+
+
+
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+         <th style="width:30px;"> 编号</th>
+          <th >业务内容</th>
+          <th style="width:150px;">到款日期</th>
+          <th style="width:50px;"> 到款人</th>
+            <th >到款内容</th>
+            <th style="width:60px;">收入公司</th>
+            <th style="width:60px;">支付方式</th>
+            <th style="width:100px;">合计</th>
+
+        </tr>
+      </thead>
+      <tbody>
+      {%if t_project_income_title%} {%for item in t_project_income_title%}
+        <tr>
+           <td> {{item.id}}
+             <td> {{item.project_name}}
+          </td>
+          <td> {{item.income_at}}
+          </td>
+          <td> {{item.uid_name}}
+          </td>
+          <td>{{item.income_title}} </td>
+
+
+          <td> {{item.company_id_name}}</td>
+          <td>{{item.pay_type_name}}</td>
+          <td>{{item.income_money_total}}</td>
+        </tr>
+        {%end%} {%else%}
+        <tr>
+          <td colspan="7">还没有哦。</td>
+
+        </tr>
+ {%end%}
+      </tbody>
+    </table>
+  </div>
+  <!-- /widget-content -->
+</div>
+</div>
+
+<div class="tab-pane active" id="customer_tab">
+
+<fieldset>
+<div class="card mb-3">
+
+<div class="faye-table">
+<ul>
+
+  <li>
+    <div class="fayet">公司名称</div>
+    <div class="fayet6">
+     {%if customer.company%}{{customer.company}}{%end%}
+
+         {%if not from_tag or role=='5'%}
+        
+        <a class="btn btn-primary btn-sm modify  " href="customer?tag=edit&id={{customer.id}}&guid={{customer.guid}}"
+          id="customer_modify" type="button" title="{{customer.id}}">修改</a>
+        
+        {%end%}
+
+    </div>
+
+  </li>
+  {%if customer.promo_id_name%}
+  <li>
+    <div class="fayet" style="border-left: none;">优惠活动 </div>
+    <div style="width:80%; height: 180px; border-left: 1px solid #dedede;"><code>{{customer.promo_id_name}}</code>
+     </div>
+</li>
+{%end%}
+<li>
+<div class="fayet" style="border-left: none;">客户编号  </div>
+<div class="fayet1"> {{customer.id}}
+ </div>
+
+<div class="fayet">统一社会信用代码</div>
+<div class="fayet1">  {%if customer.company_reguid%}
+{{customer.company_reguid}}{%end%}
+</div>
+
+<div class="fayet">法人</div>
+<div class="fayet1">
+ {%if customer.reg_person%}{{customer.reg_person}}{%end%}
+</div>
+
+<div class="fayet">标签</div>
+<div class="fayet1" style="padding-left:5px;"> {%if customer.customer_type_name%} {%for item in customer.customer_type_name.split(",")%}
+
+<font style="background-color:blue; color:white; padding:8px;">{{item}}</font>
+{%end%} {%end%}</div>
+</li>
+
+<li>
+<div class="fayet" style="border-left: none;">行业性质
+</div>
+<div class="fayet1">{%if customer.industry_name%}{{customer.industry_name}}{%end%}</div>
+
+<div class="fayet">开户行</div>
+<div class="fayet1">  {%if customer.reg_bank%}{{customer.reg_bank}}{%end%}</div>
+<div class="fayet">银行账号</div>
+<div class="fayet1"> {%if customer.reg_bank_account%}{{customer.reg_bank_account}}{%end%}</div>
+<div class="fayet">供应商</div>
+<div class="fayet1"> {%if customer.addr_cp%} {{customer.addr_cp}}{%end%}</div>
+
+</li>
+
+
+<li>
+<div class="fayet" style="border-left: none;">一般纳税人
+</div>
+<div class="fayet1">{%if customer.is_general%}是{%else%}否{%end%}</div>
+
+<div class="fayet">信用等级</div>
+<div class="fayet1">  {%if customer.credit_rating_name%}{{customer.credit_rating_name}}{%end%}</div>
+<div class="fayet">客户等级</div>
+<div class="fayet1"> {%if customer.customer_rating_name%}{{customer.customer_rating_name}}{%end%}</div>
+<div class="fayet">注册地址</div>
+<div class="fayet1">
+{%if customer.zone%}{{customer.city}}{%end%}
+{%if customer.zone%}{{customer.zone}}{%end%}
+{%if customer.zone%}{{customer.reg_addr}}{%end%}
+
+</div>
+
+</li>
+
+
+<li>
+<div class="fayet" style="border-left: none;">地址类型</div>
+<div class="fayet1"> {%if customer.addr_type%} {{customer.addr_type}} {%end%}</div>
+<div class="fayet">地址期限</div>
+
+<div class="fayet1"> {%if customer.addr_cp%}{{customer.addr_cp}}{%end%}</div>
+  <div class="fayet" >成立日期
+</div>
+  <div class="fayet1"> {%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}} {%end%}</div>
+  <div class="fayet"  style="border-left: none;">执照期限</div>
+  <div class="fayet1"> {%if customer.end_date%}{{customer.end_date.strftime("%Y-%m-%d")}}{%end%}</div>
+</li>
+
+<li>
+
+  <div class="fayet" style="border-left: none;">工商分局
+</div>
+  <div class="fayet1">{%if customer.saic%}{{customer.saic}}{%end%}</div>
+    <div class="fayet">地税分局
+    </div>
+
+    <div class="fayet1">{%if customer.land_tax%}{{customer.land_tax}}{%end%}</div>
+      <div class="fayet">国税分局
+      </div>
+
+      <div class="fayet1">
+        {%if customer.national_tax%}
+    {{customer.national_tax}}
+    {%end%}
+
+    </div>
+      <div class="fayet">注册号</div>
+<div class="fayet1">  {%if customer.reg_number%}{{customer.reg_number}}{%end%} </div>
+</li>
+<li>
+<div class="fayet"  style="border-left: none;">创建时间</div>
+<div class="fayet1">
+{{customer.created_at}}
+</div>
+
+<div class="fayet">最后更新</div>
+<div class="fayet1"> {%if customer.updated_at%} {{customer.updated_at}}{%end%}</div>
+
+  <div class="fayet" >客服会计</div>
+
+  <div class="fayet1">
+  {%if customer.acc_uid_name%}
+    {{customer.acc_uid_name}}
+    {%end%}
+  </div>
+
+
+  <div class="fayet">客户入库员</div>
+
+  <div class="fayet1">
+  {%if customer.uid_name%}
+    {{customer.uid_name}}
+    {%else%}
+    系统
+    {%end%}
+  </div>
+
+</li>
+<li>
+<div class="fayet">备注</div>
+<div class="fayet6">
+{%if customer.remark%}
+  {{customer.remark}}
+  {%end%}
+</div>
+
+</li>
+</ul>
+</div>
+
+
+
+<br/>
+
+<div class="widget widget-table action-table">
+    <div class="widget-header">
+      <i class="icon-th-list"></i>
+              <h3 class="card-title mb-1">交代事项
+
+                 <a href="javascript:void(0)" id="a_add_note"
+                 class="btn btn-info btn-sm"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                 {%if role!='6'%}
+                 <a href="javascript:void(0)" id="a_read_note"
+                 class="btn btn-info btn-sm"> <i class="fa fa-fw fa-align-justify"></i>查看</a>
+                 {%end%}
+</h3>
+
+</div>
+<div class="widget-content">
+  <table class="table table-striped table-bordered">
+    <tbody>
+           {%if project_note%}
+           {%for item in project_note%}
+           <tr>
+           <td>
+
+  {%if item.note_id%}
+      <a class="mr-3 d-inline-block cancel_note" href="javascript:void(0)" note_id='{{item.aid}}' is_cancel='{{item.is_cancel}}'>
+          {%if item.is_cancel==0%}作废{%else%}恢复{%end%}</a>
+  {%else%}
+   <a href="javascript:void(0)" class="a_change_note"  id="{{item.aid}}" note="{{item.msg}}">
+    <img  alt="修改该条记录" src="/static/images/modify.png" width="25" /></a>
+   <a href="javascript:void(0)" class="a_delete_note"  id="{{item.aid}}">
+     <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
+    {%end%}
+<b>{%if item.state_id==0%} <span class="badge badge-info">已通过</span>{%elif item.state_id==1%} <span class="badge badge-danger">未通过</span>{%elif item.is_check==1%}<span class="badge badge-dark">待审核</span>{%end%}{{item.uid_name}} ({{item.creatd_at}} )</b> :<span style="font-size:20px; color:red;">
+ <b>{%if item.is_cancel==1%}<s>{{item.msg}}</s>{%else%}{{item.msg}}{%end%}{%if item.remark%} 备注：{{item.remark}}{%end%}</b>
+ <!--
+{%if item.note_id%}<span class="bg-primary" style="color:#fff;font-size: 80%;padding:5px;">已读</span>{%else%}
+<span class="bg-danger" style="color:#fff;font-size: 80%;padding:5px;">未读</span>{%end%}
+         </span>-->
+
+{%if item.read_name%}
+{%for strs in item.read_name.split(",")%}
+  {%if strs%}
+<span class="badge badge-info">{{strs}}</span>
+  {%end%}
+{%end%}{%end%}
+
+         {%end%}
+           {%else%}
+          {%for item in project_note%}
+
+    <a href="javascript:void(0)" class="a_delete_note"  id="{{item.aid}}">
+      <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
+<b> {{item.creatd_at}} {{item.uid_name}}</b> :<span style="font-size:20px; color:red;"> <b>{{item.msg}}</b>
+
+
+          </span>
+
+{%if item.read_name%}
+{%for strs in item.read_name.split(",")%}
+<span class="badge badge-info">{{strs}}</span>
+{%end%}
+
+{%end%}
+
+
+           {%else%}
+           <tr>
+              <td colspan="7">还没有曾用名哦。</td>
+            </tr>
+          {%end%}
+        </td>
+        </tr>
+              {%end%}
+            </tbody>
+   </table>
+</div>
+  </div>
+<div class="widget widget-table action-table">
+  <div class="widget-header">
+    <i class="icon-th-list"></i>
+    <h3>公司曾用名
+        {%if not from_tag%}   <a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="a_add_company_name">增加</a>
+        {%end%}
+    </h3>
+  </div>
+  <!-- /widget-header -->
+  <div class="widget-content">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th >曾用名</th>
+          <th style="width:280px;">备注</th>
+          <th style="width:60px;">记录人</th>
+          <th style="width:100px;">记录时间</th>
+          {%if not from_tag%}<th width="40"></th>{%end%}
+        </tr>
+      </thead>
+      <tbody>
+
+        {%if t_company_name%} {%for item in t_company_name%}
+        <tr>
+          <td> {{item.name}}
+          </td>
+
+
+          <td>{{item.remark}}</td>
+          <td>{{item.uid_name}}</td>
+          <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+
+
+       {%if not from_tag%}   <td>
+            <a href="javascript:void(0)" class="btn company_modify"
+            company_name="{{item.name}}"
+              company_remark="{{item.remark}}" company_id="{{item.id}}">改</a>
+
+          </td>{%end%}
+
+
+
+        </tr>
+        {%end%} {%else%}
+        <tr>
+          <td colspan="7">还没有曾用名哦。</td>
+
+        </tr>
+        {%end%}
+
+      </tbody>
+    </table>
+  </div>
+  <!-- /widget-content -->
+</div>
+
+
+
+<div class="widget widget-table action-table">
+  <div class="widget-header">
+    <i class="icon-th-list"></i>
+    <h3>历史客服会计负责人
+    {%if not from_tag%}  <a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="a_add_acc">增加</a>{%end%}
+    </h3>
+  </div>
+  <!-- /widget-header -->
+  <div class="widget-content">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th >姓名</th>
+          <th style="width:280px;">备注</th>
+          <th style="width:60px;">记录人</th>
+          <th style="width:100px;">记录时间</th>
+         {%if not from_tag%} <th width="40"></th> {%end%}
+        </tr>
+      </thead>
+      <tbody>
+
+        {%if t_acc%} {%for item in t_acc%}
+        <tr>
+          <td> {{item.name}}
+          </td>
+
+
+          <td>{{item.remark}}</td>
+          <td>{{item.uid_name}}</td>
+          <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+
+{%if not from_tag%}
+          <td>
+            <a href="javascript:void(0)" class="btn acc_modify"
+            acc_name="{{item.name}}"
+              acc_remark="{{item.remark}}" acc_id="{{item.id}}">改</a>
+
+          </td>
+          {%end%}
+
+
+
+        </tr>
+        {%end%} {%else%}
+        <tr>
+          <td colspan="7">还没有数据哦。</td>
+
+        </tr>
+        {%end%}
+
+      </tbody>
+    </table>
+  </div>
+  <!-- /widget-content -->
+</div>
+
+{%if not from_tag%}
+<div class="widget widget-table action-table">
+  <div class="widget-header">
+    <i class="icon-th-list"></i>
+    <h3>相关帐号
+
+         {%if not from_tag%} <a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="a_add_account">增加</a>{%end%}
+    </h3>
+  </div>
+  <!-- /widget-header -->
+  <div class="widget-content">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th style="width:80px;">类型</th>
+          <th style="width:120px;">用户名</th>
+          <th style="width:120px;">密码</th>
+          <th>备注</th>
+          <th style="width:60px;">更新人</th>
+          <th style="width:100px;">更新时间</th>
+        {%if not from_tag%}  <th width="40"></th>{%end%}
+        </tr>
+      </thead>
+      <tbody>
+
+        {%if t_customer_account%} {%for item in t_customer_account%}
+        <tr>
+          <td> {{item.type_id_name}}
+          </td>
+          <td>{{item.account}}
+          </td>
+
+          <td>{{item.psw}} </td>
+
+
+          <td>{{item.remark}}</td>
+          <td>{{item.updated_by}}</td>
+          <td>{{item.updated_at.strftime("%Y-%m-%d")}}</td>
+
+
+         {%if not from_tag%} <td>
+            <a href="javascript:void(0)" class="btn modify_account" type_id="{{item.type_id}}" account="{{item.account}}" psw="{{item.psw}}"
+              remark="{{item.remark}}" account_id="{{item.id}}">改</a>
+
+          </td>{%end%}
+
+
+
+        </tr>
+        {%end%} {%else%}
+        <tr>
+          <td colspan="7">还没有联系人哦。</td>
+
+        </tr>
+        {%end%}
+
+      </tbody>
+    </table>
+  </div>
+  <!-- /widget-content -->
+</div>
+
+
+{%end%}
+<div class="widget widget-table action-table">
+            <div class="widget-header"> <i class="icon-th-list"></i>
+              <h3>相关联系人
+
+                  {%if not from_tag%}<a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="a_add_linkman">增加</a> {%end%}</h3>
+            </div>
+            <!-- /widget-header -->
+            <div class="widget-content">
+              <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                        <th style="width:80px;">名字/称呼</th>
+                        <!-- <th style="width:30px;"> 性别 -->
+                        <th style="width:120px;">电话</th>
+                        <th>备注</th>
+                        <th style="width:60px;">创建人</th>
+                        <th style="width:100px;">创建时间</th>
+                       {%if not from_tag%} <th  width="40"></th>{%end%}
+                </tr>
+                </thead>
+                <tbody>
+                {%if t_linkman%}
+                {%for item in t_linkman%}
+                    <tr>
+                                <td>{{item.name}}
+                                </td>
+                                <!-- <td> {%if item.gender==1%}男{%else%}女{%end%}
+                                </td> -->
+                                <td >{{item.tel}} </td>
+
+
+                                <td>{{item.remark}}</td>
+                                   <td>{{item.acc_uid_name}}</td>
+                                <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+
+
+                    {%if not from_tag%}    <td>
+                                              <a href="javascript:void(0)"
+                                               class="btn modify_linkman"
+                                                tel="{{item.tel}}"
+                                                remark="{{item.remark}}"
+                                                title="{{item.name}}"
+                                                gender="{{item.gender}}"
+                                                linkman_guid="{{item.guid}}"
+                                                linkman_id="{{item.id}}">改</a>
+
+                          </td>{%end%}
+
+
+
+                </tr>
+                    {%end%}
+                {%else%}
+                <tr>
+                <td colspan="7">还没有哦。</td>
+
+                </tr>
+                {%end%}
+
+                </tbody>
+              </table>
+            </div>
+            <!-- /widget-content -->
+          </div>
+
+<div class="widget widget-table action-table">
+            <div class="widget-header"> <i class="icon-th-list"></i>
+              <h3>业务到期管理     {%if not from_tag%}<a class="btn btn-info btn-sm "  id="a_add_contract"
+
+
+              type="button" title="{{customer.id}}" data-toggle="modal"
+                >增加</a>{%end%}</h3>
+            </div>
+            <!-- /widget-header -->
+            <div class="widget-content">
+              <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                        <th>合同内容
+</th>
+
+                        <th style="width:120px;">合同开始时间
+</th>
+                        <th style="width:120px;">合同结束时间</th>
+
+
+                        <th>最后更新时间</th>
+                        <th>创建人</th>
+                        <th>当前状态</th>
+<th>合同期限状态</th>
+{%if not from_tag%}<th style="width:50px;"></th>{%end%}
+
+
+                </tr>
+                </thead>
+                <tbody>
+                {%if t_contract%}
+                {%for item in t_contract%}
+                    <tr>
+                                <td>{{item.title}}
+                                </td>
+                                <td style="width:100px;">{%if item.start_time%}{{item.start_time.strftime("%Y-%m-%d")}}{%end%}
+                                </td>
+                                <td style="width:100px;" >{%if item.end_time%}{{item.end_time.strftime("%Y-%m-%d")}}{%end%}
+                                </td>
+
+
+                                <td style="width:100px;">{{item.updated_at.strftime("%Y-%m-%d")}}</td>
+                                   <td style="width:60px;">
+
+
+
+                                   {%if item.uid_name%}
+            {{item.uid_name}}
+            {%else%}系统导入
+                                   {%end%}
+                                   </td>
+                                <td style="width:60px;">
+
+                                {%if item.state_id==0%}
+                                <font color='green'>正常</font>
+                                {%end%}
+
+                                    {%if item.state_id==1%}
+                                      <font color='red'>关闭</font>
+                                   {%end%}
+                                </td>
+                                    <td style="width:140px;">
+                                     {%if item.state_id==0%}
+                                      {%if  item.expire_day >= 0 %}
+
+                                         <span style='color:blue'>还有 {{item.expire_day}} 天就到期了。</span>
+
+                                      {%else%}
+                                          {%if item.expire_day%} <span style='color:red'>已经过期{{abs(item.expire_day)}} 天</span>
+     {%else%}
+合同日期异常/无合同
+                                          {%end %}
+                                      {%end %}
+
+
+   {%else%}
+  该合同已经结束或新签
+  {%end %}
+
+                                    </td>
+                                {%if not from_tag%}    <td>
+                                          <a href="javascript:void(0)"
+                                           start_time="{%if item.start_time%}{{item.start_time.strftime("%Y-%m-%d")}}{%end%}"
+                                           end_time ="{%if item.end_time%}{{item.end_time.strftime("%Y-%m-%d")}}{%end%}"
+                                           title="{{item.title}}"
+                                           state_id="{{item.state_id}}"
+                                           contract_remark = "{{item.contract_remark}}"
+                                           class="btn modify_contract" contract_id="{{item.id}}">改</a>
+
+                                    </td>{%end%}
+
+                </tr>
+                {%end%}
+                     {%else%}
+                    <tr>
+                      <td colspan="7">还没有哦。</td>
+
+                    </tr>
+                    {%end%}
+                </tbody>
+              </table>
+            </div>
+            <!-- /widget-content -->
+
+
+
+
+</div>
+</div>
+
+<div class="widget widget-table action-table">
+  <div class="widget-header">
+    <i class="icon-th-list"></i>
+    <h3>资料交接
+        {%if not from_tag%}
+      <a class="btn btn-primary btn-sm" type="button" title="{{customer.id}}" id="a_add_trans">增加</a>
+      {%end%}
+    </h3>
+  </div>
+  <!-- /widget-header -->
+  <div class="widget-content">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th width="80">交接时间
+          </th>
+
+          <th  width="60"> 移交方
+          </th>
+
+          <th width="60"> 签收方
+          </th>
+     <th > 备注
+          </th>
+       <th style="width:60px;"> 附件
+          </th>
+          <th style="width:60px;">创建人</th>
+          <th style="width:80px;">创建时间</th>
+          <th width="10"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {%if t_transition%} {%for item in t_transition%}
+        <tr>
+          <td>{{item.tran_at.strftime("%Y-%m-%d")}}
+
+
+          </td>
+           <td> {{item.tran_by}}
+          </td>
+           <td> {{item.rec_by}}
+          </td>
+          <td> {{item.remark}}
+          </td>
+
+      <td>         {%if item.file_name%}
+                <a href="{{item.file_name}}" class="btn" target="_blank">查看</a>
+          {%end%}</td>
+
+          <td>{{item.uid_name}}</td>
+
+          <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+{%if not from_tag%}
+          <td>
+        <a href="javascript:void(0)" rec_by ="{{item.rec_by}}" class="btn modify_transition" transition_id="{{item.id}}"
+                                           tran_at="{{item.tran_at}}"
+                                           tran_by ="{{item.tran_by}}"
+                                           remark="{{item.remark}}">改</a>
+       <a href="javascript:void(0)" rec_by ="{{item.rec_by}}" class="btn modify_transition_mobile" transition_id="{{item.id}}"
+                                           tran_at="{{item.tran_at}}"
+                                           tran_by ="{{item.tran_by}}"
+                                           remark="{{item.remark}}">手机上传</a>
+          </td>
+          {%end%}
+        </tr>
+        {%end%} {%else%}
+        <tr>
+          <td colspan="8">还没有哦。</td>
+
+        </tr>
+        {%end%}
+
+      </tbody>
+    </table>
+  </div>
+  <!-- /widget-content -->
+
+
+
+</div>
+
+
+
+
+<div class="widget widget-table action-table">
+  <div class="widget-header">
+    <i class="icon-th-list"></i>
+    <h3>公司附件
+       {%if not from_tag%}  <a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="a_add_file">增加</a> {%end%}
+    </h3>
+  </div>
+  <!-- /widget-header -->
+  <div class="widget-content">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th >文件内容
+          </th>
+
+          <th > 文件备注</th>
+
+          <th style="width:80px;">创建人</th>
+          <th style="width:80px;">创建时间</th>
+          {%if not from_tag%}<th width="10"></th>{%end%}
+        </tr>
+      </thead>
+      <tbody>
+        {%if t_file%} {%for item in t_file%}
+        <tr>
+          <td>{{item.title}}
+
+          {%if item.file_name%}
+                <a href="{{item.file_name}}" class="btn" target="_blank">下载</a>
+          {%end%}
+          </td>
+          <td> {{item.file_remark}}
+          </td>
+
+
+
+          <td>{{item.uid_name}}</td>
+
+          <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+{%if not from_tag%}
+          <td>
+            <a href="javascript:;" class="btn btn-danger btn-small delete_file" title="{{item.id}}" guid="{{item.guid}}">
+              <i class="btn-icon-only icon-remove"></i>
+              </i>
+            </a>
+          </td>
+          {%end%}
+        </tr>
+        {%end%} {%else%}
+        <tr>
+          <td colspan="7">还没有哦。</td>
+
+        </tr>
+        {%end%}
+
+      </tbody>
+    </table>
+  </div>
+  <!-- /widget-content -->
+
+
+
+
+
+</div>
+{%if not from_tag%}
+
+<a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="delete_customer_btn">删除</a>
+{%end%}
+
+
+
+</div> <!-- /widget-content -->
+
+
+
+
+
+
+
+</fieldset>
+
+</div>
+
+</div> <!-- /widget -->
+
+</div> <!-- /span8 -->
+
+
+</div> <!-- /row -->
+
+
+</div> <!-- /container -->
+</div>
+
+
+
+<div id="a_add_account_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel_account">增加客户帐号
+
+
+
+    </h3>
+  </div>
+  <div class="modal-body">
+    <div class="control-group">
+
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="type_id">类 型</label>
+                                                <div class="controls">
+                                                {%for item in t_account_type%}
+                                                    <input type="radio" name="type_id" value="{{item.id}}" title="{{item.name}}"/> {{item.name}}
+                                                  {%end%}
+                                                     <p id="msg_type_id" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                                                <label class="control-label" for="account">帐号</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span4 " id="account" name="account" value="">
+                                                    <p id="msg_account" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            <!-- /control-group -->
+
+
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="psw">密码</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span4 " id="psw" name="psw" value="">
+                                                    <p id="msg_psw" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            <!-- /control-group -->
+
+
+
+                                      <div class="control-group">
+                                          <label class="control-label" for="lastname">备注</label>
+                                          <div class="controls">
+                                              <textarea type="text" class="span4" id="account_remark" name="account_remark" value="" style="height: 50px;"></textarea>
+                                          </div>
+                                          <!-- /controls -->
+                                      </div>
+
+
+
+  </div>
+  <div class="modal-footer">
+   <a href="javascript:;" class="btn btn-danger btn-small " id="delete_account">
+         删除本条数据
+        </a>
+    <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+    <button class="btn btn-primary" id="btn_save_account">保存</button>
+  </div>
+</div>
+
+
+<div id="add_linkman_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel_linkman">增加客户联系人
+
+        <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman">
+          <i class="btn-icon-only icon-remove"></i>
+          </i>
+        </a>
+
+    </h3>
+  </div>
+  <div class="modal-body">
+    <div class="control-group">
+                                                <label class="control-label" for="username">名字/称呼</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span4 " id="name" name="name" value="">
+                                                    <p id="msg_name" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            <!-- /control-group -->
+
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="firstname">性别</label>
+                                                <div class="controls">
+                                                    <input type="radio" name="gender" value="1" /> 先生
+                                                    <input type="radio" name="gender" value="0" /> 女士
+                                                     <p id="msg_gender" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="username">电话</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span4 " id="tel" name="tel" value="">
+                                                    <p id="msg_company" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            <!-- /control-group -->
+
+
+
+                                      <div class="control-group">
+                                          <label class="control-label" for="lastname">备注</label>
+                                          <div class="controls">
+                                              <textarea type="text" class="span4" id="linkman_remark" name="linkman_remark" value="" style="height: 50px;"></textarea>
+                                          </div>
+                                          <!-- /controls -->
+                                      </div>
+
+
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+    <button class="btn btn-primary" id="btn_save_linkman">保存</button>
+  </div>
+</div>
+<div id="add_project_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">增加办理业务记录
+
+
+    </h3>
+  </div>
+  <div class="modal-body">
+
+
+<div class="control-group">
+        <label class="control-label" for="username">关键词</label>
+        <div class="controls">
+                <input type="text" class="span4 " id="key" value="" > <a class="btn btn-primary" href="javascript:void(0)" id="query_project">查询</a>
+                <p class="help-block">您可以输入确认单系统的业务编号/办理人的名字，电话，公司名称.</p>
+
+
+        </div>
+
+
+        <!-- /controls -->
+</div>
+
+<div id="show_projects">
+
+
+</div>
+
+
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+    <button class="btn btn-primary" id="btn_save_project">选择</button>
+  </div>
+</div>
+
+
+
+<div id="add_contract_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel_contract">增加合同 <a href="javascript:void(0)" class="btn-danger btn" id="delete_contract">删除该合同</a></h3>
+  </div>
+  <div class="modal-body">
+
+                       <div class="control-group">
+                            <label class="control-label" for="username">合同摘要</label>
+                            <div class="controls">
+                                <input type="text" class="span4 " id="contract_title" name="contract_title" value="">
+                                <p id="msg_contract_title" class="help-block" style="color:red"></p>
+                            </div>
+                            <!-- /controls -->
+                        </div>
+                        <!-- /control-group -->
+
+                       <div class="control-group">
+                            <label class="control-label" for="username">开始时间</label>
+                            <div class="controls">
+                                <input type="text" class="span4 " id="contract_start_time" name="contract_start_time" >
+                                <p id="msg_contract_start_time" class="help-block" style="color:red"></p>
+                            </div>
+                            <!-- /controls -->
+                        </div>
+                        <!-- /control-group -->
+
+                       <div class="control-group">
+                            <label class="control-label" for="username">到期时间</label>
+                            <div class="controls">
+                                <input type="text" class="span4 " id="contract_end_time" name="contract_end_time"  >
+                                <p id="msg_contract_end_time" class="help-block" style="color:red"></p>
+                            </div>
+                            <!-- /controls -->
+                        </div>
+                        <!-- /control-group -->
+
+                       <div class="control-group">
+                            <label class="control-label" for="username">状态</label>
+                            <div class="controls">
+                            <input type="radio" value="1"  name="state_id" checked/> 正常
+                              <input type="radio" value="0" name="state_id" /> 关闭
+                            </div>
+                            <p id="msg_state_id" class="help-block" style="color:red"></p>
+                            <!-- /controls -->
+                        </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="lastname">备注</label>
+                    <div class="controls">
+                        <textarea type="text" class="span4" id="contract_remark" name="contract_remark" value="" style="height: 50px;"></textarea>
+                    </div>
+                    <!-- /controls -->
+                </div>
+                <!-- /control-group -->
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+    <button class="btn btn-primary" id="btn_save_contract">保存</button>
+  </div>
+</div>
+
+<div id="a_add_file_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">增加附件
+
+
+    </h3>
+  </div>
+  <div class="modal-body">
+    <div class="control-group">
+      <label class="control-label" for="username">文件内容</label>
+      <div class="controls">
+        <input type="text" class="span4 " id="file_title" name="file_title" value="">
+        <p id="msg_file_title" class="help-block" style="color:red"></p>
+      </div>
+      <!-- /controls -->
+    </div>
+    <!-- /control-group -->
+
+
+    <div class="control-group">
+      <label class="control-label" for="lastname">文件备注</label>
+      <div class="controls">
+        <textarea type="text" class="span4" id="file_remark" name="file_remark" value="" style="height: 50px;"></textarea>
+      </div>
+      <!-- /controls -->
+    </div>
+
+
+    <div class="control-group">
+      <label class="control-label" for="lastname">文件</label>
+      <div class="controls">
+        <input type="file" value="1" id="file" name="file" class="form-control" />
+      </div>
+      <!-- /controls -->
+    </div>
+  </div>
+
+
+
+
+
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" id="btn_save_file">保存</button>
+  </div>
+</div>
+
+<div id="a_add_trans_modal_upload" class="modal hide fade"
+ tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel_trans">手机上传交接资料 </h3>
+  </div>
+  <div class="modal-body">
+
+    <div id="show_qrcode">
+
+    </div>
+  </div>
+
+
+
+
+
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+
+  </div>
+</div>
+
+
+
+<div id="a_add_trans_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel_trans">增加交接资料记录 </h3>
+  </div>
+  <div class="modal-body">
+
+    <div class="control-group">
+      <label class="control-label" for="tran_by">移交方</label>
+      <div class="controls">
+        <input type="text" class="span4 " id="tran_by" name="tran_by" value="">
+        <p id="msg_tran_by" class="help-block" style="color:red"></p>
+      </div>
+      <!-- /controls -->
+    </div>
+    <!-- /control-group -->
+        <div class="control-group">
+      <label class="control-label" for="rec_by">签收方</label>
+      <div class="controls">
+        <input type="text" class="span4 " id="rec_by" name="rec_by" value="">
+        <p id="msg_rec_by" class="help-block" style="color:red"></p>
+      </div>
+      <!-- /controls -->
+    </div>
+    <!-- /control-group -->
+        <div class="control-group">
+      <label class="control-label" for="tran_at">交接时间</label>
+      <div class="controls">
+        <input type="text" class="span4 " id="tran_at" name="tran_at" value="">
+        <p id="msg_tran_at" class="help-block" style="color:red"></p>
+      </div>
+      <!-- /controls -->
+    </div>
+    <!-- /control-group -->
+
+
+    <div class="control-group">
+      <label class="control-label" for="lastname">备注</label>
+      <div class="controls">
+        <textarea type="text" class="span4" id="trans_remark" name="trans_remark" value="" style="height: 50px;"></textarea>
+      </div>
+      <!-- /controls -->
+    </div>
+
+
+    <div class="control-group">
+      <label class="control-label" for="lastname">附件</label>
+      <div class="controls">
+        <input type="file" id="tran_file" name="tran_file" class="form-control" />
+      </div>
+      <!-- /controls -->
+    </div>
+
+    <div id="show_qrcode">
+
+    </div>
+  </div>
+
+
+
+
+
+  <div class="modal-footer">
+  <a href="javascript:void(0)" id="delete_transition" class="btn-danger btn">删除本条数据</a>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" id="btn_save_trans">保存</button>
+  </div>
+</div>
+
+
+
+<div id="a_add_company_name_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel_linkman">增加公司曾用名
+
+
+
+    </h3>
+  </div>
+  <div class="modal-body">
+    <div class="control-group">
+                          <label class="control-label" for="username">名称</label>
+                          <div class="controls">
+                              <input type="text" class="span4 " id="company_name" name="company_name" value="">
+                              <p id="msg_name" class="help-block" style="color:red"></p>
+                          </div>
+                          <!-- /controls -->
+                      </div>
+                      <!-- /control-group -->
+
+
+
+
+                <div class="control-group">
+                    <label class="control-label" for="lastname">备注</label>
+                    <div class="controls">
+                        <textarea type="text" class="span4" id="company_remark" name="company_remark" value="" style="height: 50px;"></textarea>
+                    </div>
+                    <!-- /controls -->
+                </div>
+
+
+
+  </div>
+  <div class="modal-footer">
+  <a href="javascript:void(0)" id="btn_delete_company" class="btn-danger btn">删除本条数据</a>
+    <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+    <button class="btn btn-primary" id="btn_save_company">保存</button>
+  </div>
+</div>
+
+<div id="a_delete__customer_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel_linkman">删除客户
+
+
+
+    </h3>
+  </div>
+  <div class="modal-body">
+                <div class="control-group">
+                    <h3>确定要删除编号为{{customer.id}}的客户？</h3>
+                    <!-- /controls -->
+                </div>
+
+
+
+  </div>
+  <div class="modal-footer">
+  <a href="javascript:void(0)" id="customer_delete" class="btn-danger btn">删除客户</a>
+    <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+  </div>
+</div>
+
+
+<div id="a_add_acc_name_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel_linkman">增加历史会计客服
+    </h3>
+  </div>
+  <div class="modal-body">
+    <div class="control-group">
+                          <label class="control-label" for="username">名称</label>
+                          <div class="controls">
+                              <input type="text" class="span4 " id="acc_name" name="acc_name" value="">
+                              <p id="msg_name" class="help-block" style="color:red"></p>
+                          </div>
+                          <!-- /controls -->
+                      </div>
+                      <!-- /control-group -->
+
+
+
+
+                <div class="control-group">
+                    <label class="control-label" for="lastname">备注</label>
+                    <div class="controls">
+                        <textarea type="text" class="span4" id="acc_remark" name="acc_remark" value="" style="height: 50px;"></textarea>
+                    </div>
+                    <!-- /controls -->
+                </div>
+
+
+
+  </div>
+  <div class="modal-footer">
+  <a href="javascript:void(0)" id="btn_delete_acc" class="btn-danger btn">删除本条数据</a>
+    <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+    <button class="btn btn-primary" id="btn_save_acc">保存</button>
+  </div>
+</div>
+
+<div class="modal hide fade" id="modal_note" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-header" >
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="projects_note">增加交代事项
+      </h3>
+        </div>
+
+
+        <div class="modal-body" id="site_mod">
+          <div class="control-group" id='projects_note_confirm_content'>
+            {%if role!='6'%}
+            {%for item in project_note_unread%}
+
+            <span class="clearfix  z-1">
+<input type="checkbox" value={{item.id}} name="check_note" checked>
+ <b>{{item.uid_name}} ({{item.creatd_at}} )</b> :<span style="font-size:20px; color:red;"> <b>{{item.msg}}</b>
+
+
+            </span>
+
+            {%end%}
+            {%end%}
+            <span id="not_project_note" style="display: none;">还没有哦</span>
+             </div>
+
+      <div class="control-group" id='projects_note_content'>
+      <label for="inputEmail3" class="col-sm-5 control-label">交代内容</label>
+      <div class="controls">
+        <textarea id='note_content' class="span4" class="form-control" type="text" name="note_content" rows="3"></textarea>
+      </div>
+    </div>
+        </div>
+        <div class="modal-footer">
+
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                   <button class="btn btn-primary modal_note_btn" target="_blank" id="btn_save_modal_note">保 存</button>
+
+        </div>
+      </div>
+
+  </div>
+    {%end%}
+
+    {% block  js %}
+    <script>
+        $(function(){
+
+
+            $('#a_{{to_tag}}').tab('show');
+           _xsrf = getCookie("_xsrf")
+           var customer_id = {{ customer.id }}
+           var customer_guid = "{{customer.guid}}"
+           $("#customer_delete").on("click",function(){
+
+
+                if(confirm("确认删除客户的所有信息么？数据")){
+
+                  if (confirm("请再确认删除？")) {
+                    $.post("/customer?tag=delete_customer", { "_xsrf": _xsrf, "customer_id": customer_id, "guid": customer_guid }, function (result) {
+
+                        alert("删除成功！")
+                        location.href="/customer";
+                    })
+                  }
+                }
+
+
+           })
+
+
+      laydate.render({
+                    elem: '#tran_at' //指定元素
+           });
+
+      $(".modify_transition_mobile").on("click",function(){
+          transition_id = $(this).attr("transition_id")
+          $.get("customer?tag=qrcode",{"id":customer_id,"guid":customer_guid,"trans_id":transition_id,"qtag":"trans"},function(result){
+              $("#show_qrcode").html(result)
+          })
+            $("#a_add_trans_modal_upload").modal('show')
+      })
+      $(".modify_transition").on("click",function(){
+          $("#delete_transition").show()
+          var tran_by = $(this).attr("tran_by")
+          var rec_by = $(this).attr("rec_by")
+          var tran_at = $(this).attr("tran_at")
+          var trans_remark =$(this).attr("remark")
+          var transition_id = $(this).attr("transition_id")
+          $("#tran_by").val(tran_by)
+          $("#rec_by").val(rec_by)
+          $("#tran_at").val(tran_at)
+          $("#trans_remark").val(trans_remark)
+          $("#myModalLabel_trans").text("修改交接信息")
+          $("#btn_save_trans").attr("transition_id",transition_id)
+
+          $("#a_add_trans_modal").modal('show')
+
+      })
+
+      $("#delete_transition").on("click",function(){
+          if(confirm("确认删除吗？")){
+            transition_id = $("#btn_save_trans").attr("transition_id")
+            $.post("transition?tag=delete",{"transition_id":transition_id,"_xsrf":_xsrf,"customer_id":customer_id},function(result){
+                alert("删除成功")
+                location.reload()
+
+
+            })
+
+            }
+      })
+      $("#a_add_trans").on("click", function () {
+        $("#delete_transition").hide()
+        $("#btn_save_trans").attr("transition_id","0")
+          $("#tran_by").val("")
+          $("#rec_by").val("")
+           $("#tran_at").val("")
+           $("#trans_remark").val("")
+          $("#a_add_trans_modal").modal('show')
+        })
+
+
+         $(".acc_modify").on("click",function(){
+            var acc_name = $(this).attr("acc_name")
+
+            var acc_remark =  $(this).attr("acc_remark")
+            var acc_id = $(this).attr("acc_id")
+            $("#btn_save_acc").attr("acc_id",acc_id)
+            $("#btn_delete_acc").attr("acc_id",acc_id)
+            $("#btn_delete_acc").show()
+            $("#acc_name").val(acc_name)
+            $("#acc_remark").val(acc_remark)
+
+            $("#a_add_acc_name_modal").modal('show')
+
+        })
+
+
+        $("#a_add_acc").on("click",function(){
+            $("#acc_name").val("")
+            $("#acc_remark").val("")
+            $("#btn_save_acc").attr("acc_id","0")
+            $("#btn_delete_acc").hide()
+            $("#btn_delete_acc").attr("acc_id",0)
+            $("#a_add_acc_name_modal").modal('show')
+        })
+      $("#btn_delete_acc").on("click",function(){
+          if(confirm("确认删除吗？")){
+                acc_id = $(this).attr("acc_id")
+                $.post("customer?tag=delete_acc",{"acc_id":acc_id,"_xsrf":_xsrf,"customer_id":customer_id},function(result){
+                    alert("删除成功")
+                    location.reload()
+
+                })
+
+            }
+        })
+
+      $("#btn_save_acc").on("click",function(result){
+          acc_id = $("#btn_save_acc").attr("acc_id")
+          acc_name = $("#acc_name").val()
+          acc_remark = $("#acc_remark").val()
+          $.post("/customer?tag=add_acc",{"_xsrf":_xsrf,"acc_id":acc_id,customer_id:customer_id,
+          "acc_name":acc_name,"acc_remark":acc_remark},function(result){
+
+             location.reload()
+          })
+      })
+
+
+
+
+        $("#a_add_company_name").on("click",function(){
+            $("#company_name").val("")
+            $("#company_remark").val("")
+            $("#btn_save_company").attr("company_id","0")
+            $("#btn_delete_company").hide()
+            $("#btn_delete_company").attr("company_id",0)
+            $("#a_add_company_name_modal").modal('show')
+        })
+
+      $("#btn_delete_company").on("click",function(){
+          if(confirm("确认删除吗？")){
+                company_id = $(this).attr("company_id")
+                $.post("customer?tag=delete_company",{"company_id":company_id,"_xsrf":_xsrf,"customer_id":customer_id},function(result){
+                    alert("删除成功")
+                    location.reload()
+
+                })
+
+            }
+        })
+         $(".company_modify").on("click",function(){
+            var company_name = $(this).attr("company_name")
+
+            var company_remark =  $(this).attr("company_remark")
+            var company_id = $(this).attr("company_id")
+            $("#btn_save_company").attr("company_id",company_id)
+            $("#btn_delete_company").attr("company_id",company_id)
+            $("#btn_delete_company").show()
+            $("#company_name").val(company_name)
+            $("#company_remark").val(company_remark)
+
+            $("#a_add_company_name_modal").modal('show')
+
+        })
+
+      $("#btn_save_company").on("click",function(result){
+          company_id = $("#btn_save_company").attr("company_id")
+          company_name = $("#company_name").val()
+          company_remark = $("#company_remark").val()
+          $.post("/customer?tag=add_company",{"_xsrf":_xsrf,"company_id":company_id,customer_id:customer_id,
+          "company_name":company_name,"company_remark":company_remark},function(result){
+
+            location.reload()
+          })
+      })
+
+
+      $("#btn_save_trans").on("click",function(result){
+          var tran_by = $("#tran_by").val()
+          var rec_by = $("#rec_by").val()
+          var tran_at = $("#tran_at").val()
+          var trans_remark =$("#trans_remark").val()
+          var transition_id =  $("#btn_save_trans").attr("transition_id")
+
+          var formData = new FormData();
+          formData.append('file', $('#tran_file')[0].files[0]);
+          formData.append('_xsrf', _xsrf)
+          formData.append("remark", trans_remark)
+          formData.append("tran_at", tran_at)
+          formData.append("tran_by", tran_by)
+          formData.append("rec_by", rec_by)
+          formData.append("customer_id", customer_id)
+          formData.append("transition_id", transition_id)
+
+          //$(this).text("保存中..")
+          // $(this).attr("disabled", "disabled")
+
+          $.ajax({
+                url: '/transition?tag=add',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+
+                    location.reload()
+
+                }
+              });
+
+      })
+
+
+           $("#a_add_project").on("click",function(){
+                $("#add_project_modal").modal('show')
+           })
+
+          $("#a_add_account").on("click",function(){
+            $("#btn_save_account").attr("account_id","0")
+            $("#account").val("")
+            $("#psw").val("")
+            $("#delete_account").hide()
+            $("#a_add_account_modal").modal('show')
+          })
+
+          $("#delete_account").on("click",function(){
+            var account_id = $("#btn_save_account").attr("account_id")
+
+            if(confirm("确认删除吗？")){
+              $.post("/customer?tag=delete_account",{"account_id":account_id,"customer_id":customer_id,"_xsrf":_xsrf},function(result){
+                  alert("删除成功！")
+                  location.reload()
+              })
+            }
+          })
+
+          $(".modify_account").on("click",function(){
+              var account_id = $(this).attr("account_id")
+              var account = $(this).attr("account")
+              var psw = $(this).attr("psw")
+              var remark = $(this).attr("remark")
+              var type_id = $(this).attr("type_id")
+            $("#delete_account").show()
+              $("#psw").val(psw)
+              $("#remark").val(remark)
+              $("#account").val(account)
+
+              $('input[name=type_id]').each(function() {
+                if($(this).val()==type_id) {
+                    $(this).attr("checked","true")
+                }
+              });
+
+               $("#btn_save_account").attr("account_id",account_id)
+$("#a_add_account_modal").modal('show')
+
+
+          })
+
+
+          $("#btn_save_account").on("click",function(){
+              var type_id = $("input[name=type_id]:checked").val()
+              var type_id_name = $("input[name=type_id]:checked").attr("title")
+              var account = $("#account").val()
+              var psw = $("#psw").val()
+              var account_id = $(this).attr("account_id")
+              var account_remark = $("#account_remark").val()
+              if(type_id==undefined){
+                  $("input[name=type_id]:first").focus()
+                  $("#msg_type_id").text("类型要选择哦。")
+              }
+              else if(account==""){
+                  $("#account").focus()
+                  $("#msg_account").text("帐号要填写哦。")
+              }
+              else if(psw==""){
+                  $("#psw").focus()
+                  $("#msg_psw").text("密码要填写哦。")
+              }else{
+                  $.post("/customer?tag=add_customer_account",{"_xsrf":_xsrf,"customer_id":customer_id,
+                  "type_id":type_id,"type_id_name":type_id_name,
+                  "remark":account_remark,
+                  "account":account,"psw":psw},function(result){
+
+
+                      location.reload()
+                  })
+
+              }
+          })
+
+
+           $("#a_add_file").on("click", function () {
+            $("#a_add_file_modal").modal('show')
+          })
+
+           $("#btn_save_file").on("click",function(){
+
+              var file_title = $("#file_title").val()
+              var file_remark = $("#file_remark").val()
+              if(file_title==""){
+                  $("#msg_file_title").text('文件内容说明不能为空哦。')
+
+              }
+              else{
+                var formData = new FormData();
+                formData.append('file', $('#file')[0].files[0]);
+                formData.append('_xsrf', _xsrf);
+                formData.append("customer_id", customer_id)
+                formData.append("file_title", file_title)
+                formData.append("file_remark", file_remark)
+                $(this).text("保存中..")
+                $(this).attr("disabled", "disabled")
+
+                $.ajax({
+                      url: '/customer?tag=upload',
+                      type: 'POST',
+                      data: formData,
+                      processData: false,  // tell jQuery not to process the data
+                      contentType: false,  // tell jQuery not to set contentType
+                      success: function (data) {
+                        if (data > 0) {
+                          location.reload()
+                        }
+                      }
+                    });
+
+
+              }
+
+           })
+
+
+
+           $("#query_project").on("click",function(){
+                        var key = $("#key").val()
+                   $.get("customer?tag=query_project",{"key":key},function(result){
+                           $("#show_projects").html(result)
+                   })
+
+
+           })
+
+           $("#btn_save_contract").on("click", function () {
+            var contract_id= $("#btn_save_contract").attr("id")
+            var contract_title = $("#contract_title").val()
+            var contract_start_time = $("#contract_start_time").val()
+            var contract_end_time = $("#contract_end_time").val()
+            var state_id = $("input[name=state_id]:checked").val()
+            var contract_remark = $("#contract_remark").val()
+            if (state_id == undefined) {
+              $("#msg_state_id").text("要选择合同的状态哦。")
+            } else if (contract_title == "") {
+              $("#contract_title").text("要写合同摘要哦。")
+            } else if (contract_start_time == "") {
+              $("#msg_contract_start_time").text("要写合同开始时间哦。")
+            } else if (contract_end_time == "") {
+              $("#msg_contract_end_time").text("要写到期时间哦。")
+            } else {
+              $.post("/contract?tag=add", {
+                "_xsrf": _xsrf,
+                "customer_id": customer_id,
+                "contract_start_time": contract_start_time,
+                "contract_remark": contract_remark,
+                "contract_title": contract_title,
+                "contract_end_time": contract_end_time,
+                "state_id": state_id,
+                "contract_id": contract_id
+              }, function (result) {
+                //location.reload()
+              })
+            }
+
+          })
+
+        $("#a_add_contract").on("click",function(){
+          $("#myModalLabel_contract").text("增加合同")
+          $("#contract_title").val("")
+         $("#contract_start_time").val("")
+         $("#contract_end_time").val("")
+      $("#btn_save_contract").attr("id", 0)
+      $("#delete_contract").attr("contract_id", "0")
+          var contract_remark = $("#contract_remark").val("")
+            $("#add_contract_modal").modal("show")
+           $("#delete_contract").hide()
+        })
+
+        laydate.render({
+          elem: '#contract_end_time' //指定元素
+        });
+         laydate.render({
+                    elem: '#contract_start_time' //指定元素
+           });
+
+
+        $(".modify_contract").on("click", function () {
+          $("#myModalLabel_contract").text("修改合同")
+          var contract_id = $(this).attr("contract_id")
+          var contract_title = $(this).attr("title")
+          var contract_start_time =  $(this).attr("start_time")
+          var contract_end_time =  $(this).attr("end_time")
+          /* var state_id = $("input[name=state_id]:checked").val() */
+          var contract_remark =  $(this).attr("contract_remark")
+          $("#contract_title").val(contract_title)
+           $("#contract_end_time").val(contract_end_time)
+          $("#contract_start_time").val(contract_start_time)
+          $("#btn_save_contract").attr("id", contract_id)
+          $("#delete_contract").show()
+            $("#delete_contract").attr("contract_id",contract_id)
+
+
+
+          $("#add_contract_modal").modal("show")
+
+        })
+
+
+        $("#delete_contract").on("click",function(){
+           var contract_id = $(this).attr('contract_id')
+            if(confirm("确认删除吗？")){
+                $.post("contract?tag=delete",{"_xsrf": _xsrf,"contract_id": contract_id,customer_id:customer_id},function(result){
+                    alert("删除成功！")
+                    location.reload()
+                })
+
+            }
+        })
+
+
+        $("#delete_linkman").on("click",function(){
+           var linkman_id = $(this).attr('linkman_id')
+           var linkman_guid = $(this).attr('linkman_guid')
+
+            if(confirm("确认删除吗？")){
+                $.post("linkman?tag=delete",{"_xsrf": _xsrf,"id": linkman_id,"guid":linkman_guid},function(result){
+                    alert("删除成功！")
+                    location.reload()
+                })
+
+            }
+        })
+
+
+            $("#a_add_linkman").on("click", function () {
+              $("#delete_linkman").attr("id", 0)
+              $("#delete_linkman").attr("guid", "")
+                $("#delete_linkman").hide()
+              $("#tel").val("")
+              $("input[type=radio]").filter('[value="1"]').attr("checked",true)
+              $("#name").val(name)
+              $("#add_linkman_modal").modal('show')
+            })
+
+
+        $(".modify_linkman").on("click",function(){
+          var linkman_guid  = $(this).attr("linkman_guid")
+
+          var linkman_id = $(this).attr("linkman_id")
+
+          var linkman_remark = $(this).attr("remark")
+          var tel = $(this).attr('tel')
+          var name = $(this).attr("title")
+          var gender = $(this).attr('gender')
+          $("#delete_linkman").attr("linkman_id",linkman_id)
+          $("#delete_linkman").attr("linkman_guid",linkman_guid)
+          $("#delete_linkman").show()
+          $("#btn_save_linkman").attr("linkman_id",linkman_guid)
+          $("#tel").val(tel)
+          $("input[type=radio]").filter('[value="'+gender+'"]').attr("checked",true)
+          $("#name").val(name)
+          $("#linkman_remark").val(linkman_remark)
+
+
+
+          $("#add_linkman_modal").modal('show')
+
+
+
+        })
+        $("#btn_save_linkman").on("click",function(){
+            var gender = $("input[name=gender]:checked").val()
+            var name = $("#name").val()
+            var tel = $("#tel").val()
+            var remark = $("#linkman_remark").val()
+            if (name==""){
+              $("#msg_name").text("客户的名字必须要填写哦。")
+               $("#name").focus()
+              return false
+
+            }else if(gender==undefined){
+              $("#msg_gender").text("请选择客户的性别")
+               $("input[name=gender]").focus()
+              return false
+            }
+
+            else{
+                $.post("/linkman?tag=add",{"_xsrf":_xsrf,"customer_id":{{customer.id}},"tel":tel,"name":name,"remark":remark,"gender":gender},function(result){
+
+                  location.reload()
+
+                })
+
+            }
+
+
+        })
+           document.getElementById("file").addEventListener("change", function (evt) {
+
+             $("#file_title").val(evt.target.files[0].name)
+            });
+
+
+     /*     $(".modify_linkman").on("click",function(){
+
+
+          id = $("#delete_linkman").attr("id")
+          guid = $("#delete_linkman").attr("guid")
+
+
+
+        })
+
+
+              $.post("/linkman?tag=delete",{"_xsrf":_xsrf,"id":id,"guid":guid},function(result){
+              alert(result)
+          })*/
+           $(".delete_relation_project").on("click",function(){
+             if(confirm("确认删除业务关系吗？")){
+                  project_id = $(this).attr("title")
+                  $.post("/customer?tag=del_relation_project",{"_xsrf":_xsrf,"project_id": project_id,"customer_id":customer_id},function(result){
+                      location.reload()
+                  })
+
+                }
+           })
+            $(".delete_file").on("click", function () {
+              if (confirm("确认删除相关文件吗？")) {
+                file_id = $(this).attr("title")
+                $.post("/customer?tag=delete_file", { "_xsrf": _xsrf, "file_id": file_id, "customer_id": customer_id }, function (result) {
+                  location.reload()
+                })
+
+              }
+            })
+
+
+
+           $(".delete_relation_linkman").on("click",function(){
+             if(confirm("确认删除客户联系人吗？")){
+                  id  = $(this).attr("title")
+                  guid =$(this).attr("guid")
+                  $.post("/linkman?tag=delete",{"_xsrf":_xsrf,"id": id,"guid":guid},function(result){
+                      location.reload()
+                  })
+
+                }
+           })
+
+
+
+           $("#btn_save_project").on("click",function(){
+
+                var choice_pid = $("input[name=project_choice]:checked").val()
+
+                if(choice_pid==undefined){
+                        alert("请选择业务")
+                        return false
+                }else{
+                    $.post("customer?tag=relation_project",{"customer_id":customer_id,"project_id":choice_pid,"_xsrf":_xsrf},function(result){
+
+                            console.log(result)
+                            location.reload()
+                    })
+
+
+                }
+           })
+        $('#delete_customer_btn').on('click',function(){
+          $('#btn_delete_customer').attr('title',$(this).attr('title'));
+          $('#a_delete__customer_modal').modal('show');
+        })
+
+        $("#a_add_note").on("click",function(){
+          $("#projects_note").text('交代事项')
+          $('.modal_note_btn').text('保存')
+          $('.modal_note_btn').attr('id','btn_save_modal_note')
+          $('.modal_note_btn').removeAttr('note_id')
+          $('#note_content').val('');
+          $('#projects_note_confirm_content').hide();
+          $('#projects_note_content').show();
+          $("#modal_note").modal("show")
+})
+        $("#a_read_note").on("click",function () {
+          $("#projects_note").text('选择未读事项')
+          $('.modal_note_btn').text('确定已读')
+          $('.modal_note_btn').attr('id','btn_save_modal_note_confirm')
+          $('#projects_note_content').hide();
+          $('#projects_note_confirm_content').show();
+          $("#modal_note").modal("show")
+        })
+
+      $('#btn_save_modal_note').on("click",function(){
+        var note_content=$('#note_content').val();
+        var note_id=$(this).attr('note_id');
+        if(note_content!=''){
+          $.post("customer?tag=customer_note",{"customer_id":customer_id,"note_id":note_id,"note_content":note_content,"_xsrf":_xsrf},function(result){
+console.log(result)
+location.reload()
+})
+        }
+    })
+
+      $('.a_change_note').on('click',function () {
+        $('.checkdiv').hide();
+        $("#projects_note").text('交代事项')
+        $("#note_content").val($(this).attr('note'))
+        $('.modal_note_btn').text('保存')
+        $('.modal_note_btn').attr({'id':'btn_save_modal_note','note_id':$(this).attr('id')});
+        $('#projects_note_confirm_content').hide();
+        $('#projects_note_content').show();
+        $("#modal_note").modal("show");
+       })
+
+       $(".a_delete_note").on("click",function () {
+      id =  $(this).attr('id')
+      if(confirm("确认删除吗？")){
+        $.post(
+          '/customer?tag=delete_note',
+          {
+            "_xsrf":_xsrf,
+            'id':id
+          },function (result) {
+            alert('删除成功')
+            location.reload()
+           }
+        )
+      }
+    })
+    $('body').on('click','#btn_save_modal_note_confirm',function () {
+        check_val=[]
+        var obj=$('input[name=check_note]');
+        for (k in obj){
+          if(obj[k].checked){
+            check_val.push(obj[k].value);
+          }
+        }
+        check_val=check_val.join(',')
+
+        $.post(
+          '/customer?tag=customer_note_confirm',
+          {
+            'check_val':check_val,
+            '_xsrf':_xsrf
+          },function (result) {
+            location.reload()
+           }
+        )
+       })
+
+      $('.cancel_note').on('click',function () {
+         var note_id=$(this).attr('note_id')
+         var is_cancel=$(this).attr('is_cancel')
+         if(is_cancel==0){
+          $.post(
+            'customer?tag=customer_note',
+            {
+              'note_id':note_id,
+              'is_cancel':1,
+              "_xsrf":_xsrf
+            },function (result) {
+              location.reload()
+             }
+          )
+        }else{
+          $.post(
+            'customer?tag=customer_note',
+            {
+              'note_id':note_id,
+              'is_cancel':0,
+              "_xsrf":_xsrf
+            },function (result) {
+              location.reload()
+             }
+          )
+        }
+        })
+
+    if('{{customer.acc_uid_name}}'=='{{name}}'){
+    obj=$('input[name=check_note]')
+       if(obj.length<1){
+        $('#not_project_note').show();
+       }else{
+        $("#a_read_note").click();
+       }
+
+    }
+    $("#btn_save_msg").on("click",function(){
+            msg = $("#txt_msg").val()
+            if(msg==""){
+                alert("交流记录不能为空哦.")
+                return false
+            }else{
+              $(this).attr("disabled","disabled")
+              var formData = new FormData();
+              formData.append('file', $('#record_file')[0].files[0])
+              formData.append('_xsrf', _xsrf)
+              formData.append('msg',msg)
+              formData.append('customer_id',customer_id)
+                $.ajax({
+                url: '/customer?tag=customer_exchange',
+                type: 'POST',
+                data: formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success: function (data) {
+                  location.href="/customer?tag=show&id="+customer_id+"&guid="+customer_guid+"&to_tag=exchange_tab"
+                }
+              })
+            }
+
+
+        })
+      });
+
+    </script>
+    {% end %}

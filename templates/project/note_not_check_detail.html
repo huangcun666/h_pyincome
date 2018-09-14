@@ -1,0 +1,101 @@
+{% extends "../base.html" %} {%block title%}资料交接{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">审核交代事项
+          <a class="btn btn-info" href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}">查看订单</a>
+        </li>
+
+      </ol>
+
+
+
+       
+
+
+
+<div class="table-responsive">
+    <b>业务名称:{{t_project.project_name}}</b>
+            <div class="row">
+                <div class="col-sm-6">
+                    {%if t_projects_note_check %}
+                    {%for idx,item in enumerate(t_projects_note_check)%}
+                  
+                    <span class="clearfix  z-1">
+        
+          <br>
+         <b>{{item.uid_name}} ({{item.creatd_at}} )</b> :<span style="font-size:20px; color:red;"> <b>{{item.msg}}</b> 
+                    </span>
+                    <br>
+                    <input type="radio" value='0' name="check_note{{idx}}" id="check_note" nid='{{item.id}}' ><b style="font-size:15px;">同意</b>
+                    <input type="radio" value='1' name="check_note{{idx}}" id="check_note" nid='{{item.id}}'><b style="font-size:15px;">驳回</b>
+                    <br>
+                    <label for="inputEmail3" class="col-sm-5 control-label">备注：</label>
+                    <div class="col-sm-10">
+                      <textarea idx='{{idx}}' class="form-control note_content_check" type="text" name="note_content_check"></textarea>
+                    </div>
+                    
+                    {%end%}
+                    <div class="col-sm-6">
+                            <div class="modal-footer">
+                                  <button class="btn btn-primary" target="_blank" id="btn_save_modal_note_check">保 存</button>
+                              </div>
+                          </div>
+                    {%else%}
+                    <br>
+                    <p>还没有未审核的交代事项哦~</p>
+                    {%end%}
+                  </div>
+                  <div class="col-sm-6">
+                      <div class="card-body  bg-faded">
+                      {%for item in  t_project_all_check%}
+                      <span class="clearfix  z-1">
+        
+                          <br>
+                         <b>
+                            {%if item.state_id==0%} <span class="badge badge-info">已通过</span>{%elif item.state_id==1%} 
+                            <span class="badge badge-danger">未通过</span>{%elif item.is_check==1%}<span class="badge badge-dark">待审核</span>{%end%}
+                          {{item.uid_name}} ({{item.creatd_at}} )</b> :<span style="font-size:20px; color:red;"> <b>{{item.msg}}</b> 
+                                    </span>
+                      {%end%}
+                    </div>
+                  </div>
+              </div>
+<!-- Modal -->
+
+
+{%end%}
+
+
+
+ {%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+    $('#btn_save_modal_note_check').on('click',function () { 
+    var all_is_check=[]
+    $('input[id=check_note]:checked').each(function (idx) { 
+      all_is_check.push([$(this).attr("nid"),$(this).val(),$('textarea[idx='+idx+']').val()])
+     })
+   
+      all_is_check=all_is_check.join('-')
+     $.post(
+       "/project?tag=check_note",
+       {
+         '_xsrf':_xsrf,
+         'all_is_check':all_is_check,
+         "project_id":{{t_project_id}}
+       },function () { 
+         location.reload()
+        }
+     )
+
+   })
+ })
+ </script>
+
+{%end%}

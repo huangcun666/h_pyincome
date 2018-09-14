@@ -1,0 +1,143 @@
+
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>应收管理 
+
+{%if is_manager%}
+    {%if qtype=="my"%} <a href="/finance?tag=list&qtype=all"><span>所有列表</span> </a> {%end%} 
+{%end%}
+{%if qtype=="all"%} <a href="/finance?tag=list&qtype=my"><span>我的客户</span> </a> {%end%}</h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+
+<fieldset>
+<!--
+<form class="form-search" id="query_form">
+  <input type="text" value="{{keyword}}" name="keyword" class="input-medium search-query" placeholder="公司名称/电话/姓名">
+
+  <select name="qtype">
+    
+        <option value="company" {%if qtype=="company"%}selected{%end%}>公司名称</option>
+        <option value="lname" {%if qtype=="lname"%}selected{%end%}>联系人姓名</option>
+              <option value="tel" {%if qtype=="tel"%}selected{%end%}>电话</option>
+  </select>
+
+  <button type="submit" class="btn">检 索</button>
+  <input type="hidden" value="{{tag}}" name="tag"/>
+</form>
+-->
+{%if keyword%}
+<div class="alert fade in">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>  共找到 {{pagination.total_count}} 条记录</strong> 
+          </div>
+
+{%end%}
+
+
+
+                        {%if customers%}
+              <table class="table" style="margin:5px;">
+                     <thead>
+                                <tr style="background-color: black; color:#fff;">
+                           
+                                <th style="min-width:180px;">公司名称</th>
+                              
+                                     
+                             
+                                <th style="min-width:150px;">总服务费</th>
+                                <th style="min-width:60px;">已收款</th>
+                             
+                         
+                          
+                              
+                                <th>欠款</th>
+                                <th>客服会计</th>
+                                <th></th>
+                                </tr>
+                            </thead>
+                <tbody>
+    
+     {%for customer in customers%}
+                    <tr>
+               
+                        <td>{{customer.customer_company}}</td>
+                   <td>{{customer.all_income}}</td>
+                        <td>{{customer.dd}}</td>
+             
+                        <td>{{(customer.all_income-customer.dd)}}</td>
+  <td>{{(customer.acc_uid_name)}}</td>
+                        
+                        <td><a class="btn customer_detail btn-sm control"  type='button'
+                         href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}&to_tag=finance_tab">查看</a></td>
+
+                     
+                    </tr>
+                    {%end%}
+
+              
+                
+                </tbody>
+              </table>
+       
+                    {%else%}
+                        还没有客户哦。
+                               
+                    {%end%}
+                              <div class="pagination">
+                        <ul>
+                            {% if pagination.has_prev %}
+                            <li><a href="/finance?tag={{tag}}&page={{ pagination.page - 1}}{%if qtype%}&qtype={{qtype}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li>
+                                <a href="/finance?tag={{tag}}&page={{ page }}{%if qtype%}&qtype={{qtype}}{%end%}">{{ page }}</a></li>
+                            {% else %}
+                            <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                            {% end %} {% else %}
+                            <li><span class="active"><a href="#">....</a></span></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li><a href="/finance?tag={{tag}}&page={{pagination.page+1}}{%if qtype%}&qtype={{qtype}}{%end%}">下页 &raquo;</a></li>
+                            {% end %}
+                        </ul>
+                    </div>       
+</fieldset>
+
+</div>
+   
+
+               
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+ 
+
+    {%end%} 
+
+    {%block js%}
+
+<script>
+
+$(function () {
+
+
+});
+
+</script>
+
+
+    {%end%}

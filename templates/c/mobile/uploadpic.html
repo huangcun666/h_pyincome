@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>上传文件</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+    ">
+
+    <link rel="stylesheet" href="/static/lib/weui.min.css">
+    <link rel="stylesheet" href="/static/css/jquery-weui.css">
+    <link rel="stylesheet" href="/static/css/demos.css">
+
+  </head>
+
+  <body ontouchstart>
+    <header class='demos-header'>
+        {%if error=='-1'%}
+    <h1 class="demos-second-title">未选择图片！！！</h1>
+    <h1 class="demos-second-title">选择图片再上传！！！</h1>
+    {%else%}
+      <h1 class="demos-title">上传成功</h1>
+      {%end%}
+    </header>
+</body>
+</html>

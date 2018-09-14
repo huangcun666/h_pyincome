@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>开收据系统-收据详情</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/css/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+</head>
+
+<body class="fixed-nav sticky-footer" id="page-top">
+  <!-- Navigation-->
+  <div class="content" style="font-size: 16px;">
+    <div class="container-fluid">
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-table"></i>收据详情</div>
+        <div class="card-body">
+          <div class="table-responsive">
+          
+        <div class="form-group">
+            <div class="form-row">
+            <div class="col-md-4">
+                <p>订单编号:{{customer.cus_id}}</p>
+            </div>
+            <div class="col-md-4">
+                    <p>客户名称:{{customer.customer_name}}</p>
+            </div>
+            <div class="col-md-4">
+                    <p>公司名称:{{customer.customer_company}}</p>
+            </div>
+            </div>
+            <div class="form-row">
+                    <div class="col-md-4">
+                        <p>收款内容:{{customer.project_name}}</p>
+                    </div>
+                    <div class="col-md-4">
+                            <p>收款金额:{{customer.all_income}}</p>
+                    </div>
+                    <div class="col-md-4">
+                            <p>收款日期:{{customer.craeted_at}}</p>
+                    </div>
+                    </div>
+                    <div class="form-row">
+                            <div class="col-md-4">
+                                <p>收款账号:{{customer.income_type}}</p>
+                            </div>
+                            <div class="col-md-4">
+                                    <p>出纳:{{customer.income_name}}</p>
+                            </div>
+                            <div class="col-md-4">
+                                    <p>销售顾问:{{customer.sale_name}}</p>
+                            </div>
+                            </div>    
+                            <div class="form-row">
+                                    <div class="col-md-4">
+                                        <p>客服顾问:{{customer.kf_name}}</p>
+                                    </div>
+                                    </div>  
+
+                            <div class="container col-md-2">
+                               
+                                <a class="btn btn-block back_btn" href="/">返回</a>
+                        
+                    </div> 
+            </div>
+            
+        </div>
+        </div>
+        </div>
+    </div>
+    </div>
+    <script src="/static/js/vendor/jquery/jquery.min.js"></script>
+    <script src="/static/js/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/static/js/myjquery.js"></script>
+    <script src="/static/css/datatables/jquery.dataTables.js"></script>
+    <script src="/static/css/datatables/dataTables.bootstrap4.js"></script>
+    <script src="/static/js/sb-admin.min.js"></script>
+    <script src="/static/js/sb-admin-datatables.min.js"></script>
+
+    
+ 
+   
+  </div>
+</body>
+
+</html>

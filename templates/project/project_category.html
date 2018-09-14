@@ -1,0 +1,230 @@
+
+ {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+ <ol class="breadcrumb">
+   <li class="breadcrumb-item">
+    主面板
+   </li>
+   <li class="breadcrumb-item active">业务类型 
+       <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add">新建类型 </a>
+       <a href="/checkprojectcategory" class="btn btn-info btn-sm" id="btn_check">查看 </a>
+    </li>
+
+ </ol>
+
+
+<div class="card mb-3">
+   <div class="card-body">
+  
+<div class="table-responsive">
+
+
+             <table class="table table-bordered" id="dataTable"  cellspacing="0">
+               <thead style="background-color:#000;color:#fff">
+                   <tr>
+                    <th width="120">业务类型</th>
+                    <th width="120">业务名称</th>
+                    <th width="120">客户名称</th>
+                    <th width="60">金额</th>
+                    <th width="120">客户电话</th>
+                    <th width="60">公司</th>
+
+                   </tr>
+               </thead>
+               <tbody>
+                   {%for project in projects%}
+                   
+                    <tr id="{{project.id}}">
+                        <td id="project_category">
+                            {%if len(project_categorys_uids)>0 %}
+                         
+                                {%if project.id in project_categorys_uids%}
+                                <p id="{{project.id}}" class="choose_type" style="color:#007bff;cursor: pointer;font-weight: 400;">{{ project_categorys_name[project_categorys_uids.index(project.id)]}}</p>
+                                {%else%}
+                                <p id="{{project.id}}" class="choose_type" style="color:#007bff;cursor: pointer;font-weight: 400;">选择类型</p>
+                        
+                            {%end%}
+                            {%else%}
+                            <p id="{{project.id}}" class="choose_type" style="color:#007bff;cursor: pointer;font-weight: 400;">选择类型</p>
+                            {%end%}
+                            </td>
+                        
+                        <td>{{project.project_name}}</td>
+                        <td>{{project.customer_name}}</td>
+                        <td>{{project.all_income}}</td>
+                        <td>{{project.customer_tel}}</td>
+                        <td>{{project.customer_company}}</td>
+                    </tr>
+                  
+                    {%end%}
+               </tbody>
+           </table>
+
+<div class="col-sm-12 col-md-7">
+<div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+ <ul class="pagination">
+{% if pagination.has_prev %}
+    <li class="paginate_button page-item previous " id="dataTable_previous">
+    <a href="?tag=my&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+
+
+   {% end %}
+   {%for page in pagination.iter_pages() %}
+    {% if page %}
+    {% if page != pagination.page %}
+    <li class="paginate_button page-item "><a href="?tag=my&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+    {% else %}
+     <li class="paginate_button page-item active">
+       <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+     {% end %}
+     {% end %} {%end %}
+
+    {% if pagination.has_next %}
+    <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+{% end %} </ul>
+</div>
+</div>
+
+    </div>
+   </div>
+   <div class="card-footer small text-muted"></div>
+ </div>
+<!-- Modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="insert_category_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+
+<div class="modal-dialog" role="document" >
+<div class="modal-content">
+ <div class="modal-header">
+   <h5 class="modal-title" id="exampleModalLongTitle_license">新建分类 </h5>
+   <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+     <span aria-hidden="true">&times;</span>
+   </button>
+ </div>
+      <div class="form-group">
+       <label for="category_name"  class="col-sm-3 control-label">分类名称：</label>
+        <input style="width: 65%;" id="category_name" name="category_name" type="text" placeholder="输入分类名">
+     </div>
+
+ <div class="modal-footer" style="margin-right: 20px;">
+   <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            <button class="btn btn-primary" id="btn_save_project">保 存</button>
+ </div>
+</div>
+</div>
+</div>
+
+
+<div class="modal fade" id="project_category_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+
+        <div class="modal-dialog" role="document" >
+        <div class="modal-content">
+         <div class="modal-header">
+           <h5 class="modal-title" id="exampleModalLongTitle_license">选择分类 </h5>
+           <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+         </div>
+              <div class="form-group group1">
+               <p class="col-sm-3 control-label">所有分类：</p>
+               {%for category in categorys%}
+                <input value="{{category.id}}" style="margin-left:25%;" id="category_id" name="category_name" type="radio">{{category.category_name}}
+                {%end%}
+             </div>
+        
+         <div class="modal-footer" style="margin-right: 20px;">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button class="btn btn-primary btn_save_project1">保 存</button>
+         </div>
+        </div>
+        </div>
+        </div>
+
+
+
+
+{% end %}
+
+
+{%block js%}
+
+<script>
+$(function () {
+_xsrf =  getCookie("_xsrf")
+$('#recommend_staff').typeahead({
+ source: function (query, process) {
+   return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+       return process(JSON.parse(data));
+   });
+}
+});
+$('#addr_type').typeahead({
+ source: function (query, process) {
+   return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"addr"}, function (data) {
+       return process(JSON.parse(data));
+   });
+}
+});
+
+
+$("#div_building").hide()
+$("#div_recommend_by").hide()
+$("#div_recommend_staff").hide()
+
+   $("#btn_add").on("click",function(){
+       $("#insert_category_modal").modal("show")
+
+   })
+   $(".choose_type").on("click",function(){
+        var uid=$(this).attr('id');
+        $('.btn_save_project1').attr('id',uid);
+       $("#project_category_modal").modal("show")
+
+   })
+
+       $("#btn_save_project").click(function(){
+           var name=$('#category_name').val();
+           if(name!=''){
+                $.post(
+                    '/insertcategory',
+                    {
+                        category:name,
+                        "_xsrf":_xsrf
+                    },
+                    function(data,status){
+                        $("#insert_category_modal").modal("hide")
+                        $('.group1').append('<input value="'+data['category_id']+'" '+
+                        'id="category_id" style="margin-left:25%;" name="category_name" type="radio">'+name);
+                    }
+                )
+           }else{
+               $('#category_name').css({border:'2px solid #ff8480','border-radius':'5px'});
+               
+               
+           }
+       })
+       $(".btn_save_project1").click(function(){
+           var uid=$(this).attr('id');
+           var categoryid=$('input[name="category_name"]:checked').val();
+           $.post(
+               '/insertupdateprojectcategory',
+               {
+                category_id:categoryid,
+                id:uid,
+                "_xsrf":_xsrf
+               },
+               function(data,status){
+                $("#project_category_modal").modal("hide")
+                $('p[id='+uid+']').text(data['category_name']);
+               }
+           )
+
+       })
+   })
+</script>
+
+{%end%}

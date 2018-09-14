@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <!-- Include external CSS. -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.css">
+
+    <!-- Include Editor style. -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.0/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.0/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <!-- Create a tag that we will use as the editable area. -->
+    <!-- You can use a div tag as well. -->
+    <div id="froala-editor">
+  <h3>Click here to edit the content</h3>
+
+  <p>This is the inline example for the Froala rich text editor. For this you have to set the <a href="../docs/options#toolbarInline" title="toolbarInline option" target="_blank">toolbarInline</a> option to <code>true</code>.</p>
+    <p>广州发业集团是一家集知识产权sadsadasdasdasd、财务、工商登记、法律服务、网站服务于一体企业综合服务企业集团，集团位于广州珠江新城。发业一直致力于为广大企业提供专业的服务，创办至今已经积累了丰富的行业经验，为众多创业者提供简便专业的支持服务，为众多企业提供一站式系统化的解决方案。</p>
+</div>
+
+
+   <div id="froala-editor1">
+  <h3>Click here to edit the content</h3>
+
+  <p>This is the inline example for the Froala rich text editor. For this you have to set the <a href="../docs/options#toolbarInline" title="toolbarInline option" target="_blank">toolbarInline</a> option to <code>true</code>.</p>
+    <p>广州发业集团是一家集知识产权sadsadasdasdasd、财务、工商登记、法律服务、网站服务于一体企业综合服务企业集团，集团位于广州珠江新城。发业一直致力于为广大企业提供专业的服务，创办至今已经积累了丰富的行业经验，为众多创业者提供简便专业的支持服务，为众多企业提供一站式系统化的解决方案。</p>
+</div>
+    <!-- Include external JS libs. -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js"></script>
+
+    <!-- Include Editor JS files. -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.0/js/froala_editor.pkgd.min.js"></script>
+
+    <!-- Initialize the editor. -->
+  <script>
+  $(function() {
+    $('div#froala-editor,div#froala-editor1').froalaEditor({
+      language: 'es',
+      toolbarInline: true,
+      charCounterCount: false,
+      initOnClick: true,
+      toolbarButtons: ['Image', 'italic', 'underline', 'strikeThrough', 'color', 'emoticons', '-', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+    })
+  });
+</script>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+<table class="table" >
+        <thead>
+                <th width="100">订单编号</th>
+                <th>业务调整</th>
+                <th></th>
+        </thead>
+        <tr>
+      
+         <td>{{item.id}}</td>
+         <td>
+            {%if item.project_name %} 
+                {{item.project_name}}
+            {%else%}
+            无
+            {%end%}
+        </td>
+
+
+          <td><input type="radio" value="{{item.id}}" name="project_choice"> </td>
+        </tr>
+
+
+        
+        </table>

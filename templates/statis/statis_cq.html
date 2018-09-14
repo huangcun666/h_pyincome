@@ -1,0 +1,251 @@
+ {% extends "../base.html" %} {%block title%}客服顾问业绩统计{%end%} {% block body %}
+
+<style>
+
+    .faye-btn {padding: 0.1rem 0.2rem; background-color: #9ec6ef; margin-left: 20px; border-radius: 2px;}
+
+</style>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        主面板
+    </li>
+    <li class="breadcrumb-item active">工商办结
+        {{params["datatype_name"]}}
+
+    </li>
+<li>
+       <a class=" faye-btn" href="/statis?tag=statis_cq">办结日报</a>
+
+  <a class=" faye-btn" href="/statis?tag=statis_cq_month" >办结月报</a>
+
+                <a class=" faye-btn" href="/statis?tag=statis_cq_work">工作量日报</a>
+          <a class=" faye-btn" href="/statis?tag=statis_cq_work_month">工作量月报</a>
+
+
+    <a class=" faye-btn" href="/statis?tag=statis_cq_building">楼盘工作量日报</a>
+
+    <a class=" faye-btn" href="/statis?tag=statis_cq_building_month">楼盘工作量月报</a>
+
+</li>
+</ol>
+
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link {%if not params["type_id"]%}active {%end%}" id="nav-home-tab" href="/statis?tag={{params["tag"]}}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}">全
+            部
+        </a>
+        {%for item in btype%}
+        <a class="nav-item nav-link {%if params["type_id"]==str(item.id)%}active{%end%}" href="/statis?tag={{params["tag"]}}&type_id={{item.id}}{%if params["btype_id"]%}&btype_id={{params["type_id"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}"
+            style="font-size:13px;">{{item.income_name}}
+        </a>
+        {%end%}
+
+    </div>
+</nav>
+
+
+
+<div class="row" style="padding:10px;">
+
+    <div class="col-lg-12">
+    <form>
+        <table style="font-size:80%;">
+            <thread>
+                <tr class="faye-tdti">
+<td>
+    业务类型
+</td>
+                    <td>
+                      工商专员
+
+
+                    </td>
+                    <td>开始时间</td>
+                    <td>结束时间</td>
+                    <td></td>
+
+                </tr>
+
+                <tr>
+
+
+                         <td>
+                        <select name="btype_id" class="form-control">
+                            <option value="0">选择业务类型</option>
+                            {%for item in project_btype%}
+
+                            <option value="{{item.btype_id}}"
+                            {%if params["btype_id"]==str(item.btype_id)%}selected{%end%}>{{item.btype_name}}</option>
+                            {%end%}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="gw" class="form-control">
+                            <option value="0">选择工商专员</option>
+                            {%for item in t_kf%}
+
+                            <option value="{{item.uid}}"
+                            {%if params["gw"]==str(item.uid)%}selected{%end%}>{{item.uid_name}}</option>
+                            {%end%}
+                        </select>
+                    </td>
+
+                    <td>
+                        <input type="text" name="start" id="start" class="form-control" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}"
+                        />
+
+
+                    </td>
+                    <td>
+                        <input type="text" name="end" id="end" class="form-control" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+
+                    </td>
+                    <td>
+
+                        <input type="hidden" name="tag" value="{{params["tag"]}}" />
+                        {%if params["type_id"]%}
+                        <input type="hidden" name="type_id" value="{{params["type_id"]}}" />
+                        {%end%}
+
+                        <input type="submit" value="检索" class="form-control" />
+                    </td>
+                </tr>
+        </table>
+
+
+
+
+
+
+
+
+
+
+    </form>
+
+
+
+    </div>
+    <!-- /.col-lg-6 -->
+</div>
+<div class="table-responsive">
+
+<table class="table table-bordered"  style="width:1500px">
+    <thead class="thead-dark">
+        <tr class="active">
+            <th width="120">日期</th>
+                      <th width="80">合计</th>
+
+            {%for item in t_kf%}
+                <th width="80">{{item.uid_name}}</th>
+            {%end%}
+            <th></th>
+        </tr>
+
+        <tr style="background-color:bisque;">
+                        <td style="background-color: #efefef;">合计</td>
+           <td style="background-color: #efefef;">{{t_statis_cq_total_day_all.gc1}}</td>
+             {%for item in t_kf%}
+<td>
+            {%for row_total in t_statis_kf_total%}
+                    {%if row_total.uid_name==item.uid_name%}
+                            {{row_total.total_income}}
+                            {%break%}
+                    {%end%}
+
+
+
+            {%end%}
+            </td>
+
+            {%end%}
+                        <td></td>
+
+        </tr>
+
+    </thead>
+    <tbody>
+
+ {%for item in t_statis_kf%}
+
+ <tr>
+     <td width="120">
+         {{item.ct}}
+     </td>
+
+             <td width="120" style="background-color: #efefef;">
+        {%for row_total in t_statis_cq_total_day%}
+                {%if item.ct==row_total.ct%}
+    {{row_total.gc1}}
+                    {%break%}
+                {%end%}
+
+        {%end%}
+     </td>
+ {%for row in t_kf%}
+<td>
+     {%for r in item.gc.split(",")%}
+        {%if r and r.split("|")[0]==row.uid_name%}
+            {{r.split("|")[1]}}
+            {%break%}
+        {%else%}
+    {%end%}
+
+
+
+{%end%}
+</td>
+{%end%}
+
+
+        </tr>
+    {%end%}
+    </tbody>
+</table>
+
+<ul class="pagination">
+    {% if pagination.has_prev %}
+    <li class="paginate_button page-item previous " id="dataTable_previous">
+        <a href="/statis?tag={{params["tag"]}}&page={{ pagination.page - 1}}{%if params["btype_id"]%}&btype_id={{params["type_id"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}"
+            aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+    {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+    <li class="paginate_button page-item ">
+        <a href="/statis?tag={{params["tag"]}}&page={{page}}{%if params["btype_id"]%}&btype_id={{params["type_id"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable"
+            data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+    {% else %}
+    <li class="paginate_button page-item active">
+        <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+    {% end %} {% else %}
+    <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0"
+                class="page-link">....</a></span></li>
+    {% end %} {% end %} {% if pagination.has_next %}
+    <li class="paginate_button page-item next" id="dataTable_next"><a href="statis?tag={{params["tag"]}}&page={{pagination.page+1}}{%if params["btype_id"]%}&btype_id={{params["type_id"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}"
+            aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+    {% end %}
+</ul>
+
+</div>
+</div>
+
+</div>
+</div>
+{% end %} {%block js%}
+<script>
+    _xsrf = getCookie("_xsrf");
+    $(function () {
+
+            $("#m_statis").click()
+        $("#start").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+        $("#end").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 23:59:59',
+            language: 'zh-CN', initialDate: new Date()
+        });
+
+    })
+
+
+</script> {%end%}

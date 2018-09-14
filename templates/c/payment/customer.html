@@ -1,0 +1,123 @@
+{% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+<div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>客户详情
+</h3>
+</div>
+<div class="widget-content">
+		<div class="tabbable">
+						<ul class="nav nav-tabs" id="myTab">
+						  <li>
+						    <a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}&to_tag=customer_tab" id="a_customer_tab" >基础信息</a>
+						  </li>
+              <li ><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}&to_tag=finance_tab" id="a_finance_tab" >财务信息</a></li>
+              <li><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}&to_tag=exchange_tab" id="a_exchange_tab" >联系记录</a></li>
+
+              <li class="active"><a href="#payment_tab" id="a_payment_tab" data-toggle="tab">应收记录</a></li>
+
+						</ul>
+
+						<br>
+
+<div class="tab-content">
+    <div class="tab-pane active " id="payment_tab ">
+
+        <div class="widget widget-table action-table">
+
+
+
+
+                    <div class="widget-content">
+
+
+
+                        {%if customers%}
+              <table class="table" style="margin:5px;">
+                     <thead>
+                                <tr style="background-color: black; color:#fff;">
+
+                                <th style="min-width:180px;">公司名称</th>
+
+
+
+                                <th style="min-width:150px;">付款方式</th>
+                                <th style="min-width:60px;">总服务费</th>
+                                <th style="min-width:60px;">月服务费</th>
+
+
+
+
+                                <th>帐册费</th>
+                                <th>记账费到期时间</th>
+                                  <th>账册费到期时间</th>
+                                  <th>更新时间</th>
+                                  <th>更新人</th>
+
+                                </tr>
+                            </thead>
+                <tbody>
+
+     {%for item in customers%}
+                    <tr>
+
+                        <td>{{item.company}}</td>
+                   <td>{{item.pay_pay_typeid_name}}</td>
+                        <td>{{item.pay_service_amount}}</td>
+                        <td>{{item.pay_service_amount_month}}</td>
+
+                        <td>{{item.pay_book_amount}}</td>
+  <td>{{item.acc_end}}</td>
+  <td>{{(item.acc_book_end)}}</td>
+  <td>{{(item.pay_updated_at)}}</td>
+    <td>{{(item.pay_uid_name)}}</td>
+
+
+                    </tr>
+                    {%end%}
+
+
+
+                </tbody>
+              </table>
+
+                    {%else%}
+                        还没有客户哦。
+
+                    {%end%}
+
+
+
+
+
+
+
+
+                    </div>
+                    <!-- /widget-content -->
+
+
+
+                  </div>
+        </div>
+</div>
+    {%end%}
+
+    {% block  js %}
+    <script>
+        $(function(){
+
+
+            $('#a_{{to_tag}}').tab('show');
+           _xsrf = getCookie("_xsrf")
+
+      });
+
+    </script>
+    {% end %}

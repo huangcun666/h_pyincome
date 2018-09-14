@@ -1,0 +1,292 @@
+  {% extends "admin.html" %}
+  {%block title%}用户管理{%end%}
+  {% block body %}
+
+<div class="container-fluid">
+<!-- Button to trigger modal -->
+
+  <section>
+        <div class="page-header">
+          <div class="row">
+         <div class="span9"> <h3>用户管理</h3>
+         </div>
+         <div class="span2">
+          <button class="btn btn-info" name="btn_add">新建帐户</button>
+         </div></div>
+
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr> 
+                     <th width="40">编号# </th>     
+                     <th>企业名称</th>
+                      <th width="120">帐户</th>
+                      <th width="120">创建时间</th>
+                      <th width="120">授权开始时间</th>
+                      <th width="120">授权结束时间</th>
+                       <th width="50"></th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {%for item in t_user%}
+<tr id="{{item.f_id}}">
+<td>
+  {{item.f_id}}
+</td>
+                      <td>
+                        {{item.f_company}}
+                      </td>
+                      <td>
+                        {{item.f_email}}
+                      </td>
+                     
+                      <td>
+                       {{item.f_addtime}}
+                      </td>
+                       <td>
+                       {{item.f_starttime}}
+                      </td>
+                       <td>
+                       {{item.f_endtime}}
+                      </td>
+                         <td>
+<button href="#myModal" role="button" name="btn_view" value="{{item.f_id}}" data-toggle="modal">详细</button>
+                      </td>
+                    </tr>
+                    {%end%}
+             
+                  </tbody>
+                </table>
+          </div>
+        </div>
+      </section>     </div>
+
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">用户信息//# <span id="user_id"></span>
+      <span id="s_title"></span></h3>
+  </div>
+  <div class="modal-body">
+    <div class="alert fade in" id="show_msg" style="display:none;">
+                     
+                      </div>
+   
+    <div class="control-group info">
+              <label class="control-label" for="inputInfo">帐户</label>
+              <div class="controls">
+
+                <input type="text" name="email" class="span5" >
+                <a href='#' id="a_set_password">重置密码</a>
+              </div>
+              <div id="set_pass">
+          <label class="control-label" for="password">密码</label>
+                    <div class="controls">
+                      <input type="text" name="password"  class="span5">
+                    </div>
+              </div>
+
+
+               <label class="control-label" for="company">企业名称</label>
+              <div class="controls">
+                <input type="text" name="company"  class="span5">
+              </div>       
+
+         <label class="control-label" for="starttime">授权开始时间</label>
+              <div class="controls">
+                <input type="text" name="starttime"   id="starttime" class="span5">
+
+              </div>      
+
+             <label class="control-label" for="endtime">授权结束时间</label>
+              <div class="controls">
+                <input type="text" name="endtime" id="endtime"  class="span5">
+              </div>      
+
+   </div>
+
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+    <button class="btn btn-primary" value="" name="btn_save">保存修改</button>
+    <input type="hidden" value="" name="tag">
+
+
+         
+  </div>
+</div>
+
+
+<div id="myModel_set_password" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">重置用户密码 <span id="repassword_id"></span></h3>
+  </div>
+  <div class="modal-body">
+    <div class="alert fade in" id="show_msg_pass" style="display:none;">
+                     
+                      </div>
+   
+    <div class="control-group info">
+              <label class="control-label" for="new_email">帐户</label>
+              <div class="controls">
+
+                <input type="text" name="new_email" class="span5"  >
+               
+              </div>
+          
+          <label class="control-label" for="new_password">密码</label>
+                    <div class="controls">
+                      <input type="text" name="new_password"  class="span5">
+                    </div>
+              </div>
+
+
+
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+    <button class="btn btn-primary" value="" name="btn_save_pass">保存修改</button>
+    <input type="hidden" value="" name="tag">
+  </div>
+</div>
+{% end %}
+
+{%block js%}
+<script>
+$(document).ready(function(){
+  window.prettyPrint && prettyPrint();
+  $("button[name=btn_save_pass]").live("click",function(){
+      id=$(this).val()
+      pass=$("input[name=new_password]").val()
+      _xsrf=getCookie("_xsrf")
+      $.post("/user",{"id":id,"pass":pass,"tag":"repass","_xsrf":_xsrf},
+      function(returnid){
+         if (returnid=="7"){
+         $("#show_msg_pass").show()
+          $("#show_msg_pass").html("新密码不能为空!")
+
+        }
+        else if(returnid=="8"){
+         $("#show_msg_pass").show()
+          $("#show_msg_pass").html("该id用户不存在!"+id)
+
+        }
+        else if(returnid=="9"){
+          $("#myModel_set_password").modal("hide")
+          $("#myModal").modal('show')
+          $("#show_msg").show()
+          $("#show_msg").html("重置密码成功!")
+        }
+      }
+      )
+  })
+  $("#a_set_password").live("click",function(){
+    id =$("button[name=btn_save]").val()
+    email = $("input[name=email]").val()
+    $("button[name=btn_save_pass]").val(id)
+
+    $("#repassword_id").html("#"+id)
+    $("input[name=newpassword]").val("")
+    $("input[name=new_email]").val(email)
+    $("#myModal").modal('hide')
+    $("#myModel_set_password").modal("show")
+
+  })
+  $('#starttime').datepicker({
+        format: 'yyyy-mm-dd'
+      });
+  $("#endtime").datepicker({
+        format: 'yyyy-mm-dd'
+      })
+  $("#hide_msg").hide()
+  $("button[name=btn_add]").live("click",function(){
+      $("#user_id").html("");
+      $("#set_pass").show()
+      $("button[name=btn_save]").val("")
+      $("input[name=email]").val("")
+      $("input[name=company]").val("")
+      $("input[name=starttime]").val("")
+      $("input[name=endtime]").val("")
+      $("input[name=tag]").val("add")
+      $("#a_set_password").hide()
+      $("#s_title").text("新建")
+      $('#myModal').modal('show')
+  })
+ 
+  $("button[name=btn_view]").live("click",function(){
+      id = $(this).val();
+      $("#set_pass").hide()
+      user =$("#"+id).children('td');
+      var company=user.eq(1); 
+      var email =user.eq(2);
+      var starttime = user.eq(4)
+      var endtime = user.eq(5)
+      $("#user_id").html(id);
+      $("#s_title").text("修改")
+      $("button[name=btn_save]").val(id)
+      $("input[name=email]").val(email.text())
+      $("input[name=company]").val(company.text())
+      $("input[name=starttime]").val(starttime.text())
+      $("input[name=endtime]").val(endtime.text())
+      $("input[name=tag]").val("edit")
+      $("#a_set_password").show()
+
+  })
+  $("button[name=btn_save]").live("click",function(){
+      id= $(this).val()
+      email = $("input[name=email]").val()
+      company =$("input[name=company]").val()
+      starttime =$("input[name=starttime]").val()
+      endtime = $("input[name=endtime]").val()
+      tag= $("input[name=tag]").val()
+      pass = $("input[name=password]").val()
+      //alert(pass)
+      _xsrf=getCookie("_xsrf");
+      $.post("/user", {"id":id,"email":email,"company":company,"pass":pass,
+        "starttime":starttime,"endtime":endtime,"tag":tag,"_xsrf":_xsrf
+      } , function(returnid) {
+      if (returnid=="1"){
+                user =$("#"+id).children('td')
+                user.eq(1).text(company)
+                user.eq(2).text(email)
+                user.eq(4).text(starttime)
+                user.eq(5).text(endtime)
+                $("#myModal").modal('hide')
+                $("#show_msg").hide()
+                
+      }
+      else if(returnid==2){
+        location.href="/user"
+
+      }
+      else if(returnid==4){
+           $("#show_msg").show()
+          $("#show_msg").html("密码不能为空!")
+
+      }
+      else if(returnid==3){
+          $("#show_msg").show()
+          $("#show_msg").html("该帐户已经存在!")
+
+      }
+      else if(returnid==5){
+          $("#show_msg").show()
+          $("#show_msg").html("帐户不能为空!")
+      }
+      else if(returnid==6){
+          $("#show_msg").show()
+          $("#show_msg").html("企业名称不能为空!")
+      }
+
+    });
+  })
+})
+</script>
+{%end%}

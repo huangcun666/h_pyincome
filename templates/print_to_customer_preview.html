@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>业务往来款项告知函</title>
+<link href="/static/css/jquery.datepick.css" rel="stylesheet">
+<script src="/static/jquery.js"></script>
+<script src="/static/js/jquery.plugin.min.js"></script>
+<script src="/static/js/jquery.datepick.js"></script>
+<script src="/static/js/jquery.datepick-zh-CN.js"></script>
+<script>
+      function getCookie(name) {
+        var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+        return r ? r[1] : undefined;
+    }
+//数字金额大写转换(可以处理整数,小数,负数)     
+function upDigit(digit)       
+{      
+  //  digit=$("#digit").html();    
+    n=digit.replace(/\,/g,'');    
+    var fraction = ['角', '分'];      
+    var digit = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];      
+    var unit = [ ['元', '万', '亿'], ['', '拾', '佰', '仟']  ];      
+    var head = n < 0? '欠': '';      
+    n = Math.abs(n);      
+    
+    var s = '';      
+    
+    for (var i = 0; i < fraction.length; i++)       
+    {      
+        s += (digit[Math.floor(n * 10 * Math.pow(10, i)) % 10] + fraction[i]).replace(/零./, '');      
+    }      
+    s = s || '整';      
+    n = Math.floor(n);      
+    
+    for (var i = 0; i < unit[0].length && n > 0; i++)       
+    {      
+        var p = '';      
+        for (var j = 0; j < unit[1].length && n > 0; j++)       
+        {      
+            p = digit[n % 10] + unit[1][j] + p;      
+            n = Math.floor(n / 10);      
+        }      
+        s = p.replace(/(零.)*零$/, '').replace(/^$/, '零')  + unit[0][i] + s;      
+    }      
+    return head + s.replace(/(零.)*零元/, '元').replace(/(零.)+/g, '零').replace(/^整$/, '零元整');      
+}     
+$(function() {
+	//# $('#popupDatepicker').datepick();
+	$('#end_date').datepick({dateFormat: 'yyyy年mm月dd日',onSelect: showDate,selectDefaultDate: true});
+	$('#end_date1').datepick({dateFormat: 'yyyy年mm月dd日',selectDefaultDate: true});
+    $('#end_date2').datepick({dateFormat: 'yyyy年mm月dd日',selectDefaultDate: true});
+
+   $("#ys_textarea").keyup(function() {
+        $("#ys_text").html($(this).val().replace("\n","<br/>"))
+    });
+    $("#remark_textarea").keyup(function() {
+        $("#ys_text1").html($(this).val().replace("\n","<br/>"))
+    });
+   $("#customer_name").keyup(function() {
+        $("#fb_customer_name").text($(this).val())
+    });
+      $("#all_income").keyup(function() {
+        $("#fb_all_income").text($(this).val())
+        var all=upDigit($(this).val())
+        $("#all_income_cn").val(all)
+        $("#fb_all_income_cn").text(all)
+    }); 
+    
+      $("#all_income").keyup(function() {
+        $("#fb_all_income").text($(this).val())
+    }); 
+    
+   
+    
+          $("#wait_pay_income").keyup(function() {
+        $("#fb_wait_pay_income").text($(this).val())
+    }); 
+          $("#project_name").keyup(function() {
+        $("#fb_project_name").text($(this).val())
+    }); 
+    _xsrf =  getCookie("_xsrf")
+
+
+    $("#btnprint_reset").on("click",function(){
+
+     $.post("/project?tag=reset_print_to_customer",{
+        "project_id":{{t_project.id}},
+        "project_guid":"{{t_project.guid}}",
+        "_xsrf":_xsrf,
+        "title_id":{{title_id}}
+        },function(result){
+                location.reload()
+        })
+
+    })
+
+    $("#btnprint").on("click",function(){
+      var customer_name =   $("#customer_name").val()
+      var all_income =   $("#all_income").val()
+      var all_income_cn =   $("#all_income_cn").val()
+      var project_name =   $("#project_name").val()
+      var end_date =   $("#end_date").val()      
+      var end_date1 =   $("#end_date1").val()    
+      var end_date2 =   $("#end_date2").val()    
+      var wait_pay_income =   $("#wait_pay_income").val()    
+      var ys_textarea =   $("#ys_textarea").val()   
+      var remark_textarea=$("#remark_textarea").val(); 
+    if(end_date==""){
+        alert("截止日期不能为空")
+        $("#end_date").focus()
+    }else if (end_date==""){
+        alert("付清合同日期不能为空")
+        $("#end_date1").focus()
+
+    }else if (end_date==""){
+        alert("告知函日期不能为空")
+        $("#end_date2").focus()
+    }else{
+        $.post("/project?tag=print_to_customer_preview",{
+            "customer_name":customer_name,
+            "all_income":all_income,
+            "all_income_cn":all_income_cn,
+            "project_name":project_name,
+            "end_date":end_date,
+            "end_date1":end_date1,
+            "end_date2":end_date2,
+            "wait_pay_income":wait_pay_income,
+            "ys_remark":ys_textarea,
+            "remark":remark_textarea,
+            "project_id":{{t_project.id}},
+            "project_guid":"{{t_project.guid}}",
+            "_xsrf":_xsrf,
+            "title_id":{{title_id}}
+            },function(result){
+
+                location.href="/project?tag=print_to_customer&project_id={{t_project.id}}&project_guid={{t_project.guid}}&title_id={{title_id}}"
+                
+            })
+
+
+    }
+    })
+});
+
+function showDate(date1) {
+    var date = new Date(date1);
+  
+	$("#end_date_str").text( date.getFullYear()+"年"+(date.getMonth()+1)+"月"+date.getDate()+"日");
+}
+</script>
+
+<style>
+	* {margin: 0; padding: 0;}
+	i {font-style:normal; margin: 0 20px;}
+	u {margin: 0 2px;}
+	.body {width: 650px; height: 978px; background-color: #fff;margin: 0 auto; font-family: "宋体";}
+	.body h2 {width: 100%; text-align: center; margin: 15px 0;}
+	.body p {padding: 7px 50px; box-sizing: border-box; letter-spacing:0.1em;}
+	.zifu {text-indent:2em;}
+	.di {border-bottom:1px solid #000; display: block; width: 100%;}
+	.xun {border-bottom: 1px dashed #000; display: block; width: 100%; margin-top: 20px;}
+</style>
+</head>
+<body>
+	<div class="body">
+		<h2>业务往来款项告知函  <button id="btnprint_reset" style="padding:8px; font-size:15px;">重置</button>   <button id="btnprint" style="padding:8px; font-size:15px;">保存,打印进入打印预览</button>
+       {%if income_print%}<span style="font-size:14px;color:red;">最后保存{{income_print.updated_at}}</span>{%else%}未保存过数据{%end%} </h2>
+
+		<p>尊敬的客户(名称）:  <input id="customer_name" type="text" value="{%if income_print%}{{income_print.customer_name}}{%else%}
+        {{t_project.customer_name}}
+        {%if t_project.customer_company%} - 
+        {{t_project.customer_company}}{%end%}{%end%}" name="customer_name" style="height:25px;  width:280px;font-size:13px;" /></p>
+		<p class="zifu">您好！为了保证发业集团与您的往来款项账账相符，现将我公司</p>
+		<p>应收款项余额通知如下：</p>
+		<p class="zifu">我司为您所提供的服务已办结。合同总价</p>
+		<p>金额共计
+
+
+        <input type="text" value="{%if income_print%}{{income_print.all_income}}{%else%}{{t_project.all_income}}{%end%}" id="all_income"
+         style="height:25px; font-size:13px; width:80px;" />(大写：<b>
+        <input type="text" value="{%if income_print%}{{rmb_convert(income_print.all_income)}}{%else%}{{rmb_convert(t_project.all_income)}}{%end%}" id="all_income_cn"
+         style="height:25px; font-size:13px; width:120px;" />
+        </b>)。服务内容如下：</p>
+		<p><input type="text" value="{%if income_print%}{{income_print.project_name}}{%else%}{{t_project.project_name}}{%end%}" id="project_name"
+         style="height:25px; font-size:13px; width:520px;" /></p>
+		<p>截止    <input id="end_date" type="text"  name="end_date"
+         style="height:25px; font-size:13px; width:120px;" value="{%if income_print%}{{income_print.end_date.strftime("%Y年%m月%d日")}}{%else%}{%end%}"/>我司应收款项余额为人民币:
+         <input type="text" value="{%if income_print%}{{income_print.wait_income}}{%else%}{{(t_project.all_income - t_project_income_wait.dd)}}{%end%}" id="wait_pay_income" name="wait_pay_income"
+         style="height:25px; font-size:13px; width:100px;" />元。</p>
+		<p>应收款项余额明细如下：</p>
+		<p><textarea  id="ys_textarea" type="text" style="width:550px; height:50px; font-size:13px;" >{%if income_print%}{{income_print.ys_remark}}{%else%}{%end%}</textarea></p>
+		<p class="zifu">为了便于双方今后更好的合作,请在
+        <input type="text" id="end_date1"
+         style="height:25px; font-size:13px; width:120px;" 
+         value="{%if income_print%}{{income_print.end_date1.strftime("%Y年%m月%d日")}}{%else%}{%end%}"
+         />
+        日前付清合同余</p>
+        <p>款，同时再次感谢您对我司的支持与配合！</p>
+        <p><textarea  id="remark_textarea" type="text" style="width:550px; height:50px; font-size:13px;" >{%if income_print and income_print.remark!=None%}{{income_print.remark}}{%else%}{%end%}</textarea></p>
+		<p><i class="zifu">顺颂</i><i style="margin-left: 340px;">发业集团</i></p>
+		<p><i class="zifu">商祺</i><i style="margin-left: 340px;">
+        <input type="text"  id="end_date2"
+         style="height:25px; font-size:13px; width:100px;" value='{%if income_print%}{{income_print.end_date2.strftime("%Y年%m月%d日")}}{%else%}{{t_project_income_title.fi_confirm_at.strftime("%Y年%m月%d日")}}{%end%}' /></p>
+		<p><b class="xun"></b></p>
+		<h2>回执</h2>
+		<p>尊敬的客户(名称）: <span style="color:red" id="fb_customer_name">{%if income_print%}{{income_print.customer_name}}{%else%}
+        {{t_project.customer_name}}
+        {%if t_project.customer_company%} - 
+        {{t_project.customer_company}}{%end%}{%end%}</span></p>
+		<p class="zifu">我司为您所提供的服务已办结。合同总价</p>
+		<p>金额共计 <font color='red' id="fb_all_income">{%if income_print%}{{income_print.all_income}}{%else%}{{t_project.all_income}}{%end%}</font>(大写：<b>
+        <span id="fb_all_income_cn" color='red'>{%if income_print%}{{rmb_convert(income_print.all_income)}}{%else%}{{rmb_convert(t_project.all_income)}}{%end%}</span></b>)。服务内容如下：</p>
+		<p style="color:red" id="fb_project_name"> 
+        {%if income_print%}{{income_print.project_name}}{%else%}{{t_project.project_name}}{%end%}
+     </p>
+		<p>截止<span id="end_date_str" style="color:red"></span>我司应收款项余额为人民币:
+      <font color='red' id="fb_wait_pay_income">{{(t_project.all_income - t_project_income_wait.dd)}}</font>元。</p>
+		<p>应收款项余额明细如下：</p>
+		<p id="ys_text" style="color:red">{%if income_print%}{{income_print.ys_remark}}{%else%}{%end%}</p>
+        <p>请您确认上述款项、及收到办结资料并签字。感谢您的配合！</p>
+        <p id="ys_text1" style="color:red">{%if income_print and income_print.remark!=None%}{{income_print.remark}}{%else%}{%end%}</p>
+		<p><i style="margin-left: 350px;">客户签字：</i><span></span></p>
+	</div>
+
+</body>
+</html>

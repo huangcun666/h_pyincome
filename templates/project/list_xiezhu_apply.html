@@ -1,0 +1,677 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">{%if t_project%}{{t_project.project_name}}{%else%}业务协助{%end%}
+         {%if t_project%}  <a class="btn btn-info btn-sm" href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}">返回</a>{%end%}
+                {%if (role=='7' or role=='9') and t_project %}
+            <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add_xiezhu" >发起协助</a>
+                {%end%}
+        </li>
+
+      </ol>
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link {%if not todo%}active{%end%}" id="nav-home-tab"
+            href="/project?tag=xiezhu_apply" >全 部
+            <span class="badge badge-danger">{{sum.count}}</span>
+        </a>
+          <a class="nav-item nav-link {%if todo=='1'%}active{%end%}"
+            href="/project?tag=xiezhu_apply&todo=1" style="font-size:13px;">协助待审核
+            <span class="badge badge-danger">{{sum.a}}</span>
+            </a>
+            <a class="nav-item nav-link {%if todo=='2'%}active{%end%}"
+            href="/project?tag=xiezhu_apply&todo=2" style="font-size:13px;">申请被驳回
+            <span class="badge badge-danger"></span>
+            <span class="badge badge-danger">{{sum.b}}</span>
+            </a>
+            <a class="nav-item nav-link {%if todo=='3'%}active{%end%}"
+            href="/project?tag=xiezhu_apply&todo=3" style="font-size:13px;">待接单
+            <span class="badge badge-danger">{{sum.c}}</span></a>
+            <a class="nav-item nav-link {%if todo=='4'%}active{%end%}"
+            href="/project?tag=xiezhu_apply&todo=4" style="font-size:13px;"> 处理中
+            <span class="badge badge-danger">{{sum.d}}</span></a>
+            <a class="nav-item nav-link {%if todo=='5'%}active{%end%}"
+            href="/project?tag=xiezhu_apply&todo=5" style="font-size:13px;"> 申请办结
+            <span class="badge badge-danger">{{sum.e}}</span></a>
+            <a class="nav-item nav-link {%if todo=='6'%}active{%end%}"
+            href="/project?tag=xiezhu_apply&todo=6" style="font-size:13px;">驳回订单
+            <span class="badge badge-danger">{{sum.f}}</span></a>
+            <a class="nav-item nav-link {%if todo=='7'%}active{%end%}"
+            href="/project?tag=xiezhu_apply&todo=7" style="font-size:13px;">待确认
+            <span class="badge badge-danger">{{sum.g}}</span></a>
+            <a class="nav-item nav-link {%if todo=='8'%}active{%end%}"
+            href="/project?tag=xiezhu_apply&todo=8" style="font-size:13px;">已办结
+            <span class="badge badge-danger">{{sum.h}}</span></a>
+           </div>
+    </nav>
+    <form>
+        <table>
+            <thread>
+                <tr>
+                    <th>订单/公司/客户/业务</th>
+                    <th>协助内容</th>
+                    <th>工商专员</th>
+                    <th>销售顾问</th>
+                    <th></th>
+                </tr>
+            </thread>
+            <tbody>
+                <tr>
+                    <td><input type="text" name="search_project" class="form-control" placeholder="订单/公司/客户/业务"
+                         value="{%if params['search_project']%}{{params['search_project']}}{%end%}"></td>
+                    <td><input type="text" name="xiezhu_content" class="form-control" placeholder="协助内容"
+                        value="{%if params['xiezhu_content']%}{{params['xiezhu_content']}}{%end%}"></td>
+                    <td><select name="gs_uid">
+                        <option value="">选择工商专员</option>
+                        {%for m  in t_user_teams%}
+                        {%if m.role==7 or m.role==9%}
+                            <option value="{{m.id}}" {%if params['gs_uid']==str(m.id) %}selected{%end%}>{{m.name}}</option>
+                            {%end%}
+                        {%end%}
+                    </select></td>
+                    <td>
+                        <select name="xs_guwen_uid">
+                            <option value="">选择销售顾问</option>
+                            {%for m  in t_user_teams%}
+                            {%if m.team_id==1%}
+                                <option value="{{m.id}}" {%if params['xs_guwen_uid']==str(m.id)%}selected{%end%}>{{m.name}}</option>
+                            {%end%}
+                            {%end%}
+                        </select>
+                    </td>
+                    <td>
+                        <input name="tag" hidden value="{{tag}}">
+                        <input type="submit" value="检索"></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+      <div class="card mb-3">
+            <div class="card-body">
+
+            <div class="table-responsive">
+
+
+            <table class="table table-bordered" id="dataTable"  cellspacing="0">
+            <thead style="background-color:#000;color:#fff">
+                <tr>
+                    <th width="100">订单编号</th>
+                    <th width="100">公司名称</th>
+                    <th width="100">客户姓名</th>
+                    <th width="200">业务内容</th>
+                    <th width="100">协助内容</th>
+                    <th width="100">工商专员</th>
+                    <th width="100">销售顾问</th>
+                    <th width="100">协助周期</th>
+                    <th width="120">当前状态</th>
+                    <th width="50"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for item in xiezhu_applys%}
+                <tr>
+                    <td>{{item.project_id}}</td>
+                    <td>{{item.customer_company}}</td>
+                    <td>{{item.customer_name}}</td>
+                    <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.project_id}}">
+                        {{item.project_name}}</a></td>
+                    <td>{{item.xiezhu_content}}</td>
+                    <td>{{item.gs_uid_name}}</td>
+                    <td>{% if item.xs_uid_name%}{{item.xs_uid_name}}{%end%}</td>
+                    <td>{%if item.zhouqi!='None' and item.zhouqi==0%}小于1天{%elif item.zhouqi>0%}{{item.zhouqi}}天{%end%}</td>
+                    <td>
+                        {%if item.queren_confirm_at%}
+                        {{item.queren_uid_name}}确认业务已经办完
+                        {%elif item.sh_confirm_at%}
+                        待工商专员{{item.gs_uid_name}}确认
+                        {%if name==item.gs_uid_name%}
+                        <button class="gs_queren" id="{{item.queren_id}}">确认</button>
+                        {%end%}
+                        {%elif item.sh_is_pass==0%}
+                            订单被驳回
+                        {%elif item.sh_created_at%}
+                        销售顾问{{item.xs_uid_name}}申请办结
+                        {%if is_xz_manage=='1'%}
+                        <button class="shenhe_banjie" xs_uid_name="{{item.xs_uid_name}}"
+                        xiezhu_zj="{{item.xiezhu_zj}}"sh_id="{{item.sh_id}}" gs_uid_name="{{item.gs_uid_name}}"
+                        gs_uid="{{item.gs_uid}}" xiezhu_id="{{item.id}}">审核办结</button>
+                        {%end%}
+                        {%elif item.xs_confirm_at%}
+                        {{item.xs_uid_name}}已接单，业务处理中
+                        {%if name==item.xs_uid_name%}
+                        <button class="xs_banjie"  id="{{item.id}}">确认办结</button>
+                        {%end%}
+                        {%elif item.gs_is_pass==0 %}
+                        协助申请被驳回
+                        {%elif item.gs_confirm_at%}
+                        待销售顾问{{item.xs_uid_name}}接单
+                        {%if name==item.xs_uid_name%}
+                        <button class="xs_jiedan" id="{{item.id}}" xs_id="{{item.xs_id}}">接单</button>
+                        {%end%}
+                        {%elif item.gs_uid_name%}
+                        协助申请待审核
+                        {%if name==item.gs_uid_name%}
+                        <button class="edit_xiezhu_content" xiezhu_content="{{item.xiezhu_content}}" id="{{item.id}}" gs_id="{{item.gs_id}}" >修改</button>
+                        {%end%}
+                        {%if name=='罗文波'%}
+                        <button class="manage_sh" id="{{item.id}}" gs_id="{{item.gs_id}}">审核</button>
+                        {%end%}
+                        {%end%}
+                    </td>
+                    <td><a class="btn btn-info xiezhu_detail" id="{{item.id}}"
+                         href="/project?tag=show&guid={{item.guid}}&id={{item.project_id}}&xiezhu_id={{item.id}}#xiezhu_list">查看</a></td>
+                </tr>
+                {%end%}
+            </tbody>
+            </table>
+            <div class="col-sm-12 col-md-7">
+                    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                       <ul class="pagination">
+                     {% if pagination.has_prev %}
+                          <li class="paginate_button page-item previous " id="dataTable_previous">
+                          <a href="?tag=xiezhu_apply{%if todo%}&todo={{todo}}{%end%}
+                          {%if params['search_project']%}&search_project={{params['search_project']}}{%end%}
+                          {%if params['xiezhu_content']%}&xiezhu_content={{params['xiezhu_content']}}{%end%}
+                          {%if params['gs_uid']%}&gs_uid={{params['gs_uid']}}{%end%}
+                          {%if params['xs_guwen_uid']%}&xs_guwen_uid={{params['xs_guwen_uid']}}{%end%}
+                          &page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+                 
+                 
+                 
+                         {% end %}
+                         {%for page in pagination.iter_pages() %}
+                          {% if page %}
+                          {% if page != pagination.page %}
+                          <li class="paginate_button page-item ">
+                            <a href="?tag=xiezhu_apply{%if todo%}&todo={{todo}}{%end%}
+                            {%if params['search_project']%}&search_project={{params['search_project']}}{%end%}
+                            {%if params['xiezhu_content']%}&xiezhu_content={{params['xiezhu_content']}}{%end%}
+                            {%if params['gs_uid']%}&gs_uid={{params['gs_uid']}}{%end%}
+                            {%if params['xs_guwen_uid']%}&xs_guwen_uid={{params['xs_guwen_uid']}}{%end%}
+                            &page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                          {% else %}
+                           <li class="paginate_button page-item active">
+                             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+                           {% end %}
+                           {% else %}
+                           <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+                           {% end %} 
+                           
+                           {%end %}
+                 
+                          {% if pagination.has_next %}
+                          <li class="paginate_button  page-item next" id="dataTable_next">
+                            <a href="/project?tag=xiezhu_apply{%if todo%}&todo={{todo}}{%end%}
+                            {%if params['search_project']%}&search_project={{params['search_project']}}{%end%}
+                            {%if params['xiezhu_content']%}&xiezhu_content={{params['xiezhu_content']}}{%end%}
+                            {%if params['gs_uid']%}&gs_uid={{params['gs_uid']}}{%end%}
+                            {%if params['xs_guwen_uid']%}&xs_guwen_uid={{params['xs_guwen_uid']}}{%end%}
+                            &page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                      {% end %} </ul>
+                    </div>
+                 </div>
+            </div>
+            {% if not xiezhu_applys%}
+            <div class="container">
+                <p class="text-center">还没有哦~</p>
+            </div>
+            
+            {%end%}
+        </div>
+    </div>
+
+    <div class="modal fade" id="add_project_xiezhu" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="xiezhu_title">发起协助
+        
+              </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+        
+        
+                <div class="modal-body form-horizontal" id="site_mod">
+                    <div class="form-group">
+                    <div class="col-sm-10">
+                        <label for="recode">协助内容</label>
+                        <textarea class="form-control" name="xiezhu_content" id="xiezhu_content" type="text" placeholder="填写协助内容">
+                            </textarea>
+                        </div>
+                    </div>
+    
+                </div>
+        
+        
+                <div class="modal-footer">
+                    <input type="hidden" value="0" id="is_other" name="is_other" />
+                           <button class="btn btn-primary" target="_blank" id="btn_save_project_xiezhu">发起</button>
+        
+                </div>
+              </div>
+            </div>
+          </div>
+    <!-- <div class="modal fade" id="project_xiezhu_detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="income_title_type">协助状态
+            
+                  </h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+            
+            
+                    <div class="modal-body form-horizontal" id="site_mod">
+                        <div class="form-group">
+                        <div class="col-sm-12 detail_box">
+                            </div>
+                        </div>
+        
+                    </div>
+            
+            
+                    <div class="modal-footer">
+                        <input type="hidden" value="0" id="is_other" name="is_other" />
+            
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+    <div class="modal fade" id="shenhe_xiezhu_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="income_title_type">审核
+              </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+        
+        
+                <div class="modal-body form-horizontal" id="site_mod">
+                    <div class="form-group">
+                            <div class="col-sm-10">
+                                <label for="recode">状态：</label>
+                                <input type="radio" name="is_pass" value="1">通过
+                                <input type="radio" name="is_pass" value="0">不通过
+                                </div>
+                            </div>
+                    <div class="form-group">
+                    <div class="col-sm-10">
+                        <label for="recode">分配销售顾问：</label>
+                        <select name="fenpei_xs">
+                        <option value="">选择销售顾问</option>
+                        {%for m  in t_user_teams%}
+                        {%if m.team_id==1%}
+                            <option value="{{m.id}}">{{m.name}}</option>
+                        {%end%}
+                        {%end%}
+                    </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                    <div class="col-sm-10">
+                        <label for="recode">备注：</label>
+                        <textarea class="form-control"
+                         name="remark" id="remark" type="text" placeholder="填写备注">
+                            </textarea>
+                        </div>
+                    </div>
+    
+                </div>
+        
+        
+                <div class="modal-footer">
+                    <input type="hidden" value="0" id="is_other" name="is_other" />
+                           <button class="btn btn-primary" target="_blank" id="btn_save_shenhe_xiezhu">确定</button>
+        
+                </div>
+              </div>
+            </div>
+          </div>
+   <div class="modal fade" id="banjie_xiezhu_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="income_title_type">申请办结
+              </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+        
+        
+                <div class="modal-body form-horizontal" id="site_mod">
+                    <div class="form-group">
+                    <div class="col-sm-10">
+                        <label for="recode">总结：</label>
+                        <textarea class="form-control"
+                         name="xiezhu_zj" id="xiezhu_zj" type="text" placeholder="填写总结">
+                            </textarea>
+                        </div>
+                    </div>
+    
+                </div>
+        
+        
+                <div class="modal-footer">
+                    <input type="hidden" value="0" id="is_other" name="is_other" />
+                           <button class="btn btn-primary" target="_blank" id="btn_save_banjie_xiezhu">确定</button>
+        
+                </div>
+              </div>
+            </div>
+          </div>
+   <div class="modal fade" id="shenhe_banjie_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="income_title_type">审核办结
+              </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+        
+        
+                <div class="modal-body form-horizontal" id="site_mod">
+                    <div class="form-group">
+                    <div class="col-sm-10">
+                        <div class="xs_zj"></div>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                            <div class="col-sm-10">
+                                <label>状态:</label>
+                                <input type="radio" name="is_pass1" id="is_pass1" value="1">确认
+                                <input type="radio" name="is_pass1" id="is_pass1" value="0">驳回
+                                </div>
+                            </div>
+                       <div class="form-group">
+                            <div class="col-sm-10">
+                                <label>备注:</label>
+                            <textarea class="form-control"
+                                name="remark1" id="remark1" type="text" placeholder="填写总结">
+                                    </textarea>
+                                </div>
+                            </div>
+                </div>
+        
+        
+                <div class="modal-footer">
+                    <input type="hidden" value="0" id="is_other" name="is_other" />
+                           <button class="btn btn-primary" target="_blank" id="btn_save_shenhe_banjie">确定</button>
+        
+                </div>
+              </div>
+            </div>
+          </div>
+{%end%}
+
+{%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+ 
+    
+    $('#btn_add_xiezhu').on('click',function () {
+        $('#xiezhu_title').text('发起协助') 
+        $('#xiezhu_content').val('')
+        $('#btn_save_project_xiezhu').removeAttr('xiezhu_id')
+        $('#btn_save_project_xiezhu').text('发起')
+        $('#add_project_xiezhu').modal('show');
+     })
+     $('.edit_xiezhu_content').on('click',function () {
+         var xiezhu_content=$(this).attr('xiezhu_content')
+         var id=$(this).attr('id')
+         var gs_id=$(this).attr('gs_id')
+         $('#xiezhu_title').text('修改协助')
+         $('#btn_save_project_xiezhu').text('修改')
+         $('#xiezhu_content').val(xiezhu_content)
+         $('#btn_save_project_xiezhu').attr('xiezhu_id',id)
+         $('#btn_save_project_xiezhu').attr('gs_id',gs_id)
+         $('#add_project_xiezhu').modal('show');
+      })
+     
+    $('#btn_save_project_xiezhu').on('click',function () { 
+        var content=$('#xiezhu_content').val()
+        var xiezhu_id=$(this).attr('xiezhu_id')
+        var gs_id=$(this).attr('gs_id')
+        if(content==''){
+            alert('协助内容不能为空')
+        }else{
+        $.post(
+            '/project?tag=xiezhu_apply',
+            {
+                '_xsrf':_xsrf,
+                'content':content,
+                'xiezhu_id':xiezhu_id,
+                'gs_id':gs_id,
+                'project_id':"{%if t_project%}{{t_project.id}}{%end%}",
+                'step':1
+            },function (res) {
+                if(res=='1'){
+                    if(confirm('已审核通过不能修改')){
+                        location.reload()
+                    }
+                } else{
+                location.reload()
+                }
+             }
+        )
+        }
+     })
+    // $('.xiezhu_detail').on('click',function () { 
+    //     var id=$(this).attr('id')
+    //         $.get(
+    //             '/project?tag=xiezhu_apply_detail',
+    //             {
+    //                 'xiezhu_id':id
+    //             },function (res) { 
+    //                 $('.detail_box').children().remove()
+    //                 mileposts=res['mileposts']
+    //                 var text=''
+    //                 for( var i=0;i<mileposts.length;i++){
+    //                     if(mileposts[i].type_name=='待审核' ){
+    //                         text+='<p>流程1:工商专员'+mileposts[i].uid_name+'发起协助工单'+
+    //                         '<span class="badge badge-success">'+mileposts[i].created_at+'</span></p>'
+    //                         if(mileposts[i].confirm_at!=null){
+    //                             text+='<p>流程2:'+mileposts[i+1].fz_name+'审核通过<span class="badge badge-success">'+
+    //                             mileposts[i].confirm_at+'</span></p>'
+                              
+    //                         }else if(mileposts[i].is_pass==0){
+    //                             text+='<p>流程2:协助申请被驳回<span class="badge badge-success">'+mileposts[i].reject_at+'</span></p>'
+    //                         }
+    //                         else{
+    //                             text+='<p>流程2:待经理审核中<span class="badge badge-success">'+mileposts[i].created_at+'</span></p>'
+                              
+    //                         }
+    //                         if(mileposts[i].remark!=''){
+    //                                 text+='<p>备注：'+mileposts[i].remark+'</p>'
+    //                         }
+    //                     }
+    //                     if(mileposts[i].type_name=='待接单'){
+    //                         if(mileposts[i].created_at!=null & mileposts[i].confirm_at==null){
+    //                                 text+='<p>流程3:待销售顾问'+mileposts[i].uid_name+'接单<span class="badge badge-success">'+
+    //                                 mileposts[i].created_at+'</span></p>'
+    //                         }else if(mileposts[i].confirm_at!=null){
+    //                             text+='<p>流程3:'+mileposts[i].uid_name+'已接单，业务处理中'+
+    //                             '<span class="badge badge-success">'+
+    //                             mileposts[i].confirm_at+'</span></p>'
+    //                         }
+    //                     }
+    //                     if(mileposts[i].type_name=='结果审核'){
+    //                         text+='<p>流程4:销售顾问'+mileposts[i].uid_name+'申请办结<span class="badge badge-success">'+
+    //                             mileposts[i].created_at+'</span></p>'
+    //                         if(mileposts[i].is_pass==0){
+    //                             text+='<p>流程5:'+mileposts[i].fz_name+'驳回办结<span class="badge badge-success">'+mileposts[i].reject_at+'</span></p>'
+    //                         }
+    //                         else if(mileposts[i].created_at!=null & mileposts[i].confirm_at==null){
+    //                             text+='<p>流程5:待部门负责人确认<span class="badge badge-success">'+mileposts[i].created_at+'</span></p>'
+    //                         } else if(mileposts[i].confirm_at!=null){
+    //                             text+='<p>流程5：'+mileposts[i].fz_name+'确认办结<span class="badge badge-success">'+mileposts[i].confirm_at+'</span></p>'
+    //                         }
+    //                         if(mileposts[i].remark!=''){
+    //                                 text+='<p>备注：'+mileposts[i].remark+'</p>'
+    //                             }
+    //                     }
+    //                     if(mileposts[i].type_name=='已确认'){
+    //                         if(mileposts[i].confirm_at==null){
+    //                             text+='<p>流程6:待工商专员'+mileposts[i].uid_name+'确认<span class="badge badge-success">'+mileposts[i].created_at+
+    //                             '</span></p>'
+    //                         }else{
+    //                             text+='<p>流程6:工商专员'+mileposts[i].uid_name+'确认业务已经办完<span class="badge badge-success">'+mileposts[i].confirm_at+
+    //                             '</span></p>'
+                              
+    //                         }
+    //                     }
+
+                        
+    //                 }
+    //                 $('.detail_box').append(text)
+    //                 $('#project_xiezhu_detail').modal('show')
+    //              }
+    //         )
+    //  })
+     
+     $('.manage_sh').on('click',function () { 
+         var id=$(this).attr('id')
+         var gs_id=$(this).attr('gs_id')
+         $('#btn_save_shenhe_xiezhu').attr('xiezhu_id',id)
+         $('#btn_save_shenhe_xiezhu').attr('gs_id',gs_id)
+         $('#shenhe_xiezhu_modal').modal('show')
+      })
+    
+    $("#btn_save_shenhe_xiezhu").on('click',function () { 
+        var is_pass=$('input[name=is_pass]:checked').val()
+        var fenpei_xs_id=$('select[name=fenpei_xs]').val()
+        var fenpei_xs_name=$('select[name=fenpei_xs] option:selected').text()
+        var xiezhu_id=$(this).attr('xiezhu_id')
+        var remark=$('#remark').val()
+        var gs_id=$(this).attr('gs_id')
+       
+        if(is_pass==undefined){
+            alert('请选择是否通过')
+        }
+        else if(fenpei_xs_id==''){
+            alert('请选择销售顾问')
+        }
+        else{
+        $.post(
+            '/project?tag=xiezhu_apply',
+            {
+                '_xsrf':_xsrf,
+                'xiezhu_id':xiezhu_id,
+                'gs_id':gs_id,
+                'is_pass':is_pass,
+                'fenpei_xs_id':fenpei_xs_id,
+                'fenpei_xs_name':fenpei_xs_name,
+                'remark':remark,
+                'step':2
+            },function (res) { 
+                location.reload()
+             }
+        )
+        }
+     })
+    $('.xs_jiedan').on('click',function () { 
+        var xiezhu_id=$(this).attr('id')
+        var xs_id=$(this).attr('xs_id')
+        $.post(
+            '/project?tag=xiezhu_apply',
+            {
+                '_xsrf':_xsrf,
+                'xs_id':xs_id,
+                'step':3
+            },function (res) { 
+                location.reload()
+             }
+        )
+     })
+    $('.xs_banjie').on('click',function () { 
+        var xiezhu_id=$(this).attr('id')
+        $('#btn_save_banjie_xiezhu').attr('xiezhu_id',xiezhu_id)
+        $('#banjie_xiezhu_modal').modal('show')
+     })
+     $('#btn_save_banjie_xiezhu').on('click',function () { 
+         var xiezhu_id=$(this).attr('xiezhu_id')
+         var xiezhu_zj=$('#xiezhu_zj').val()
+         $.post(
+            '/project?tag=xiezhu_apply',
+            {
+                '_xsrf':_xsrf,
+                'xiezhu_id':xiezhu_id,
+                'xiezhu_zj':xiezhu_zj,
+                'step':4
+            },function (res) { 
+                location.reload()
+             }
+        )
+      })
+      $('.shenhe_banjie').on('click',function () {
+          var xs_uid_name=$(this).attr('xs_uid_name')
+          var xiezhu_zj=$(this).attr('xiezhu_zj')
+          var sh_id=$(this).attr('sh_id')
+          var xiezhu_id=$(this).attr('xiezhu_id')
+          var gs_uid_name=$(this).attr('gs_uid_name')
+          var gs_uid=$(this).attr('gs_uid')
+          $('.xs_zj').children().remove()
+          $('.xs_zj').append('<p>销售顾问'+xs_uid_name+'办理总结：</p><p>'+xiezhu_zj+'</p>')
+          $('#btn_save_shenhe_banjie').attr({'sh_id':sh_id,'xiezhu_id':xiezhu_id,'gs_uid_name':gs_uid_name,'gs_uid':gs_uid}) 
+          $('#shenhe_banjie_modal').modal('show')
+       })
+       $('#btn_save_shenhe_banjie').on('click',function () { 
+           var is_pass=$('#is_pass1:checked').val()
+           var remark=$('#remark1').val()
+           var sh_id=$(this).attr('sh_id')
+           var xiezhu_id=$(this).attr('xiezhu_id')
+           var gs_uid_name=$(this).attr('gs_uid_name')
+           var gs_uid=$(this).attr('gs_uid')
+           if(is_pass==undefined){
+               alert('请选择是否通过')
+           }else{
+           $.post(
+            '/project?tag=xiezhu_apply',
+            {
+                '_xsrf':_xsrf,
+                'is_pass':is_pass,
+                'remark':remark,
+                'sh_id':sh_id,
+                'xiezhu_id':xiezhu_id,
+                'gs_uid_name':gs_uid_name,
+                'gs_uid':gs_uid,
+                'step':5
+            },function (res) { 
+                location.reload()
+             }
+           )
+        }
+        })
+        $('.gs_queren').on('click',function () { 
+            var queren_id=$(this).attr('id')
+            $.post(
+            '/project?tag=xiezhu_apply',
+            {
+                '_xsrf':_xsrf,
+                'queren_id':queren_id,
+                'step':6
+            },function (res) { 
+                location.reload()
+             }
+           )
+         })
+})
+</script>
+{%end%}

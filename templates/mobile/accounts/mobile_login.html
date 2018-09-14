@@ -1,0 +1,57 @@
+{% extends "../mobile_base.html" %} {%block title%}系 统 登 录{%end%} 
+{% block body %}
+<form method="post">
+<header class="demos-header">
+      <h1 class="demos-title">系 统 登 录</h1>
+    </header>
+<div class="weui-cells weui-cells_form">
+  <div class="weui-cell">
+    <div class="weui-cell__hd"><label class="weui-label">账号</label></div>
+    <div class="weui-cell__bd">
+      <input class="weui-input" type="text" placeholder="请输入账号" name="username">
+    </div>
+  </div>
+  <div class="weui-cell">
+    <div class="weui-cell__hd"><label class="weui-label">密码</label></div>
+    <div class="weui-cell__bd">
+      <input class="weui-input" type="password"  id="password" name="password" placeholder="请输入密码">
+    </div>
+  </div>
+   {% module xsrf_form_html() %}
+<div class="weui-btn-area">
+  
+
+                <button class="weui-btn weui-btn_primary"  type="submit" style="margin-top: 15px" class="btn btn-primary btn-block">登 录</button>
+
+    </div>
+
+</div>
+    </form>
+
+
+
+
+      {%end%}
+
+      {%block js%}
+
+    <script>
+    $(function(){
+
+ {%if error%}
+$.toast("{{error}}", "forbidden");
+
+  {%end%}
+
+  {%if log_in_again%}
+      <div class="alert alert-success" role="alert">
+    <strong>温馨提示: </strong> {{log_in_again}}
+  
+</div>   
+ {%end%}
+
+
+    })
+
+</script>
+      {%end%}

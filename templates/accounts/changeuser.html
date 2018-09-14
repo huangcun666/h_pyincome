@@ -1,0 +1,688 @@
+
+
+
+ 
+ {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+ <ol class="breadcrumb">
+   <li class="breadcrumb-item">
+    主面板
+   </li>
+   <li class="breadcrumb-item active">修改用户</li>
+
+ </ol>
+
+ <div class="container">
+    {% if error%}
+    <div class="alert alert-warning">
+            <a href="#" class="close" data-dismiss="alert">
+                &times;
+            </a>
+            <strong>
+                    {{error}}
+            </strong>
+        </div>
+        {%end%}
+        <form action="/changeuser/{{user.id}}" method="POST">
+            {% raw xsrf_form_html() %}
+            <div class="form-group">
+              <div class="form-row">
+                  <div class="col-md-4">
+                      <label for="name"><span style="color:red;">*</span>用户名:</label>
+                      <input value="{{user.name}}" class="form-control" name="name" 
+                      id="name" type="text" aria-describedby="nameHelp" placeholder="用户名" required>
+                    </div>
+                <div class="col-md-4">
+                      <label for="email">邮箱</label>
+                      <input value="{{user.email}}" class="form-control" 
+                      id="email" name="email" type="text" aria-describedby="nameHelp" placeholder="邮箱">
+                    </div>
+                <div class="col-md-4">
+                        <label for="phone">电话</label>
+                        <input value="{{user.phone}}" class="form-control" 
+                        id="phone" name="phone" type="text" aria-describedby="nameHelp" placeholder="电话">
+                    </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-row">
+                  <div class="col-md-4" style="margin-top: 35px; ">
+                      <label for="is_lock"><span style="color:red;">*</span>是否锁定用户登录: </label>
+                      {%if user.is_lock==1%}
+                      <input  checked id="is_lock"
+                       name="is_lock" type="radio" style="margin-left: 20px;" value="1" required>是
+                       {%else%}
+                       <input  id="is_lock"
+                       name="is_lock" type="radio" style="margin-left: 20px;" value="1" required>是
+                       {%end%}
+                       {%if user.is_lock==0%}
+                       <input  checked id="is_lock"
+                       name="is_lock" type="radio" style="margin-left: 20px;" value="0" required>否
+                       {%else%}
+                       <input   id="is_lock"
+                       name="is_lock" type="radio" style="margin-left: 20px;" value="0" required>否
+                       {%end%}
+                       
+                    </div>
+                    <div class="col-md-4" style="margin-top: 35px;">
+                        <span style="color:red;">*</span>选择用户权限：<select name="role" required>
+                                    <option value="">==请选择用户权限==</option>
+                                    {% if user.role==1 %}                 
+                                    <option value="1" selected="selected">业务</option>
+                                    {%else%}
+                                    <option value="1">业务</option>
+                                    {%end%}
+                                    {% if user.role==2 %}   
+                                    <option value="2" selected="selected">出纳</option>
+                                    {%else%}
+                                    <option value="2">出纳</option>
+                                    {%end%}
+                                    {% if user.role==3 %}  
+                                    <option value="3" selected="selected">财务</option>
+                                    {%else%}
+                                    <option value="3">财务</option>
+                                    {%end%}
+                                    {% if user.role==5 %}  
+                                    <option value="5" selected="selected">合同确认</option>
+                                    {%else%}
+                                    <option value="5">合同确认</option>
+                                    {%end%}
+                                    {% if user.role==6 %} 
+                                    <option value="6" selected="selected">电销</option>
+                                    {%else%}
+                                    <option value="6">电销</option>
+                                    {%end%}
+                                    {% if user.role==7 %} 
+                                    <option value="7" selected="selected">跟单分配员</option>
+                                    {%else%}
+                                    <option value="7">跟单分配员</option>
+                                    {%end%}
+                                    {% if user.role==8 %} 
+                                    <option value="8" selected="selected">管理员</option>
+                                    {%else%}
+                                    <option value="8">管理员</option>
+                                    {%end%}
+                                    {% if user.role==9 %} 
+                                    <option value="9" selected="selected">跟单员</option>
+                                    {%else%}
+                                    <option value="9">跟单员</option>
+                                    {%end%}
+                                  </select>
+                   </div>
+                    </div>
+                  </div>
+                   <div class="form-group">
+                        <div class="form-row">
+                            <div class="col-md-6" style="margin-top: 35px;">
+                                <label for="remark">备注:</label>
+                                <textarea cols="50" rows="5" placeholder="备注" name="remark" id="remark">{%if user.remark!=None%}{{user.remark}}{%end%}
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+
+              <div class="form-group">
+                <div class="form-row">
+                    <div class="col-md-4" style="margin-top: 35px;">
+                        <label for="is_first"><span style="color:red">*</span>是否第一次登陆:</label>
+                        {%if user.is_first==0%}
+                          <input checked id="is_first"
+                              name="is_first" type="radio" style="margin-left: 20px;" value="0" required>是
+                        {%else%}
+                        <input checked id="is_first"
+                        name="is_first" type="radio" style="margin-left: 20px;" value="0" required>是
+                        {%end%}
+                        {%if user.is_first==1%}
+                          <input checked id="is_first"
+                              name="is_first" type="radio" style="margin-left: 20px;" value="1" required>否
+                          {%else%}
+                          <input  id="is_first"
+                          name="is_first" type="radio" style="margin-left: 20px;" value="1" required>否
+                          {%end%}
+                          </div>
+                <div class="col-md-4" style="margin-top: 35px;">
+                        <label for="is_admin">管理员:</label>
+                        {%if user.is_admin==1%}
+                          <input checked id="is_admin"
+                             name="is_admin" type="radio" style="margin-left: 20px;" value="1">是
+                          <input   id="is_admin"
+                             name="is_admin" type="radio" style="margin-left: 20px;" value="0">否
+                             {%else%}
+                             <input id="is_admin"
+                             name="is_admin" type="radio" style="margin-left: 20px;" value="1">是
+                          <input  checked  id="is_admin"
+                             name="is_admin" type="radio" style="margin-left: 20px;" value="0">否
+                             {%end%}
+                </div>
+
+                <div class="col-md-4" style="margin-top: 35px;">
+                  <label for="qc"><span style="color:red;">*</span>是否为跟单分配权限：</label>
+                  {%if user.qc==1%}
+                  <input checked id="qc"
+                  name="qc" type="radio" style="margin-left: 20px;" value="1" required>是
+               <input   id="qc"
+                  name="qc" type="radio" style="margin-left: 20px;" value="0" required>否
+                  {%else%}
+                  <input  id="qc"
+                  name="qc" type="radio" style="margin-left: 20px;" value="1" required>是
+               <input  checked id="qc"
+                  name="qc" type="radio" style="margin-left: 20px;" value="0" required>否
+                  {%end%}
+                </div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top: 30px;"> 
+            <input type="submit" value="提交" class="btn btn-info" style="text-align: center;margin-bottom: 10px;">
+        </div>     
+          </form>
+   <div class="card-footer small text-muted"></div>
+ </div>
+<!-- Modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="new_project_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+
+<div class="modal-dialog" role="document" >
+<div class="modal-content">
+ <div class="modal-header">
+   <h5 class="modal-title" id="exampleModalLongTitle_license">新建业务 </h5>
+   <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+     <span aria-hidden="true">&times;</span>
+   </button>
+ </div>
+
+ <div class="modal-body form-horizontal" id="site_mod">
+
+  <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-4 control-label">业务来源: <small class="text-danger">（必填）</small></label>
+
+      {% for idx, item in enumerate(t_income_type) %}
+
+            <input type="radio" name="busniess_from"  value="{{item.id}}|{{item.income_name}}" {%if idx==0%}checked{%end%}/> &nbsp;{{item.income_name}}
+      {% end %}
+
+     </div>
+
+     <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-4 control-label">所属公司: <small class="text-danger">（必选）</small></label>
+
+      {% for idx, item in enumerate(t_company) %}
+            <input type="radio" name="company"  id="company" value="{{item.id}}|{{item.income_name}}" /> &nbsp;{{item.income_name}}
+      {% end %}
+ <small id="pcompanyHelpInline" class="text-danger">
+     
+     </small>
+     </div>
+
+
+ <div id="div_building" class="well">
+
+    <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-4 control-label">所属楼盘: <small class="text-danger">（必填）</small></label>
+   <select name="building_id" id="building_id"  class="form-control">
+        <option value="0">==请选择楼盘==</option>
+      {% for idx, item in enumerate(t_building) %}
+
+         <option
+          value="{{item.id}}|{{item.income_name}}">
+         {{item.income_name}}
+           </option>
+      {% end %}
+ </select>
+     <small id="building_idHelpInline" class="text-danger">
+     
+     </small>
+     </div>
+ </div>
+
+<div id="div_recommend_by"  style="  border:1px solid #eee; padding:10px;">
+     <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-6 control-label">客户推荐人: <small class="text-danger">（必填）</small></label>
+       <input class="form-control"  type="text" name="recommend_by" id="recommend_by" placeholder="谁帮我们介绍的客户" value="">
+   
+   
+       <small id="recommend_byHelpInline" class="text-danger">
+     
+     </small>
+   
+     </div>
+</div>
+
+
+
+<div id="div_recommend_staff"  style="  border:1px solid #eee; padding:5px;">
+     <div class="form-group">
+       <label for="exampleInputEmail1" class="col-sm-4 control-label">内部推荐人:<small class="text-danger" id="msg_inner_re">（必选）</small></label>
+
+<input type="text" name="recommend_staff" id="recommend_staff"   data-items="8" data-provide="typeahead" />
+<small id="recommend_staffHelpInline" class="text-danger">
+     
+     </small>
+     </div>
+</div>
+
+
+
+ <div id="div_from_word"  style="  border:1px solid #eee; padding:5px; margin-bottom:4px;">
+
+
+    <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-6 control-label">在线客服:  <small class="text-danger">（必填）</small></label>
+   <select name="kf_id" id="kf_id"  class="form-control">
+        <option value="0">选择在线客服</option>
+      {% for idx, item in enumerate(t_users_kf) %}
+
+         <option
+          value="{{item.id}}|{{item.name}}">
+         {{item.name}}
+           </option>
+      {% end %}
+ </select>
+ <small id="kf_idHelpInline" class="text-danger">
+     
+     </small>
+
+     </div>
+
+<div class="form-group" >
+<label for="inputEmail3" class=" control-label">来源关键词 <small class="text-danger">（必填）</small></label>
+
+       <input class="form-control"  type="text" name="from_word" id="from_word" placeholder="没有写无" value=""/>
+
+<small id="from_wordHelpInline" class="text-danger">
+     
+     </small>
+
+</div>
+
+
+    <div class="form-group">
+       <label for="exampleInputEmail1"  class=" control-label">来源渠道: <small class="text-danger">（必填）</small></label>
+
+      {% for idx, item in enumerate(t_business_channel) %}
+
+            <input type="radio" name="business_channel"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
+      {% end %}
+
+
+<small id="business_channelHelpInline" class="text-danger">
+     
+     </small>
+     </div>
+    </div>
+
+  <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-4 control-label">签约方式: <small class="text-danger">（必填）</small></label>
+
+      {% for idx, item in enumerate(t_sign_type) %}
+            <input type="radio" name="sign_type_id"  value="{{item.id}}|{{item.income_name}}"
+             /> &nbsp;{{item.income_name}}
+      {% end %}
+
+     </div>
+  <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-4 control-label">来源方式: <small class="text-danger">（必填）</small></label>
+
+      {% for idx, item in enumerate(t_talk_type) %}
+            <input type="radio" name="talk_type"  value="{{item.id}}|{{item.income_name}}"
+            /> &nbsp;{{item.income_name}}
+      {% end %}
+     <small id="talk_typeHelpInline" class="text-danger"></small>
+     </div>
+            <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-4 control-label">是否记账: <small class="text-danger">（必填）</small></label>
+
+       <input type="radio" name="is_finance"  value="1"
+            /> &nbsp;是
+            <input type="radio" name="is_finance"  value="0"
+            /> &nbsp;否
+
+
+
+            <small id="is_financeHelpInline" class="text-danger"></small>
+     </div>
+                    <div class="form-group">
+<label for="exampleInputEmail1"  class="col-sm-4 control-label">合同情况: <small class="text-danger">（必填）</small></label>
+           {%for idx,item in enumerate(t_rec_contarct_type)%}
+     <input type="radio" name="new_contract_type_id" value="{{item.id}}|{{item.income_name}}"
+      title="{{item.income_name}}"/> {{item.income_name}}
+  {%end%}
+
+   <small id="new_contract_type_idHelpInline" class="text-danger"></small>
+   </div>
+<div class="row" style="margin:10px;">
+
+            <div class=" form-group  span5   " style="margin:10px;">
+       <label for="exampleInputEmail1"  class="control-label">成交周期(天）:  <small class="text-danger">（必填）</small></label>
+
+       <input class="form-control"  type="text" name="deal_day" id="deal_day" placeholder="花了多少天完成了订单" />
+    
+    
+      <small id="deal_dayHelpInline" class="text-danger"></small>
+     </div>
+             <div class="form-group span5" style="margin:10px;"    >
+                   <label for="exampleInputEmail1"  class="control-label">预计合同定金:   <small class="text-danger">（必填）</small></label>
+                   <input class="form-control"  type="text" name="pre_income" id="pre_income" placeholder="预计合同定金金额" value="">
+               
+               <small id="pre_incomeHelpInline" class="text-danger"></small>
+               </div>
+</div>
+         <div class="form-group">
+       <label for="exampleInputEmail1"  class="control-label">地址类型:<small class="text-danger">（必选）</small></label>
+       <input class="form-control"  type="text"  name="addr_type" id="addr_type" placeholder="如果没有写无">
+       <small id="addr_typeHelpInline" class="text-danger"></small>
+     </div>
+           <div class="form-group">
+       <label for="exampleInputEmail1"  class="control-label">业务内容:<small class="text-danger">（必选）</small></label>
+       <input class="form-control"  type="text"  name="project_name" id="project_name" placeholder="业务内容 摘要">
+       <small id="project_nameHelpInline" class="text-danger"></small>
+     </div>
+ <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-4 control-label">客户姓名:<small class="text-danger">（必选）</small></label>
+       <input class="form-control"  type="text" name="customer_name" id="customer_name" placeholder="客户姓名 称呼">
+        <small id="customer_nameHelpInline" class="text-danger"></small>
+     </div>
+
+
+     <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-4 control-label">企业名称:</label>
+       <input class="form-control"  type="text" name="customer_company" id="customer_company"  placeholder="企业名称">
+       <small id="customer_companyHelpInline" class="text-danger"></small>
+     </div>
+     <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-4 control-label">联系方式:</label>
+       <input class="form-control"  type="text" name="customer_tel" id="customer_tel" placeholder="手机号码">
+          <small id="customer_telHelpInline" class="text-danger"></small>
+     </div>
+
+       <input class="form-control"  type="hidden" name="all_income" id="all_income" placeholder="" value="0">
+
+
+      <input class="form-control"  type="hidden" name="true_inew_project_modalncome" placeholder="" value="0">
+
+      <input class="form-control"  type="hidden" name="true_income" id="true_income" placeholder="" value="0">
+      <div class="form-group">
+       <label for="exampleInputEmail1"  class="col-sm-4 control-label">备注</label>
+       <textarea class="form-control"  type="textarea" name="remark" id="remark"  placeholder=""></textarea>
+     </div>
+
+
+
+ </div>
+ <div class="modal-footer">
+   <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            <button class="btn btn-primary" id="btn_save_project">保 存</button>
+ </div>
+</div>
+</div>
+</div>
+
+
+
+
+{% end %}
+
+
+{%block js%}
+
+<script>
+$(function () {
+_xsrf =  getCookie("_xsrf")
+$('#recommend_staff').typeahead({
+ source: function (query, process) {
+   return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+       return process(JSON.parse(data));
+   });
+}
+});
+$('#addr_type').typeahead({
+ source: function (query, process) {
+   return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"addr"}, function (data) {
+       return process(JSON.parse(data));
+   });
+}
+});
+
+
+$("#div_building").hide()
+$("#div_recommend_by").hide()
+$("#div_recommend_staff").hide()
+
+   $("#btn_add").on("click",function(){
+       $("#new_project_modal").modal("show")
+
+   })
+
+     $(document).on("change", 'input[name=busniess_from]',function(){
+
+             bf_value = $(this).val().split('|')[0]
+
+         if (bf_value=="2"){
+             $("#div_from_word").show()
+             $("#div_building").hide()
+             $("#div_recommend_by").hide()
+             $("#div_recommend_staff").hide()
+         }else if(bf_value=="3"){
+             $("#div_from_word").hide()
+             $("#div_building").hide()
+             $("#div_recommend_by").show()
+              $("#div_recommend_staff").show()
+               $("#msg_inner_re").text("")
+         }else if(bf_value=="4"){
+             $("#div_from_word").hide()
+             $("#div_building").show()
+             $("#div_recommend_by").hide()
+              $("#div_recommend_staff").hide()
+
+         } else if(bf_value=="81"){
+             $("#div_from_word").hide()
+             $("#div_building").hide()
+             $("#div_recommend_by").hide()
+            $("#div_recommend_staff").show()
+            $("#msg_inner_re").text("（必填）")
+
+         }
+         else{
+              $("#div_from_word").hide()
+              $("#div_building").hide()
+              $("#div_recommend_by").hide()
+               $("#div_recommend_staff").hide()
+
+         }
+
+
+
+     })
+
+
+
+
+       $("#btn_save_project").on("click",function(){
+           all_income = $("#all_income")
+           pre_income = $("#pre_income")
+           project_name = $("#project_name")
+           customer_name=$("#customer_name")
+           busniess_from = $("input[name=busniess_from]:checked")
+           new_contract_type_id = $("input[name=new_contract_type_id]:checked")
+           recommend_by =$("#recommend_by")
+           deal_day = $("#deal_day")
+           recommend_staff = $("#recommend_staff")
+           b = $.isNumeric(pre_income.val())
+           b_all_income = $.isNumeric(all_income.val())
+           b_deal_day= $.isNumeric(deal_day.val())
+           console.log(busniess_from)
+           bf_value = busniess_from.val().split('|')[0]
+           business_channel= $("input[name=business_channel]:checked")
+           customer_company = $("#customer_company")
+           customer_tel = $("#customer_tel")
+           true_income = $("#true_income")
+           sign_type_id = $("input[name=sign_type_id]:checked")
+           remark = $("#remark")
+           talk_type = $("input[name=talk_type]:checked")
+           from_word = $("#from_word")
+           company = $("input[name=company]:checked")
+           is_finance = $("input[name=is_finance]:checked")
+           building_id = $("#building_id")
+           addr_type = $("#addr_type")
+           kf_id = $("#kf_id")
+           console.log(bf_value)
+           console.log(recommend_staff.val())
+         
+           if (company.val()=="0" || company.val()==undefined){
+             $("#pcompanyHelpInline").text("请选择业务所属公司哦。")
+             $("#company").focus()
+              console.log("hi1")
+             return false;
+           }
+           else if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
+             $("#business_channelHelpInline").text("请选择来源渠道哦。")
+             $("input[name=business_channel]:first").focus()
+              console.log("hi2")
+             return false;
+           }
+
+           else if(bf_value=="2" && kf_id.val()=="0"){
+              console.log("hi7")
+               
+               $("#kf_idHelpInline").text("在线客服人员必选哦！")
+               kf_id.focus()
+              $("input[name=kf_id]:first").focus()
+
+               return false
+           }
+         else if(bf_value=="3" && recommend_by.val()==""){
+            console.log("hi8")
+          
+               $("#recommend_byHelpInline").text("客户推荐人必填哦")
+
+               recommend_by.focus()
+               return false
+           }
+           else if(bf_value=="81" && recommend_staff.val()==""){
+              console.log("hi9")
+               
+               $("#recommend_staffHelpInline").text("内部推荐人必填哦")
+
+               recommend_staff.focus()
+               return false
+           } 
+           else if(bf_value=="4" && building_id.val()=="0" || building_id.val()==undefined){
+              console.log("hi9")
+               
+               $("#building_idHelpInline").text("内部推荐人必填哦")
+
+               building_id.focus()
+               return false
+           } 
+           else if (sign_type_id.val()=="0" || sign_type_id.val()==undefined){
+             $("#sign_type_idHelpInline").text("请选择签约方式哦。")
+           
+             $("input[name=sign_type_id]:first").focus()
+              console.log("hi3")
+             return false;
+           }
+         else if (talk_type.val()=="0" || talk_type.val()==undefined){
+             $("#talk_typeHelpInline").text("请选择来源方式哦。")
+            
+              $("input[name=talk_type]:first").focus()
+               console.log("hi4")
+             return false;
+           }
+           else if ( is_finance.val()==undefined){
+             $("#is_financeHelpInline").text("请选择是否记账。")
+               console.log("hi5")
+            $("input[name=is_finance]:first").focus()
+             return false;
+           }
+           else if (new_contract_type_id.val()=="0" || new_contract_type_id.val()==undefined){
+              console.log("hi6")
+             $("#new_contract_type_idHelpInline").text("请选择合同情况")
+       
+             $("input[name=new_contract_type_id]:first").focus()
+             return false;
+           }
+
+
+           
+           
+
+           else if (deal_day.val()==""){
+              console.log("hi10")
+                $("#deal_dayHelpInline").text("成交周期不能为空哦！")
+                deal_day.focus()
+               return false
+           }
+           else if(b_deal_day==false){
+                console.log("hi11")
+               $("#deal_dayHelpInline").text("成交周期的天数必须是数值哦！")
+               deal_day.focus()
+
+               return false
+           }
+           else if(b==false){
+              console.log("hi")
+               //alert("预计合同定金必须是数值哦！")
+                $("#pre_incomeHelpInline").text("预计合同定金必须是数值哦！")
+               pre_income.focus()
+               return false
+           }
+           else if(addr_type.val()==""){
+              console.log("hi")
+               $("#addr_typeHelpInline").text("地址类型不能为空哦,可以试试输入 地址")
+               addr_type.focus()
+             return false
+           }
+           else if(project_name.val()==""){
+              console.log("hi")
+               $("#project_nameHelpInline").text("业务名称不能为空哦")
+               project_name.focus()
+             return false
+           }
+           else if(customer_name.val()==""){
+              console.log("hi")
+               $("#customer_nameHelpInline").text("客户名称不能为空哦")
+               customer_name.focus()
+             return false
+           } else{
+               $(this).attr("disabled","disabled")
+              $(this).text("保存中...")
+          
+               $.post("/project?tag=new",{
+                   "kf_id":kf_id.val(),
+                   "all_income":all_income.val(),
+                   "pre_income":pre_income.val(),
+                   "project_name":project_name.val(),
+                   "customer_name":customer_name.val(),
+                   "busniess_from":busniess_from.val(),
+                   "recommend_by":recommend_by.val(),
+                   "deal_day":deal_day.val(),
+                   "business_channel":business_channel.val(),
+                   "customer_company":customer_company.val(),
+                   "true_income":true_income.val(),
+                   "customer_tel":customer_tel.val(),
+                   "remark":remark.val(),
+                   "sign_type_id":sign_type_id.val(),
+                   "talk_type":talk_type.val(),
+                   "from_word":from_word.val(),
+                   "company":company.val(),
+                   "is_finance":is_finance.val(),
+                   "building_id":building_id.val(),
+                   "new_contract_type_id":new_contract_type_id.val(),
+                   "addr_type":addr_type.val(),
+                   "recommend_staff":recommend_staff.val(),"_xsrf":_xsrf},function(result){
+                       console.log("result"+result)
+                       location.href =result
+                       
+                   })
+
+           }
+       })
+
+
+   })
+</script>
+
+{%end%}

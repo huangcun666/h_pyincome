@@ -1,0 +1,965 @@
+
+ {% extends "../base.html" %} {%block title%}我的业务{%end%} {% block body %}
+ {%block head%}
+ {%end%}
+<!-- 发业源码开始 -->
+<style>
+.faye-ti {
+padding: 0.5rem;
+}
+.faye-a a {
+padding: 5px;
+}
+.faye-tdti {
+text-align: center;
+}
+.faye-selsect td {
+margin-right: 15px;
+}
+.faye-selsect td input {
+font-size: 12px;
+padding: 5px;
+}
+.faye-selsect td select {
+font-size: 12px;
+padding: 5px;
+}
+.faye-btn {padding: 0.1rem 0.2rem; background-color: #9ec6ef; margin-left: 20px; border-radius: 2px;}
+select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
+</style>
+<!-- 发业源码结束 -->
+
+ <ol class="breadcrumb faye-ti">
+   <li class="breadcrumb-item">
+     主面板
+   </li>
+   <li class="breadcrumb-item active">事项安排
+       {%if my%}
+       <a class=" faye-btn" href="/project?tag=todo_arrange" >全部事项</a>
+        {%else%}
+        <a class=" faye-btn" href="/project?tag=todo_arrange&my=1">我的事项</a>
+        {%end%}
+        <a class=" faye-btn show_todo" href="javascript:void(0)">创建事项</a>
+   </li>
+ </ol>
+
+
+ <nav>
+    <div class="nav faye-a nav-tabs" id="nav-tab" role="tablist">
+      {%if my%}
+      <a class="nav-item nav-link {%if not todo%}active{%end%}" id="nav-home-tab"
+      href="/project?tag=todo_arrange&my=1" >全 部</a>
+          <a class="nav-item nav-link {%if todo=='-100'%}active{%end%}" href="/project?tag=todo_arrange&todo=-1000&waitme=my&my=1" style="font-size:13px;">
+            待安排
+          <span class="badge badge-danger">{{wait_per_count.count}}</span>
+          </a>
+    <a class="nav-item nav-link {%if todo=='1'%}active{%end%}"
+      href="/project?tag=todo_arrange&todo=1&my=1" style="font-size:13px;"> 待接单
+      <span class="badge badge-danger">{{nums.a}}</span></a>
+      <a class="nav-item nav-link {%if todo=='2'%}active{%end%}"
+      href="/project?tag=todo_arrange&todo=2&my=1" style="font-size:13px;"> 办理中
+      <span class="badge badge-danger">{{nums.b}}</span></a>
+      <a class="nav-item nav-link {%if todo=='3'%}active{%end%}"
+      href="/project?tag=todo_arrange&todo=3&my=1" style="font-size:13px;"> 已办结
+      <span class="badge badge-danger">{{nums.c}}</span></a>
+      {%else%}
+        <a class="nav-item nav-link {%if not todo%}active{%end%}" id="nav-home-tab"
+        href="/project?tag=todo_arrange" >全 部
+        </a>
+        
+        
+        </a>
+        
+        
+        <a class="nav-item nav-link {%if todo=='-100'%}active{%end%}" href="/project?tag=todo_arrange&todo=-100" style="font-size:13px;">
+              待安排
+          <span class="badge badge-danger">{{wait_per_count.count}}</span>
+            </a>
+      <a class="nav-item nav-link {%if todo=='1'%}active{%end%}"
+        href="/project?tag=todo_arrange&todo=1" style="font-size:13px;"> 待接单
+        <span class="badge badge-danger">{{nums.a}}</span></a>
+        <a class="nav-item nav-link {%if todo=='2'%}active{%end%}"
+        href="/project?tag=todo_arrange&todo=2" style="font-size:13px;"> 办理中
+        <span class="badge badge-danger">{{nums.b}}</span></a>
+        <a class="nav-item nav-link {%if todo=='3'%}active{%end%}"
+        href="/project?tag=todo_arrange&todo=3" style="font-size:13px;"> 已办结
+        <span class="badge badge-danger">{{nums.c}}</span></a>
+        {%end%}
+       </div>
+</nav>
+<br>
+
+
+  <form>
+    <table style="font-size:80%;">
+      <thread>
+        <tr class="faye-tdti">
+          <th>公司名称</th>
+          <th>办事区域</th>
+          <th>办事地点</th>
+          <th>办理时间</th>
+          <th></th>
+          <th></th>
+          <th>办理事项</th>
+          <th>部门</th>
+          <th>负责人</th>
+          <th>办事人</th>
+          <th></th>
+        </tr>
+      </thread>
+          <tr class="faye-selsect">
+              <td><input type="text" value="{%if params['company']%}{{params['company']}}{%end%}" id="comp" name="comp" class="form-control" placeholder="公司名称"/></td>
+              <td>
+                  <select name="bs_area" class="form-control">
+                    <option value="">选择办事区域</option>
+                    {% for item in area_type%}
+                    <option value="{{item.income_name}}" {%if item.income_name==params['bs_area']%}selected{%end%}>{{item.income_name}}</option>
+                    {%end%}
+                  </select>
+                </td>
+                <td><input type="text" value="{%if params['bs_address']%}{{params['bs_address']}}{%end%}" id="bs_addr" name="bs_addr" class="form-control" placeholder="办事地点"/></td>
+
+                <td>
+                    <input type="text" value="{%if params['start_time']%}{{params['start_time']}}{%end%}" class="form-control"  id="start" name="start"  placeholder="开始时间"/>
+                  </td>
+                  <td>至</td>
+                  <td>
+                    <input type="text" value="{%if params['end_time']%}{{params['end_time']}}{%end%}" class="form-control"  id="end" name="end" placeholder="结束时间"/>
+                      <input type="hidden" name="tag" value="{{tag}}"/>
+                      <input type="hidden" name="todo" value="{{todo}}"/>
+                    </td>
+                  
+                  <td><input type="text" value="{%if params['project_name']%}{{params['project_name']}}{%end%}" id="project" name="project" class="form-control" placeholder="办理事项"/></td>
+
+                  <td>
+                      <select name="department" class="form-control">
+                        <option value="">选择部门</option>
+                        {%for item in departments%}
+                        <option value="{{item.name}}" {%if params['departmet_name']==item.name %}selected{%end%}>{{item.name}}</option>
+                        {%end%}
+                        </select>
+                  </td>
+              <td>
+                <input type="text" value="{%if params['fz_name']%}{{params['fz_name']}}{%end%}" class="form-control"id="fz_per" name="fz_per" placeholder="创建人" style="width:150px;">
+            </td>
+            <td>
+                <input type="text" value="{%if params['bs_name']%}{{params['bs_name']}}{%end%}" class="form-control" id="bs_per" name="bs_per" placeholder="办事人" style="width:150px;">
+            </td>
+
+          
+            
+              <td> 
+                <input type="submit" value="检索" class="btn btn-info" />
+            </td>
+          </tr>
+    </table>
+  </form>
+<br/>
+<style>
+  .faye-table {font-size: 12px;}
+  .faye-table thead tr th {text-align: center;}
+  .faye-table tbody tr td {text-align: center; padding: 0.5rem;}
+</style>
+<div class="table-responsive">
+  <table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:12px;width:2000px;">
+    
+               <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                   <tr>
+                      <th width="180">公司名称</th>
+                      <th width="90">办事区域</th>
+                      <th width="100">办事地点</th>
+                       <th width="100">办理日期</th> 
+                       <th  width="100">办理时段</th>  
+                        <th  width="150">办理事项</th>  
+                       <th  width="300">办理总结</th>
+                       {%if role=="8"%}
+                         <th width="100">负责部门</th>
+                         {%end%}
+                        <th width="75">负责人</th>
+              
+                       {%if todo=='-100'%}
+                       
+                       
+                        {%else%}
+                     
+                      <th width="75">办事人</th>
+
+                     
+                       {%end%}
+<th width="220">办理状态</th>
+                       <th width="300">备注</th>
+                       {%if my%}
+                       <th width="100"></th>
+                       {%end%}
+                   </tr>
+               </thead>
+               <tbody>
+                   {%if todo_arranges%}
+                    {% for item in todo_arranges %}
+                        <tr style=" font-size:13px;">
+                            <td>{{item.company}}</td>
+                            <td>{{item.bs_area}}</td>
+                            <td>{{item.bs_address}}</td>
+                            <td>{{item.bl_date.strftime("%Y-%m-%d")}}</td>
+                            <td>{{str(item.start_time)[:-3]}}-{{str(item.end_time)[:-3]}}</td>
+                            <td>{{item.project_name}}</td>
+                            <td>{{item.project_zj}}</td>
+                             {%if role=="8"%} <td>{{item.department_name}}</td>{%end%}
+                            <td > {%if item.responsible_per%}{{item.responsible_per}}{%else%}{%end%}</td>
+                         
+                            
+                            
+                              {%if todo=='-100'%} {%else%}
+                         
+                            <td class="{%if item.responsible_per%}table-info{%else%}table-warning{%end%}">
+                               {%if item.banshi_per%} {{item.banshi_per}}{%end%}
+                            </td>
+                     
+
+                            {%end%}
+                            <td style="background-color:#eee;">
+
+                              {%if todo=='-100'%}
+
+                                <span class="text-danger">待{{item.leader_name}}分配办事人</span>
+                                  {%if item.leader_id==int(uid)%}
+                                  <button id="btn_set_per" class="btn btn-info btn-small the_detail_btn_set"  
+                                  todo_type="{{item.todo_type}}" bl_date="{{item.bl_date.strftime("%Y-%m-%d")}}" leader_id="{{item.leader_id}}"
+                                  company='{{item.company}}' bs_area='{{item.bs_area}}' bs_address='{{item.bs_address}}' todoid='{{item.id}}'
+                                   created_at="{{item.created_at.strftime("%Y-%m-%d")}}" leader_name="{{item.leader_name[:-6]}}"
+                                  start_time="{{item.start_time}}" end_time="{{item.end_time}}" project_name="{{item.project_name}}" project_zj="{{item.project_zj}}"
+                                  department_name="{{item.department_name}}" responsible_per="{%if item.responsible_per%}{{item.responsible_per}}{%end%}" phone_fz="{%if item.phone_fz%}{{item.phone_fz}}{%end%}"
+                                   banshi_per="{%if item.banshi_per%}{{item.banshi_per}}{%end%}"
+                                  phone_bs="{%if item.phone_bs%}{{item.phone_bs}}{%end%}" remark="{{item.remark}}" bs_created_at="{{item.bs_created_at}}">分配</button>
+                                  {%end%}
+                                           {%else%}
+                              {%if my%}
+                               {%if not item.banshi_per %} 
+                              <span class="text-danger">待{{item.leader_name}}分配办事人</span>
+                              {%elif not item.bs_created_at and item.banshi_per==name %}
+                                  <span class="text-info"> 待接单：待办事人{{item.banshi_per}}接单</span>
+                                <button class="confirm" bs_name="{{item.banshi_per}}" href="javascript:void(0)" id='{{item.id}}'>接单</button>
+                              {%elif not item.bs_created_at%}
+                                <span class="text-primary">待接单：待办事人{{item.banshi_per}}接单</span>
+                              {%elif  item.bs_created_at and item.project_zj and not item.fz_updated_at and item.responsible_per==name %}
+                              <span class="text-primary"> 待确认：待负责人{{item.responsible_per}}确认</span>
+                              <button class="fz_confirm" fz_name="{{item.responsible_per}}" href="javascript:void(0)" id='{{item.id}}'>确认</button>
+                              {%elif  item.bs_created_at and item.project_zj and not item.fz_updated_at%}
+                              <span class="text-primary"> 待确认：待负责人{{item.responsible_per}}确认</span>
+                              {%elif  item.bs_created_at and item.project_zj and  item.fz_updated_at%}
+                              <span class="ext-success"> 已办结</span>
+                              {%else%}
+                              <span class="ttext-secondary">  办理中：办事人{{item.banshi_per}}办理中</span>
+                              {%end%}
+
+                              {%else%}
+
+                             {%if not item.banshi_per %}
+                                    <span  class="text-danger"> 待{{item.leader_name}}分配办事人</span>
+                              {%elif not item.bs_created_at %}
+                              <span class="text-info"> 待接单：待办事人{{item.banshi_per}}接单</span>
+                              {%elif  item.bs_created_at and item.project_zj and not item.fz_updated_at%}
+                              <span class="text-primary"> 待确认：待负责人{{item.responsible_per}}确认</span>
+                              {%elif  item.bs_created_at and item.project_zj and  item.fz_updated_at%}
+                              <span class="text-success"> 已办结</span>
+                              {%else%}
+                              <span class="text-secondary"> 办理中：办事人{{item.banshi_per}}办理中</span>
+                              {%end%}
+                              {%end%}
+                             {%end%}
+                            </td>
+                              
+                            
+                            <td>{{item.remark}}</td>
+                            {%if my%}  
+                            <td><a class="btn btn-info the_detail_btn" href="javascript:void(0)"
+
+                            bl_date="{{item.bl_date.strftime("%Y-%m-%d")}}"
+                                company='{{item.company}}' bs_area='{{item.bs_area}}' bs_address='{{item.bs_address}}'
+                                todoid='{{item.id}}' created_at="{{item.created_at.strftime("%Y-%m-%d")}}"
+                                start_time="{{item.start_time}}" end_time="{{item.end_time}}"
+                                project_name="{{item.project_name}}" project_zj="{{item.project_zj}}"
+                                department_name="{{item.department_name}}" responsible_per="{%if item.responsible_per%}{{item.responsible_per}}{%end%}"
+                                phone_fz="{%if item.phone_fz%}{{item.phone_fz}}{%end%}"  banshi_per="{%if item.banshi_per%}{{item.banshi_per}}{%end%}" phone_bs="{%if item.phone_bs%}{{item.phone_bs}}{%end%}"
+                                remark="{{item.remark}}" bs_created_at="{{item.bs_created_at}}" fz_updated_at="{{item.fz_updated_at}}" todo_type="{{item.todo_type}}"
+                                leader_id="{{item.leader_id}}" leader_name="{% if item.leader_name%}{{item.leader_name[:-6]}}{%end%}" >查看</a></td>
+                              
+                                {%end%}
+                        </tr>
+                    {%end%}
+                   {%else%}
+                   <tr>
+                        <td colspan="15">
+                           还没有数据哦    
+                          </td>
+                        </tr>
+                   {%end%}
+               </tbody>
+           </table>
+       </div>
+           <ul class="pagination">
+              {% if pagination.has_prev %}
+                   <li class="paginate_button page-item previous " id="dataTable_previous">
+                   <a 
+                   href="?tag=todo_arrange&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if todo%}&todo={{todo}}{%end%}
+                   {%if params['bs_address']%}&bs_addr={{params['bs_address']}}{%end%}
+                   {%if params['bs_area']%}&bs_area={{params['bs_area']}}{%end%}
+                   {%if params['fz_name']%}&fz_per={{params['fz_name']}}{%end%}
+                   {%if params['bs_name']%}&bs_per={{params['bs_name']}}{%end%}
+                   {%if params['departmet_name']%}&department={{params['departmet_name']}}{%end%}
+                   {%if params['company']%}&comp={{params['company']}}{%end%}
+                   {%if params['start_time']%}&start={{params['start_time']}}{%end%}
+                   {%if params['end_time']%}&end={{params['end_time']}}{%end%}
+                   {%if params['project_name']%}&project={{params['project_name']}}{%end%}" 
+                    aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+          
+          
+          
+                  {% end %}
+                  {%for page in pagination.iter_pages() %}
+                   {% if page %}
+                   {% if page != pagination.page %}
+                   <li class="paginate_button page-item ">
+                     <a 
+              href="?tag=todo_arrange&page={{page}}{%if my%}&my={{my}}{%end%}{%if todo%}&todo={{todo}}{%end%}
+              {%if params['bs_address']%}&bs_addr={{params['bs_address']}}{%end%}
+              {%if params['bs_area']%}&bs_area={{params['bs_area']}}{%end%}
+              {%if params['fz_name']%}&fz_per={{params['fz_name']}}{%end%}
+              {%if params['bs_name']%}&bs_per={{params['bs_name']}}{%end%}
+              {%if params['departmet_name']%}&department={{params['departmet_name']}}{%end%}
+              {%if params['company']%}&comp={{params['company']}}{%end%}
+              {%if params['start_time']%}&start={{params['start_time']}}{%end%}
+              {%if params['end_time']%}&end={{params['end_time']}}{%end%}
+              {%if params['project_name']%}&project={{params['project_name']}}{%end%}" 
+                aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                   {% else %}
+                    <li class="paginate_button page-item active">
+                      <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+                    {% end %}
+                     {% else %}
+                    <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+                    {% end %}
+                    {% end %} 
+          
+                   {% if pagination.has_next %}
+                   <li class="paginate_button page-item next" id="dataTable_next"
+                   ><a 
+                   href="/project?tag=todo_arrange&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if todo%}&todo={{todo}}{%end%}
+                   {%if params['bs_address']%}&bs_addr={{params['bs_address']}}{%end%}
+                   {%if params['bs_area']%}&bs_area={{params['bs_area']}}{%end%}
+                   {%if params['fz_name']%}&fz_per={{params['fz_name']}}{%end%}
+                   {%if params['bs_name']%}&bs_per={{params['bs_name']}}{%end%}
+                   {%if params['departmet_name']%}&department={{params['departmet_name']}}{%end%}
+                   {%if params['company']%}&comp={{params['company']}}{%end%}
+                   {%if params['start_time']%}&start={{params['start_time']}}{%end%}
+                   {%if params['end_time']%}&end={{params['end_time']}}{%end%}
+                   {%if params['project_name']%}&project={{params['project_name']}}{%end%}"
+                   aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+               {% end %} </ul>
+<!-- Modal -->
+{{pagination.total_count}}
+
+
+
+                
+
+
+           <div class="modal fade" id="modify_milepost_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLongTitle_license">创建事项 </h5>
+                      <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+              
+              <div class="modal-body form-horizontal" id="site_mod">
+                  <div class="form-group">
+                      <label for="inputEmail3" class="col-sm-4 control-label">公司名称</label>
+                      <div class="col-sm-12">
+                      
+                        <textarea type="text" class="form-control" id="company" name="company" placeholder="公司名称"></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-4 control-label">办事区域</label>
+                        <div class="col-sm-12">
+                            <select name="bs_area2"  class="form-control">
+                                <option value="">请选择办事区域</option>
+                                {% for item in area_type%}
+                                <option value="{{item.income_name}}">{{item.income_name}}</option>
+                                {%end%}
+                              </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                          <label for="inputEmail3" class="col-sm-4 control-label">办事地点</label>
+                          <div class="col-sm-12">
+                            <input type="text" class="form-control" id="bs_address">
+                          </div>
+                        </div>
+
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-4 control-label">办理日期</label>
+                  <div class="col-sm-12">
+                    <input type="text" class="form-control" readonly="readonly" id="created_at">
+                    <div class="alert alert-danger" role="alert" id="save_to_created_at" style="display:none;"></div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-4 control-label">办理时段</label>
+                        <div class="col-sm-12">
+                          <input type="datetime" class="form-control " style="width:48%;display:inline-block;" readonly="readonly" id="work_time_start">
+                          - <input type="datetime" class="form-control " style="width:48% ;display:inline-block;" readonly="readonly" id="work_time_end">
+                          <div class="alert alert-danger" role="alert" id="save_to_start_end" style="display: none;"></div>
+                        </div>
+                      </div> 
+                      <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-4 control-label">办理事项</label>
+                        <div class="col-sm--10">
+                          <textarea  type="text" class="form-control" id="project_name" name="project_name" placeholder="办理事项"></textarea>
+                          <div class="alert alert-danger" role="alert" id="save_to_project_name" style="display:none;"></div>
+                        </div>
+                      </div>
+
+
+
+                      <div class="form-group" >
+                       
+                        <div class="col-sm--12" style="font-size:18px;">
+                          <div id="ctype_fzr">
+                          <input type="radio" name="choice_type"  value="0" checked/> 负责人安排
+                            <input type="radio" name="choice_type" value="1"/> 自定义办事人
+
+                            <select name="leader_id" id="leader_id" class="form-control">
+                              {%for item in t_todo_leader%}
+                                <option value="{{item.leader_id}}">{{item.leader_name}} ({{item.department_name}})</option>
+                              {%end%}
+                            </select>
+                                </div>
+                            
+                            <span id="zdy_title">
+                                自定义办事人
+                                </span>
+                            <input type="text" class="form-control" id="banshi_per" >
+                            <div class="alert alert-danger" role="alert" id="save_to_banshi_per" style="display:none;"></div>
+
+                        </div>
+                      </div>
+
+
+
+                    <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-4 control-label">备注</label>
+                  <div class="col-sm--10">
+                    <textarea  type="text" class="form-control" id="remark" name="remark" placeholder="备注信息" ></textarea>
+                  </div>
+                </div>
+              
+              
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="btn_delete_todo1" data-dismiss="modal" style="display:none;">删除</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                               <button class="btn btn-primary" target="_blank" id="btn_save_todo">保 存</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+           <div class="modal fade" id="modify_milepost_modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLongTitle_license">事项安排
+                      </h5>
+                      <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+              
+                    <div class="modal-body form-horizontal" id="site_mod">
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-4 control-label">公司名称</label>
+                            <div class="col-sm-10">
+                              <textarea type="text" class="form-control" readonly="readonly" id="comoany1" name="comoany1" placeholder="公司名称"></textarea>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                              <label for="inputEmail3" class="col-sm-4 control-label">办事区域</label>
+                              <div class="col-sm-10">
+                                <input type="text" class="form-control" readonly="readonly" id="bs_area1">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEmail3" class="col-sm-4 control-label">办事地点</label>
+                                <div class="col-sm-10">
+                                  <input type="text" class="form-control" readonly="readonly" id="bs_address1">
+                                </div>
+                              </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-4 control-label">办理日期</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" readonly="readonly" id="created_at1" readonly="readonly">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-4 control-label">办理时段</label>
+                        <div class="col-sm-12">
+                          <input type="text" class="form-control" style="width:30%;display:inline-block;" readonly="readonly" id="work_time_start1">
+                          - <input type="text" class="form-control" style="width:30% ;display:inline-block;" readonly="readonly" id="work_time_end1">
+                        </div>
+                      </div> 
+                      <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-4 control-label">办理事项</label>
+                        <div class="col-sm--10">
+                          <textarea  type="text" class="form-control" id="project_name1" readonly="readonly" name="project_name1" placeholder="办理事项" ></textarea>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-4 control-label">办理总结</label>
+                        <div class="col-sm--10"><textarea  type="text" class="form-control" id="project_zj" name="project_zj" placeholder="办理总结"></textarea></div>
+                      </div>
+                      <div class="form-group">
+                        <div class="col-sm-12">
+                          <form>
+                            <table>
+                            <tbody>
+                              <tr>
+                                <td>负责部门</td>
+                                <td>负责人</td>
+                                <td>负责人电话</td>
+                              </tr>
+                              <tr>
+                              <td><input type="text" class="form-control" id="department_name1" readonly="readonly"></td>
+                              <td><input type="text" class="form-control" id="responsible_per1" readonly="readonly"></td>
+                              <td><input type="text" class="form-control" id="phone_fz1" readonly="readonly"></td>
+                              </tr>
+                            </tbody>
+                            </table>
+                          </form>
+                      </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="col-sm--10">
+                            <form>
+                                <table>
+                                <tbody>
+                                  <tr>
+                                    <td>办事人</td>
+                                    <td>办事人电话</td>
+                                  </tr>
+                                  <tr>
+                                  <td><input type="text" class="form-control" id="banshi_per1" readonly="readonly"></td>
+                                  <td><input type="text" class="form-control" id="phone_bs1" readonly="readonly"></td>
+                                  </tr>
+                                </tbody>
+                                </table>
+                              </form>
+                            
+                        </div>
+                      </div>
+                    <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-4 control-label">备注</label>
+                  <div class="col-sm--10">
+                    <textarea  type="text" class="form-control" id="remark1" name="remark1" placeholder="备注信息" readonly="readonly" ></textarea>
+                  </div>
+                </div>
+              
+              
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                               <button class="btn btn-primary" target="_blank" id="btn_save_todo1">保 存</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <div class="modal fade" id="todo_status_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLongTitle_license">进度
+                      </h5>
+                      <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+              
+                    <div class="modal-body form-horizontal" id="site_mod">
+                <div class="form-group">
+                  <div class="col-sm-10 status_box">
+                  </div>
+                </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+</div>
+ {% end %} 
+ {%block js%}
+<script>
+$(function () { 
+_xsrf = getCookie("_xsrf") 
+    $('#myTable').DataTable();
+
+
+$("#banshi_per").hide()
+$("input[name=choice_type]").on("change",function(){
+
+  if($(this).val()=="1"){
+    
+    $("#leader_id").hide()
+    $("#banshi_per").show()
+  }  
+  else if($(this).val()=="0"){
+    $("#leader_id").show()
+    $("#banshi_per").hide()
+  }
+
+})
+
+
+$("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+$("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59',
+    language: 'zh-CN',initialDate: new Date()});
+$("#created_at").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+$("#work_time_start").datetimepicker({startView: 1,minView: 0,maxView:1,format: 'hh:ii',
+pickTime: false,autoclose: true,language: 'zh-CN'});
+$("#work_time_end").datetimepicker({ startView:1,minView: 0,maxView:1,pickTime: true,autoclose: true,format: 'hh:ii',
+    language: 'zh-CN'});
+
+$('#fz_per').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+$('#bs_per').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+  $('#banshi_per').typeahead({
+    source: function (query, process) {
+      return $.post('/api', { query: query, "_xsrf": _xsrf }, function (data) {
+        return process(JSON.parse(data));
+      });
+    }
+  });
+$('#company').typeahead({
+  source: function (query, process) {
+      return $.post('/api', { query: query, "_xsrf": _xsrf,'tag':'customer_company' }, function (data) {
+        return process(JSON.parse(data));
+      });
+    }
+});
+  
+
+$('.show_todo').on('click',function () {
+  $('#btn_save_todo').removeAttr('leader_id')
+  $('#btn_save_todo').removeAttr('todo_id')
+  $('#btn_save_todo').removeAttr('leader_name')
+  $('#btn_delete_todo1').hide()
+  $('#btn_save_todo').removeAttr('responsible_per')
+  $("#zdy_title").hide()
+  $("#ctype_fzr").show()
+  $('#company').val('')
+  $('#bs_address').val('')
+  $('#created_at').val('')
+  $('#work_time_start').val('')
+  $('#work_time_end').val('')
+  $('#remark').val('')
+  $('#project_name').val('')
+  $('#banshi_per').val('')
+  $('select[name=bs_area2]').val('')
+    $("#modify_milepost_modal").modal('show')
+ })
+
+$('#banshi_per').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+$('#btn_save_todo').on('click',function () {
+    var company=$('#company').val()
+    var bs_area=$('select[name=bs_area2]').val()
+    var bs_address=$('#bs_address').val() 
+    var created_at=$('#created_at').val()
+    var start_time=$('#work_time_start').val()
+    var end_time=$('#work_time_end').val()
+    var project_name=$('#project_name').val()
+    var banshi_per=$('#banshi_per').val()
+    var remark=$('#remark').val()
+    var todoid=$(this).attr('todo_id')
+    var leader_id = $("#leader_id").val()
+    var leader_name = $("#leader_id :selected").text()
+    var todo_type = $("input[name=choice_type]:checked").val()
+    var responsible_per=$(this).attr('responsible_per')
+    var leader_id1=$(this).attr('leader_id')
+    var banshi_per1=$(this).attr('banshi_per')
+    var leader_name1=$(this).attr('leader_name')
+    var todo_type1=$(this).attr('todo_type')
+    if(created_at==''){
+      $('#save_to_created_at').html('办理日期不能为空哦.')
+      $('#save_to_created_at').show()
+    
+    }
+    else if(start_time=='' || end_time==''){
+      $('#save_to_start_end').html('时间段不能为空哦.')
+      $('#save_to_start_end').show()
+    }
+    else if(project_name==''){
+     
+      $('#save_to_project_name').html('办理事项不能为空哦.')
+      $('#save_to_project_name').show()
+    }
+    if(todo_type1==undefined){
+      $.post(
+        '/project?tag=add_update_todo',
+        {   "_xsrf":_xsrf,
+            'company':company,
+            'id1':todoid,
+            'bs_area':bs_area,
+            'bs_address':bs_address,
+            'created_at':created_at,
+            'start_time':start_time,
+            'end_time':end_time,
+            'project_name':project_name,
+            'banshi_per':banshi_per,
+            'remark':remark,
+            'leader_id': leader_id,
+            'leader_name': leader_name,
+            'todo_type': todo_type
+        },function (result) { 
+          location.reload()
+         }
+    )
+    }
+    else if(banshi_per.length>0 & responsible_per=="{{name}}" & responsible_per!=leader_name1 
+    & banshi_per1.length<1 & todo_type1=="0" & banshi_per!=banshi_per1){
+      alert('你不能修改')
+    }else{
+    $.post(
+        '/project?tag=add_update_todo',
+        {   "_xsrf":_xsrf,
+            'company':company,
+            'id1':todoid,
+            'bs_area':bs_area,
+            'bs_address':bs_address,
+            'created_at':created_at,
+            'start_time':start_time,
+            'end_time':end_time,
+            'project_name':project_name,
+            'banshi_per':banshi_per,
+            'remark':remark,
+            'leader_id': leader_id,
+            'leader_name': leader_name,
+            'todo_type': todo_type
+        },function (result) { 
+          location.reload()
+         }
+    )
+    }
+ })
+ 
+ $('.the_detail_btn_set').on('click', function () {
+   $('#btn_save_todo').attr({'leader_id':$(this).attr('leader_id'),'leader_name':$(this).attr('leader_name')}) 
+   $('#company').val($(this).attr('company'))
+   $('select[name=bs_area2]').val($(this).attr('bs_area'))
+   $('#bs_address').val($(this).attr('bs_address'))
+   $('#created_at').val($(this).attr('bl_date'))
+   $('#work_time_start').val($(this).attr('start_time'))
+   $('#work_time_end').val($(this).attr('end_time'))
+   $('#project_name').val($(this).attr('project_name'))
+   $('#remark').val($(this).attr('remark'))
+   $('#banshi_per').val($(this).attr('banshi_per'))
+  // $('#bl_date').val($(this).attr('bl_date'))
+
+   
+    $("#ctype_fzr").hide()
+  
+   $('#btn_save_todo').attr('todo_id', $(this).attr('todoid'))
+   $('#btn_save_todo').attr('todo_type',$(this).attr('todo_type'))
+   $('#btn_save_todo').attr('banshi_per',$(this).attr('banshi_per'))
+   $("#leader_id").hide()
+   $("#banshi_per").show()
+    $("#modify_milepost_modal").modal('show')
+
+ })
+
+
+$('.the_detail_btn').on('click',function () { 
+  if($(this).attr('responsible_per')=='{{name}}'){
+        $('#company').val($(this).attr('company'))
+        $('select[name=bs_area2]').val($(this).attr('bs_area'))
+        $('#bs_address').val($(this).attr('bs_address'))
+        $('#created_at').val($(this).attr('bl_date'))
+        $('#work_time_start').val($(this).attr('start_time'))
+        $('#work_time_end').val($(this).attr('end_time'))
+        $('#project_name').val($(this).attr('project_name'))
+        $('#remark').val($(this).attr('remark'))
+        $('#banshi_per').val($(this).attr('banshi_per'))
+        $('#btn_save_todo').attr('todo_id',$(this).attr('todoid'))
+        $('#btn_save_todo').attr('responsible_per',$(this).attr('responsible_per'))
+        $('#btn_save_todo').attr('banshi_per',$(this).attr('banshi_per'))
+        $('#btn_save_todo').attr('leader_name',$(this).attr('leader_name'))
+        $('#btn_save_todo').attr('leader_id',$(this).attr('leader_id'))
+        $('#btn_save_todo').attr('todo_type',$(this).attr('todo_type'))
+        $('#btn_delete_todo1').attr('todoid',$(this).attr('todoid'))
+        $('#btn_delete_todo1').show()
+        $("#banshi_per").show()
+        $("#modify_milepost_modal").modal('show')
+    }else{
+          $('#comoany1').val($(this).attr('company'))
+          $('#bs_area1').val($(this).attr('bs_area'))
+          $('#bs_address1').val($(this).attr('bs_address'))
+          $('#created_at1').val($(this).attr('bl_date'))
+          $('#work_time_start1').val($(this).attr('start_time'))
+          $('#work_time_end1').val($(this).attr('end_time'))
+          $('#project_name1').val($(this).attr('project_name'))
+          $('#banshi_per1').val($(this).attr('banshi_per'))
+          $('#department_name1').val($(this).attr('department_name'))
+          $('#responsible_per1').val($(this).attr('responsible_per'))
+          $('#phone_fz1').val($(this).attr('phone_fz'))
+          $('#banshi_per1').val($(this).attr('banshi_per'))
+          $('#phone_bs1').val($(this).attr('phone_bs'))
+          $('#remark1').val($(this).attr('remark'))
+          $('#project_zj').val($(this).attr('project_zj'))
+
+          $('#btn_save_todo1').attr('todo_id',$(this).attr('todoid'))
+          $('#btn_save_todo1').attr('bs_created_at',$(this).attr('bs_created_at'))
+          if($(this).attr('fz_updated_at')!='None'){
+            $('#project_zj').attr('readonly','readonly')
+          }else{
+            $('#project_zj').removeAttr('readonly')
+          }
+          $("#modify_milepost_modal1").modal('show')
+    }
+  })
+
+$('#btn_delete_todo1').on('click',function () { 
+  var todoid=$(this).attr('todoid')
+  if(confirm('确定要删除？')){
+  $.post(
+    '/project?tag=delete_todo',
+    {
+      '_xsrf':_xsrf,
+      'todoid':todoid
+    },function (res) { 
+      location.reload()
+     }
+  )
+  }
+ })
+$('.confirm').on('click',function () { 
+      var id=$(this).attr('id')
+      var bs_name=$(this).attr('bs_name')
+      $.post(
+        '/project?tag=confirm_todo',
+        {
+          '_xsrf':_xsrf,
+          'id':id,
+          'bs':1
+        },function (result) {
+          // $('.the_detail_btn').attr('bs_created_at',result['created'])
+          // $('.todo_status').attr('bs_created_at',result['created'])
+          location.reload()
+         }
+      )
+   })
+$('.fz_confirm').on('click',function () { 
+      var id=$(this).attr('id')
+      var fz_name=$(this).attr('fz_name')
+      $.post(
+        '/project?tag=confirm_todo',
+        {
+          '_xsrf':_xsrf,
+          'id':id,
+          'fz':1
+        },function (result) {
+          location.reload()
+         }
+      )
+   })
+  
+  
+$('#btn_save_todo1').on('click',function () { 
+    var project_zj=$('#project_zj').val()
+    var bs_created_at=$(this).attr('bs_created_at')
+    var id=$(this).attr('todo_id')
+    if(project_zj.length<1){
+      alert('总结不能为空')
+    }else{
+      if(bs_created_at=='None'){
+        alert('你需要先接单才能填写办理总结哦.')
+        $("#modify_milepost_modal1").modal('hide')
+        setTimeout(function () { $('.todo_status[id="'+id+'"]').click() },450)
+        
+      }else{
+      $.post(
+        '/project?tag=add_update_todo',
+        {   "_xsrf":_xsrf,
+            "project_zj":project_zj,
+            "id":id
+        },function (result) { 
+          location.reload()
+         }
+    )}
+    }
+
+ })
+// $('.todo_status').on('click',function () {
+//   var bs=$(this).attr('bs_created_at')
+//   var fz=$(this).attr('fz_updated_at')
+//   var fz_name=$(this).attr('responsible_per')
+//   var bs_name=$(this).attr('banshi_per')
+//   var project_zj=$(this).attr('project_zj')
+//   var zj_at=$(this).attr('zj_at')
+//   var id=$(this).attr('id')
+//   var text=''
+//   $('.status_box').children().remove()
+//   if(bs=='None'){
+//     if(bs_name=='{{name}}'){
+//       text+='<p>流程1:待办事人'+bs_name+'确认 <button class="confirm" bs_name="'+bs_name+'" href="javascript:void(0)" id='+id+'>确认</button></p>'
+//     }else{
+//       text+='<p>流程1:待办事人'+bs_name+'确认</p>'
+//     }
+//   }else{
+//     text+='<p>流程1:已确认 <span class="badge badge-success">办事人'+bs_name+'办理中'+bs+'</span></p>'
+//   }
+//   if(bs!='None'&project_zj!=''){
+//       text='<p>流程1:办结 <span class="badge badge-success">办事人'+bs_name+'已办结'+zj_at+'</span></p>'
+//   }
+//   if(bs!='None' & project_zj!='' & fz=='None'){
+//     if(fz_name=='{{name}}'){
+//       text+='<p>流程2:待负责人'+fz_name+'确认 <button class="fz_confirm" fz_name="'+fz_name+'" href="javascript:void(0)" id='+id+'>确认</button></p>'
+//     }else{
+//       text+='<p>流程2:待负责人'+fz_name+'确认</p>'
+//     }
+   
+//   }else if(bs!='None' & project_zj!='' & fz!='None'){
+//       text+='<p>流程2:已确认 <span class="badge badge-success">负责人'+fz_name+'已确认'+fz+'</span></p>'+
+//       '<p>流程3:已完结<span class="badge badge-success">'+fz+'</span></p>'
+//   }
+//   $('.status_box').append(text)
+//   $("#todo_status_modal").modal('show')
+//  })
+ 
+ 
+ })
+</script>
+{%end%}

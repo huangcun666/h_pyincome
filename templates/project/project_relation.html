@@ -1,0 +1,288 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">我的业务 
+          <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add">新 建 </a>
+          {%if role=='8'%}
+          <a href="javascript:void()" class="btn btn-info btn-sm" id="btn_add1">新增客户分组 </a>
+          {%end%}
+         {% if role=='12'%}
+          <a href="/project?tag=project_relation" class="btn btn-info btn-sm">关联订单</a>
+          {%end%}
+        </li>
+
+      </ol>
+
+
+   <div class="card mb-3">
+        <div class="card-body">
+                <div class="table-responsive">
+
+
+                        <table class="table table-bordered" id="dataTable" style="width:2800px">
+                          <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                              <tr>
+                              <th width="100">日期</th>
+                                  <!-- <th width="100">客户分组</th> -->
+                               <th width="20">订单编号</th>
+                     
+                                           <th width="80">客户姓名</th>
+                                           <th width="100">联系方式</th>
+                                <th width="200">公司名称</th>
+                                      <th width="300">业务内容</th>
+                                    <th width="60">记账</th>
+      
+                  <th width="100">合同金额</th>
+       
+      
+      
+                <th width="100">合同定金</th>
+                        <!--    <th width="120">实收定金</th>
+      
+                <th width="120">尾款</th>
+                          <th width="120">代收款项</th>
+      
+                          <th width="120">待收款</th>-->
+      
+                        <th width="100">客服顾问</th>
+                          <th width="100">销售顾问</th>
+                               <th width="100">工商专员</th>
+                               <th width="80">客户来源</th>
+                               <th width="100">来源平台</th>
+                                   <th width="100">在线客服</th>
+                                     
+                           
+                                          <th width="90">签约方式</th>
+                                        
+      
+      
+      
+                                           <th width="90">成交周期</th>
+          <th width="80" >搜索词</th>
+      
+      
+            <th width="80">来源方式</th>
+                 
+      
+        <th width="100">是否有合同</th>
+      
+      
+                               
+                                <th width="220">合同编号</th>
+       <th ></th>
+      
+                              </tr>
+                          </thead>
+                          <tbody style=" font-size:13px;">
+                          {%if t_projects%}
+                              {%for item in t_projects%}
+                              
+                              <tr >
+                   <td>
+                               {{item.created_at.strftime("%Y-%m-%d")}}
+                                  </td>
+                               <td>
+                              <a style=" font-size:13px;" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn" title="{{item.id}}">{{item.id}}</a>
+                                  </td>
+      
+                                               
+                                       <td>
+                                {{item.customer_name}}
+                                  </td>
+      
+                                        <td>
+                                {{item.customer_tel}}
+                                  </td>
+         <td>
+                               {{item.customer_company}}
+                                  </td>
+            <td>
+                                      <a style=" font-size:13px;" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn"  title="{{item.id}}">{{item.project_name}}</a>
+                                  </td>
+      
+      
+      
+                               <td>
+                               {%if item.is_finance%}
+                               是
+                              {%else%}
+      否
+                              {%end%}
+                                  </td>
+                                   <td>
+                                          {{item.all_income}}
+                                  </td>
+      
+      
+      
+              <td>
+                                          {{item.pre_income}}
+                                  </td>
+                            <!--  <td>
+                                          {{item.true_income}}
+                                  </td>
+      
+      
+                                  <td>
+                                         {{item.all_income-item.con_wait_income}}
+                                  </td>
+      
+                                    <td>
+                                          {{item.all_income_other}}
+                                  </td>
+      
+                                      <td>
+                                          {{item.waitpay_other+(item.all_income-item.con_wait_income)}}
+                                  </td>-->
+                                   <td>      {%if item.team_list%}
+                 {%for s in item.team_list.split(",")%}
+                      {%if s%}
+      
+                      {%if "36" ==s.split("|")[1]%}
+                      {{s.split("|")[0]}}
+                      {%end%}
+                        {%end%}
+                 {%end%}{%end%}
+                                  </td>
+                                      <td>
+                                            {%if item.team_list%}
+                   {%for s in item.team_list.split(",")%}
+                       {%if s%}
+                      {%if "34" ==s.split("|")[1]%}
+                      {{s.split("|")[0]}}
+                      {%end%}  {%end%}
+                 {%end%}{%end%}
+                                  </td>
+                                <td>
+      
+                                {%if item.team_list%}
+                   {%for s in item.team_list.split(",")%}
+                       {%if s%}
+                      {%if "38" ==s.split("|")[1]%}
+                      {{s.split("|")[0]}}
+                      {%end%}  {%end%}
+                 {%end%}
+         {%end%}
+      
+      
+                                  </td>
+                                  
+                                       <td>
+                               {{item.busniess_from_id_name}}
+      
+                                  </td>
+                                  <td>
+                                     {%if item.channel_id_name%} {{item.channel_id_name}} {%end%}
+                                  </td>
+      
+                                    <td>
+                        
+       {%if item.team_list%}
+               {%for s in item.team_list.split(",")%}
+               {%if s%}
+                      {%if "39" ==s.split("|")[1]%}
+                      {{s.split("|")[0]}}
+                      {%end%}
+                        {%end%}
+                 {%end%}    {%end%}
+      
+                                  </td>
+      
+                          
+      
+      
+      
+                                 <td>
+                                {{item.sign_type_id_name}}
+      
+                                  </td>
+      
+      
+      
+      
+               <td>
+                                {{item.deal_day}}
+                                  </td>
+                        <td>
+                                {{item.from_word}}
+      
+                                  </td>
+      
+      
+                                   <td>
+                                      {{item.talk_type_id_name}}
+                                  </td>
+      
+      
+                            
+      
+                                        <td>
+                                {{item.contract_confirm_id_name}}
+      
+                                  </td>
+      
+                                   
+      
+            
+                         <td>      {%if item.team_list%}
+                                      {%if item.contract_remark%}
+                                {{item.contract_remark}}
+                                {%end%}   {%end%}
+                                  </td>
+      
+                                                <td>
+                                      <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-info " title="{{item.id}}">详细</a>
+      
+                                  </td>
+      
+      
+                              </tr>
+                              {%end%}
+      
+                              {%else%}
+                              <tr>
+                                      <td colspan="26">没有数据哦。</td>
+                              </tr>
+      
+                                {%end%}
+                          </tbody>
+                      </table>
+      
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=project_relation&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+
+
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=project_relation&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% end %} {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=project_relation&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>         
+      
+               </div>
+              </div>
+              <div class="card-footer small text-muted"></div>
+            </div>
+        
+</div>
+</div>
+{%end%}

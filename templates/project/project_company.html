@@ -1,0 +1,699 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">资料交接
+        </li>
+
+      </ol>
+
+
+      <div class="card mb-3">
+     
+        <div class="card-body ">
+          <h6 class="card-title mb-1 ">
+              <h5>公司名称：<b>{{t_company.company_name}}</b><br>
+              统一社会信用代码：<b>{{t_company.company_code}}</b><br><br>
+              </h5>
+ 资料交接(公司)
+<a href="javascript:void(0)" class=" mr-3 d-inline-block" id="a_add_trans1"  style="font-size:14px;">
+  <i class="fa fa-fw fa-comment"></i>新增</a>
+</h3>
+      
+          </h6>
+      
+        </div>
+        <hr class="my-0">
+
+            <table class="table table-striped" style="padding:10px;">
+              <thead>
+                <tr>
+                  <th width="130">交接时间
+                  </th>
+
+                  <th  width="120"> 交接类型
+                  </th>
+
+                  <th width="80"> 签收方
+                  </th>
+                    <th width="120"> 签收状态
+                  </th>
+                       <th width="580"> 资料明细
+                  </th>
+                     <th > 其他资料
+                  </th>
+                      <th width="120"> 资料用途
+                  </th>
+          
+               <th width="60"> 附件
+                  </th>
+                  <th width="80">移交方</th>
+                  <th width="130">创建时间</th>
+                  <th width="10"></th>
+                </tr>
+              </thead>
+              <tbody>   
+                {%if t_company_transitions%} {%for item in t_company_transitions%}
+                <tr>
+                  <td>
+                  
+                  {%if item.tran_at%}{{item.tran_at.strftime("%Y-%m-%d")}}{%end%}
+
+
+                  </td>
+                   <td> 
+{%if item.is_inner%}
+内部
+
+{%else%}
+外部
+{%end%}
+
+
+
+                  </td>
+                   <td> {{item.rec_by}}
+                  </td>
+                     <td>
+
+                     {%if item.rec_by_uid_at%}
+                    <span style='background-color:green;color:#fff;'>已确认</span>
+                    {%else%}
+  待确认
+                     {%end%}
+                  </td>
+                   <td> {{item.type_names}}
+                  </td>      
+                  
+                       <td>  {%if item.remark%}{{item.remark}} {%end%}
+                  </td>
+                    <td>   {%if item.use_type%}{{item.use_type}}   {%end%}
+                  </td>
+             
+
+              <td>         {%if item.file_name%}
+                        <a href="{{item.file_name}}" class="btn" target="_blank">查看</a>
+                  {%end%}</td>
+
+                  <td>{{item.uid_name}}</td>
+
+                  <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+                 
+                  <td>
+                      {%if item.uid==int(uid) %}
+                      <a href="javascript:void(0)"
+                       rec_by ="{{item.rec_by}}"
+                        class="btn btn-info btn-sm modify_transition"
+                         transition_id="{{item.id}}"
+                      project_id="{{item.project_id}}"
+                      tran_at="{{item.tran_at}}"
+                      tran_by ="{{item.tran_by}}"
+                      use_type="{%if item.use_type%}{{item.use_type}}{%end%}"
+                      type_ids="{{item.type_ids}}"
+                      rec_by_uid_at ="{%if item.rec_by_uid_at%}{{item.rec_by_uid_at}}{%else%}{%end%}"
+                      remark="{%if item.remark%}{{item.remark}}{%end%}">修 &emsp;&nbsp; 改</a>
+                      <a 
+                        style="margin-top:5px;"
+                        href="javascript:void(0)" 
+                        rec_by ="{{item.rec_by}}"
+                        class="btn btn-info btn-sm modify_transition_mobile" 
+                        transition_id="{{item.id}}"
+                        tran_at="{{item.tran_at}}"
+                        tran_by ="{{item.tran_by}}"
+                        type_ids="{{item.type_ids}}"
+                        remark="{{item.remark}}">手机上传</a>
+                        {%end%}
+                  </td>
+                  
+                  
+                </tr>
+                {%end%} {%else%}
+                <tr>
+                  <td colspan="11">还没有哦。</td>
+
+                </tr>
+                {%end%}
+
+              </tbody>
+            </table>
+          </div>
+          {%if project_id%}
+          <div class="card mb-3">
+          
+            <div class="card-body ">
+              <h6 class="card-title mb-1 ">
+     资料交接(业务)
+
+              </h6>
+          
+            </div>
+            <hr class="my-0">
+
+                <table class="table table-striped" style="padding:10px;">
+                  <thead>
+                    <tr>
+                      <th width="130">交接时间
+                      </th>
+
+                      <th  width="120"> 交接类型
+                      </th>
+
+                      <th width="80"> 签收方
+                      </th>
+                        <th width="120"> 签收状态
+                      </th>
+                           <th width="580"> 资料明细
+                      </th>
+                         <th > 其他资料
+                      </th>
+                          <th width="120"> 资料用途
+                      </th>
+              
+                   <th width="60"> 附件
+                      </th>
+                      <th width="80">移交方</th>
+                      <th width="130">创建时间</th>
+                      <th width="10"></th>
+                    </tr>
+                  </thead>
+                  <tbody>   
+                    {%if t_projects_transitions%} {%for item in t_projects_transitions%}
+                    <tr>
+                      <td>
+                      
+                      {%if item.tran_at%}{{item.tran_at.strftime("%Y-%m-%d")}}{%end%}
+
+
+                      </td>
+                       <td> 
+    {%if item.is_inner%}
+内部
+
+    {%else%}
+外部
+    {%end%}
+
+
+
+                      </td>
+                       <td> {{item.rec_by}}
+                      </td>
+                         <td>
+
+                         {%if item.rec_by_uid_at%}
+                        <span style='background-color:green;color:#fff;'>已确认</span>
+                        {%else%}
+      待确认
+                         {%end%}
+                      </td>
+                       <td> {{item.type_names}}
+                      </td>      
+                      
+                           <td>  {%if item.remark%}{{item.remark}} {%end%}
+                      </td>
+                        <td>   {%if item.use_type%}{{item.use_type}}   {%end%}
+                      </td>
+                 
+
+                  <td>         {%if item.file_name%}
+                            <a href="{{item.file_name}}" class="btn" target="_blank">查看</a>
+                      {%end%}</td>
+
+                      <td>{{item.uid_name}}</td>
+
+                      <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+                     
+                      <td>
+                          {%if item.uid==int(uid) %}
+                          <a href="javascript:void(0)"
+                           rec_by ="{{item.rec_by}}"
+                            class="btn btn-info btn-sm modify_transition"
+                             transition_id="{{item.id}}"
+                          project_id="{{item.project_id}}"
+                          tran_at="{{item.tran_at}}"
+                          tran_by ="{{item.tran_by}}"
+                          use_type="{%if item.use_type%}{{item.use_type}}{%end%}"
+                          type_ids="{{item.type_ids}}"
+                          rec_by_uid_at ="{%if item.rec_by_uid_at%}{{item.rec_by_uid_at}}{%else%}{%end%}"
+                          remark="{%if item.remark%}{{item.remark}}{%end%}">修 &emsp;&nbsp; 改</a>
+                          <a 
+                            style="margin-top:5px;"
+                            href="javascript:void(0)" 
+                            rec_by ="{{item.rec_by}}"
+                            class="btn btn-info btn-sm modify_transition_mobile" 
+                            transition_id="{{item.id}}"
+                            tran_at="{{item.tran_at}}"
+                            tran_by ="{{item.tran_by}}"
+                            type_ids="{{item.type_ids}}"
+                            remark="{{item.remark}}">手机上传</a>
+                            {%end%}
+                      </td>
+                      
+                      
+                    </tr>
+                    {%end%} {%else%}
+                    <tr>
+                      <td colspan="11">还没有哦。</td>
+
+                    </tr>
+                    {%end%}
+
+                  </tbody>
+                </table>
+              </div>
+          {%end%}
+
+<div class="modal fade" id="add_project_recode" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="income_title_type">业务记录
+                <button class="btn btn-danger delete_recode">&times;</button>
+        
+              </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+        
+        
+                <div class="modal-body form-horizontal" id="site_mod">
+                    <div class="form-group">
+                    <div class="col-sm-10">
+                        <label for="recode">业务记录</label>
+                        <input class="form-control" name="recode" id="recode" type="text">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label for="money">合同金额</label>
+                            <input class="form-control" name="money" id="money" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="dingjin">合同定金</label>
+                            <input class="form-control" name="dingjin" id="dingjin" type="text">
+                        </div>
+                        </div>
+                </div>
+        
+        
+                <div class="modal-footer">
+                    <input type="hidden" value="0" id="is_other" name="is_other" />
+                           <button class="btn btn-primary" target="_blank" id="btn_save_project_recode" rel_id='0'>保 存</button>
+        
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="a_add_trans_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                <div class="modal-header">
+                  <h3 id="myModalLabel_trans">新建交接资料</h3>
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                <!--
+                  <div class="form-group">
+                    <label class="control-label" for="tran_by">移交方</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="span4 " id="tran_by" name="tran_by" value="">
+                      <p id="msg_tran_by" class="help-block" style="color:red"></p>
+                    </div>
+                  
+                  </div>
+                  -->
+                  <!-- /control-group -->
+                      <div class="form-group">
+                    <label class="control-label" for="rec_by">签收方</label>
+                    <div class="col-md-10">
+                      <input type="text" id="rec_by" name="rec_by" value=""  class="form-control">
+                      <input type="checkbox" name="is_inner" id="is_inner" value="1" checked/>内部交接
+                      <p id="msg_rec_by" class="help-block" style="color:red"></p>
+                    </div>
+                    <!-- /controls -->
+                  </div>
+                  <!-- /control-group -->
+                      <div class="form-group">
+                    <label class="control-label" for="tran_at">交接时间</label>
+                    <div class="col-sm-10">
+                      <input type="date datetime"  id="tran_at" name="tran_at" readonly="readonly"  class="form-control"/>
+                      <p id="msg_tran_at" class="help-block" style="color:red"></p>
+                    </div>
+                    <!-- /controls -->
+                  </div>
+                  <!-- /control-group -->
+              
+                         <div class="form-group">
+                    <label class="control-label" for="tran_at">交接明细 </label>
+              
+                     <input type="checkbox" name="allcheck_trans" id="allcheck_trans"/>全选
+                    <div class="col-sm-10">
+                    {% for item in t_projects_type%}
+                      <input type="checkbox" style="margin:0 0 0 10px;" name="check_projects_type_trans" id="trans_type_id_{{item.id}}"
+                       income_name="{{item.income_name}}" value="{{item.id}}"
+                        >{{item.income_name}}
+                      {%end%}
+              </p>
+                    </div>
+                    <!-- /controls -->
+                  </div>
+                  <!-- /control-group --> 
+                      <div class="form-group">
+                    <label class="control-label" for="lastname">其他资料</label>
+                    <div class="col-sm-10">
+                      <textarea type="text"  class="form-control" id="trans_remark" name="trans_remark" value="" style="height: 60px;"></textarea>
+                    </div>
+                    <!-- /controls -->
+                  </div>
+              
+              
+              
+                  <div class="form-group">
+                    <label class="control-label" for="lastname">资料用途</label>
+                    <div class="col-sm-10">
+                      <textarea type="text"  class="form-control" id="use_type" name="use_type" value="" style="height: 60px;"></textarea>
+                    </div>
+                    <!-- /controls -->
+                  </div>
+              
+              
+              
+              
+              
+              
+                  <div class="control-group">
+                    <label class="control-label" for="lastname">附件</label>
+                    <div class="controls">
+                      <input type="file" value="1" id="tran_file" name="tran_file" class="form-control" />
+                    </div>
+                    <!-- /controls -->
+                  </div>
+                </div>
+              
+              
+              
+              
+              
+                <div class="modal-footer">
+                <div class="alert alert-danger " role="alert" id="show_msg_by_transition">
+              
+              </div>
+                <a href="javascript:void(0)" id="delete_transition" class="btn-danger btn">删除本条数据</a>
+                  <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                  <button class="btn btn-primary" id="btn_save_trans">保存</button>
+                </div>
+                </div>
+                </div>
+              </div>
+
+              <div id="a_add_trans_modal_upload" class="modal fade"
+              tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+              <div class="modal-dialog" role="document" >
+                 <div class="modal-content">
+                   <div class="modal-header">
+                     <h5 class="modal-title" id="exampleModalLongTitle_mfile">手机上传交接资料 </h5>
+                     <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                       <span aria-hidden="true">&times;</span>
+                     </button>
+                   </div>
+             
+                   <div class="modal-body form-horizontal" id="show_qrcode">
+             
+             </div>
+             
+             
+             
+               <div class="modal-footer">
+                 <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+               </div>
+               </div>
+             </div>
+             
+            
+            
+            
+            </div>
+        
+<div id="a_add_trans_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="myModalLabel_trans">新建交接资料</h3>
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+    <!--
+      <div class="form-group">
+        <label class="control-label" for="tran_by">移交方</label>
+        <div class="col-sm-10">
+          <input type="text" class="span4 " id="tran_by" name="tran_by" value="">
+          <p id="msg_tran_by" class="help-block" style="color:red"></p>
+        </div>
+      
+      </div>
+      -->
+      <!-- /control-group -->
+          <div class="form-group">
+        <label class="control-label" for="rec_by">签收方</label>
+        <div class="col-md-10">
+          <input type="text" id="rec_by" name="rec_by" value=""  class="form-control">
+          <input type="checkbox" name="is_inner" id="is_inner" value="1" checked/>内部交接
+          <p id="msg_rec_by" class="help-block" style="color:red"></p>
+        </div>
+        <!-- /controls -->
+      </div>
+      <!-- /control-group -->
+          <div class="form-group">
+        <label class="control-label" for="tran_at">交接时间</label>
+        <div class="col-sm-10">
+          <input type="date datetime"  id="tran_at" name="tran_at" readonly="readonly"  class="form-control"/>
+          <p id="msg_tran_at" class="help-block" style="color:red"></p>
+        </div>
+        <!-- /controls -->
+      </div>
+      <!-- /control-group -->
+  
+             <div class="form-group">
+        <label class="control-label" for="tran_at">交接明细 </label>
+  
+         <input type="checkbox" name="allcheck_trans" id="allcheck_trans"/>全选
+        <div class="col-sm-10">
+        {% for item in t_projects_type%}
+          <input type="checkbox" style="margin:0 0 0 10px;" name="check_projects_type_trans" id="trans_type_id_{{item.id}}"
+           income_name="{{item.income_name}}" value="{{item.id}}"
+            >{{item.income_name}}
+          {%end%}
+  </p>
+        </div>
+        <!-- /controls -->
+      </div>
+      <!-- /control-group --> 
+          <div class="form-group">
+        <label class="control-label" for="lastname">其他资料</label>
+        <div class="col-sm-10">
+          <textarea type="text"  class="form-control" id="trans_remark" name="trans_remark" value="" style="height: 60px;"></textarea>
+        </div>
+        <!-- /controls -->
+      </div>
+  
+  
+  
+      <div class="form-group">
+        <label class="control-label" for="lastname">资料用途</label>
+        <div class="col-sm-10">
+          <textarea type="text"  class="form-control" id="use_type" name="use_type" value="" style="height: 60px;"></textarea>
+        </div>
+        <!-- /controls -->
+      </div>
+  
+  
+  
+  
+  
+  
+      <div class="control-group">
+        <label class="control-label" for="lastname">附件</label>
+        <div class="controls">
+          <input type="file" value="1" id="tran_file" name="tran_file" class="form-control" />
+        </div>
+        <!-- /controls -->
+      </div>
+    </div>
+  
+  
+  
+  
+  
+    <div class="modal-footer">
+    <div class="alert alert-danger " role="alert" id="show_msg_by_transition">
+  
+  </div>
+    <a href="javascript:void(0)" id="delete_transition" class="btn-danger btn">删除本条数据</a>
+      <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+      <button class="btn btn-primary" id="btn_save_trans">保存</button>
+    </div>
+    </div>
+    </div>
+  </div>             
+{%end%}
+
+{%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+    $("#tran_at").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#show_msg_by_transition").hide()
+    $(".modify_transition").on("click",function(){
+          $("#delete_transition").show()
+          var tran_by = $(this).attr("tran_by")
+          var rec_by = $(this).attr("rec_by")
+          var tran_at = $(this).attr("tran_at")
+          var trans_remark =$(this).attr("remark")
+          var transition_id = $(this).attr("transition_id")
+          var type_ids = $(this).attr('type_ids')
+          var rec_by_uid_at =$(this).attr("rec_by_uid_at")
+          var use_type = $(this).attr("use_type")
+          var project_id = $(this).attr("project_id")
+
+          console.log(rec_by_uid_at)
+          if (rec_by_uid_at!=""){
+              $("#btn_save_trans").hide()
+             $("#delete_transition").hide()
+              $("#show_msg_by_transition").show()
+             $("#show_msg_by_transition").text("该交接"+rec_by+"("+rec_by_uid_at+")"+"已确认签收")
+          }
+          
+          $('input[name=check_projects_type_trans]').prop('checked', false); 
+          type_ids_arr = type_ids.split(',')
+    
+          for (var i = 0; i < type_ids_arr.length; i++) {
+              $('#trans_type_id_'+type_ids_arr[i]).prop('checked', true); 
+         
+          }
+          $("#use_type").val(use_type)
+          $("#tran_by").val(tran_by)
+          $("#rec_by").val(rec_by)
+          $("#tran_at").val(tran_at)
+          $("#trans_remark").val(trans_remark)
+          $("#myModalLabel_trans").text("修改交接信息")
+          $("#btn_save_trans").attr("transition_id",transition_id)
+          $("#btn_save_trans").attr("project_id",project_id)
+          $("#a_add_trans_modal").modal('show')
+      })
+
+$("#allcheck_trans").on("change",function(){
+    
+    $('input[name=check_projects_type_trans]').not(this).prop('checked', this.checked);
+
+})
+$("#a_add_trans1").on("click", function () {
+    $('input[name=check_projects_type_trans]').prop('checked', false); 
+        $("#delete_transition").hide()
+        $("#btn_save_trans").attr("transition_id","0")
+         $("#btn_save_trans").attr("project_id","0")
+         // $("#tran_by").val("")
+          $("#rec_by").val("")
+           $("#tran_at").val("")
+           $("#trans_remark").val("")
+           $("#use_type").val("")
+          $("#a_add_trans_modal").modal('show')
+           $("#show_msg_by_transition").hide()
+           $("#btn_save_trans").show()
+
+
+
+  })
+  
+$("#btn_save_trans").on("click",function(){
+
+// var tran_by = $("#tran_by").val()
+ var rec_by = $("#rec_by").val()
+ var tran_at = $("#tran_at").val()
+ var trans_remark =$("#trans_remark").val()
+ var transition_id =$("#btn_save_trans").attr("transition_id")
+ var is_inner =  $("input[name=is_inner]:checked").val()
+ var use_type = $("#use_type").val()
+   var type_ids=[]
+   var type_names=[]
+   var remark=$('#projects_type_remark').val();
+
+   $('input[name=check_projects_type_trans]:checked').each(function () { 
+         type_ids.push($(this).val());
+         type_names.push($(this).attr('income_name'))
+    })
+    type_ids=type_ids.join(',')
+    type_names=type_names.join(',')
+
+ if (is_inner==undefined){
+   is_inner = 0
+ }
+ if(rec_by==""){
+     $("#rec_by").focus()
+      $("#show_msg_by_transition").text("签收方不能为空")
+ }
+ else if(tran_at==""){
+       $("#show_msg_by_transition").text("交接时间不能为空")
+       $("#tran_at").focus()
+   }
+   else{
+
+   var formData = new FormData();
+   formData.append('file', $('#tran_file')[0].files[0]);
+   formData.append('_xsrf', _xsrf)
+   formData.append("trans_remark",trans_remark)
+   formData.append("tran_at", tran_at)
+   formData.append("is_inner",is_inner)
+   formData.append("rec_by", rec_by)
+   formData.append("type_ids", type_ids)
+   formData.append("type_names", type_names)
+   formData.append("transition_id", transition_id)
+   formData.append("use_type", use_type)
+   formData.append('project_company_type',2)
+   formData.append('company_id',{{t_company.id}})
+
+
+   //$(this).text("保存中..")
+   // $(this).attr("disabled", "disabled")
+
+   $.ajax({
+         url: '/project?tag=add_tran',
+         type: 'POST',
+         data: formData,
+         processData: false,  // tell jQuery not to process the data
+         contentType: false,  // tell jQuery not to set contentType
+         success: function (data) {
+           if(data >=0){
+             location.reload()
+
+           }
+           else{
+               if(data=="内部交接:签收用户不存在哦."){
+                   $("#rec_by").focus()
+               }
+               $("#show_msg_by_transition").show()
+               $("#show_msg_by_transition").text(data)
+
+           }
+
+         }
+       });
+   }
+
+})
+$('#rec_by').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+      
+})
+</script>
+{%end%}

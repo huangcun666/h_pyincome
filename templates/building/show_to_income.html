@@ -1,0 +1,27 @@
+{%if t_customer_state%}
+{%for item in t_customer_state%}
+<div class="message-item" id="m9">
+<div class="message-inner">
+<div class="message-head clearfix">
+<div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
+<div class="user-detail">
+<h5 class="handle">{{item.updated_uid_name}}  <span style="font-size:13px;">{{item.created_at}} 将设置状态：
+{{item.state_msg}}</span>
+</h5>
+</div>
+</div>
+ 
+<div class="qa-message-content">
+{{item.remark}}
+</div>
+ 
+</div>
+</div>
+{%end%}
+
+{%else%}
+        <div class="card-body py-2 ">
+                  <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                </div>
+
+{%end%}

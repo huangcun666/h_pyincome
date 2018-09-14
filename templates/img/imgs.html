@@ -1,0 +1,67 @@
+
+ <span class="btn btn-success fileinput-button">
+        <i class="glyphicon glyphicon-plus"></i>
+        <span>点击选择本地文件...</span>
+        <input id="fileupload" type="file" name="files_my[]" data-url="/upload_img" >
+    </span>
+<table>
+    {%if imgs%}
+    {%for item in imgs%}
+    <tr>
+            <td><img src="{{item.path}}" /></td>
+    </tr>
+    {%end%}
+
+    {%else%}
+        还没有上传过图片
+    {%end%}
+</table>
+
+
+<script type="text/javascript">
+    $(function(){
+          $('#fileupload').fileupload({
+                        autoUpload: true,
+                        formData: {_xsrf: getCookie("_xsrf"),"fileupload_type":$("#fileupload_type").val()},
+                        type:"post",
+                        done: function (e, data) {
+                            // alert(data.result)
+                            $.magnificPopup.close()
+                            // $.each(data.result.files, function (index, file) {
+                            //     $('<p/>').text(file.name).appendTo(document.body);
+                            // });
+                            // alert(data)
+                            fileupload_id = $("#fileupload_type").val()
+                            console.log(fileupload_id)
+                            if(fileupload_id=="img_backgroundimage"){
+                              $("#"+fileupload_id).css('background-image', 'url("'+data.result+'")');
+
+                            }else
+                            {
+                                // alert($("#"+fileupload_id).attr("src"))
+                                 $("#"+fileupload_id).attr("src",""+data.result+"");
+                            }
+                       $.post("/edittemplate",{"key_name":"fy_navigation","key_value": $("#fy_navigation").html(),"_xsrf":getCookie("_xsrf"),"site_id":{{template_row.id}}},function(result){
+                            // alert(result)
+                            console.log(result)
+                        })
+
+
+                        $.post("/edittemplate",{"key_name":fileupload_id,"key_value":data.result,"_xsrf":getCookie("_xsrf"),"site_id":{{template_row.id}}},function(result){
+                            // alert(result)
+                            console.log(result)
+                        })
+                        },
+                        fail: function(e, data) {
+                          alert('Fail!');
+                        }
+
+                    });
+
+
+
+
+
+    })
+
+</script>

@@ -1,0 +1,273 @@
+
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>{{name}}的客户 <a class="btn btn-primary btn-sm  customer_new "  href="customer?tag=add" >新建客户</a> </h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+
+<fieldset>
+
+<form class="form-search" id="query_form">
+  <input type="text" value="{{keyword}}" name="keyword" class="input-medium search-query" placeholder="公司名称/电话/姓名">
+
+  <select name="qtype">
+    
+        <option value="company" {%if qtype=="company"%}selected{%end%}>公司名称</option>
+        <option value="lname" {%if qtype=="lname"%}selected{%end%}>联系人姓名</option>
+              <option value="tel" {%if qtype=="tel"%}selected{%end%}>电话</option>
+  </select>
+  <input type="text" name="kj" class="input-medium" style="width:80px;" placeholder="会计" value="{%if kj %}{{kj}}{%end%}">
+  <input type="checkbox" value="记账" name="jz" {%if jz%}checked{%end%}/> 记账
+    <input type="checkbox" value="楼盘"  name="lp" {%if lp%}checked{%end%}/> 楼盘客户
+
+    
+  <button type="submit" class="btn">检 索</button>
+  <input type="hidden" value="{{tag}}" name="tag"/>
+  {%if my%}
+  <input type="hidden" value="{{my}}" name="my"/>
+{%end%}
+
+</form>
+
+{%if keyword%}
+<div class="alert fade in">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>  共找到 {{pagination.total_count}} 条记录</strong> 
+          </div>
+
+{%end%}
+
+
+
+                        {%if customers%}
+                        {%if is_manager=='1' and not my%}
+                        <a class="btn btn-primary btn-sm change_kj">批量修改客服会计</a>
+                        {%end%}
+              <table class="table" style="margin:5px;">
+                     <thead>
+                             
+                                <tr style="background-color: black; color:#fff;">
+                                        {%if kj%}
+                                        <th style="min-width:60px;">请选择</th>
+                                        {%end%}
+                                        {%if is_manager=='1' and not my %}
+                                        <th style="min-width:30px;">
+                                            <input type="checkbox" id="choose_all">全选
+                                        </th>
+                                        {%end%}
+                                <th style="min-width:60px;">编号</th>
+                                <th style="min-width:180px;">公司名称</th>
+                                            <th>客户类型</th>
+                                     
+                                      <th>地址类型</th>
+                                <th style="min-width:150px;">注册区域</th>
+                                <th style="min-width:60px;">社会信用代码</th>
+                             
+                         
+                          
+                              
+                                <th>客服会计</th>
+                                <th style="min-width:100px;">创建时间</th>
+                                <th></th>
+                                </tr>
+                            </thead>
+                <tbody>
+    
+     {%for customer in customers%}
+                    <tr>
+                            {%if kj%}
+                            <td ><input type="checkbox" value="{{customer.id}}" id="check"></td>
+                            {%end%}
+                            {%if is_manager=='1' and not my%}
+                            <td><input type="checkbox" value="{{customer.id}}" name="check_customer"></td>
+                            {%end%}
+                       <td>{{customer.id}}</td>
+                        <td>{{customer.company}}</td>
+                              <td>
+                          {{customer.customer_type_name}}
+                        </td>
+                        <td>
+                          {{customer.addr_type}}
+                        </td>
+                        <td>{{customer.zone}}</td>
+                        <td>{{customer.company_reguid}}</td>
+                    
+           
+                   
+                        <td>
+                          {{customer.acc_uid_name}}
+                        </td>
+                        <td>{{customer.created_at.strftime("%Y-%m-%d")}}</td>
+                        <td><a class="btn customer_detail btn-sm control"  type='button' href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}">查看</a></td>
+
+                     
+                    </tr>
+                    {%end%}
+
+              
+                
+                </tbody>
+              </table>
+       
+                    {%else%}
+                        还没有客户哦。
+                               
+                    {%end%}
+                    
+            
+                              <div class="pagination">
+                        <ul>
+                            {% if pagination.has_prev %}
+                            {%if kj%}
+                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">&laquo; 上页</a></li>
+                            {%else%}
+                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">&laquo; 上页</a></li> {% end %}
+                            {%end%}
+                            {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            {%if kj%}
+                            <li>
+                                    <a href="/customer?tag={{tag}}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">{{ page }}</a></li>
+                            {%else%}
+                            <li> 
+                                <a href="/customer?tag={{tag}}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">{{ page }}</a></li>
+                            {%end%}
+                            {% else %}
+                            <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                            {% end %} {% else %}
+                            <li><span class="active"><a href="#">....</a></span></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            {%if kj%}
+                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">下页 &raquo;</a></li>
+                            {%else%}
+                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">下页 &raquo;</a></li>
+                            {%end%}
+                            {% end %}
+                        </ul>
+                    </div>  
+</fieldset>
+<div id="a_add_trans_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="myModalLabel_trans">批量修改客服会计</h3> 
+        </div>
+        <div class="modal-body">
+          <div class="control-group">
+            <label class="control-label" for="lastname">选择客服名称</label>
+            <div class="controls">
+            <select name="kj_name">
+                <option value="0">请选择客服会计</option>
+                {%for item in t_user%}
+                <option value="{{item.id}}">{{item.name}}</option>
+         {%end%}
+            </select>
+            </div>
+            <!-- /controls -->
+          </div>
+    
+        </div>
+      
+      
+      
+      
+      
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+          <button class="btn btn-primary" id="btn_save_kj">保存</button>
+        </div>
+      </div>
+</div>
+   
+
+               
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+ 
+
+    {%end%} 
+
+    {%block js%}
+
+<script>
+
+$(function () {
+    _xsrf = getCookie("_xsrf")
+	{%if my%}
+            $("#my_customer").attr('class',"active")
+    {%else%}
+            $("#all_customer").attr('class',"active")
+    {%end%}
+
+    $('#submit_check').on('click',function (param) { 
+        var id_array=new Array();  
+        $('input[id="check"]:checked').each(function(){  
+        id_array.push($(this).val());//向数组中添加元素  
+            });  
+        var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串  
+        $.post(
+            'customer?tag=add_relation',
+            {
+                "_xsrf":_xsrf,
+                "idstr":idstr
+            },function (result) { 
+                alert('添加成功')
+             }
+        )  
+     })
+     $('#choose_all').on('change',function () { 
+         $('input[name=check_customer]').not(this).prop('checked',this.checked);
+      })
+    $('.change_kj').on('click',function () {
+        $('#a_add_trans_modal').modal('show')
+     })
+    $('#btn_save_kj').on('click',function () { 
+        var kj_id=$('select[name=kj_name]').val()
+        var kj_name=$('select[name=kj_name] option:selected').text()
+        customer_ids=[] 
+        $('input[name=check_customer]:checked').each(function () { 
+            customer_ids.push($(this).val())
+         })
+         customer_ids=customer_ids.join(',')
+         if(kj_id=='0'){
+             alert('请选择客服会计')
+         }
+         else if(customer_ids.length<1){
+             alert('请选择需要修改的编号')
+         }
+         else{
+         $.post(
+             '/customer?tag=add_kj',
+             {
+                    '_xsrf':_xsrf,
+                    'customer_ids':customer_ids,
+                    'kj_id':kj_id,
+                    'kj_name':kj_name
+             },function (result) { 
+                 location.reload()
+              }
+         )
+         }
+     })
+
+});
+
+</script>
+
+
+    {%end%}

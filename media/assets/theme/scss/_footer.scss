@@ -1,0 +1,43 @@
+.footer {
+	background: $main-dark-color;
+	padding: $padding-large;
+	height: auto;
+	min-height: auto;
+	float: left;
+	width: 100%;
+
+	&-logo {
+		margin: $margin-medium 0;
+		width: 50px;
+		height: auto;
+	}
+
+	.contact-data {
+		border-bottom: 3px solid $main-light-color;
+		margin-bottom: $margin-medium * 1.5;
+
+		ul {
+			opacity: 0.6;
+			background: none;
+			color: white;
+			float: left;
+			font-size: 12px;
+			margin-bottom: 0;
+			width: 100%;
+			bottom: 30px;
+			left: 30px;
+			right: 0;
+
+			li {
+				display: inline-block;
+				float: none;
+				margin: 0 $margin-base $margin-medium;
+				text-align: left;
+				width: auto;
+			}
+
+		}
+
+	}
+
+}

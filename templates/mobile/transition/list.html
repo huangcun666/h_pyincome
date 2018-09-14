@@ -1,0 +1,80 @@
+{% extends "../mobile_base.html" %} {%block title%}收入管理{%end%} 
+{% block body %}
+
+
+
+{%if not  t_projects_transition%}
+没有数据哦.
+{%else%}
+{%for item in t_projects_transition%}
+<div class="weui-form-preview">
+  <div class="weui-form-preview__hd">
+    <label class="weui-form-preview__label">客户名称</label>
+    <em class="weui-form-preview__value">{{item.customer_name}}</em>
+  </div>
+  <div class="weui-form-preview__bd">
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">公司名称</label>
+      <span class="weui-form-preview__value">{{item.customer_company}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">业务名称</label>
+      <span class="weui-form-preview__value">{{item.project_name}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">交接人</label>
+      <span class="weui-form-preview__value">{{item.uid_name}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">交接时间</label>
+      <span class="weui-form-preview__value">{{item.tran_at}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">交接明细</label>
+      <span class="weui-form-preview__value">{{item.type_names}}</span>
+    </div>
+        <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">其他资料</label>
+      <span class="weui-form-preview__value">{{item.remark}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">资料用途</label>
+      <span class="weui-form-preview__value">{{item.use_type}}</span>
+    </div>
+
+  </div>
+  <div class="weui-form-preview__ft">
+            {%if not item.rec_by_uid_at%}
+             <button  class="weui-btn weui-btn_primary  weui-btn_mini confirm_rec" pt_id="{{item.id}}" project_id="{{item.project_id}}" 
+             id="confirm_rec">确认签收</button>
+            {%else%}
+
+              <label class="weui-form-preview__label"> {{item.rec_by}} 于 {{item.rec_by_uid_at}} 确认签收</label>
+
+
+             {%end%}
+  </div>
+</div>
+
+      {%end%}
+{%end%}
+      {%end%}
+
+      {%block js%}
+
+      <script>
+        $(function(){
+          _xsrf =  getCookie("_xsrf")
+            $(".confirm_rec").on("click",function(){
+                  project_id = $(this).attr("project_id")
+                  pt_id = $(this).attr("pt_id")
+                  $.post("/mtransition?tag=confirm_rec",{"project_id":project_id,"pt_id":pt_id,"_xsrf":_xsrf},function(result){
+                      location.reload()
+
+                  })
+
+            })
+
+        })
+      </script>
+      {%end%}

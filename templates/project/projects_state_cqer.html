@@ -1,0 +1,189 @@
+
+ {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          主面板
+        </li>
+        <li class="breadcrumb-item active">跟单分配列表</li>
+      </ol>
+   <div class="card mb-3">
+
+     
+             
+                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>                       
+                        
+                           <th width="60">
+                            编号
+                            </th>
+                             <th>业务名称</th>  
+
+                                <th>公司名称</th>  
+                             <th width="150">客户名称</th>  
+                     
+                            
+                            
+                             <th width="200">
+                            跟单员
+                            </th>
+                              <th width="120">合同金额</th>
+                               
+                          
+                             <th width="120">业务创建人</th>
+<th width="120">创建时间</th>
+                            <th width="100"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for item in t_projects%}
+                        <tr id="{{item.id}}">
+                               <td>
+                                {{item.id}}
+
+                            </td>  
+                            <td>
+                                {{item.project_name}}
+
+                            </td>  
+                                      <td>
+                                {{item.customer_company}}
+                            </td>  
+                          <td>
+                                {{item.customer_name}}
+                            </td>  
+                           
+                             <td>
+                             {%if item.bsa%}
+                                    <font color='blue'>{{item.bsa}}</font>
+                            {%else%}
+
+                            {%if item.wait_set_state==1%}
+                                     <font color='green'>请设置跟单员</font>
+                            {%else%}
+                                      <font color='red'>待客户到款确认</font>
+                             {%end%}
+
+
+
+                             {%end%}
+                          
+                            </td>  
+                             <td>
+                                    {{item.all_income}}
+                            </td>
+                          <td>
+                            {{item.uid_name}}
+                            </td>
+                              <td>
+                            {{item.created_at}}
+                            </td>
+                            <td>
+                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-primary " title="{{item.id}}">查看</a>
+
+                            </td>
+                        </tr>
+                        {%end%}
+                    </tbody>
+                </table>
+
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=projects_state_cqer&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+
+
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=projects_state_cqer&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% end %} {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_state_cqer&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>                
+  
+         </div>
+      {% end %} {%block js%}
+<script>
+       function getCookie(name) {
+            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+            return r ? r[1] : undefined;
+        }
+$(document).ready(function() {
+    window.prettyPrint && prettyPrint();
+
+    $(".manage_site").on("click",function() {
+        site_id = $(this).attr("title")
+        $("#site_edit").attr("href","/sites?form_tag={{form_tag}}&tag=edit&site_id="+site_id)
+        $("#site_article").attr("href","/articles?site_id="+site_id)
+        $("#site_preview").attr("href","/?site_id="+site_id)
+    $("#nav_edit").attr("href","/sites?tag=nav&site_id="+site_id)
+    $("#site_staticfile").attr("href","/static_file?site_id="+site_id)
+        $("#site_mod").html("")
+        $.get("/sites?tag=get",{"site_id":site_id},function(result){
+            $("#site_mod").append(result)
+        })
+        $("#manage_modal1").modal("show")
+
+    })
+
+     _xsrf = getCookie("_xsrf");
+
+    $("a[name=btn_choice_temp]").click(function() {
+
+        tmp_id = $(this).attr("value")
+
+        $("#choice_temp_id").val(tmp_id)
+        $("#modal_save").show()
+        $("#input_siteinfo").show()
+        $("#choice_temp").hide()
+        $("#myModalLabel").text("配置站点信息")
+    })
+
+
+    $("#btn_save").click(function() {
+        _xsrf = getCookie("_xsrf");
+        temp_id = $("#choice_temp_id").val()
+        site_name = $("#site_name").val()
+        site_title = $("#site_title").val()
+        site_keyword = $("#site_keyword").val()
+        site_desc = $("#site_desc").val()
+        site_tongji = $("#site_tongji").val()
+        $.post("", {
+            "_xsrf": _xsrf,
+            "site_name": site_name,
+            "temp_id": temp_id,
+            "site_title": site_title,
+            "site_desc": site_desc,
+            "site_tongji": site_tongji,
+            "site_keyword": site_keyword
+        }, function(result) {
+            location.reload()
+        })
+
+    })
+
+    $("#btn_cancal").click(function() {
+        $("#input_siteinfo").hide()
+        $("#modal_save").hide()
+        $("#choice_temp").show()
+    })
+
+
+
+})
+</script>
+{%end%}

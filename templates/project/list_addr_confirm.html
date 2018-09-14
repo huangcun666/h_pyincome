@@ -1,0 +1,269 @@
+
+ {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+ <ol class="breadcrumb">
+   <li class="breadcrumb-item">
+     主面板
+   </li>
+   <li class="breadcrumb-item active">
+       地址安排审核
+   </li>
+ </ol>
+<div class="card mb-3">
+             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>   <th width="80">业务编号</th>
+                            <th width="400">业务内容</th>
+                            <th width="150">公司名称</th>
+                            <th width="100">客户名称</th>
+                            <th width="80">供应商</th>
+                            <th width="120">安排地址类型</th>
+                            <th width="60">区域</th>
+                            <th width="120">发票限量</th>
+                            <th width="80">担保事项</th>
+                            <th width="80">安排人</th>
+                            <th  width="100">创建时间</th>
+                            <th  width="120">地址起始时间</th>
+                            <th  width="120">地址到期时间</th> 
+                            <th  width="80">地址收费</th>
+                            <th  width="120">财务确认状态</th>
+                            <th  width="110">财务确认时间</th>
+                            <th  width="100">财务确认人</th>
+                            <th width="100">安排状态</th>
+                            <th width="60"></th>
+                         
+                    </tr>
+                    </thead>
+                    <tbody>
+                      {%if projects_addr_provider%}
+                      {%for item in projects_addr_provider%}
+                        <tr>
+                          <td>{{item.project_id}}</td>
+                          <td>{{item.project_name}}</td>
+                          <td>{{item.customer_company}}</td>
+                          <td>{{item.customer_name}}</td>
+                            <td>{%if item.provider %}{{item.provider}}{%end%}
+                              </td>
+                            
+                              <td>{%if item.addr_type%}{{item.addr_type}}{%end%}
+                              </td>
+                              <td >{%if item.area%}{{item.area}}{%end%} </td>
+  
+  
+                              <td>{%if item.fp_limit%}{{item.fp_limit}}{%end%}</td>
+  
+                              <td>{%if item.danbao_matter%}{{item.danbao_matter}}{%end%}</td>
+                              <td>{%if item.fz_name%}{{item.fz_name}}{%end%}</td>
+                              <td>{% if item.created_at%}{{item.created_at.strftime("%Y-%m-%d")}}{%end%}</td>
+                              <td>{% if item.addr_start_time%}{{item.addr_start_time.strftime("%Y-%m-%d")}}{%end%}</td>
+                              <td>{%if item.addr_end_time%}{{item.addr_end_time.strftime("%Y-%m-%d")}}{%end%}</td>
+                             
+                              <td>{%if item.addr_shoufei%}{{item.addr_shoufei}}{%end%}</td>
+                              <td  {%if item.caiwu_confirm==0 %}style="background-color:pink;"{%end%} >
+                                  {%if item.caiwu_confirm==1%}已确认{%else%}未确认{%end%}</td>
+                              {%if item.caiwu_confirm==1%}
+                              <td>{{item.confirm_time.strftime("%Y-%m-%d")}}</td>
+                              <td>{{item.confirm_name}}</td>
+                              {%else%}
+                              <td></td><td></td>
+                              {%end%}
+                          
+                        
+                        <td style="background-color:pink;">
+                        {%if not item.fz_id%}
+                            待接单
+                        {% elif item.fz_id and not item.addr_id and item.caiwu_confirm==0%}
+                          待安排
+                        {% elif item.fz_id and item.caiwu_confirm==0%}
+                          已接单
+                        {%elif item.caiwu_confirm==1%}
+                          已确认
+                        {%end%}
+                       
+                        </td>
+                        <td>
+                        {% if item.fz_name==name and item.caiwu_confirm==0%}
+                          <a href="javascript:void(0)"
+                              class="btn btn-info edit_addr" id="{{item.id}}" addr_shoufei="{{item.addr_shoufei}}"
+                              addr_start_time="{{item.addr_start_time}}" addr_end_time="{{item.addr_end_time}}"
+                              >编辑</a>
+                        {%elif role=='3' and item.addr_id and item.caiwu_confirm==0%}
+                        <a href="javascript:void(0)" class="btn btn-info confirm_addr" confirm_id="{{item.id}}">确认</a>
+                        {%elif not item.fz_id and role!='3' %}
+                        <a href="/project?tag=show&guid={{item.guid}}&id={{item.project_id}}&addr_provider={{item.id}}#addr_list"
+                        class="btn btn-info"
+                        >接单</a>
+                        {%end%}
+                       
+                        </td>
+                        
+  
+  
+  
+                    </tr>
+                    {%end%}
+                    {%else%}
+                    <tr>
+                    <td colspan="20">还没有哦。</td>
+  
+                    </tr>
+                    {%end%}
+  
+                    </tbody>
+           </table>
+           <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                   <ul class="pagination">
+                 {% if pagination.has_prev %}
+                      <li class="paginate_button page-item previous " id="dataTable_previous">
+                      <a href="?tag=list_addr_confirm&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+             
+             
+             
+                     {% end %}
+                     {%for page in pagination.iter_pages() %}
+                      {% if page %}
+                      {% if page != pagination.page %}
+                      <li class="paginate_button page-item "><a href="?tag=list_addr_confirm&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                      {% else %}
+                       <li class="paginate_button page-item active">
+                         <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+                       {% end %}
+                       {% else %}
+                       <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+                       {% end %} 
+                       
+                       {%end %}
+             
+                      {% if pagination.has_next %}
+                      <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=list_addr_confirm&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                  {% end %} </ul>
+                </div>
+             </div>
+    </div>
+    <div class="modal fade" id="modal_addr1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="projects_addr">新增地址安排</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+          
+          <div class="modal-body form-horizontal" id="site_mod">
+                <div class="form-group">
+                  <div class="col-sm-10">
+                    <label for="inputEmail3"  class="col-sm-5 control-label">地址起始时间</label>
+                    <input type="text" id="addr_start_time" class="form-control" readonly="readonly">
+                    <div class="alert alert-danger" id="e_addr_start_time" style="display:none;"></div>
+                  </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-10">
+                      <label  for="inputEmail3" class="col-sm-5 control-label">地址到期时间</label>
+                      <input type="text" id="addr_end_time" class="form-control" readonly="readonly">
+                      <div class="alert alert-danger" id="e_addr_end_time" style="display:none;"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                      <div class="col-sm-10">
+                        <label for="inputEmail3" class="col-sm-4 control-label">地址收费</label>
+                        <input type="text" id="addr_shoufei" class="form-control">
+                        <div class="alert alert-danger" id="e_addr_shoufei" style="display:none;"></div>
+                      </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                           <button class="btn btn-primary" target="_blank" id="btn_save_addr">添加</button>
+          
+                </div>
+              </div>
+            </div>
+          </div>
+ {% end %} {%block js%}
+<script>
+  function getCookie(name) {
+       var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+       return r ? r[1] : undefined;
+   }
+$(function () { 
+    $("#addr_start_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#addr_end_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    _xsrf = getCookie("_xsrf");
+    $('.confirm_addr').on('click',function () { 
+    var confirm_id=$(this).attr('confirm_id')
+    $.post(
+      '/project?tag=add_addr',
+      {
+        '_xsrf':_xsrf,
+        'confirm_id':confirm_id,
+      },function (result) { 
+        location.reload()
+       }
+    )
+   })
+
+    $('.edit_addr').on('click',function () {
+    var addr_shoufei=$(this).attr('addr_shoufei')
+    var addr_start_time=$(this).attr('addr_start_time') 
+    var addr_end_time=$(this).attr('addr_end_time')
+    var id=$(this).attr('id')
+    $('#addr_start_time').val(addr_start_time)
+    $('#addr_end_time').val(addr_end_time)
+    $('#addr_shoufei').val(addr_shoufei)
+    $('#btn_save_addr').attr('project_addr_id',id)
+    $('#e_addr_start_time').hide()
+    $('#e_addr_end_time').hide()
+    $('#e_addr_shoufei').hide()
+    $('#projects_addr').text('修改地址安排')
+    $('#btn_save_addr').text('修改')
+    $('#modal_addr1').modal('show')
+   })
+ 
+   $('#btn_save_addr').on('click',function () { 
+    var addr_start_time=$('#addr_start_time').val()
+    var addr_end_time=$('#addr_end_time').val()
+    var addr_shoufei=$('#addr_shoufei').val()
+    var addr_id=$(this).attr('addr_id')
+    var project_addr_id=$(this).attr('project_addr_id')
+    if(addr_start_time==''){
+      $('#e_addr_start_time').text('地址起始时间不能为空')
+      $('#e_addr_start_time').show()
+    }
+    else if(addr_start_time==''){
+      $('#e_addr_end_time').text('地址到期时间不能为空')
+      $('#e_addr_end_time').show()
+    }
+    else if(addr_shoufei==''){
+      $('#e_addr_shoufei').text('地址收费不能为空')
+      $('#e_addr_shoufei').show()
+    }
+    else if(addr_shoufei!='' & isNaN(addr_shoufei)){
+      $('#e_addr_shoufei').text('需填写数字')
+      $('#e_addr_shoufei').show()
+    }
+    else{
+    $.post(
+      '/project?tag=add_addr',
+      {
+        '_xsrf':_xsrf,
+        'project_addr_id':project_addr_id,
+        'addr_start_time':addr_start_time,
+        'addr_end_time':addr_end_time,
+        'addr_shoufei':addr_shoufei,
+        'addr_id':addr_id,
+      },function (result) { 
+        location.reload()
+       }
+    )
+  }
+   })
+  
+ })
+</script>
+{%end%}

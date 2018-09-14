@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> {%block title%}发业集团{%end%}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+    ">
+
+    <link rel="stylesheet" href="/static/dist/lib/weui.min.css">
+    <link rel="stylesheet" href="/static/dist/css/jquery-weui.css">
+    <link rel="stylesheet" href="/static/dist/demos/css/demos.css">
+
+
+  </head>
+
+  <body ontouchstart>
+ 
+{% block body %} {%end%}
+
+   
+
+   <!-- body 最后 -->
+<script src="/static/dist/js/jquery.min.js"></script>
+<script src="/static/dist/js/jquery-weui.min.js"></script>
+<script>
+
+      function getCookie(name) {
+          var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+          return r ? r[1] : undefined;
+        }
+</script>
+    {%block js%}
+
+    {%end%}
+    <div class="weui-tab">
+            {% block body1 %} {%end%}
+    
+  </div>
+</div>
+  </body>
+</html>

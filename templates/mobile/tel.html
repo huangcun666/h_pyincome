@@ -1,0 +1,59 @@
+{% extends "mobile_base.html" %} {%block title%}我的传统商机(最新15条){%end%} 
+{% block body %}
+
+
+
+{%if not  t_company%}
+没有数据哦.
+{%else%}
+<center><h4><a href="" style="font-size:15">刷新页面</a></h4></center>
+{%for item in t_company%}
+<div class="weui-form-preview">
+  <div class="weui-form-preview__hd">
+    <label class="weui-form-preview__label">客户名称</label>
+    <em class="weui-form-preview__value">{{item.regCap}}</em>
+  </div>
+  <div class="weui-form-preview__bd">
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">公司名称</label>
+      <span class="weui-form-preview__value">{{item.entName}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">电话</label>
+      <span class="weui-form-preview__value">
+          
+        {%for row in item.phone.split(";")%}
+        <a href="tel://{{row}}">{{row}}</a><br/>
+    
+        {%end%}
+    
+    </span>
+    </div>
+   
+
+  </div>
+
+</div>
+
+      {%end%}
+{%end%}
+      {%end%}
+
+      {%block js%}
+
+      <script>
+        $(function(){
+          _xsrf =  getCookie("_xsrf")
+            $(".confirm_rec").on("click",function(){
+                  project_id = $(this).attr("project_id")
+                  pt_id = $(this).attr("pt_id")
+                  $.post("/mtransition?tag=confirm_rec",{"project_id":project_id,"pt_id":pt_id,"_xsrf":_xsrf},function(result){
+                      location.reload()
+
+                  })
+
+            })
+
+        })
+      </script>
+      {%end%}

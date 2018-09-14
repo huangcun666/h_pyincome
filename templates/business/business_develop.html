@@ -1,0 +1,374 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">商机开发
+            <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add_business_develop" >新 建 </a>
+        </li>
+
+      </ol>
+      {%if '商机' in all_manage%}
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link {%if not distribution%}active{%end%}" id="nav-home-tab"
+            href="/business?tag=business_develop" >全 部
+            <span class="badge badge-danger">{%if sums%}{{sums.count}}{%end%}</span>
+        </a>
+          <a class="nav-item nav-link  {%if distribution=='1'%}active{%end%}"
+            href="/business?tag=business_develop&distribution=1" style="font-size:13px;">待分配
+            <span class="badge badge-danger">{%if sums%}{{sums.a}}{%end%}</span>
+            </a>
+            <a class="nav-item nav-link {%if distribution=='2'%}active{%end%}" 
+            href="/business?tag=business_develop&distribution=2" style="font-size:13px;">已分配
+            <span class="badge badge-danger">{%if sums%}{{sums.b}}{%end%}</span>
+            </a>
+           </div>
+    </nav>
+    {%end%}
+      <div class="card mb-3">
+            <div class="card-body">
+
+            <div class="table-responsive">
+            
+            <table class="table table-bordered" id="dataTable"  cellspacing="0">
+            <thead style="background-color:#000;color:#fff">
+                <tr>
+                    <th width="100">公司名称 </th>
+                    <th width="100">客户姓名</th>
+                    <th width="100">联系电话</th>
+                    <th width="80">创建人</th>
+                    <th width="100">创建时间</th>
+                    <th width="100">来源渠道</th>
+                    <th width="100" >来源方式</th>
+              
+                    <th width="100">来源关键词</th>
+                    <th width="120">客服客户推荐人</th>
+                    <th width="100">内部推荐人</th>
+                    <th width="100">在线客服</th>
+                    <th width="100">客服顾问</th>
+                    <th width="100">状态</th>
+                    <th  width="100"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {%if business_develop%}
+                {%for item in business_develop%}
+                <tr>
+                    <td>{{item.company}}</td>
+                    <td>{{item.customer_name}}</td>
+                    <td>{{item.customer_tel}}</td>
+                    <td>{{item.uid_name}}</td>
+                    <td>{{item.created_at}}</td>
+                    <td>{{item.source_qd}}</td>
+                    <td>{{item.source_way}}</td>
+                    <td>{{item.source_key}}</td>
+                    <td>{{item.customer_introducer}}</td>
+                    <td>{{item.inner_introducer}}</td>
+                    <td>{{item.online_kf}}</td>
+                    <td>{{item.kf_guwen}}</td>
+                    <td>{{item.status}}</td>
+                    <td><a href="/business?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-info">查看</a></td>
+                </tr>
+                {%end%}
+                {%else%}
+                <td colspan="20">还没有哦~</td>
+                {%end%}
+            </tbody>
+            </table>
+            <div class="col-sm-12 col-md-7">
+                    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                       <ul class="pagination">
+                     {% if pagination.has_prev %}
+                          <li class="paginate_button page-item previous " id="dataTable_previous">
+                          <a href="?tag=business_develop{%if distribution%}&distribution={{distribution}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+                 
+                 
+                 
+                         {% end %}
+                         {%for page in pagination.iter_pages() %}
+                          {% if page %}
+                          {% if page != pagination.page %}
+                          <li class="paginate_button page-item "><a href="?tag=business_develop{%if distribution%}&distribution={{distribution}}{%end%}&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                          {% else %}
+                           <li class="paginate_button page-item active">
+                             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+                           {% end %}
+                           {% else %}
+                           <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+                           {% end %} 
+                           {%end %}
+                          {% if pagination.has_next %}
+                          <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=business_develop{%if distribution%}&distribution={{distribution}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                      {% end %} </ul>
+                    </div>
+                 </div>
+
+            </div>
+  
+        </div>
+    </div>
+<!-- <modal> -->
+      
+<div class="modal fade" id="business_develop_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document" >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="income_title_type">新增商机开发
+    
+          </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+    
+    
+            <div class="modal-body" id="site_mod">
+                <div class="form-group">
+                <div class="col-sm-10">
+                    <label>公司名称</label>
+                    <input class="form-control" type="text" id="company" placeholder="公司名称">
+                    <div class="alert alert-danger" id="e_company" style="display:none;"></div>
+                </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <label>客户姓名</label>
+                        <input class="form-control" type="text" id="customer_name" placeholder="客户姓名">
+                        <div class="alert alert-danger" id="e_customer_name" style="display:none;"></div>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <label>联系电话</label>
+                            <input class="form-control" type="text" id="customer_tel" placeholder="联系电话">
+                            <div class="alert alert-danger" id="e_customer_tel" style="display:none;"></div>
+                        </div>
+                        </div>
+                        {%if role=='6'%}
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label  class="col-sm-3">来源渠道</label>
+                                
+                    {% for idx, item in enumerate(t_income_type) %}
+
+                    <input type="radio" name="source_qd"  value="{{item.income_name}}"/> &nbsp;{{item.income_name}}
+                    {% end %}
+                                <div class="alert alert-danger" id="e_source_qd" style="display:none;"></div>
+                            </div>
+                            </div>
+                        {%end%}
+                            {%if role=='6'%}
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label  class="col-sm-3">来源方式</label>
+                                    {% for idx, item in enumerate(t_talk_type) %}
+                                    <input type="radio" name="source_way"  value="{{item.income_name}}"/> &nbsp;{{item.income_name}}
+                              {% end %}
+                                    <div class="alert alert-danger" id="e_source_way" style="display:none;"></div>
+                                </div>
+                                </div>
+                                {%end%}
+                                {%if role=='6'%}
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <label>来源关键词</label>
+                                        <input class="form-control" type="text" id="source_key" placeholder="来源关键词">
+                                        <div class="alert alert-danger" id="e_source_key" style="display:none;"></div>
+                                    </div>
+                                    </div>
+                                    {%end%}
+                                    {%if role!='6' or '商机' in all_manage%}
+                                    <div class="form-group">
+                                        <div class="col-sm-10">
+                                            <label>客户推荐人</label>
+                                            <input class="form-control" type="text" id="customer_introducer" placeholder="客户推荐人">
+                                            <div class="alert alert-danger" id="e_customer_introducer" style="display:none;"></div>
+                                        </div>
+                                        </div>
+                                        {%end%}
+                                        {%if role!='6' or '商机' in all_manage%}
+                                        <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <label>内部推荐人</label>
+                                                <input class="form-control" type="text" id="inner_introducer" placeholder="内部推荐人">
+                                                <div class="alert alert-danger" id="e_inner_introducer" style="display:none;"></div>
+                                            </div>
+                                            </div>
+                                            {%end%}
+                                
+                                            <div class="form-group">
+                                                <div class="col-sm-10">
+                                                    <label>在线客服</label>
+                                                    <input class="form-control" type="text" id="online_kf" placeholder="在线客服"
+                                                    {% if '商机' not in all_manage%}
+                                                    readonly="readonly"{%end%}>
+                                                </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-sm-10">
+                                                        <label>客服顾问</label>
+                                                        <input class="form-control" type="text" id="kf_guwen" placeholder="客服顾问"
+                                                        {% if '商机' not in all_manage%}
+                                                        readonly="readonly"{%end%}>
+                                                    </div>
+                                                    </div>
+                                                    <div class="form-group business_develop_status">
+                                                            <div class="col-sm-10">
+                                                                <label>状态</label>
+                                                                <select id="status">
+                                                                    <option value="已创建订单">已创建订单</option>
+                                                                    <option value="在开发">在开发</option>
+                                                                    <option value="已成交">已成交</option>
+                                                                </select>
+                                                            </div>
+                                                            </div>
+          
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-danger delete_business_develop">删除</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary create_business_develop">新增</button>
+                  </div>
+          </div>
+        </div>
+</div>
+</div>        
+{%end%}
+
+{%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+    $('#online_kf').typeahead({
+    source: function (query, process) {
+    return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+    return process(JSON.parse(data));
+    });
+    }
+});
+$('#kf_guwen').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+    $('#btn_add_business_develop').on('click',function () {
+        $('.delete_business_develop').hide()
+        $('#company').val('')
+        $('#customer_name').val('')
+        $('#customer_tel').val('')
+        $('#source_qd').val('')
+        $('#source_way').val('')
+        $('#source_key').val('')
+        $('#customer_introducer').val('')
+        $('#inner_introducer').val('')
+        if('{{role}}'=='6'){
+            $('#online_kf').val('{{name}}')
+        }else{
+        $('#online_kf').val('')
+        }
+        if('{{role}}'=='13'){
+            $('#kf_guwen').val('{{name}}')
+        }else{
+        $('#kf_guwen').val('')
+        }
+        $('.business_develop_status').hide()
+        $('#business_develop_modal').modal('show')
+     })
+    $('.create_business_develop').on('click',function () { 
+        var company=$('#company').val()
+        var customer_name=$('#customer_name').val()
+        var customer_tel=$('#customer_tel').val()
+        var source_qd=$('input[name=source_qd]:checked').val()
+        var source_way=$('input[name=source_way]:checked').val()
+        var source_key=$('#source_key').val()
+        var customer_introducer=$('#customer_introducer').val()
+        var inner_introducer=$('#inner_introducer').val()
+        var online_kf=$('#online_kf').val()
+        var kf_guwen=$('#kf_guwen').val()
+        var status=$('#status').val()
+        var id=$(this).attr('id')
+        if(company==''){
+            $('#e_company').text('公司名不能为空')
+            $('#e_company').show()
+        }
+        else if(customer_name==''){
+            $('#e_customer_name').text('客户名不能为空')
+            $('#e_customer_name').show()
+        }
+        else{
+            $(this).text('保存中')
+            $(this).attr('disabled','disabled')
+        $.post(
+            '/business?tag=business_develop',
+            {
+                '_xsrf':_xsrf,
+                'company':company,
+                'customer_name':customer_name,
+                'customer_tel':customer_tel,
+                'source_qd':source_qd,
+                'source_way':source_way,
+                'source_key':source_key,
+                'customer_introducer':customer_introducer,
+                'inner_introducer':inner_introducer,
+                'online_kf':online_kf,
+                'kf_guwen':kf_guwen,
+                'status':status,
+                'id':id,
+                'is_distribution':"{%if role=='13'%}0{%else%}1{%end%}"
+            },function (result) { 
+                location.reload()
+             }
+        )
+        }
+     })
+    $('.edit_business_develop').on('click',function () {
+        var id=$(this).attr('id')
+        var company=$(this).attr('company') 
+        var customer_name=$(this).attr('customer_name')
+        var customer_tel=$(this).attr('customer_tel')
+        var source_qd=$(this).attr('source_qd')
+        var source_way=$(this).attr('source_way')
+        var source_key=$(this).attr('source_key')
+        var customer_introducer=$(this).attr('customer_introducer')
+        var inner_introducer=$(this).attr('inner_introducer')
+        var online_kf=$(this).attr('online_kf')
+        var kf_guwen=$(this).attr('kf_guwen')
+        var status=$(this).attr('status')
+        $('#company').val(company)
+        $('#customer_name').val(customer_name)
+        $('#customer_tel').val(customer_tel)
+        $('#source_qd').val(source_qd)
+        $('#source_way').val(source_way)
+        $('#source_key').val(source_key)
+        $('#customer_introducer').val(customer_introducer)
+        $('#inner_introducer').val(inner_introducer)
+        $('#online_kf').val(online_kf)
+        $('#kf_guwen').val(kf_guwen)
+        $('#status option[value="'+status+'"]').attr('selected',true)
+        $('.create_business_develop').attr('id',id)
+        $('.delete_business_develop').attr('id',id)
+        $('.business_develop_status').show()
+        $('#business_develop_modal').modal('show')
+     })
+     $('.delete_business_develop').on('click',function () {
+         var id=$(this).attr('id')
+         if(confirm('确定删除?')){
+        $.post(
+            '/business?tag=business_develop',
+            {
+                '_xsrf':_xsrf,
+                'delete_id':id
+            },function (result) { 
+                    location.reload()
+             }
+        )
+         }
+      })
+})
+</script>
+{%end%}

@@ -1,0 +1,210 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">办理地址管理
+            <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add_recode" >新 建 </a>
+        </li>
+
+      </ol>
+
+      <div class="card mb-3">
+            <div class="card-body">
+
+            <div class="table-responsive">
+
+
+            <table class="table table-bordered" id="dataTable"  cellspacing="0">
+            <thead style="background-color:#000;color:#fff">
+                <tr>
+                    <th width="250">地址类型</th>
+                    <th width="100">供应商</th>
+                    <th width="100">订单编号</th>
+                    <th width="100">地址价格</th>
+                    <th width="150">地址结算时间</th>
+                    <th width="150">地址起始时间</th>
+                    <th width="150">地址到期时间</th>
+                    <th width="150">更新时间</th>
+                    <th width="150">创建时间</th>
+                    <th width='100'>记录人</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for item in project_manage_addr%}
+                <tr>
+                    <td>{{item.addr_type}}</td>
+                    <td>{{item.addr_cp}}</td>
+                    <td>{{item.project_id}}</td>
+                    <td>{{item.addr_price}}</td>
+                    <td>{{item.addr_price_time}}</td>
+                    <td>{{item.start_time}}</td>
+                    <td>{{item.expired_time}}</td>
+                    <td>{{item.updated_at}}</td>
+                    <td>{{item.created_at}}</td>
+                    <td>{{item.uid_name}}</td>
+                    <td><a class="btn btn-info change_recode" 
+                        addr_type="{{item.addr_type}}"
+                        addr_cp="{{item.addr_cp}}" 
+                        addr_price="{{item.addr_price}}"
+                        addr_price_time="{{item.addr_price_time}}"
+                        start_time="{{item.start_time}}"
+                        expired_time="{{item.expired_time}}"
+                        rel_id="{{item.id}}"
+                        >修改</a></td>
+                </tr>
+                {%end%}
+            </tbody>
+            </table>
+         
+
+
+
+
+            
+            </div>
+            {% if not project_manage_addr%}
+            <div class="container">
+                <p class="text-center">还没有哦~</p>
+            </div>
+            
+            {%end%}
+        </div>
+    </div>
+
+    <div class="modal fade" id="add_project_recode" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="income_title_type">业务记录
+                <button class="btn btn-danger delete_recode">&times;</button>
+        
+              </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+        
+        
+                <div class="modal-body form-horizontal" id="site_mod">
+                    <div class="col-sm-10">
+                        <label for="addr_type">地址类型</label>
+                        <input class="form-control" name="addr_type" id="addr_type" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="addr_cp">供应商</label>
+                            <input class="form-control" name="addr_cp" id="addr_cp" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="addr_price">地址价格</label>
+                            <input class="form-control" name="addr_price" id="addr_price" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="addr_price_time">地址结算时间</label>
+                            <input class="form-control" name="addr_price_time" id="addr_price_time" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="start_time">地址起始时间</label>
+                            <input class="form-control" name="start_time" id="start_time" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="expired_time">地址到期时间</label>
+                            <input class="form-control" name="expired_time" id="expired_time" type="text">
+                        </div>
+                </div>
+        
+        
+                <div class="modal-footer">
+                    <input type="hidden" value="0" id="is_other" name="is_other" />
+                           <button class="btn btn-primary" target="_blank" id="btn_save_project_recode" rel_id='0'>保 存</button>
+        
+                </div>
+              </div>
+            </div>
+          </div>
+{%end%}
+
+{%block js%}
+
+<script>
+ $(function () {
+    $("#addr_price_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#start_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#expired_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    _xsrf =  getCookie("_xsrf")
+    $('#btn_add_recode').on("click",function(){
+        $('.delete_recode').hide();
+        $('#add_project_recode').modal('show')
+    })
+    $('#btn_save_project_recode').on('click',function () { 
+        var addr_type=$('#addr_type').val();
+        var addr_cp=$('#addr_cp').val();
+        var addr_price=$('#addr_price').val();
+        var addr_price_time=$('#addr_price_time').val();
+        var start_time=$('#start_time').val();
+        var expired_time=$('#expired_time').val();
+        var rel_id=$(this).attr('rel_id');
+        if(addr_type==''){
+            alert('地址类型不能为空')
+        
+        }
+        else{
+            if(isNaN(addr_price)){
+                alert('价格必须为数字！！！')
+            }
+            else{
+            $.post(
+                '/project?tag=add_manage_addr',
+                {
+                    "_xsrf":_xsrf,
+                    "addr_type":addr_type,
+                    "addr_cp":addr_cp,
+                    "addr_price":addr_price,
+                    "addr_price_time":addr_price_time,
+                    "start_time":start_time,
+                    "expired_time":expired_time,
+                    'rel_id':rel_id,
+                    "project_id":{{project_id}}
+                },
+                function (result) { 
+                    location.reload()
+                 }
+                )
+            }
+        }
+     })
+     $('.change_recode').on('click',function () {
+        $('.delete_recode').show();
+
+        $('#addr_type').val($(this).attr('addr_type')); 
+        $('#addr_cp').val($(this).attr('addr_cp'));
+        $('#addr_price').val($(this).attr('addr_price'));
+        $('#addr_price_time').val($(this).attr('addr_price_time'));
+        $('#start_time').val($(this).attr('start_time'));
+        $('#expired_time').val($(this).attr('expired_time'));
+        $('#btn_save_project_recode').attr('rel_id',$(this).attr('rel_id'))
+        $('#add_project_recode').modal('show')
+
+      })
+      $(".delete_recode").on('click',function () { 
+          var id= $('#btn_save_project_recode').attr('rel_id');
+          $.post(
+              '/project?tag=delete_manage_addr',
+              {
+                  'id':id,
+                  "_xsrf":_xsrf,
+              },
+              function (result) { 
+                  location.reload()
+               }
+          )
+       })
+})
+</script>
+{%end%}

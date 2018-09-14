@@ -1,0 +1,371 @@
+
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+<style>
+    .faye-table {
+        font-size: 12px;
+    }
+
+    .faye-table thead tr th {
+        text-align: center;
+    }
+
+    .faye-table tbody tr td {
+        text-align: center;
+        padding: 0.3rem;
+        height: 40px;
+        box-sizing: border-box;
+    }
+
+    .faye-ti {
+        padding: 0.5rem;
+    }
+
+    .faye-a a {
+        padding: 5px;
+    }
+
+    .faye-tdti {
+        text-align: center;
+    }
+
+    .faye-selsect td {
+        margin-right: 15px;
+    }
+
+    .faye-selsect td input {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    .faye-selsect td select {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    .faye-btn {
+        padding: 0.1rem 0.2rem;
+        background-color: #9ec6ef;
+        margin-left: 20px;
+        border-radius: 2px;
+    }
+
+    select.form-control:not([size]):not([multiple]) {
+        height: calc(2rem + 0px);
+    }
+</style>
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        主面板
+    </li>
+    <li class="breadcrumb-item active">{%if params["my"]=="1"%} 我的商机 {%elif params["my"]=="2"%} 已成交商机{%else%}传统商机开发
+       
+        
+        {%end%}
+        
+
+    </li>
+
+</ol>
+
+<div class="row" >
+    <div class="col-lg-12">
+<form>
+<input type="text" id="keyword" name="keyword" placeholder="公司名/注册地址/电话/邮箱" style="width:300px; height:30px;" value="{%if  params["keyword"]%}{{params["keyword"]}}{%end%}" > 
+<input type="text" id="sales_uid_name" name="sales_uid_name" placeholder="销售顾问" style="width:100px; height:30px;" value="{%if  params["sales_uid_name"]%}{{params["sales_uid_name"]}}{%end%}">
+<input type="text" id="update_start" name="update_start" placeholder="更新时间(开始)" style="width:150px; height:30px;" value="{%if params["update_start"]%}{{params["update_start"]}}{%end%}">
+至 <input type="text" id="update_end" name="update_end" placeholder="更新时间(结束)" style="width:150px; height:30px;" value="{%if params["update_end"]%}{{params["update_end"]}}{%end%}">
+
+<select name="rank" style="height:30px;">
+<option value="0">选择质量类型</option>
+<option value="A" {%if params["rank"]=="A"%} selected="true"{%end%}>A类</option>
+<option value="B" {%if params["rank"]=="B"%} selected="true"{%end%}>B类</option>
+</select>
+<input type="hidden" value="all" name="bystaff"/>
+<input type="hidden" value="list_company" name="tag" />
+
+<button class="btn btn-primary btn-small">检索</button>
+
+</form>
+
+</nav>
+<input type="radio" name="batch_edit" id="batch_edit" value="0">放回公有池
+<input type="radio" name="batch_edit" id="batch_edit" value="1">修改归属人
+<a class="btn btn-primary btn-sm change_batch" href="javascript:void(0);">批量修改</a>
+    <div class="card mb-3">
+
+
+
+
+
+
+        
+    <table class="table table-bordered" style="width: 100%;" >
+        <thead style="background-color:#000;color:#fff ; font-size:12px;">
+            <tr>
+                <th width="50">
+                    <input type="checkbox" id="choose_all">全选
+                </th> 
+                <th width="50">级别</th>
+                <th  width="200">公司名称</th>
+                <th width="100">销售顾问</th>
+
+                <th width="120">联系电话</th>
+                
+               
+              
+                <th >更新内容</th>
+                 <th width="150">最后更新</th>
+
+               
+         
+
+            </tr>
+        </thead>
+        <tbody style=" font-size:12px;">
+            {%if t_company%} {%for item in t_company%}
+
+            <tr>
+                <td><input type="checkbox" value="{{item.id}}" guid="{{item.company_guid}}" id="check_company" name="check_company"></td>
+                <td>
+                    {{item.rank}}
+                </td>
+                <td>
+                    <a style=" font-size:12px;" href="/company?tag=show&guid={{item.company_guid}}&id={{item.id}}" title="{{item.entName}}" {%if not params["my"]%} target="_blank"{%end%}>{{item.entName}}</a>
+                </td>
+                <td>
+                    {{item.sales_uid_name}}
+                </td>
+                <td title="{{item.phone}}">
+                   
+                     {%if item.phone%} {%if len(item.phone) > 12%} {{item.phone[:12]}}....... {%else%} {{item.phone}} {%end%}{%end%}
+                </td>
+       
+                <td title="{{item.last_updated_msg}}">
+                    
+{%if item.last_updated_msg%} {%if len(item.last_updated_msg) > 30%} {{item.last_updated_msg[:30]}}....... {%else%} {{item.last_updated_msg}}
+{%end%}
+                    
+                   </td>
+
+<td title="{{item.last_updated_msg}}">{{item.last_updated}}
+
+
+
+</td>
+{%else%}
+<td>{{item.created_at}}</td>{%end%}
+
+              
+
+
+            </tr>
+            {%end%} {%else%}
+            <tr>
+                <td colspan="26">加油哦, 目前还没有没有数据哦。</td>
+            </tr>
+
+            {%end%}
+        </tbody>
+    </table>
+
+    <div class="col-sm-12 col-md-7">
+        <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+            <ul class="pagination">
+                {% if pagination.has_prev %}
+                <li class="paginate_button page-item previous " id="dataTable_previous">
+                    <a href="?tag=list_company&page={{ pagination.page - 1}}
+                    {%if params["update_start"]%}&update_start={{params["update_start"]}}{%end%}
+                    {%if params["update_end"]%}&update_end={{params["update_end"]}}{%end%}
+                    {%if params["sales_uid_name"]%}&sales_uid_name={{params["sales_uid_name"]}}{%end%}{%if params["bystaff"]%}&bystaff={{params["bystaff"]}}{%end%}{%if params["last_updated"]%}&last_updated={{params["last_updated"]}}{%end%}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a>
+                </li>
+
+
+
+                {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                <li class="paginate_button page-item ">
+                    <a href="?tag=list_company&page={{page}}{%if params["update_start"]%}&update_start={{params["update_start"]}}{%end%}
+                    {%if params["update_end"]%}&update_end={{params["update_end"]}}{%end%}
+                    {%if params["sales_uid_name"]%}&sales_uid_name={{params["sales_uid_name"]}}{%end%}{%if params["bystaff"]%}&bystaff={{params["bystaff"]}}{%end%}{%if params["last_updated"]%}&last_updated={{params["last_updated"]}}{%end%}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if  params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
+                </li>
+                {% else %}
+                <li class="paginate_button page-item active">
+                    <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a>
+                </li>
+                {% end %} {% else %}
+                <li class="paginate_button page-item ">
+                    <span class="active">
+                        <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a>
+                    </span>
+                </li>
+                {% end %} {%end %} {% if pagination.has_next %}
+                <li class="paginate_button  page-item next" id="dataTable_next">
+                    <a href="?tag=list_company&page={{pagination.page+1}}{%if params["update_start"]%}&update_start={{params["update_start"]}}{%end%}
+                    {%if params["update_end"]%}&update_end={{params["update_end"]}}{%end%}
+                    {%if params["sales_uid_name"]%}&sales_uid_name={{params["sales_uid_name"]}}{%end%}{%if params["bystaff"]%}&bystaff={{params["bystaff"]}}{%end%}{%if params["last_updated"]%}&last_updated={{params["last_updated"]}}{%end%}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
+                </li>
+                {% end %} </ul>
+        </div>
+    </div>
+
+</div></div></div></div>
+
+<!-- Modal -->
+<div id="a_edit_sales_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+                <h5 id="myModalLabel_linkman">修改归属人
+                    </h5>
+        </div>
+        <div class="modal-body">
+          <div class="control-group">
+            <label class="control-label" for="lastname">归属人</label>
+            <div class="controls">
+            <input type="text" class="form-control" id="sales_uid_name1" placeholder="归属人名字">
+            </div>
+            <!-- /controls -->
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+          <button class="btn btn-primary" id="btn_save_sales">保存</button>
+        </div>
+      </div>
+</div>
+</div>
+
+
+{%end%} {%block js%}
+
+<script>
+    $(function () {
+        _xsrf = getCookie("_xsrf")
+        $("#update_start").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+        $("#update_end").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+   
+
+            $("#list_company").click()
+    $('#sales_uid_name').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
+    $('#sales_uid_name1').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
+    $('#choose_all').on('change',function () {
+         $('input[id=check_company]').not(this).prop('checked',this.checked);
+      })
+      $('.change_batch').on('click',function () {
+          var batch_edit=$('#batch_edit:checked').val()
+           var companys=[]
+            $('input[name=check_company]:checked').each(function () {
+                companys.push($(this).val())
+                companys.push($(this).attr('guid'))
+            })
+            companys=companys.join(',')
+        if('{{params["my"]}}'=="1"){
+            if(companys==''){
+                  $('#choose_all').focus()
+                  alert('未选择商机开发')
+              }else{
+                $.post("/company?tag=free_to_me", { "_xsrf": _xsrf, "companys": companys }, function (result) {
+                    location.reload()
+                })
+              }
+        }else{
+          if(batch_edit=='0'){
+              if(companys==''){
+                  $('#choose_all').focus()
+                  alert('未选择商机开发')
+              }else{
+                $.post("/company?tag=free_to_me", { "_xsrf": _xsrf, "companys": companys }, function (result) {
+                    location.reload()
+                })
+              }
+          }else if(batch_edit=='1'){
+            if(companys==''){
+                  $('#choose_all').focus()
+                  alert('未选择商机开发')
+              }else{
+                $('#a_edit_sales_modal').modal('show')
+              }
+
+          }else if(batch_edit==undefined){
+            $('#batch_edit').focus()
+              alert('请选择操作类型')
+          }
+        }
+       })
+
+       $('#btn_save_sales').on('click',function () {
+           var sales_uid_name=$('#sales_uid_name1').val()
+            var companys=[]
+            $('input[name=check_company]:checked').each(function () {
+                companys.push($(this).val())
+                companys.push($(this).attr('guid'))
+            })
+            companys=companys.join(',')
+            if(sales_uid_name==''){
+                alert('归属人不能为空')
+            }else{
+                $.post('/company?tag=edit_sales_name',
+                {
+                "_xsrf": _xsrf,
+                "companys": companys,
+                "sales_uid_name":sales_uid_name
+                },function (result) {
+                    if(result=='-1'){
+                        alert('查无此人')
+                    }else{
+                    location.reload()
+                    }
+                 })
+            }
+
+        })
+
+        $('#btn_save_sales').on('click',function () {
+           var sales_uid_name=$('#sales_uid_name1').val()
+            var companys=[]
+            $('input[name=check_company]:checked').each(function () {
+                companys.push($(this).val())
+                companys.push($(this).attr('guid'))
+            })
+            companys=companys.join(',')
+            if(sales_uid_name==''){
+                alert('归属人不能为空')
+            }else{
+                $.post('/company?tag=edit_sales_name',
+                {
+                "_xsrf": _xsrf,
+                "companys": companys,
+                "sales_uid_name":sales_uid_name
+                },function (result) {
+                    if(result=='-1'){
+                        alert('查无此人')
+                    }else{
+                    location.reload()
+                    }
+                 })
+            }
+
+        })
+
+
+    })
+</script> {%end%}

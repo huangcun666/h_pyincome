@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>{%block title%}{%end%}</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/newcss/css/bootstrap.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+    <link href="/static/vendor/bootstrap/css/bootstrap-datetimepicker.css" rel="stylesheet">
+
+  <link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Page level plugin CSS-->
+  <link href="/static/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+
+  {%block head%}{%end%}
+</head>
+
+<body class="fixed-nav sticky-footer bg-dark" id="page-top" style="font-size: 13px;">
+  <!-- Navigation-->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+    <a class="navbar-brand" href="">广州发业管理系统 {{role}}</a> {% raw xsrf_form_html() %}
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+
+    {%if kf_manage=='1' or sh_manage=='1'%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="内部推荐审核">
+          <a class="nav-link" href="/project?tag=project_check">
+            <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">内部推荐审核</span>
+          </a>
+        </li>
+{%end%}
+  {%if role!="12"%}
+
+      {%if role=="2"%}<!-- 出纳审核-->
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="待审核业务">
+          <a class="nav-link" href="/project?tag=list_confirm&state_id=49">
+            <i class="fa fa-fw fa-dashboard"></i>  <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">待审核业务</span>
+          </a>
+        </li>
+        {%end%}
+
+      {% if role=="13"%}
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务列表">
+          <a class="nav-link" href="/project?tag=relation_projects" style="color:#fff">
+       <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">业务列表</span>
+          </a>
+        </li>
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务列表">
+          <a class="nav-link" href="/project?tag=projects_kfgw" style="color:#fff">
+       <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">订单流转</span>
+          </a>
+        </li>
+
+      {%end%}
+{%if is_developer=='1'%}
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
+                  <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti" data-parent="#exampleAccordion" id="list_company" style="color:#fff">
+                    <i class="fa fa-fw fa-sitemap"></i>
+                    <span class="nav-link-text">商机开发</span>
+                  </a>
+                  <ul class="sidenav-second-level collapse" id="collapseMulti">
+                    <li>
+                      <a href="/company?tag=list_company" style="color:#fff">传统商机</a>
+                    </li>
+ {%if role=="8"%}
+      <li>
+        <a href="/company?tag=list_company&bystaff=all" style="color:#fff">传统商机管理</a>
+      </li>
+  {%end%}
+
+
+
+
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="非传统商机" style="color:#fff">
+                  <a class="nav-link" href="/business?tag=business_develop" style="color:#fff">
+
+                    <span class="nav-link-text">非传统商机</span>
+                  </a>
+                </li>
+
+
+
+                  </ul>
+                </li>
+                {%end%}
+
+ {%if role=="1" or role=="8" %}
+<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
+  <a class="nav-link nav-link-collapse collapsed" id="collapseMulti_plan_nv" data-toggle="collapse" href="#collapseMulti_plan" data-parent="#exampleAccordion"
+    id="list_company" style="color:#fff">
+    <i class="fa fa-fw fa-sitemap"></i>
+    <span class="nav-link-text">销售计划</span>
+  </a>
+  <ul class="sidenav-second-level collapse" id="collapseMulti_plan">
+    <li>
+      <a href="/plan?tag=list_plan&my=1" style="color:#fff">我的销售计划</a>
+    </li>
+    {%if role=="8"%}
+    <li>
+      <a href="/plan?tag=list_plan" style="color:#fff">所有销售计划</a>
+    </li>
+    {%end%}
+
+  </ul>
+</li>
+{%end%}
+
+
+      {%if role=="1" or role=='12'%}
+
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="我的业务">
+          <a class="nav-link" href="/project?tag=my" style="color:#fff">
+       <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">我的业务</span>
+          </a>
+        </li>
+                    <li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务列表">
+                      <a class="nav-link" href="/project?tag=relation_projects" style="color:#fff">
+                        <i class="fa fa-fw fa-area-chart"></i>
+                        <span class="nav-link-text">关联业务</span>
+                      </a>
+                    </li>
+               <li class="nav-item" data-toggle="tooltip" data-placement="right" title="订单流转">
+          <a class="nav-link" href="/project?tag=projects_yw"  style="color:#fff">
+              <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">订单流转</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="楼盘业务">
+          <a class="nav-link" href="/project?tag=projects_qc_loupan"  style="color:#fff">
+              <i class="fa fa-fw fa-sitemap"></i>
+            <span class="nav-link-text">楼盘业务</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="应收管理">
+          <a class="nav-link" href="/project?tag=projects_yingshou"  style="color:#fff">
+              <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">应收管理</span>
+          </a>
+        </li>
+        {%end%}
+ {%if role=="8" or role=="7" or role=="3"%}
+
+
+
+
+<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
+  <a id="m_statis" class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti1" data-parent="#exampleAccordion"
+    id="list_company" style="color:#fff">
+    <i class="fa fa-fw fa-sitemap"></i>
+    <span class="nav-link-text">数据统计</span>
+  </a>
+  <ul class="sidenav-second-level collapse" id="collapseMulti1">
+  <li>
+
+    <a href="/statis?tag=statis_kf" style="color:#fff">营销日报</a>
+  </li>
+  <li>
+
+    <a href="/statis?tag=statis_kf_month" style="color:#fff">营销月报</a>
+  </li>
+
+
+              <li>
+                <a href="/statis?tag=statis_cq" style="color:#fff">工商统计</a>
+              </li>
+
+    <li>
+
+      <a href="/statis?tag=all_building" style="color:#fff">楼盘周期</a>
+
+    </li>
+
+
+<!--
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="办理进度统计分析" style="color:#fff">
+                  <a class="nav-link" href="/statis?tag=cq_trans" style="color:#fff">
+                    <i class="fa fa-fw fa-area-chart"></i>
+                    <span class="nav-link-text">办理进度统计分析</span>
+                  </a>
+                </li>
+              <li class="nav-item" data-toggle="tooltip" data-placement="right" title="办理进度统计" style="color:#fff">
+                <a class="nav-link" href="/statis?tag=cq_trans" style="color:#fff">
+                  <i class="fa fa-fw fa-area-chart"></i>
+                  <span class="nav-link-text">办理进度统计</span>
+                </a>
+              </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="办结统计" style="color:#fff">
+          <a class="nav-link" href="/project?tag=banjie_tongji"  style="color:#fff">
+              <i class="fa fa-fw fa-table"></i>
+            <span class="nav-link-text">办结统计</span>
+          </a>
+        </li> -->
+  </ul>
+</li>
+{%end%}
+{%if role=="10" or role=="13"%}
+  <li class="nav-item" data-toggle="tooltip" data-placement="right" title="我的业务">
+    <a class="nav-link" href="/project?tag=my" style="color:#fff">
+      <i class="fa fa-fw fa-area-chart"></i>
+      <span class="nav-link-text">我的业务</span>
+    </a>
+  </li>
+{%end%}
+
+      {%if role=="3"%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="财务审核">
+      <a class="nav-link" href="/project?tag=list_confirm&state_id=51"  style="color:#fff">
+        <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">财务审核</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="地址安排审核">
+            <a class="nav-link" href="/project?tag=list_addr_confirm&confirm=1"  style="color:#fff">
+              <i class="fa fa-fw fa-area-chart"></i>
+                  <span class="nav-link-text">地址安排审核</span>
+                </a>
+              </li>
+
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务列表">
+      <a class="nav-link" href="/project?tag=allview"  style="color:#fff">
+
+           <i class="fa fa-pie-chart"></i>
+            <span class="nav-link-text">业务列表</span>
+          </a>
+        </li>
+                  <li class="nav-item" data-toggle="tooltip" data-placement="right" title="我的业务">
+          <a class="nav-link" href="/project?tag=my" style="color:#fff">
+       <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">我的业务</span>
+          </a>
+        </li>
+        {%end%}
+
+    {%if role=="5"%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="待审业务">
+      <a class="nav-link" href="/project?tag=list_confirm&state_id=50"  style="color:#fff">
+             <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">待审业务</span>
+          </a>
+        </li>
+        {%end%}
+
+            {%if role=="6"%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务列表">
+      <a class="nav-link" href="/project?tag=list_confirm&state_id=63"  style="color:#fff">
+             <i class="fa fa-fw fa-table"></i>
+            <span class="nav-link-text">业务列表</span>
+          </a>
+        </li>
+        {%end%}
+      {%if role=="7"%}
+  <li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务列表">
+      <a class="nav-link" href="/project?tag=allview"  style="color:#fff">
+
+           <i class="fa fa-pie-chart"></i>
+            <span class="nav-link-text">业务列表</span>
+          </a>
+        </li>
+
+            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="地址安排">
+              <a class="nav-link" href="/project?tag=projects_state" style="color:#fff">
+                <i class="fa fa-fw fa-dashboard"></i>
+                <span class="nav-link-text">跟单分配</span>
+              </a>
+            </li>
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="地址安排">
+          <a class="nav-link" href="/project?tag=list_addr_confirm"  style="color:#fff">
+              <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">地址安排</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="订单流转">
+          <a class="nav-link" href="/project?tag=projects_state"  style="color:#fff">
+              <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">订单流转</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="我的业务">
+          <a class="nav-link" href="/project?tag=my" style="color:#fff">
+       <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">我的业务</span>
+          </a>
+</li>
+
+
+
+
+        </li>
+
+        {%end%}
+
+
+      {%if role=="11"%}
+       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务列表">
+          <a class="nav-link" href="/project?tag=allview"  style="color:#fff">
+              <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">业务列表</span>
+          </a>
+        </li>
+
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="订单流转">
+          <a class="nav-link" href="/project?tag=projects_cg"  style="color:#fff">
+              <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">订单流转</span>
+          </a>
+        </li>
+
+
+         {%end%}
+      {%if role=="8" %}
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务列表">
+      <a class="nav-link" href="/project?tag=allview"  style="color:#fff">
+
+           <i class="fa fa-pie-chart"></i>
+            <span class="nav-link-text">业务列表</span>
+          </a>
+        </li>
+
+
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="订单流转">
+          <a class="nav-link" href="/project?tag=projects_state"  style="color:#fff">
+              <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">订单流转</span>
+          </a>
+        </li>
+
+
+          <li class="nav-item" data-toggle="tooltip" data-placement="right" title="我的业务">
+          <a class="nav-link" href="/project?tag=my" style="color:#fff">
+       <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">我的业务</span>
+          </a>
+        </li>
+
+            <!--  <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+              <a class="nav-link" href="/project?tag=role_allot"  style="color:#fff">
+                  <i class="fa fa-fw fa-area-chart">分配权限</i>
+                <span class="nav-link-text">分配权限</span>
+              </a>
+-->
+
+        {%end%}
+      {%if role=="8" or role=="3" or role=="11" or role=='1'%}
+        {%if uid!="155"%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="数据导出">
+          <a class="nav-link" href="/project?tag=output"  style="color:#fff">
+               <i class="fa fa-fw fa-file"></i>
+            <span class="nav-link-text">数据导出</span>
+          </a>
+        </li>
+         {%end%}
+        {%end%}
+
+    {%if role=="9"%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务列表">
+          <a class="nav-link" href="/project?tag=projects_qc"  style="color:#fff">
+              <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">业务列表</span>
+          </a>
+        </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="订单流转">
+          <a class="nav-link" href="/project?tag=projects_qc_milepost"  style="color:#fff">
+              <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">订单流转</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="楼盘">
+          <a class="nav-link" href="/project?tag=projects_qc_loupan"  style="color:#fff">
+              <i class="fa fa-bar-chart"></i>
+            <span class="nav-link-text">楼盘</span>
+          </a>
+        </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="我的业务">
+                  <a class="nav-link" href="/project?tag=my" style="color:#fff">
+                    <i class="fa fa-fw fa-area-chart"></i>
+                    <span class="nav-link-text">我的业务</span>
+                  </a>
+                </li>
+                      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务列表">
+                        <a class="nav-link" href="/project?tag=relation_projects" style="color:#fff">
+                          <i class="fa fa-fw fa-area-chart"></i>
+                          <span class="nav-link-text">关联业务</span>
+                        </a>
+                      </li>
+        {%end%}
+
+{%end%}
+
+ {%if role=="7" or role=='9' or is_xz_manage=='1' or role=='1' or role=='8'%}
+<li class="nav-item" data-toggle="tooltip" data-placement="right" title="业务协助">
+  <a class="nav-link" href="/project?tag=xiezhu_apply" style="color:#fff">
+    <i class="fa fa-fw fa-dashboard"></i>
+    <span class="nav-link-text">业务协助</span>
+  </a>
+</li>
+{%end%}
+
+
+
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="资料交接">
+          <a class="nav-link" href="/project?tag=projects_transition" style="color:#fff">
+            <i class="fa fa-fw fa-sitemap"></i>
+            <span class="nav-link-text">资料交接</span>
+          </a>
+        </li>
+        {%if is_check=='1'%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="审核事项">
+          <a class="nav-link" href="/project?tag=note_check" style="color:#fff">
+            <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">审核事项</span>
+          </a>
+        </li>
+        {%end%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="出纳审核">
+            <a class="nav-link" href="/project?tag=todo_arrange" style="color:#fff">
+              <i class="fa fa-fw fa-area-chart"></i>
+              <span class="nav-link-text">事项安排</span>
+            </a>
+      </li>
+
+
+      <!--          <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Charts">
+          <a class="nav-link" href="javaScript:alert('建设中')">
+            <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">汇总统计</span>
+          </a>
+        </li><li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseComponents" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-wrench"></i>
+            <span class="nav-link-text">系统配置</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="collapseComponents">
+            <li>
+              <a href="navbar.html">Navbar</a>
+            </li>
+            <li>
+              <a href="cards.html">Cards</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Example Pages">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseExamplePages" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-file"></i>
+            <span class="nav-link-text">Example Pages      <script>
+
+    </script></span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="collapseExamplePages">
+            <li>
+              <a href="login.html">Login Page</a>
+            </li>
+            <li>
+              <a href="register.html">Registration Page</a>
+            </li>
+            <li>
+              <a href="forgot-password.html">Forgot Password Page</a>
+            </li>
+            <li>
+              <a href="blank.html">Blank Page</a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Link">
+          <a class="nav-link" href="#">
+            <i class="fa fa-fw fa-link"></i>
+            <span class="nav-link-text">Link</span>
+          </a>
+        </li> -->
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="客户管理">
+          <a class="nav-link" href="/customer?my=1" target="_blank"  style="color:#fff">
+              <i class="fa fa-fw fa-link"></i>
+            <span class="nav-link-text">客户管理</span>
+          </a>
+        </li>
+        {%if role=="1" or role=="3" or role=="7" or role=="8" or role=="13"%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="报价管理">
+            <a class="nav-link" href="/project?tag=bj_manage"  style="color:#fff">
+                <i class="fa fa-bar-chart"></i>
+              <span class="nav-link-text">报价管理</span>
+            </a>
+          </li>
+          {%end%}
+         {%if is_gy_manage=='1'%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="报价管理">
+              <a class="nav-link" href="/project?tag=provider_manage"  style="color:#fff">
+                  <i class="fa fa-bar-chart"></i>
+                <span class="nav-link-text">供应商管理</span>
+              </a>
+            </li>
+        {%end%}
+
+
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="记账应收管理">
+            <a class="nav-link" href="/account_receive?tag=account_receive"  style="color:#fff">
+              <i class="fa fa-fw fa-area-chart"></i>
+                  <span class="nav-link-text">记账应收管理</span>
+                </a>
+              </li>
+
+
+
+      </ul>
+
+      <ul class="navbar-nav sidenav-toggler">
+        <li class="nav-item">
+          <a class="nav-link text-center" id="sidenavToggler">
+            <i class="fa fa-fw fa-angle-left"></i>
+          </a>
+
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle mr-lg-2" id="messagesDropdown" href="/msg?tag=list" >
+            <i class="fa fa-fw fa-envelope"></i>
+           <span class="d-lg-none" id="msg_notify_badge1">
+              <span class="badge badge-pill badge-primary">您有新的消息</span>
+          </span>
+            <span class="indicator text-primary d-none " id="msg_notify_badge2">
+              <i class="fa fa-fw fa-circle"></i>
+            </span>
+          </a>
+           <!--<div class="dropdown-menu" aria-labelledby="messagesDropdown">
+           <h6 class="dropdown-header">没有新消息</h6>
+            <div class="dropdown-divider"></div>
+
+
+            <a class="dropdown-item small" href="/msg?tag=list">查看所有信息</a>
+          </div>
+        </li>
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle mr-lg-2" id="alertsDropdown" href="/msg?tag=list">
+            <i class="fa fa-fw fa-bell"></i>
+            <span class="d-lg-none" id="msg_notify_badge3">
+              <span class="badge badge-pill badge-warning">您有新的审核消息</span>
+            </span>
+            <span class="indicator text-warning d-none " id="msg_notify_badge4">
+              <i class="fa fa-fw fa-circle"></i>
+            </span>
+          </a>
+
+        </li>-->
+        <li class="nav-item">
+
+            <div class="input-group">
+              <input class="form-control" type="text" id="txt_search_word"  onkeypress="if(event.keyCode==13) {btn_search.click();return false;}" placeholder="客户/电话/项目名/公司/备注" value="{{search_key}}">
+              <span class="input-group-btn">
+                <button class="btn btn-primary" type="button" id="btn_search">
+                  <i class="fa fa-search"></i>
+                </button>
+              </span>
+            </div>
+
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/changepassword">
+              <i class="fa fa-fw"></i>修改密码</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="modal"
+ data-target="#exampleModal">
+            <i class="fa fa-fw fa-sign-out"></i>退 出({{name}}{%if department_name%} - {{department_name}}{%end%})</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+
+      <!-- Icon Cards-->
+      {% block body %}{% end %}
+
+    </div>
+    <!-- /.container-fluid-->
+    <!-- /.content-wrapper-->
+    <footer class="sticky-footer">
+      <div class="container">
+        <div class="text-center">
+          <small>Copyright @ gzfaye.com 2017</small>
+        </div>
+      </div>
+    </footer>
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fa fa-angle-up"></i>
+    </a>
+    <!-- Logout Modal-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">确认退出系统吗?</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">X</span>
+            </button>
+          </div>
+          <div class="modal-body">请点击"退出" 清除登陆授权.</div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
+            <a class="btn btn-primary" href="/logout">退出</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Bootstrap core JavaScript-->
+    <script src="/static/vendor/jquery/jquery.min.js"></script>
+
+    <script src="/static/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/vendor/bootstrap/js/bootstrap-datetimepicker.js"></script>
+    <script src="/static/vendor/bootstrap/js/bootstrap-typeahead.js"></script>
+
+    <script src="/static/bootstrap-notify.js"></script>
+<script type="text/javascript" src="/static/vendor/bootstrap/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Page level plugin JavaScript-->
+
+    <script src="/static/vendor/datatables/jquery.dataTables.js"></script>
+    <script src="/static/vendor/datatables/dataTables.bootstrap4.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="/static/js/sb-admin.min.js"></script>
+
+  </div>
+  <script>
+      function getCookie(name) {
+        var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+        return r ? r[1] : undefined;
+    }
+        $(function(){
+
+              $("#btn_search").on("click",function(){
+                   txt_search_word  =  $("#txt_search_word").val()
+                   if(txt_search_word==""){
+                     alert("请输入要查找的关键词哦。")
+                   }else{
+                     location.href="/project?tag=search&key="+txt_search_word
+                   }
+              })
+          var time = setInterval(function(){
+             $.get("/msg?tag=getnotify",{"_xsrf": getCookie("_xsrf")},function(result){
+
+
+                    if (result==0){
+                       $("#msg_notify_badge1").addClass("d-lg-none")
+                       $("#msg_notify_badge2").addClass("d-none")
+                    }else{
+                       $("#msg_notify_badge1").removeClass("d-lg-none")
+                       $("#msg_notify_badge2").removeClass("d-none")
+                    }
+
+             })
+          },60000)
+
+
+
+
+
+
+        })
+
+  </script>
+
+
+  {%block js%}
+
+{%end%}
+</body>
+
+</html>

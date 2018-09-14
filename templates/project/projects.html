@@ -1,0 +1,268 @@
+
+ {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">我的业务</li>
+      </ol>
+   <div class="card mb-3">
+        <div class="card-body">
+          <div class="table-responsive">
+                <p>
+                        <a href="/project?tag=new&form_tag={{form_tag}}" class="btn btn-primary" name="btn_add">新建</a>
+                </p>
+                  <table class="table table-bordered" id="dataTable" width="2000" style="width:5000px" cellspacing="0">
+                    <thead>
+                        <tr>
+                         <th width="60">序号</th>
+
+                          <th width="60">所属</th>
+                         <th width="180">来源渠道</th>
+                       
+                               <th width="120">日期</th>
+                                     <th width="120">客户姓名</th>
+                                     <th width="120">成交周期</th>
+    <th width="200">搜索词</th>  
+         <th width="120">创建者</th>
+    
+      <th width="130">来源方式</th>   
+                 <th>业务名称（摘要）</th>
+                 
+
+                 
+            <th width="120">总金额</th>
+            {%for item in t_project_bussniss%}
+              <th width="160">{{item.income_name}}</th>
+            {%end%}
+          <th width="120">电销</th>
+              <th width="120">反馈姓名</th>
+
+      <th width="100"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {%if t_projects%}
+                        {%for item in t_projects%}
+                        <tr id="{{item.id}}">
+                         <td>
+                        <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn" title="{{item.id}}">{{item.id}}</a>
+                            </td> 
+   <td>
+                         {{item.company_id_name}}
+                            </td> 
+
+                                 <td>
+                         {{item.busniess_from_id_name}}
+                         {%if item.channel_id_name%} ({{item.channel_id_name}})
+                         {%end%}
+                            </td> 
+                                       
+                                 <td>
+                         {{item.created_at.strftime("%Y-%m-%d")}}
+                            </td> 
+                                 <td>
+                          {{item.customer_name}}
+                            </td> 
+                        
+                            
+         <td>
+                          {{item.deal_day}}
+                            </td> 
+                                       <td>
+                          {{item.from_word}}
+
+                            </td>
+                                <td>
+                          {{item.uid_name}}
+
+                            </td> 
+                        
+                             <td>
+                                {{item.talk_type_id_name}}
+                            </td>  
+                                    
+                         
+                            <td>
+                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn"  title="{{item.id}}">{{item.project_name}}</a>
+                            </td>   
+                            
+                              <td>
+                                    {{item.all_income}}
+                            </td>
+                            {%for row in t_project_bussniss%}
+                                <th>{{write_income(item.bs,row.id)}}</th>
+                                {%end%}
+                            <td>
+                            {%if item.sale_name%}
+                                    {{item.sale_name}}
+                                    {%else%}
+                                    无
+                                    {%end %}
+                            </td>
+                          <td>
+                                            {%if item.promo_name%}
+                                    {{item.promo_name}}
+                                    {%else%}
+                                    无
+                                    {%end %}
+
+                                   
+                            </td>
+                            <td>
+                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-info " title="{{item.id}}">详细</a>
+
+                            </td>
+                        </tr>
+                        {%end%}   
+                        
+                        {%else%}
+                        <tr>
+                                <td colspan="26">还没有数据哦。</td>
+                        </tr>
+                        
+                          {%end%}
+                    </tbody>
+                </table>
+
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=my&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+        
+        
+        
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %} 
+         {% if page != pagination.page %} 
+         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% end %} {%end %} 
+
+         {% if pagination.has_next %}
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>
+                
+         </div>
+        </div>
+        <div class="card-footer small text-muted"></div>
+      </div>
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">新建站点 - 选择模板</h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group info hide" id="input_siteinfo">
+            <label class="control-label" for="site_name">站点名称 </label>
+            <div class="controls">
+                <input type="text" name="site_name" id="site_name" class="span5">
+            </div>
+            <label class="control-label" for="site_title">首页标题</label>
+            <div class="controls">
+                <input type="text" name="site_title" id="site_title" class="span5">
+            </div>
+            <label class="control-label" for="site_keyword">SEO关键词</label>
+            <div class="controls">
+                <textarea name="site_keyword" id="site_keyword" class="span5"></textarea>
+            </div>
+            <label class="control-label" for="site_desc">SEO站点描述</label>
+            <div class="controls">
+                <textarea name="site_desc" id="site_desc" class="span5"></textarea>
+            </div>
+            <label class="control-label" for="remark">第三方统计</label>
+            <div class="controls">
+                <textarea name="site_tongji" id="site_tongji" class="span5"></textarea>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer hide" id="modal_save">
+        <input type="hidden" name="tag" value="">
+        </button>
+        <button class="btn" data-dismiss="modal" id="btn_cancal" aria-hidden="true">取消</button>
+        <button class="btn btn-primary" value="" name="btn_save" id="btn_save">保存修改</button>
+    </div>
+</div>
+<input id="choice_temp_id" type="hidden" value="0" /> {% end %} {%block js%}
+<script>
+       function getCookie(name) {
+            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+            return r ? r[1] : undefined;
+        }
+$(document).ready(function() {
+    window.prettyPrint && prettyPrint();
+
+    $(".manage_site").on("click",function() {
+        site_id = $(this).attr("title")
+        $("#site_edit").attr("href","/sites?form_tag={{form_tag}}&tag=edit&site_id="+site_id)
+        $("#site_article").attr("href","/articles?site_id="+site_id)
+        $("#site_preview").attr("href","/?site_id="+site_id)
+    $("#nav_edit").attr("href","/sites?tag=nav&site_id="+site_id)
+    $("#site_staticfile").attr("href","/static_file?site_id="+site_id)
+        $("#site_mod").html("")
+        $.get("/sites?tag=get",{"site_id":site_id},function(result){
+            $("#site_mod").append(result)
+        })
+        $("#manage_modal1").modal("show")
+
+    })
+
+     _xsrf = getCookie("_xsrf");
+
+    $("a[name=btn_choice_temp]").click(function() {
+
+        tmp_id = $(this).attr("value")
+
+        $("#choice_temp_id").val(tmp_id)
+        $("#modal_save").show()
+        $("#input_siteinfo").show()
+        $("#choice_temp").hide()
+        $("#myModalLabel").text("配置站点信息")
+    })
+
+
+    $("#btn_save").click(function() {
+        _xsrf = getCookie("_xsrf");
+        temp_id = $("#choice_temp_id").val()
+        site_name = $("#site_name").val()
+        site_title = $("#site_title").val()
+        site_keyword = $("#site_keyword").val()
+        site_desc = $("#site_desc").val()
+        site_tongji = $("#site_tongji").val()
+        $.post("", {
+            "_xsrf": _xsrf,
+            "site_name": site_name,
+            "temp_id": temp_id,
+            "site_title": site_title,
+            "site_desc": site_desc,
+            "site_tongji": site_tongji,
+            "site_keyword": site_keyword
+        }, function(result) {
+            location.reload()
+        })
+
+    })
+
+    $("#btn_cancal").click(function() {
+        $("#input_siteinfo").hide()
+        $("#modal_save").hide()
+        $("#choice_temp").show()
+    })
+
+
+
+})
+</script>
+{%end%}

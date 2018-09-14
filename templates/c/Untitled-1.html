@@ -1,0 +1,239 @@
+
+						
+  {%if 'customer' in globals()%}
+        <form action="/changecustomer/{{customer.id}}" method="POST">
+          {% raw xsrf_form_html() %}
+
+          
+          <div class="form-group">
+            <div class="form-row">
+                <div class="col-md-4">
+                    <label for="customer_id">客户编号</label>
+                    <input  value="{{customer.customer_id}}" class="form-control" name="customer_id" 
+                    id="customer_id" type="text" aria-describedby="nameHelp" placeholder="输入客户编号">
+                  </div>
+              <div class="col-md-4">
+                <label for="company">公司名称</label>
+                <input value="{{customer.company}}" class="form-control" name="company" 
+                id="company" type="text" aria-describedby="nameHelp" placeholder="输入公司名称">
+              </div>
+              <div class="col-md-4">
+                    <label for="linkman">联系人</label>
+                    <input value="{{customer.linkman}}" class="form-control" 
+                    id="linkman" name="linkman" type="text" aria-describedby="nameHelp" placeholder="输入联系人">
+                  </div>
+            </div>
+          </div>
+          <div class="form-group">
+              <div class="form-row">
+                <div class="col-md-4">
+            <label for="phone">电话</label>
+            <input value="{{customer.phone}}" class="form-control" 
+                  id="phone" name="phone" type="text" aria-describedby="nameHelp" placeholder="输入电话">
+            </div>
+                <div class="col-md-8">
+                    <label for="yewu_content">业务内容</label>
+                    <input value="{{customer.yewu_content}}" class="form-control" id="yewu_content"
+                     name="yewu_content" type="text" placeholder="输入业务内容">
+                  </div>
+
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-row">
+                <div class="col-md-4">
+                     <label for="address_style">地址类型</label>
+                     <input value="{{customer.address_style}}" class="form-control" id="address_style"
+                        name="address_style" type="text" placeholder="输入地址类型">
+                </div>
+              <div class="col-md-4">
+                <label for="start_hetong">合同起始</label>
+                <input value="{{customer.start_hetong}}" class="form-control" name="start_hetong" id="start_hetong" 
+                    type="date" placeholder="输入合同起始">
+                </div>
+              <div class="col-md-4">
+                <label for="end_hetong">合同到期</label>
+                <input value="{{customer.end_hetong}}" class="form-control" id="end_hetong" 
+                name="end_hetong" type="date" placeholder="合同到期">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+                <div class="form-row">
+                        <div class="col-md-4">
+                                <label for="date_chengli">成立日期</label>
+                                <input value="{{customer.date_chengli}}" class="form-control" id="date_chengli" 
+                                name="date_chengli" type="date" placeholder="成立日期">
+                              </div>
+                        <div class="col-md-4">
+                                <label for="date_zhizhao">执照期限</label>
+                                <input value="{{customer.date_zhizhao}}" class="form-control" id="date_zhizhao" 
+                                name="date_zhizhao" type="date" placeholder="执照期限">
+                        </div>
+                        <div class="col-md-4">
+                                <label for="date_address">地址期限</label>
+                                <input value="{{customer.date_address}}" class="form-control" id="date_address" 
+                                name="date_address" type="date" placeholder="地址期限">
+                        </div>
+                </div>
+    
+              </div>
+              <div class="form-group">
+                    <div class="form-row">
+                            <div class="col-md-6">
+                                    <label for="kf_name">客服顾问</label>
+                                    <input value="{{customer.kf_name}}" class="form-control" id="kf_name" 
+                                    name="kf_name" type="text" placeholder="客服顾问">
+                                  </div>
+                            <div class="col-md-6">
+                                    <label for="sale_name">销售顾问</label>
+                                    <input value="{{customer.sale_name}}" class="form-control" id="sale_name" 
+                                    name="sale_name" type="text" placeholder="销售顾问">
+                            </div>
+                    </div>
+        
+                  </div>
+                  <div class="form-group">
+                        <div class="form-row">
+                                <div class="col-md-4">
+                                        <label for="zhuanshang">工商专员</label>
+                                        <input value="{{customer.zhuanshang}}" class="form-control" id="zhuanshang" 
+                                        name="zhuanshang" type="text" placeholder="工商专员">
+                                      </div>
+                                <div class="col-md-4">
+                                        <label for="kuaiji">会计</label>
+                                        <input value="{{customer.kuaiji}}" class="form-control" id="kuaiji" 
+                                        name="kuaiji" type="text" placeholder="会计">
+                                </div>
+                                <div class="col-md-4">
+                                        <label for="address_gongying">地址供应商</label>
+                                        <input value="{{customer.address_gongying}}" class="form-control" id="address_gongying" 
+                                        name="address_gongying" type="text" placeholder="地址供应商">
+                                </div>
+                        </div>
+            
+                      </div>
+          <input type="submit" value="提交" class="btn btn-primary btn-block">
+        </form>
+        
+        {%else%}
+        <form action="/insert_customer" method="POST">
+          {% raw xsrf_form_html() %}
+          <div class="form-group">
+            <div class="form-row">
+                <div class="col-md-4">
+                    <label for="customer_id">客户编号</label>
+                    <input  class="form-control" name="customer_id" 
+                    id="customer_id" type="text" aria-describedby="nameHelp" placeholder="输入客户编号">
+                  </div>
+              <div class="col-md-4">
+                <label for="company">公司名称</label>
+                <input  class="form-control" name="company" 
+                id="company" type="text" aria-describedby="nameHelp" placeholder="输入公司名称">
+              </div>
+              <div class="col-md-4">
+                    <label for="linkman">联系人</label>
+                    <input  class="form-control" 
+                    id="linkman" name="linkman" type="text" aria-describedby="nameHelp" placeholder="输入联系人">
+                  </div>
+            </div>
+          </div>
+          <div class="form-group">
+              <div class="form-row">
+                <div class="col-md-4">
+            <label for="phone">电话</label>
+            <input  class="form-control" 
+                  id="phone" name="phone" type="text" aria-describedby="nameHelp" placeholder="输入电话">
+            </div>
+                <div class="col-md-8">
+                    <label for="yewu_content">业务内容</label>
+                    <input  class="form-control" id="yewu_content"
+                     name="yewu_content" type="text" placeholder="输入业务内容">
+                  </div>
+
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-row">
+                <div class="col-md-4">
+                     <label for="address_style">地址类型</label>
+                     <input  class="form-control" id="address_style"
+                        name="address_style" type="text" placeholder="输入地址类型">
+                </div>
+              <div class="col-md-4">
+                <label for="start_hetong">合同起始</label>
+                <input  class="form-control" name="start_hetong" id="start_hetong" 
+                    type="date" placeholder="输入合同起始">
+                </div>
+              <div class="col-md-4">
+                <label for="end_hetong">合同到期</label>
+                <input  class="form-control" id="end_hetong" 
+                name="end_hetong" type="date" placeholder="合同到期">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+                <div class="form-row">
+                        <div class="col-md-4">
+                                <label for="date_chengli">成立日期</label>
+                                <input  class="form-control" id="date_chengli" 
+                                name="date_chengli" type="date" placeholder="成立日期">
+                              </div>
+                        <div class="col-md-4">
+                                <label for="date_zhizhao">执照期限</label>
+                                <input  class="form-control" id="date_zhizhao" 
+                                name="date_zhizhao" type="date" placeholder="执照期限">
+                        </div>
+                        <div class="col-md-4">
+                                <label for="date_address">地址期限</label>
+                                <input  class="form-control" id="date_address" 
+                                name="date_address" type="date" placeholder="地址期限">
+                        </div>
+                </div>
+    
+              </div>
+              <div class="form-group">
+                    <div class="form-row">
+                            <div class="col-md-6">
+                                    <label for="kf_name">客服顾问</label>
+                                    <input  class="form-control" id="kf_name" 
+                                    name="kf_name" type="text" placeholder="客服顾问">
+                                  </div>
+                            <div class="col-md-6">
+                                    <label for="sale_name">销售顾问</label>
+                                    <input  class="form-control" id="sale_name" 
+                                    name="sale_name" type="text" placeholder="销售顾问">
+                            </div>
+                    </div>
+        
+                  </div>
+                  <div class="form-group">
+                        <div class="form-row">
+                                <div class="col-md-4">
+                                        <label for="zhuanshang">工商专员</label>
+                                        <input  class="form-control" id="zhuanshang" 
+                                        name="zhuanshang" type="text" placeholder="工商专员">
+                                      </div>
+                                <div class="col-md-4">
+                                        <label for="kuaiji">会计</label>
+                                        <input  class="form-control" id="kuaiji" 
+                                        name="kuaiji" type="text" placeholder="会计">
+                                </div>
+                                <div class="col-md-4">
+                                        <label for="address_gongying">地址供应商</label>
+                                        <input  class="form-control" id="address_gongying" 
+                                        name="address_gongying" type="text" placeholder="地址供应商">
+                                </div>
+                        </div>
+            
+                      </div>
+          <input type="submit" value="提交" class="btn btn-primary btn-block">
+        </form>
+        {%end%}
+        <div class="text-center">
+            <a class="d-block small mt-3" href="/customer">返回</a>
+        </div>
+        {% if 'error_id' in globals() %}
+        <p class="error_message" style="display:none;">{{error_id}}</p>
+        {%end%}
+						

@@ -1,0 +1,199 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">内部推荐审核
+        </li>
+      </ol>
+      <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                 <a href="/project?tag=project_check" class="nav-item nav-link {%if not step%}active{%end%}" >全部</a>
+          
+                {%if kf_manage=='1'%}
+                 <a href="/project?tag=project_check&step=1" class="nav-item nav-link {%if step=='1'%}active{%end%}" >待审核</a>
+                {%elif sh_manage=='1'%}
+                <a href="/project?tag=project_check&step=2" class="nav-item nav-link {%if step=='2'%}active{%end%}" >待审核</a>
+                {%end%}
+                 <a href="/project?tag=project_check&step=3" class="nav-item nav-link {%if step=='3'%}active{%end%}" >已审核</a>
+
+    </div>
+    </nav>
+      <div class="card mb-3">
+            <div class="card-body">
+
+            <div class="table-responsive">
+            
+            <table class="table table-bordered" id="dataTable"  cellspacing="0">
+            <thead style="background-color:#000;color:#fff">
+                <tr>
+                    <th width="100">编号</th>
+                    <th width="100">公司名</th>
+                    <th width="100">客户姓名</th>
+                    <th width="100">电话</th>
+                    <th>业务内容</th>
+                    <th width="100">内部推荐人</th>
+                    <th width="100">创建时间</th>
+                    <th width="110">状态</th>
+                    {%if step%}
+                    <th width="50"></th>
+                    {%end%}
+                </tr>
+            </thead>
+            <tbody>
+                {%for item in t_projects%}
+                <tr>
+                    <td>{{item.p_id}}</td>
+                    <td>{{item.customer_company}}</td>
+                    <td>{{item.customer_name}}</td>
+                    <td>{{item.customer_tel}}</td>
+                    <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.p_id}}">{{item.project_name}}</a></td>
+                    <td>{{item.recommend_staff}}</td>
+                    <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+                    <td>
+                        {%if item.sh_created_at%}{{item.sh_uid_name}}已审核 备注：{%if item.sh_remark%}{{item.sh_remark}}{%else%}无{%end%}
+                        {%elif item.kf_check_status==1%}{{item.kf_uid_name}}审核通过
+                        {%elif item.kf_check_status==0%}{{item.kf_uid_name}}待确定 意见：{{item.remark}}
+                        {%elif not item.kf_check_status%}待客服经理审核
+                        {%end%}
+                    </td>
+                    {%if step%}
+                    <td>
+                        {%if item.sh_created_at%}
+                        <a class="btn btn-info"  href="javascript:void(0);">已完结</a>
+                        {%elif sh_manage=='1' or  ( item.kf_check_status!=0 and  item.kf_check_status!=1)%}
+                        <a class="btn btn-info project_check" id="{{item.p_id}}" href="javascript:void(0);">审核</a>
+                        {%end%}
+                    </td>
+                    {%end%}
+                </tr>
+                {%end%}
+            </tbody>
+            </table>
+            <div class="col-sm-12 col-md-7">
+                    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                        <ul class="pagination">
+                            {% if pagination.has_prev %}
+                            <li class="paginate_button page-item previous " id="dataTable_previous">
+                                <a href="/project?tag=project_check{%if step%}&step={{step}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li class="paginate_button page-item ">
+                                <a href="/project?tag=project_check{%if step%}&step={{step}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                            {% else %}
+                            <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                            {% end %} {% else %}
+                            <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li class="paginate_button page-item next" id="dataTable_next">
+                            <a href="/project?tag=project_check{%if step%}&step={{step}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                            {% end %}
+                        </ul>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+  
+        </div>
+    </div>
+<!-- <modal> -->
+ <div id="a_check_project_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                <div class="modal-header">
+                  <h3 id="myModalLabel_trans">审核订单</h3>
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body form-horizontal" id="site_mod">
+                        {%if kf_manage=='1'%}
+                    <div class="form-group">
+                            <div class="col-sm-10">
+                                <label>审核：</label>
+                            <input type="radio" name="kf_check_status" value="1">同意
+                            <input type="radio" name="kf_check_status" value="0">待确定
+
+                        </div>
+                        </div>
+                        <div class="form-group">
+                                <div class="col-sm-10">
+                                        <label>意见</label>
+                                <textarea  class="form-control" placeholder="意见" id="remark"></textarea>
+                        </div>
+                        </div>
+                        {%end%}
+                        {%if sh_manage=='1'%}
+                        <div class="form-group">
+                                <div class="col-sm-10">
+                                <label>备注</label>
+                                <textarea class="form-control" placeholder="填写备注" id="sh_remark"></textarea>
+                        </div>
+                        </div>
+                        {%end%}
+                </div>
+              
+              
+              
+              
+              
+                <div class="modal-footer">
+    
+                  <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                  <button class="btn btn-primary" id="btn_check_project">保存</button>
+                </div>
+                </div>
+                </div>
+              </div>      
+      
+{%end%}
+
+{%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+    $('.project_check').on('click',function () {
+        $('#btn_check_project').attr('project_id',$(this).attr('id'))
+        $('#a_check_project_modal').modal('show')
+      })
+    $('#btn_check_project').on('click',function () { 
+        var kf_check_status=$('input[name=kf_check_status]:checked').val()
+        var remark=$('#remark').val()
+        var sh_remark=$('#sh_remark').val()
+        var project_id=$(this).attr('project_id')
+        var sh_check_status=$('input[name=sh_check_status]:checked').val()
+        if('{{ kf_manage}}'==1){
+            if(kf_check_status==undefined){
+                alert('未选择')
+        }else{
+        $.post('/project?tag=project_check',
+            {
+                '_xsrf':_xsrf,
+                'kf_check_status':kf_check_status,
+                'remark':remark,
+                'project_id':project_id
+            },function (res) { 
+                location.reload()
+             }
+        )
+        }
+        }else if('{{sh_manage}}'==1){
+          
+            $.post('/project?tag=project_check',
+            {
+                '_xsrf':_xsrf,
+                'is_sh':1,
+                'sh_remark':sh_remark,
+                'project_id':project_id
+            },function (res) { 
+                location.reload()
+             }
+        )
+            
+        }
+     })
+})
+</script>
+{%end%}

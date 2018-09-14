@@ -1,0 +1,122 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>{%block title%}{%end%}</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/newcss/css/bootstrap.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+    <link href="/static/vendor/bootstrap/css/bootstrap-datetimepicker.css" rel="stylesheet">
+
+  <link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Page level plugin CSS-->
+  <link href="/static/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+
+</head>
+<body>
+ <ol class="breadcrumb">
+  
+   <li class="breadcrumb-item active">修改帐号密码</li>
+
+ </ol>
+
+ <div class="container">
+        {% if error%}
+            {%if error=='修改密码-管理员要求'%}
+            <p class="changepass_adminrequest" hidden="hidden"></p>
+            {%else%}
+        <div class="alert alert-warning">
+                <a href="#" class="close" data-dismiss="alert">
+                    &times;
+                </a>
+                <strong>
+                        {{error}}
+                </strong>
+            </div>
+            {%end%}
+            {%end%}
+            {% if change_success%}
+            <div class="alert alert-success">
+                    <a href="#" class="close" data-dismiss="alert">
+                        &times;
+                    </a>
+                    <strong>
+                            {{change_success}}
+                    </strong>
+                </div>
+                {%end%}
+           {%if admin==True%}
+           <h3 class="text-danger" style="margin-top: 40px;">管理员</h3>
+           <form action="/changepassword" method="post">
+            <div class="form-group">
+                <div class="col-md-4">
+                    <label for="exampleInputPassword1">用户名</label>
+                    <input class="form-control" type="text" id="admin_change_user" placeholder="用户名" name="admin_change_user" required>
+                </div>
+                </div>
+           <div class="form-group">
+               <div class="col-md-4">
+                   <label for="exampleInputPassword1">新密码</label>
+                   <input class="form-control" type="password" id="admin_new_password" placeholder="新密码" name="admin_new_password" required>
+               </div>
+               </div>
+               <button  type="submit" style="margin: 15px;width: 100px;" class="btn btn-primary btn-block">确定修改</button>
+                   {% module xsrf_form_html() %}
+               </form>
+               {%else%}
+               <form action="/allchangepassword" method="post">
+                <div class="form-group">
+                    <div class="col-md-4">
+                        <label for="exampleInputPassword1">当前密码</label>
+                        <input class="form-control" type="password" id="currentpassword1" placeholder="当前密码" name="currentpassword" required>
+                    </div>
+                    </div>
+               <div class="form-group">
+                   <div class="col-md-4">
+                       <label for="exampleInputPassword1">新密码</label>
+                       <input class="form-control" type="password" id="newpassword" placeholder="新密码" name="newpassword" required>
+                   </div>
+                   </div>
+                   <button  type="submit" style="margin: 15px;width: 100px;" class="btn btn-primary btn-block">提交</button>
+                       {% module xsrf_form_html() %}
+                   </form>
+               {%end%}
+               {%if error=='修改密码-管理员要求'%}
+               <div class="alert alert-warning">
+                    <a href="#" class="close" data-dismiss="alert">
+                        &times;
+                    </a>
+                    <strong>
+                            温馨提示:为了系统安全,需修改密码才能继续使用哦 :) 
+                    </strong>
+                </div>
+               {%end%}
+ </div>
+<!-- Modal -->
+
+
+{%block js%}
+
+<script>
+$(function () {
+_xsrf =  getCookie("_xsrf")
+
+if($('.changepass_adminrequest').length>0){
+    $('.nav-link').attr('href','#');
+    $('#btn_search').attr('disabled','disabled')
+    
+}
+
+
+   })
+</script>
+
+{%end%}
+</body>
+</html>

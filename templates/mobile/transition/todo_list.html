@@ -1,0 +1,218 @@
+{% extends "../mobile_base.html" %} {%block title%}{{name}}的事项安排{%end%} 
+{% block body1 %}
+<div class="weui-navbar">
+    <a class="weui-navbar__item {%if not todo%}weui-btn_disabled weui-btn_default{%end%}"  href="/mtransition?tag=list_todo">
+      全部
+    </a>
+  <a class="weui-navbar__item  {%if todo=='1'%}weui-btn_disabled weui-btn_default{%end%}" href="/mtransition?tag=list_todo&todo=1">
+    待接单<span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">{{nums.a}}</span>
+  </a>
+  <a class="weui-navbar__item {%if todo=='2'%}weui-btn_disabled weui-btn_default{%end%}" href="/mtransition?tag=list_todo&todo=2">
+    办理中<span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">{{nums.b}}</span>
+  </a>
+  <a class="weui-navbar__item {%if todo=='3'%}weui-btn_disabled weui-btn_default{%end%}" href="/mtransition?tag=list_todo&todo=3">
+    已办结<span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">{{nums.c}}</span>
+  </a>
+  <a class="weui-navbar__item " href="/mtransition?tag=search_todo">
+    <i class="weui-icon-search"></i>搜索
+  </a>
+</div>
+
+<div class="weui-tab__bd">
+<div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+{%if not  todo_arranges%}
+没有数据哦.
+{%else%}
+{%for item in todo_arranges%}
+<div class="weui-form-preview">
+  <div class="weui-form-preview__hd">
+    <label class="weui-form-preview__label">公司名称</label>
+    <em class="weui-form-preview__value">{%if item.company%}{{item.company}}{%else%}&nbsp;{%end%}</em>
+  </div>
+  <div class="weui-form-preview__bd">
+     
+  
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">办事区域</label>
+      <span class="weui-form-preview__value">{{item.bs_area}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">办事地点</label>
+      <span class="weui-form-preview__value">{{item.bs_address}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">办理日期</label>
+      <span class="weui-form-preview__value">{{item.bl_date.strftime("%Y-%m-%d")}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">办理时段</label>
+      <span class="weui-form-preview__value">{{str(item.start_time)[:-3]}}-{{str(item.end_time)[:-3]}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">办理事项</label>
+      <span class="weui-form-preview__value">{{item.project_name}}</span>
+    </div>
+        <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">办理总结</label>
+      <span class="weui-form-preview__value">{{item.project_zj}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+      <label class="weui-form-preview__label">负责部门</label>
+      <span class="weui-form-preview__value">{{item.department_name}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label">负责人</label>
+        <span class="weui-form-preview__value">{{item.responsible_per}}</span>
+      </div>
+      <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label">负责电话</label>
+        <span class="weui-form-preview__value">{{item.phone_fz}}</span>
+      </div>
+      <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label">办事人</label>
+        <span class="weui-form-preview__value">{{item.banshi_per}}</span>
+      </div>
+      <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label">办事人电话</label>
+        <span class="weui-form-preview__value">{{item.phone_bs}}</span>
+      </div>
+      <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label">备注</label>
+        <span class="weui-form-preview__value">{{item.remark}}</span>
+      </div>
+      <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label">办理状态</label>
+        <span class="weui-form-preview__value">
+            {%if not item.bs_created_at %}
+            待接单：待办事人{{item.banshi_per}}接单
+            {%elif  item.bs_created_at and item.project_zj and not item.fz_updated_at%}
+            待确认：待负责人{{item.responsible_per}}确认
+            {%elif  item.bs_created_at and item.project_zj and  item.fz_updated_at%}
+            已办结
+            {%else%}
+            办理中：办事人{{item.banshi_per}}办理中...
+            {%end%}
+        </span>
+      </div>
+    </div>
+    <div class="weui-cells__title project_zj{{item.id}}" style="display:none;">填写办理总结</div>
+<div class="weui-cells project_zj{{item.id}}" style="display:none;">
+  <div class="weui-cell">
+    <div class="weui-cell__bd">
+      <input class="weui-input" id="project_zj{{item.id}}" name="project_zj" type="text" placeholder="请输入总结内容">
+      <button class="weui-btn weui-btn_primary  weui-btn_mini project_zj_sub"  href="javascript:void(0)" todo_id='{{item.id}}'>保存</button>
+    </div>
+  </div>
+</div>
+    <div class="weui-form-preview__ft">
+        {%if not item.bs_created_at and item.banshi_per==name %}
+         <button class="weui-btn weui-btn_primary  weui-btn_mini confirm" bs_name="{{item.banshi_per}}" href="javascript:void(0)" id='{{item.id}}'>接单</button>
+         {%elif item.bs_created_at and item.banshi_per==name and not item.fz_updated_at %}
+         <button class="weui-btn weui-btn_primary  weui-btn_mini project_zj_btn" bs_name="{{item.banshi_per}}" href="javascript:void(0)" id='{{item.id}}'>填写办理总结</button>
+        {%elif  item.bs_created_at and item.project_zj and not item.fz_updated_at and item.responsible_per==name %}
+       <button class="weui-btn weui-btn_primary  weui-btn_mini fz_confirm" fz_name="{{item.responsible_per}}" href="javascript:void(0)" id='{{item.id}}'>确认</button>
+       {%end%}
+        
+</div>
+  </div>
+  {%end%}
+  {%end%}
+  <br><br>
+    
+     {% if pagination.has_prev %}
+          <a href="/mtransition?tag=list_todo{%if todo%}&todo={{todo}}{%end%}&page={{ pagination.page - 1}}" class="weui-btn weui-btn_mini weui-btn_default">&laquo; 上页</a>
+  
+         {% end %}
+         {%for page in pagination.iter_pages() %}
+          {% if page %}
+          {% if page != pagination.page %}
+         <a href="/mtransition?tag=list_todo{%if todo%}&todo={{todo}}{%end%}&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" 
+         class="weui-btn weui-btn_mini weui-btn_default">{{ page }}</a>
+          {% else %}
+             <a href="#"  class="{%if page==page1%}weui-btn weui-btn_mini weui-btn_primary{%else%}weui-btn weui-btn_mini weui-btn_default{%end%}">{{ page }}</a>
+           {% end %}
+           {% else %}
+           
+            <a href="#" class="weui-btn weui-btn_mini weui-btn_default">....</a>
+           {% end %} 
+           
+           {%end %}
+  
+          {% if pagination.has_next %}
+        <a href="/mtransition?tag=list_todo{%if todo%}&todo={{todo}}{%end%}&page={{pagination.page+1}}"  class="weui-btn weui-btn_mini weui-btn_default">下页 &raquo;</a>
+      {% end %} 
+  <br><br><br><br>
+</div>
+
+</div>
+
+
+      {%end%}
+
+      {%block js%}
+
+      <script>
+        $(function(){
+          _xsrf =  getCookie("_xsrf")
+            $(".confirm_rec").on("click",function(){
+                  project_id = $(this).attr("project_id")
+                  pt_id = $(this).attr("pt_id")
+                  $.post("/mtransition?tag=confirm_rec",{"project_id":project_id,"pt_id":pt_id,"_xsrf":_xsrf},function(result){
+                      location.reload()
+
+                  })
+
+            })
+
+$('.confirm').on('click',function () { 
+      var id=$(this).attr('id')
+      var bs_name=$(this).attr('bs_name')
+      $.post(
+        '/project?tag=confirm_todo',
+        {
+          '_xsrf':_xsrf,
+          'id':id,
+          'bs':1
+        },function (result) {
+          location.reload()
+         }
+      )
+   })
+$('.fz_confirm').on('click',function () { 
+      var id=$(this).attr('id')
+      var fz_name=$(this).attr('fz_name')
+      $.post(
+        '/project?tag=confirm_todo',
+        {
+          '_xsrf':_xsrf,
+          'id':id,
+          'fz':1
+        },function (result) {
+          location.reload()
+         }
+      )
+   })
+$('.project_zj_btn').on('click',function () { 
+      $('.project_zj'+$(this).attr('id')).show()
+   })
+   $('.project_zj_sub').on('click',function () { 
+    var id=$(this).attr('todo_id')
+    var project_zj=$('#project_zj'+id).val()
+    if(project_zj.length<1){
+      alert('总结不能为空')
+    }else{
+      $.post(
+        '/project?tag=add_update_todo',
+        {   "_xsrf":_xsrf,
+            "project_zj":project_zj,
+            "id":id
+        },function (result) { 
+          location.reload()
+         }
+    )}
+    
+
+ })
+        })
+      </script>
+      {%end%}

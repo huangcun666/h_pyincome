@@ -1,0 +1,405 @@
+
+ {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">数据导出</li>
+
+      </ol>
+
+
+   <div class="card mb-3">
+        <div class="card-body">
+           
+
+
+
+ <form>
+ <table>
+    <tr>
+      <td>业务类型</td>
+            {%if role!='1'%}<td>销售顾问</td>{%end%}
+      <td>工商专员</td>
+      <td>在线客服</td>
+      <td>来源渠道</td>
+      <td>楼盘</td>
+          <td>
+时间段
+       </td>
+    </tr>
+
+        <tr>
+      <td>
+
+<select name="income_bussniss" class="form-control">
+  <option  value="0">请选择业务类型</option>
+    {%for idx,item in enumerate(t_project_bussniss)%}
+    
+        <option value="{{item.id}}"   {%if params["income_bussniss"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+    {%end%}
+</select></td>
+{%if role!='1'%}
+      <td>
+<select name="sales" class="form-control" >
+  <option  value="0">销售顾问</option>
+    {%for idx,item in enumerate(t_user_sales)%}
+        <option value="{{item.id}}" {%if params["sales"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+    {%end%}
+</select>
+      </td>
+{%end%}
+      <td>
+<select name="cq" class="form-control" >
+  <option  value="0">工商专员</option>
+    {%for idx,item in enumerate(t_user_cq)%}
+        <option value="{{item.id}}" {%if params["cq"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+    {%end%}
+</select>
+      </td>
+
+       <td>
+<select name="kefu" class="form-control">
+  <option  value="0">请选择在线客服</option>
+    {%for idx,item in enumerate(t_users)%}
+    {%if item.team_id==4%}
+        <option value="{{item.id}}"  {%if params["kefu"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+ {%end%}
+    {%end%}
+</select>
+       </td>
+       <td>
+<select name="from_id" class="form-control">
+  <option  value="0">请选择来源渠道</option>
+    {%for idx,item in enumerate(t_income_type)%}
+        <option value="{{item.id}}"  {%if params["from_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+    {%end%}
+</select>
+       </td>
+   
+      <td>
+        <select name="building_id" class="form-control" >
+          <option value="0">请选择楼盘</option>
+            {%for idx,item in enumerate(t_building)%}
+                <option value="{{item.id}}"  {%if params["building_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+            {%end%}
+        </select>
+      </td>
+          <td>
+<input type="text" class="form-control" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
+至
+<input type="text" class="form-control" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+<input type="hidden" name="tag" value="{{tag}}"/>
+<input type="submit" value="检索" />
+
+       </td>
+    </tr>
+ </table>
+
+
+
+
+
+
+
+
+
+
+</form>
+
+            {%if  start%}
+            <div class="alert alert-primary" role="alert">
+  当前导出时间段： {{start}} 至 {{end}} 一共 {{num}} 条记录
+</div>
+   
+<br/>
+{%if num>0%}
+       <a href="{{output_path}}" class="btn btn-primary btn-lg">点击下载数据（Excel格式）</a>
+{%else%}
+        
+        <div class="alert alert-warning" role="alert">
+  没有找到该时间段的数据！
+</div>
+{%end%}
+
+{%else%}
+  <div class="alert alert-info" role="alert"> 请选择要导出的时间段</div>
+{%end%}
+
+</div>
+
+</div>
+</div>
+
+
+
+ {% end %}
+
+
+ {%block js%}
+
+<script>
+ $(function () {
+    $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00', 
+    language: 'zh-CN',initialDate: new Date()});
+    $("#end").datetimepicker({  minView: 2,pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59', 
+    language: 'zh-CN',initialDate: new Date()});
+
+    _xsrf =  getCookie("_xsrf")
+    $('#recommend_staff').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
+    $('#addr_type').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"addr"}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
+
+
+     $("#div_building").hide()
+    $("#div_recommend_by").hide()
+    $("#div_recommend_staff").hide()
+
+        $("#btn_add").on("click",function(){
+            $("#new_project_modal").modal("show")
+
+        })
+
+          $(document).on("change", 'input[name=busniess_from]',function(){
+
+                  bf_value = $(this).val().split('|')[0]
+
+              if (bf_value=="2"){
+                  $("#div_from_word").show()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").hide()
+                  $("#div_recommend_staff").hide()
+              }else if(bf_value=="3"){
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").show()
+                   $("#div_recommend_staff").show()
+                    $("#msg_inner_re").text("")
+              }else if(bf_value=="4"){
+                  $("#div_from_word").hide()
+                  $("#div_building").show()
+                  $("#div_recommend_by").hide()
+                   $("#div_recommend_staff").hide()
+
+              } else if(bf_value=="81"){
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").hide()
+                 $("#div_recommend_staff").show()
+                 $("#msg_inner_re").text("（必填）")
+
+              }
+              else{
+                   $("#div_from_word").hide()
+                   $("#div_building").hide()
+                   $("#div_recommend_by").hide()
+                    $("#div_recommend_staff").hide()
+
+              }
+
+
+
+          })
+
+
+
+
+            $("#btn_save_project").on("click",function(){
+                all_income = $("#all_income")
+                pre_income = $("#pre_income")
+                project_name = $("#project_name")
+                customer_name=$("#customer_name")
+                busniess_from = $("input[name=busniess_from]:checked")
+                new_contract_type_id = $("input[name=new_contract_type_id]:checked")
+                recommend_by =$("#recommend_by")
+                deal_day = $("#deal_day")
+                recommend_staff = $("#recommend_staff")
+                b = $.isNumeric(pre_income.val())
+                b_all_income = $.isNumeric(all_income.val())
+                b_deal_day= $.isNumeric(deal_day.val())
+                console.log(busniess_from)
+                bf_value = busniess_from.val().split('|')[0]
+                business_channel= $("input[name=business_channel]:checked")
+                customer_company = $("#customer_company")
+                customer_tel = $("#customer_tel")
+                true_income = $("#true_income")
+                sign_type_id = $("input[name=sign_type_id]:checked")
+                remark = $("#remark")
+                talk_type = $("input[name=talk_type]:checked")
+                from_word = $("#from_word")
+                company = $("input[name=company]:checked")
+                is_finance = $("input[name=is_finance]:checked")
+                building_id = $("#building_id")
+                addr_type = $("#addr_type")
+                kf_id = $("#kf_id")
+                console.log(bf_value)
+                console.log(recommend_staff.val())
+              
+                if (company.val()=="0" || company.val()==undefined){
+                  $("#pcompanyHelpInline").text("请选择业务所属公司哦。")
+                  $("#company").focus()
+                   console.log("hi1")
+                  return false;
+                }
+                else if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
+                  $("#business_channelHelpInline").text("请选择来源渠道哦。")
+                  $("input[name=business_channel]:first").focus()
+                   console.log("hi2")
+                  return false;
+                }
+
+                else if(bf_value=="2" && kf_id.val()=="0"){
+                   console.log("hi7")
+                    
+                    $("#kf_idHelpInline").text("在线客服人员必选哦！")
+                    kf_id.focus()
+                   $("input[name=kf_id]:first").focus()
+
+                    return false
+                }
+              else if(bf_value=="3" && recommend_by.val()==""){
+                 console.log("hi8")
+               
+                    $("#recommend_byHelpInline").text("客户推荐人必填哦")
+
+                    recommend_by.focus()
+                    return false
+                }
+                else if(bf_value=="81" && recommend_staff.val()==""){
+                   console.log("hi9")
+                    
+                    $("#recommend_staffHelpInline").text("内部推荐人必填哦")
+
+                    recommend_staff.focus()
+                    return false
+                } 
+                else if(bf_value=="4" && building_id.val()=="0" || building_id.val()==undefined){
+                   console.log("hi9")
+                    
+                    $("#building_idHelpInline").text("内部推荐人必填哦")
+
+                    building_id.focus()
+                    return false
+                } 
+                else if (sign_type_id.val()=="0" || sign_type_id.val()==undefined){
+                  $("#sign_type_idHelpInline").text("请选择签约方式哦。")
+                
+                  $("input[name=sign_type_id]:first").focus()
+                   console.log("hi3")
+                  return false;
+                }
+              else if (talk_type.val()=="0" || talk_type.val()==undefined){
+                  $("#talk_typeHelpInline").text("请选择来源方式哦。")
+                 
+                   $("input[name=talk_type]:first").focus()
+                    console.log("hi4")
+                  return false;
+                }
+                else if ( is_finance.val()==undefined){
+                  $("#is_financeHelpInline").text("请选择是否记账。")
+                    console.log("hi5")
+                 $("input[name=is_finance]:first").focus()
+                  return false;
+                }
+                else if (new_contract_type_id.val()=="0" || new_contract_type_id.val()==undefined){
+                   console.log("hi6")
+                  $("#new_contract_type_idHelpInline").text("请选择合同情况")
+            
+                  $("input[name=new_contract_type_id]:first").focus()
+                  return false;
+                }
+
+
+                
+                
+
+                else if (deal_day.val()==""){
+                   console.log("hi10")
+                     $("#deal_dayHelpInline").text("成交周期不能为空哦！")
+                     deal_day.focus()
+                    return false
+                }
+                else if(b_deal_day==false){
+                     console.log("hi11")
+                    $("#deal_dayHelpInline").text("成交周期的天数必须是数值哦！")
+                    deal_day.focus()
+
+                    return false
+                }
+                else if(b==false){
+                   console.log("hi")
+                    //alert("预计合同定金必须是数值哦！")
+                     $("#pre_incomeHelpInline").text("预计合同定金必须是数值哦！")
+                    pre_income.focus()
+                    return false
+                }
+                else if(addr_type.val()==""){
+                   console.log("hi")
+                    $("#addr_typeHelpInline").text("地址类型不能为空哦,可以试试输入 地址")
+                    addr_type.focus()
+                  return false
+                }
+                else if(project_name.val()==""){
+                   console.log("hi")
+                    $("#project_nameHelpInline").text("业务名称不能为空哦")
+                    project_name.focus()
+                  return false
+                }
+                else if(customer_name.val()==""){
+                   console.log("hi")
+                    $("#customer_nameHelpInline").text("客户名称不能为空哦")
+                    customer_name.focus()
+                  return false
+                } else{
+                    $(this).attr("disabled","disabled")
+                   $(this).text("保存中...")
+               
+                    $.post("/project?tag=new",{
+                        "kf_id":kf_id.val(),
+                        "all_income":all_income.val(),
+                        "pre_income":pre_income.val(),
+                        "project_name":project_name.val(),
+                        "customer_name":customer_name.val(),
+                        "busniess_from":busniess_from.val(),
+                        "recommend_by":recommend_by.val(),
+                        "deal_day":deal_day.val(),
+                        "business_channel":business_channel.val(),
+                        "customer_company":customer_company.val(),
+                        "true_income":true_income.val(),
+                        "customer_tel":customer_tel.val(),
+                        "remark":remark.val(),
+                        "sign_type_id":sign_type_id.val(),
+                        "talk_type":talk_type.val(),
+                        "from_word":from_word.val(),
+                        "company":company.val(),
+                        "is_finance":is_finance.val(),
+                        "building_id":building_id.val(),
+                        "new_contract_type_id":new_contract_type_id.val(),
+                        "addr_type":addr_type.val(),
+                        "recommend_staff":recommend_staff.val(),"_xsrf":_xsrf},function(result){
+                            console.log("result"+result)
+                            location.href =result
+                            
+                        })
+
+                }
+            })
+
+
+        })
+ </script>
+
+{%end%}

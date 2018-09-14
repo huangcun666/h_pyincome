@@ -1,0 +1,196 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+<style>
+    .faye-table {
+        font-size: 12px;
+    }
+
+    .faye-table thead tr th {
+        text-align: center;
+    }
+
+    .faye-table tbody tr td {
+        text-align: center;
+        padding: 0.3rem;
+        height: 40px;
+        box-sizing: border-box;
+    }
+
+    .faye-ti {
+        padding: 0.5rem;
+    }
+
+    .faye-a a {
+        padding: 5px;
+    }
+
+    .faye-tdti {
+        text-align: center;
+    }
+
+    .faye-selsect td {
+        margin-right: 15px;
+    }
+
+    .faye-selsect td input {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    .faye-selsect td select {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    .faye-btn {
+        padding: 0.1rem 0.2rem;
+        background-color: #9ec6ef;
+        margin-left: 20px;
+        border-radius: 2px;
+    }
+
+    select.form-control:not([size]):not([multiple]) {
+        height: calc(2rem + 0px);
+    }
+</style>
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        主面板
+    </li>
+    <li class="breadcrumb-item active">传统商机开发明细
+
+    </li>
+
+</ol>
+
+
+    <table class="table table-bordered" style="width: 100%;" >
+        <thead style="background-color:#000;color:#fff ; font-size:12px;">
+            <tr>
+                <th  width="200">公司名称</th>
+                <th width="100">法人代表</th>
+
+                <th width="120">联系电话</th>
+                <th width="100">成立日期</th>
+                <th width="100">公司网站</th>
+                <th width="100">注册地址</th>
+                <th width="100">邮箱</th>
+                <th width="100">入库时间</th>
+                <th width="70">跟进人</th>
+         
+
+            </tr>
+        </thead>
+        <tbody style=" font-size:12px;">
+            {%if t_company%} {%for item in t_company%}
+
+            <tr>
+                <td>
+                    <a style=" font-size:12px;" href="/company?tag=show&guid={{item.company_guid}}&id={{item.id}}" class="btn" title="{{item.id}}">{{item.entName}}</a>
+                </td>
+                <td>
+                    {{item.regCap}}
+                </td>
+                <td>
+                   
+                     {%if item.phone%} {%if len(item.phone) > 12%} {{item.phone[:12]}}....... {%else%} {{item.phone}} {%end%}{%end%}
+                </td>
+                <td>{{item.creater}}</td>
+                <td>
+                    {%if item.email%}
+                    
+                    {{item.email}}
+                    {%end%}
+
+
+                    
+                </td>
+                <td>
+                    
+                     {%if item.reg_addr%} {%if len(item.reg_addr) > 10%} {{item.reg_addr[:10]}}....... {%else%} {{item.reg_addr}} {%end%}{%end%}
+                    
+                   </td>
+
+               <td>
+                 {%if item.urls%} 
+                
+                 {%if len(item.urls) > 10%} {{item.urls[:10]}}....... {%else%} {{item.urls}} {%end%}{%end%}
+                </td>
+
+
+<td>{{item.created_at}}</td>
+                <td>
+                    
+                </td>
+
+
+            </tr>
+            {%end%} {%else%}
+            <tr>
+                <td colspan="26">没有数据哦。</td>
+            </tr>
+
+            {%end%}
+        </tbody>
+    </table>
+
+    <div class="col-sm-12 col-md-7">
+        <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+            <ul class="pagination">
+                {% if pagination.has_prev %}
+                <li class="paginate_button page-item previous " id="dataTable_previous">
+                    <a href="?tag=list&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a>
+                </li>
+
+
+
+                {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                <li class="paginate_button page-item ">
+                    <a href="?tag=list&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
+                </li>
+                {% else %}
+                <li class="paginate_button page-item active">
+                    <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a>
+                </li>
+                {% end %} {% else %}
+                <li class="paginate_button page-item ">
+                    <span class="active">
+                        <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a>
+                    </span>
+                </li>
+                {% end %} {%end %} {% if pagination.has_next %}
+                <li class="paginate_button  page-item next" id="dataTable_next">
+                    <a href="?tag=list&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
+                </li>
+                {% end %} </ul>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Modal -->
+
+
+
+{%end%} {%block js%}
+
+<script>
+    $(function () {
+        _xsrf = getCookie("_xsrf")
+        $("#start").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+        $("#end").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+   
+
+
+
+
+
+    })
+</script> {%end%}

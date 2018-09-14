@@ -1,0 +1,511 @@
+user<!DOCTYPE HTML>
+<html>
+<head>
+<title>Home</title>
+<link href="/static/theme/default/css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="/static/theme/default/js/jquery-1.11.0.min.js"></script>
+<!-- Custom Theme files -->
+<link href="/static/theme/default/css/style.css" rel="stylesheet" type="text/css" media="all"/>
+<!-- Custom Theme files -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="Dr.Care Responsive web template, Bootstrap Web Templates, Flat Web Templates, Android Compatible web template,
+Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <link href="/static/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+     <link href="/static/js/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/js/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+<!-- start-smoth-scrolling -->
+<script type="text/javascript" src="/static/theme/default/js/move-top.js"></script>
+<script type="text/javascript" src="/static/theme/default/js/easing.js"></script>
+	<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				$(".scroll").click(function(event){
+					event.preventDefault();
+					$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+				});
+			});
+	</script>
+<!-- //end-smoth-scrolling -->
+<link rel="stylesheet" type="text/css" href="/static/theme/default/css/style_common.css" />
+<link rel="stylesheet" type="text/css" href="/static/theme/default/css/style4.css" />
+
+
+    <style>
+    .tag {
+        font-size: 14px;
+        font-family: 'Droid Serif';
+        text-align: center;
+        color: #FFF;
+        margin-left: 15px;
+        padding: 6px;
+        background-color: red;
+        float: right;
+        z-index: 100000;
+        display: block;
+
+    }
+
+    #tag {
+
+    top: 1em;
+    right: 1em;
+}
+
+.white-popup {
+    background: #fff none repeat scroll 0 0;
+    margin: 60px auto;
+    max-width: 650px;
+    padding: 20px 30px;
+    position: relative;
+    text-align: center;
+}
+    </style>
+
+
+</head>
+<body>
+<!--header start here-->
+
+<div class="header">
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">模块选择</h4>
+            </div>
+            <div class="modal-body">在这里添加一些文本</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary">提交更改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 按钮触发模态框 -->
+<div class="tag rightmenu"  data-toggle="modal" data-target="#myModal">配置</div>
+<div class="header">
+	<div class="container">
+		<div class="header-main">
+			<div class="header-left">
+				<div class="logo">
+				   <h1><a href="index.html">Dr.Care</a></h1>
+			    </div>
+				<div class="social-icons">
+					<ul>
+						<li><a href="#"><span class="fa"> </span></a></li>
+						<li><a href="#"><span class="tw"> </span></a></li>
+						<li><a href="#"><span class="ga"> </span></a></li>
+					</ul>
+				</div>
+				 <div class="clearfix"> </div>
+			  </div>
+				<div class="top-navg">
+					   <span class="menu"> <img src="/static/theme/default/images/icon.png" alt=""/></span>
+					<nav class="cl-effect-16">
+						<ul class="res">
+
+							<li><a class="scroll" data-hover="首页" href="index.html">首页</a></li>
+							<li><a class="scroll" data-hover="服务项目" href="#about">服务项目</a></li>
+							<li><a class="scroll" data-hover="申请流程" href="#services">申请流程</a></li>
+							<li><a class="scroll" data-hover="新闻资讯" href="#gallery">新闻资讯</a></li>
+							<li><a class="scroll" data-hover="联系我们" href="#contact">联系我们</a></li>
+						</ul>
+					<!-- script-for-menu -->
+						 <script>
+						   $( "span.menu" ).click(function() {
+							 $( "ul.res" ).slideToggle( 300, function() {
+							 // Animation complete.
+							  });
+							 });
+						</script>
+
+					</nav>
+				</div>
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+</div>
+<!--header start here-->
+<!--banner strat here-->
+<div class="banner" id="faye_banner" style="background: url(/static/theme/default/images/banner.jpg) ">
+<div class="modal fade" id="model_banner" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Banner模块</h4>
+            </div>
+            <div class="modal-body">
+            	<div class="form-group">
+				<label for="input-folder-1">更换背景</label>
+				<div class="file-loading">
+				    <input id="faye_banner_file" type="file" name="faye_banner_file">
+				</div>
+			</div>
+			 <div class="form-group">
+			    <input type="text" class="form-control faye_banner_edit" id="faye_banner_txt1" placeholder="请输入名称" >
+			  </div>
+ 			<div class="form-group">
+			    <input type="text" class="form-control faye_banner_edit" id="faye_banner_txt2" placeholder="请输入名称">
+			  </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" name="btn_save" title="faye_banner_edit">提交更改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<script type="text/javascript">
+	$(function(){
+
+			$(".rightmenu").on("click",function(){
+				  modal_name = $(this).attr("title")
+				  $('#'+modal_name).modal('show')
+			})
+
+			$("button[name=btn_save]").on("click",function(){
+					txtname = $(this).attr("title")
+						 $('.'+txtname).each(function(i, obj) {
+                                key_name =  $(this).attr("id")
+                                key_value = $(this).text()
+                                $.post("/edittemplate",{
+                                    "key_name":key_name,
+                                    "key_value":key_value,
+                                     "_xsrf":_xsrf,
+                                     "site_id":{{template_row.id}}},
+                                function(result){
+                                   console.log(result)
+                                })
+                         });
+
+			})
+
+
+	})
+
+</script>
+	<div class="tag rightmenu" title="model_banner">配置</div>
+
+	<div class="container">
+		<div class="banner-main">
+			 <h3>广州公司注册</h3>
+			 <p>免费起名 免费申报 加急一天拿证</p>
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+</div>
+<!--banner end here-->
+<!--about strat here-->
+<div class="about" id="about">
+	<div class="container">
+		<div class="abou-main">
+			<div class="about-top">
+				<h2>服务项目
+</h2>
+				<p>公司注册是开始创业的第一步。一般来说，公司注册的流程包括：企业核名→提交材料→领取执照→刻章，就可以完成公司注册，进行开业了。
+</p>
+			</div>
+			<div class="about-bottom">
+				<div class="col-md-4 about-grid">
+					<img src="/static/theme/default/images/a1.jpg" alt="" class="img-responsive">
+					<div class="grid-details">
+						<h3>广州公司注册</h3>
+						<p>代办工商注册公司地址挂靠，加急一天出证，解决疑难问题。</p>
+					</div>
+				</div>
+				<div class="col-md-4 about-grid">
+					<img src="/static/theme/default/images/a2.jpg" alt="" class="img-responsive">
+					<div class="grid-details">
+						<h3>南沙自贸区注册</h3>
+						<p>代办自贸区注册公司核名，办理特殊加急优惠政策占先机。</p>
+					</div>
+				</div>
+				<div class="col-md-4 about-grid">
+					<img src="/static/theme/default/images/a3.jpg" alt="" class="img-responsive">
+					<div class="grid-details">
+						<h3>无地址注册</h3>
+						<p>各区地址挂靠注册公司，只需身份证就可办理，高效专业。</p>
+					</div>
+				</div>
+			  <div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--about end here-->
+
+<!--services strta here-->
+<div class="services" id="services">
+	<div class="container">
+		<div class="services-main">
+			<div class="services-top">
+				<h3>注册流程</h3>
+
+			</div>
+			<div class="services-bottom">
+			  <div class="hi-icon-wrap hi-icon-effect-6">
+				<div class="col-md-3 ser-grid">
+					<div class="ser-icon">
+						<a href="#" class="hi-icon hi-icon-archive glyphicon glyphicon-eye-open"> </a>
+					</div>
+					<h4>1、核准名称</h4>
+					<p>
+3-4个工作日</p>
+				</div>
+				<div class="col-md-3 ser-grid">
+					<div class="ser-icon">
+				      <a href="#" class="hi-icon hi-icon-archive glyphicon glyphicon-grain"> </a>
+					</div>
+					<h4>2、提交材料</h4>
+					<p>3-5个工作日</p>
+				</div>
+				<div class="col-md-3 ser-grid">
+					<div class="ser-icon">
+						<a href="#" class="hi-icon hi-icon-archive glyphicon glyphicon-heart"> </a>
+					</div>
+					<h4>3-5个工作日</h4>
+					<p>5-10个工作日</p>
+				</div>
+				<div class="col-md-3 ser-grid">
+					<div class="ser-icon">
+						<a href="#" class="hi-icon hi-icon-archive glyphicon glyphicon-tint"> </a>
+					</div>
+					<h4>4、刻章备案
+</h4>
+					<p>1个工作日</p>
+				</div>
+			  </div>
+			</div>
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+</div>
+<!--services end here-->
+
+
+<!--advantages start here-->
+<div class="advantages">
+	<div class="container">
+		<div class="advantages-main">
+			 <h3>注册公司的好处
+</h3>
+			<div class="col-md-7 advant-left">
+				<p>公司作为市场和社会中的一个力量，通过与外界的合作，反复的磨合，可以起到优化资源配置、推动市场发展和承担社会责任的重要作用，具体好处如下：
+</p>
+				<ul>
+					<li><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span> <a href="#">品牌创建：只有创建了公司才真正意义上创建起自己品牌。
+ </a></li>
+					<li><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span> <a href="#">业务保护：有公司签约可以有高保障，交易双方对保障是非常看重。
+</a></li>
+					<li><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span><a href="#">业务宣传：没有真正的公司，宣传经常受阻，有项目时如果没有公司欺骗客户又会涉及违法。
+</a></li>
+					<li><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span><a href="#">提高身份：公司是一张名片，自己开公司当老板本身是一张很好的名片。
+</a></li>
+					<li><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span> <a href="#">规避风险：避免无照经营被罚款，有效避免同行举报。
+</a></li>
+				</ul>
+			</div>
+			<div class="col-md-5 advant-right">
+				<a href="#"><img src="/static/theme/default/images/doctor.png" alt=""></a>
+			</div>
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+</div>
+<!--advantages end here-->
+
+<div class="testmony" >
+	<div class="container">
+		<div class="testmony-main">
+			<div class="col-md-4 testmo-left">
+				<img src="/static/theme/default/images/tes.jpg" alt="" class="img-responsive img_editor">
+			</div>
+			<div class="col-md-8 testmo-right">
+				<span class="quota1"> </span>
+				<h4 class="text_editor">广州公司注册所需资料
+</h4>
+				<p class="text_editor">1、投资人的身份证复印件及原件；2、公司的名称；3、经营范围；4、投资人数；5、注册资金；6、公司注册住所证明；7、公司的注册章程。
+</p>
+			    <span class="quota2"> </span>
+			</div>
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+</div>
+<!--team start here-->
+<div class="team-mem" >
+		<div class="container">
+			   <div class="team-main">
+					<div class="team-top">
+							<h3 class="text_editor">注册后会获得哪些资料？
+</h3>
+					</div>
+					<div class="team-bottom">
+						<div class="col-md-3 team-grid">
+							<a href="#"> <img src="/static/theme/default/images/t1.jpg"  alt="" class="img-responsive img_editor"> </a>
+						</div>
+						<div class="col-md-3 team-grid">
+							<a href="#"> <img src="/static/theme/default/images/t2.jpg" alt="" class="img-responsive img_editor"> </a>
+						</div>
+						<div class="col-md-3 team-grid">
+							<a href="#"> <img src="/static/theme/default/images/t3.jpg" alt="" class="img-responsive img_editor"> </a>
+						</div>
+						<div class="col-md-3 team-grid">
+							<a href="#"> <img src="/static/theme/default/images/t4.jpg" alt="" class="img-responsive img_editor"> </a>
+						</div>
+					<div class="clearfix"> </div>
+				</div>
+			</div>
+	  </div>
+</div>
+<!--team end  here-->
+
+
+<div class="gallery" id="gallery">
+	<div class="container">
+		<div class="gallery-main">
+			<div class="gallery-top">
+				<h3>我们还提供多项服务
+</h3>
+				<p>注册无忧、起名无忧、预约无忧，广州发业带给您一站式的无忧体验。
+.</p>
+			</div>
+			<div class="gallery-bottom">
+				<div class="view view-fourth">
+                     <a href="/static/theme/default/images/g1.jpg" class="b-link-stripe b-animate-go  swipebox" title="Image Title"><img src="/static/theme/default/images/g1.jpg" alt="" class="img-responsive">
+                    <div class="mask">
+                         <h3>起名核名</h3>
+                        <p>详情请咨询在线客服.</p>
+                      <span class="gall">在线客服</span>
+                    </div></a>
+                </div>
+                <div class="view view-fourth">
+                     <a href="/static/theme/default/images/g2.jpg" class="b-link-stripe b-animate-go  swipebox" title="Image Title"><img src="/static/theme/default/images/g2.jpg" alt="" class="img-responsive">
+                    <div class="mask">
+                         <h3>网上预约
+</h3>
+                        <p>详情请咨询在线客服.</p>
+                      <span class="gall">在线客服</span>
+                    </div></a>
+                </div>
+                <div class="view view-fourth">
+                     <a href="/static/theme/default/images/g3.jpg" class="b-link-stripe b-animate-go  swipebox" title="Image Title"><img src="/static/theme/default/images/g3.jpg" alt="" class="img-responsive">
+                    <div class="mask">
+                                    <h3>代领《核名通知书》</h3>
+                        <p>详情请咨询在线客服.</p>
+                      <span class="gall">在线客服</span>
+                    </div></a>
+                </div>
+                <div class="view view-fourth">
+                     <a href="/static/theme/default/images/g4.jpg" class="b-link-stripe b-animate-go  swipebox" title="Image Title"><img src="/static/theme/default/images/g4.jpg" alt="" class="img-responsive">
+                    <div class="mask">
+                                 <h3>代理资料提交工商局</h3>
+                        <p>详情请咨询在线客服.</p>
+                      <span class="gall">在线客服</span>
+                    </div></a>
+                </div>
+                <div class="view view-fourth">
+                     <a href="/static/theme/default/images/g5.jpg" class="b-link-stripe b-animate-go  swipebox" title="Image Title"><img src="/static/theme/default/images/g5.jpg" alt="" class="img-responsive">
+                    <div class="mask">
+                     <h3>代理领取执照刻章
+</h3>
+                        <p>详情请咨询在线客服.</p>
+                      <span class="gall">在线客服</span>
+                    </div></a>
+                </div>
+                <div class="view view-fourth">
+                     <a href="/static/theme/default/images/g6.jpg" class="b-link-stripe b-animate-go  swipebox" title="Image Title"><img src="/static/theme/default/images/g6.jpg" alt="" class="img-responsive">
+                    <div class="mask">
+                           <h3>代理税务局报到
+</h3>
+                        <p>详情请咨询在线客服.</p>
+                      <span class="gall">在线客服</span>
+                    </div></a>
+                </div>
+			</div>
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+</div>
+<!--footer strat here-->
+<div class="footer">
+	<div class="container">
+		<div class="footer-main">
+		   <div class="col-md-4 ftr-grid">
+		   	<h4>关于我们</h4>
+		   	<p>发业集团总部设立在广州珠江新城，是一家集工商注册、代理记账、广州入户、装修设计、知识产权、法律服务于一体的大型“企业一站式服务”集团。
+.</p>
+		   </div>
+		   <div class="col-md-4 ftr-grid">
+		   	<h4>公司地址
+</h4>
+		   	<p>广州市天河区珠江新城华穗路263号双城国际东座23层
+</p>
+		   	<p>热线电话</p>
+		   	<p>020-28990999</p>
+		   </div>
+		   <div class="col-md-4 ftr-grid">
+		   	<h4>热门搜索</h4>
+		   	<input type="text" value="" placeholder="请输入你要查询的内容" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Name';}">
+		   	<input type="submit" value="立即查询">
+		   </div>
+		  <div class="clearfix"> </div>
+	    </div>
+	</div>
+	<div class="copy-right">
+			<p>Copyright &copy; 2016.Company name All rights reserved. </p>
+		</div>
+		<script type="text/javascript">
+         function getCookie(name) {
+            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+            return r ? r[1] : undefined;
+        }
+										$(document).ready(function() {
+
+											/*
+											var defaults = {
+									  			containerID: 'toTop', // fading element id
+												containerHoverID: 'toTopHover', // fading element hover id
+												scrollSpeed: 1200,
+												easingType: 'linear'
+									 		};
+											*/
+
+											$().UItoTop({ easingType: 'easeOutQuart' });
+											$(".img_editor").froalaEditor({
+												imageUploadParam: 'file1',
+														imageUploadURL: '/img',
+														 imageAllowedTypes: ['jpeg', 'jpg', 'png'],
+														  imageMaxSize: 1 * 1024 * 1024,
+														  imageUploadMethod: 'POST',
+														 imageUploadParams: {_xsrf: getCookie("_xsrf")},
+										                language: 'zh_cn',
+										                toolbarInline: true,
+										                charCounterCount: false,
+										                initOnClick: true,
+										                    toolbarButtons: ['Bord', 'italic', 'underline', 'strikeThrough', 'color', 'emoticons', '-', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+										     })
+											$(".text_editor").froalaEditor({
+													imageUploadURL: '/img',
+										                language: 'zh_cn',
+										                toolbarInline: true,
+										                charCounterCount: false,
+										                initOnClick: true,
+										                toolbarButtons: ['Bord', 'italic', 'underline', 'strikeThrough', 'color', 'emoticons', '-', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+										            })
+										});
+									</script>
+
+<!--footer end here-->
+
+</div>
+<script type="text/javascript" src="/static/js/froala_editor.pkgd.min.js"></script>
+<script src="/media/js/bootstrap.min.js"></script>
+</body>
+</html>

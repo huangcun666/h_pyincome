@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<title>{%block title%}{%end%}
+</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+{%block head%}{%end%}
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-responsive.css">
+<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+
+<script type="text/javascript" src="/static/css/jsapi"></script>
+
+<script type="text/javascript" src="/static/css/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="/static/css/main.js"></script>
+<script type="text/javascript" src="/static/css/bootstrap.min.js"></script>
+
+
+   <link href="/static/css/tooltip.css" rel="stylesheet" type="text/css"><script type="text/javascript" charset="utf-8" src="/static/css/get.js"></script>
+
+      <link href="/static/css/datepicker.css" rel="stylesheet">
+      <script src="/static/js/bootstrap-datepicker.js"></script>
+      <script>
+      function getCookie(name) {
+        var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+        return r ? r[1] : undefined;
+    }
+    </script>
+</head>
+
+<body>
+    <div class="navbar navbar-fixed-top m-header">
+        <div class="navbar-inner m-inner">
+            <div class="container-fluid">
+                <a class="brand m-brand" href="/">
+                     </a>
+
+                    <form class="form-search m-search span5">
+                        <input type="text" placeholder="输入站点名称或域名,快速查看" class="span5 search-query">
+                    </form>
+
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+
+                    <div class="nav-collapse collapse">
+
+                        <div class="btn-group pull-right">
+                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="icon-user"></i>您好: {{name}}
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+           <!--                      <li><a href="/userinfo?tag=my"><i class="icon-user"></i>我的资料</a></li>
+                                <li><a href="/userinfo?tag=config"><i class="icon-cog"></i>w</a></li>
+                                <li class="divider"></li> -->
+                                <li><a href="/logout"><i class="icon-off"></i>退 出</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="m-top"></div>
+        <aside class="sidebar">
+            <ul class="nav nav-tabs nav-stacked">
+                <li class="active">
+                    <a href="/">
+                        <div>
+                            <div class="ico">
+                                <img src="/static/css/ico-home.png">
+                            </div>
+                            <div class="title">
+                                我的网站
+                            </div>
+                        </div>
+
+                        <div class="arrow">
+                            <div class="bubble-arrow-border"></div>
+                            <div class="bubble-arrow"></div>
+                        </div>
+                    </a>
+                </li>
+             <!--    <li class="">
+                    <a href="/mobile">
+                        <div>
+                            <div class="ico">
+                                <img src="/static/css/ico-setting.gif">
+                            </div>
+                            <div class="title">
+                                设备管理
+                            </div>
+                        </div>
+                        <div class="arrow">
+                            <div class="bubble-arrow-border"></div>
+                            <div class="bubble-arrow"></div>
+                        </div>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="/POI">
+                        <span class="badge badge-important m-badge-notification">6</span>
+                        <div>
+                            <div class="ico">
+                                <img src="/static/css/ico-notification.gif">
+                            </div>
+                            <div class="title">
+                                POI管理
+                            </div>
+                        </div>
+
+                        <div class="arrow">
+                            <div class="bubble-arrow-border"></div>
+                            <div class="bubble-arrow"></div>
+                        </div>
+                    </a>
+                </li>
+
+
+
+                <li class="">
+                    <a href="/Msg">
+                        <div>
+                            <div class="ico">
+                                <img src="/static/css/ico-order.gif">
+                            </div>
+                            <div class="title">
+                                消息通知
+                            </div>
+                        </div>
+                        <div class="arrow">
+                            <div class="bubble-arrow-border"></div>
+                            <div class="bubble-arrow"></div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="/Sign">
+                        <div>
+                            <div class="ico">
+                                <img src="/static/css/ico-media.gif">
+                            </div>
+                            <div class="title">
+                                签到记录
+                            </div>
+                        </div>
+                        <div class="arrow">
+                            <div class="bubble-arrow-border"></div>
+                            <div class="bubble-arrow"></div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="/user">
+                        <div>
+                            <div class="ico">
+                                <img src="/static/css/ico-help.gif">
+                            </div>
+                            <div class="title">
+                                用户管理
+                            </div>
+                        </div>
+                        <div class="arrow">
+                            <div class="bubble-arrow-border"></div>
+                            <div class="bubble-arrow"></div>
+                        </div>
+                    </a>
+                </li> -->
+
+       <!-- <li class="">
+            <a href="#">
+                <div>
+                    <div class="ico">
+                        <img src="/static/css/ico-user.gif">
+                    </div>
+                    <div class="title">
+                        全局管理
+                    </div>
+                </div>
+                <div class="arrow">
+                    <div class="bubble-arrow-border"></div>
+                    <div class="bubble-arrow"></div>
+                </div>
+            </a>
+        </li>
+
+
+        <li class="">
+            <a href="#" id="btn-more" style="display: block; ">
+                <div>
+                    <div class="ico">
+                        <img src="/static/css/ico-more.png">
+                    </div>
+                    <div class="title">
+                        全局管理
+                    </div>
+                </div>
+            </a>
+
+        </li>-->
+
+    </ul>
+</aside>
+<div class="m-sidebar-collapsed">
+    <ul class="nav nav-pills"><li class="">
+        <a href="#">
+            <div>
+                <div class="ico">
+                    <img src="/static/css/ico-report.gif">
+                </div>
+                <div class="title">
+                    全局管理
+                </div>
+            </div>
+            <div class="arrow">
+                <div class="bubble-arrow-border"></div>
+                <div class="bubble-arrow"></div>
+            </div>
+        </a>
+    </li>
+
+</ul>
+
+<div class="arrow-border">
+    <div class="arrow-inner"></div>
+</div>
+</div>
+<div class="main-container" style="height: 729px; ">
+    {% block body %}{% end %}
+</div>
+{%block js%}
+
+{%end%}
+</body></html>

@@ -1,0 +1,214 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">分配权限
+        </li>
+
+      </ol>
+
+      <div class="card mb-3">
+            <div class="card-body">
+
+            <div class="table-responsive">
+                
+                <table>
+                        <tr>
+                             
+                                <td>
+                        权限：
+                    <select name="role_type" id="role_type">
+                        {%for item in role_projects_types%}
+                        <option value="{{item.id}}">{{item.income_name}}</option>
+                        {%end%}
+                    </select>
+                    </td>
+                    </tr>
+                        
+                    <tr>
+                    <td>
+                            <label for="left" style="float: left;margin-top: 100px;">用户：</label>
+                    <select name="left" id="left" multiple="true" style="width:200px;margin:100px 50px 50px 0;" size="10">
+                        
+                    </select>
+                    </td>
+                    <td>
+    
+                    <input type="button" value=">>" id="toRight"><br><br><br>
+                   
+                    <input type="button" value="<<" id="toLeft"><br>
+                    </td>
+                    <td>
+                    <select id="right" multiple="multiple" style="width:200px;margin:100px 50px 50px 50px;" size="10">
+                    
+                    
+                    </select>
+                    </td>
+                    </tr>
+                    </table>    
+
+            
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="add_project_recode" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="income_title_type">业务记录
+                <button class="btn btn-danger delete_recode">&times;</button>
+        
+              </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+        
+        
+                <div class="modal-body form-horizontal" id="site_mod">
+                    <div class="col-sm-10">
+                        <label for="addr_type">地址类型</label>
+                        <input class="form-control" name="addr_type" id="addr_type" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="addr_cp">供应商</label>
+                            <input class="form-control" name="addr_cp" id="addr_cp" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="addr_price">地址价格</label>
+                            <input class="form-control" name="addr_price" id="addr_price" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="addr_price_time">地址结算时间</label>
+                            <input class="form-control" name="addr_price_time" id="addr_price_time" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="start_time">地址起始时间</label>
+                            <input class="form-control" name="start_time" id="start_time" type="text">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="expired_time">地址到期时间</label>
+                            <input class="form-control" name="expired_time" id="expired_time" type="text">
+                        </div>
+                </div>
+        
+        
+                <div class="modal-footer">
+                    <input type="hidden" value="0" id="is_other" name="is_other" />
+                           <button class="btn btn-primary" target="_blank" id="btn_save_project_recode" rel_id='0'>保 存</button>
+        
+                </div>
+              </div>
+            </div>
+          </div>
+{%end%}
+
+{%block js%}
+
+<script>
+ $(function () {
+
+    _xsrf =  getCookie("_xsrf")
+
+$('#toRight').on("click",function () { 
+        var role_type_id=$('#role_type option:selected').val();
+        var user_ids=$('#left option:selected').map(function(){
+            return $(this).val();
+        }).get().join(",")
+         $.post(
+             '/project?tag=add_role_allot',
+             {
+             "role_type_id":role_type_id,
+             "user_ids":user_ids,
+             "_xsrf":_xsrf
+            },function (result) { 
+                alert('添加成功')
+                location.reload()
+                
+          }
+         )
+     })
+     $('#toLeft').on("click",function () { 
+        var role_type_id=$('#role_type option:selected').val();
+        var user_ids=$('#right option:selected').map(function(){
+            return $(this).val();
+        }).get().join(",")
+         $.post(
+             '/project?tag=delete_role_allot',
+             {
+             "role_type_id":role_type_id,
+             "user_ids":user_ids,
+             "_xsrf":_xsrf
+            },function (result) { 
+                alert('删除成功')
+                location.reload()
+                
+          }
+         )
+     })
+
+$("#toRight").click(function(){
+$("#left option:selected").appendTo("#right");
+});
+
+$("#toLeft").click(function(){
+$("#right option:selected").appendTo("#left");
+});
+$("#role_type").bind('change',function () { 
+    var type_id=$('#role_type option:selected').val();
+    var type=$('#role_type option:selected').text();
+    if(type=='供应商'){
+        $('#left option').remove();
+        $('#right option').remove();
+        $('#left').append(
+            '{%for item in not_visible_gy%}<option value="{{item.id}}">{{item.name}}</option>{%end%}'
+        )
+        $('#right').append(
+            '{%for item in visible_gy%}<option value="{{item.id}}">{{item.name}}</option>{%end%}'
+        )
+    }
+    else if(type=='地址查看'){
+        $('#left option').remove();
+        $('#right option').remove();
+        $('#left').append(
+            '{%for item in not_visible_addr%}<option value="{{item.id}}">{{item.name}}</option>{%end%}'
+        )
+        $('#right').append(
+            '{%for item in visible_addr%}<option value="{{item.id}}">{{item.name}}</option>{%end%}'
+        )
+    }
+    else{
+        $('#left option').remove();
+        $('#right option').remove();
+      
+    }
+    
+ })
+ if($('#role_type option:selected').text()=='供应商'){
+        $('#left option').remove();
+        $('#right option').remove();
+        $('#left').append(
+            '{%for item in not_visible_gy%}<option value="{{item.id}}">{{item.name}}</option>{%end%}'
+        )
+        $('#right').append(
+            '{%for item in visible_gy%}<option value="{{item.id}}">{{item.name}}</option>{%end%}'
+        )
+    }
+if($('#role_type option:selected').text()=='地址查看'){
+        $('#left option').remove();
+        $('#right option').remove();
+        $('#left').append(
+            '{%for item in not_visible_addr%}<option value="{{item.id}}">{{item.name}}</option>{%end%}'
+        )
+        $('#right').append(
+            '{%for item in visible_addr%}<option value="{{item.id}}">{{item.name}}</option>{%end%}'
+        )
+    }
+
+})
+</script>
+{%end%}

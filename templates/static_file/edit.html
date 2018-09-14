@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>站点管理</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+  <link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark" ><div class="about" id="about">
+  <div class="container"  >
+    <div class="card card-register mx-auto mt-5" >
+      <div class="card-header">新建文件 ( 所属站点: {{t_user_site.site_name}} ) <button id="btndelete" class="btn btn-danger">删除</button></div>
+      <div class="card-body">
+        <form method="post" id="post_form" >
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">文件名(只支持 txt xml 文件): </label>
+            <input class="form-control"  type="text"  name="fname" placeholder="aa.txt aaa.xml" value="{{t_static_file.fname}}">
+          </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">文件备注: </label>
+            <input class="form-control"  type="text"  name="fname_remark" placeholder="微信验证文件" value="{{t_static_file.fname_remark}}">
+          </div>
+
+          <div class="form-group">
+            <label for="exampleInputEmail1">内容:</label>
+            <textarea class="form-control text_editor"   name="content"  placeholder="" style="height: 300px;">{{t_static_file.content}}</textarea>
+          </div>
+
+
+          <input type="hidden" id="site_id" value="{{t_static_file.site_id}}"/>
+          {%if msg%}
+
+            <div class="alert alert-success" role="alert">
+  <strong>{{msg}} </strong> <a href="/static_file?site_id={{t_static_file.site_id}}">返回列表</a>
+</div>    {%end%}
+          <button class="btn btn-primary btn-block" >保存</button>
+            {% module xsrf_form_html() %}
+
+        </form>
+        <div class="text-center">
+
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <!-- Bootstrap core JavaScript-->
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Core plugin JavaScript-->
+  <script type="text/javascript" src="/static/js/froala_editor.pkgd.min.js"></script>
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script type="text/javascript">
+          function getCookie(name) {
+            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+            return r ? r[1] : undefined;
+        }
+    $(function(){
+      _xsrf = getCookie("_xsrf");
+      $("#btndelete").on("click",function(){
+          if(confirm("确认删除吗?")){
+            $.post("/static_file?tag=delete",{"sf_id":{{t_static_file.id}},"_xsrf":getCookie("_xsrf"),"site_id":{{t_user_site.id}}},function(result){
+
+                if (result==0){
+                    alert("删除成功!")
+                   location.href="/static_file?tag=list&site_id={{t_user_site.id}}"
+                }
+
+            })
+          }
+      })
+      $("#post_form").on("submit",function(){
+         fname =  $("input[name=fname]").val()
+         if (fname=="") {
+          alert("文件名不能为空.")
+           $("input[name=fname]").focus()
+              return false
+         }
+         content =  $("textarea[name=content]").val()
+         if (content=="") {
+          alert("正文不能为空.")
+           $("textarea[name=content]").focus()
+              return false
+         }
+
+
+      })
+
+
+
+
+
+    })
+  </script>
+</body>
+
+</html>

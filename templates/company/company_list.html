@@ -1,0 +1,268 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+<style>
+    .faye-table {
+        font-size: 12px;
+    }
+
+    .faye-table thead tr th {
+        text-align: center;
+    }
+
+    .faye-table tbody tr td {
+        text-align: center;
+        padding: 0.3rem;
+        height: 40px;
+        box-sizing: border-box;
+    }
+
+    .faye-ti {
+        padding: 0.5rem;
+    }
+
+    .faye-a a {
+        padding: 5px;
+    }
+
+    .faye-tdti {
+        text-align: center;
+    }
+
+    .faye-selsect td {
+        margin-right: 15px;
+    }
+
+    .faye-selsect td input {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    .faye-selsect td select {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    .faye-btn {
+        padding: 0.1rem 0.2rem;
+        background-color: #9ec6ef;
+        margin-left: 20px;
+        border-radius: 2px;
+    }
+
+    select.form-control:not([size]):not([multiple]) {
+        height: calc(2rem + 0px);
+    }
+</style>
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        主面板
+    </li>
+    <li class="breadcrumb-item active">{%if params["my"]=="1"%} 我的商机 {%elif params["my"]=="2"%} 已成交商机{%else%}传统商机开发
+
+
+        {%end%}
+
+
+    </li>
+
+</ol>
+
+<div class="row" >
+    <div class="col-lg-12">
+<form>
+<input type="text" id="keyword" name="keyword" placeholder="公司名/注册地址/电话/邮箱" style="width:300px; height:30px;" value="{%if  params["keyword"]%}{{params["keyword"]}}{%end%}" >
+<!--<input type="text" id="start" name="start" placeholder="成立时间(开始)" style="width:150px; height:30px;" value="{%if params["start"]%}{{params["start"]}}{%end%}">
+<input type="text" id="end" name="end" placeholder="成立时间(结束)" style="width:150px; height:30px;" value="{%if params["end"]%}{{params["end"]}}{%end%}">-->
+
+<select name="rank" style="height:30px;">
+<option value="0">选择质量类型</option>
+<option value="A" {%if params["rank"]=="A"%} selected="true"{%end%}>A类</option>
+<option value="B" {%if params["rank"]=="B"%} selected="true"{%end%}>B类</option>
+</select>
+
+<button class="btn btn-primary btn-small">检索</button>
+ {%if params["my"]%}
+<a href="/company?tag=list_company" class="btn btn-info">挖掘新商机</a> {%else%}
+
+<a href="/company?tag=list_company&rank=A" class="btn btn-info">换一批A类商机</a>
+<a href="/company?tag=list_company&rank=B" class="btn btn-info">换一批B类商机</a>
+
+{%end%}
+</form>
+
+<div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link {%if  params["my"] != "1" and params["my"] != "2"%}active{%end%}"  href="/company?tag=list_company">全部商机</a>
+    <a class="nav-item nav-link {%if  params["my"]=="1"%}active{%end%}"  href="/company?tag=list_company&my=1">我的商机</a>
+    <a class="nav-item nav-link {%if  params["my"]=="2"%}active{%end%}" href="/company?tag=list_company&my=2">已成交商机 </a>
+</div>
+{%if params["my"]=='1'%}
+<a class="btn btn-primary btn-sm change_batch" href="javascript:void(0);">批量放回公有池</a>
+{%end%}
+</nav>
+
+    <div class="card mb-3">
+    <table class="table table-bordered" style="width: 100%;" >
+        <thead style="background-color:#000;color:#fff ; font-size:12px;">
+            <tr>
+                {%if  params["my"]=="1"%}
+                <th width="50">
+                    <input type="checkbox" id="choose_all">全选
+                </th>
+                {%end%}
+                <th width="50">级别</th>
+                <th  width="200">公司名称</th>
+                <th width="100">法人代表</th>
+
+                <th width="120">联系电话</th>
+                <th width="100">成立日期</th>
+                <th width="100">公司网站</th>
+                <th width="100">注册地址</th>
+                <th width="100">邮箱</th>
+                {%if params["my"]%}
+                 <th width="100">最后更新</th>
+
+                {%else%}
+                <th width="100">入库时间</th>
+                {%end%}
+
+
+
+            </tr>
+        </thead>
+        <tbody style=" font-size:12px;">
+            {%if t_company%} {%for item in t_company%}
+
+            <tr>
+                    {%if  params["my"]=="1"%}
+                <td><input type="checkbox" value="{{item.id}}" guid="{{item.company_guid}}" id="check_company" name="check_company"></td>{%end%}
+                <td>
+                    {{item.rank}}
+                </td>
+                <td>
+                    <a style=" font-size:12px;" href="/company?tag=show&guid={{item.company_guid}}&id={{item.id}}" title="{{item.entName}}" {%if not params["my"]%} target="_blank"{%end%}>{{item.entName}}</a>
+                </td>
+                <td>
+                    {{item.regCap}}
+                </td>
+                <td title="{{item.phone}}">
+
+                     {%if item.phone%} {%if len(item.phone) > 12%} {{item.phone[:12]}}....... {%else%} {{item.phone}} {%end%}{%end%}
+                </td>
+                <td>{{item.creater}}</td>
+            <td title="{{item.urls}}">
+                {%if item.urls%} {%if len(item.urls) > 10%} {{item.urls[:10]}}....... {%else%} {{item.urls}} {%end%}{%end%}
+            </td>
+                <td title="{{item.reg_addr}}">
+
+                     {%if item.reg_addr%} {%if len(item.reg_addr) > 10%} {{item.reg_addr[:10]}}....... {%else%} {{item.reg_addr}} {%end%}{%end%}
+
+                   </td>
+
+<td title="{{item.email}}">
+
+
+    {%if item.email%} {%if item.email%} {%if len(item.email) > 12%} {{item.email[:12]}}....... {%else%} {{item.email}} {%end%}{%end%}
+    {%end%}
+
+
+
+</td>
+ {%if params["my"] or params["bystaff"]%}
+<td title="{{item.last_updated_msg}}">{{item.last_updated}}
+<br/>
+
+{%if item.last_updated_msg%} {%if len(item.last_updated_msg) > 10%} {{item.last_updated_msg[:10]}}....... {%else%} {{item.last_updated_msg}} {%end%}
+
+ {%end%}
+
+</td>
+{%else%}
+<td>{{item.created_at}}</td>{%end%}
+
+
+
+
+            </tr>
+            {%end%} {%else%}
+            <tr>
+                <td colspan="26">加油哦, 目前还没有没有数据哦。</td>
+            </tr>
+
+            {%end%}
+        </tbody>
+    </table>
+
+    <div class="col-sm-12 col-md-7">
+        <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+            <ul class="pagination">
+                {% if pagination.has_prev %}
+                <li class="paginate_button page-item previous " id="dataTable_previous">
+                    <a href="?tag=list_company&page={{ pagination.page - 1}}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a>
+                </li>
+
+
+
+                {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                <li class="paginate_button page-item ">
+                    <a href="?tag=list_company&page={{page}}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if  params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
+                </li>
+                {% else %}
+                <li class="paginate_button page-item active">
+                    <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a>
+                </li>
+                {% end %} {% else %}
+                <li class="paginate_button page-item ">
+                    <span class="active">
+                        <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a>
+                    </span>
+                </li>
+                {% end %} {%end %} {% if pagination.has_next %}
+                <li class="paginate_button  page-item next" id="dataTable_next">
+                    <a href="?tag=list_company&page={{pagination.page+1}}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
+                </li>
+                {% end %} </ul>
+        </div>
+    </div>
+</div></div></div></div>
+
+<!-- Modal -->
+
+
+{%end%} {%block js%}
+
+<script>
+    $(function () {
+        _xsrf = getCookie("_xsrf")
+        $("#start").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+        $("#end").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+
+    $('#choose_all').on('change',function () {
+         $('input[id=check_company]').not(this).prop('checked',this.checked);
+      })
+      $('.change_batch').on('click',function () {
+          var batch_edit=$('#batch_edit:checked').val()
+           var companys=[]
+            $('input[name=check_company]:checked').each(function () {
+                companys.push($(this).val())
+                companys.push($(this).attr('guid'))
+            })
+            companys=companys.join(',')
+            if(companys==''){
+                  $('#choose_all').focus()
+                  alert('未选择商机开发')
+              }else{
+                $.post("/company?tag=free_to_me", { "_xsrf": _xsrf, "companys": companys }, function (result) {
+                    location.reload()
+                })
+              }
+       })
+
+            $("#list_company").click()
+    })
+</script> {%end%}

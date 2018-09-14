@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+<script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="/static/js/jQuery.print.js"></script>
+
+	<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+
+
+
+</head>
+	<style>body{font-family
+:"微软雅黑"}
+*{margin: 0; padding: 0;}
+ul,ol{list-style:none;}
+.z-table {width: 1000px; height: auto; margin:0px auto 0px; border:1px solid #272727; }
+.z-table ul li {border-top: 1px solid #272727; height: 49px;}
+.z-table ul li:nth-child(1) {border-top:none; height: 100px;}
+.z-table ul li:nth-child(3) { height: 65px;}
+.z-table ul li:nth-child(4) { height: 65px;}
+.z-table ul li:nth-child(7) { height: 90px;}
+.z-table ul li:nth-child(8) { height: 35px;}
+.z-table ul li:nth-child(9) { height: 141px;}
+.z-table ul li:nth-child(1) div {float: left;}
+.z-table ul li:nth-child(2) div {float: left; line-height: 50px;}
+.ge1-box1 {width: 350px; height: 100px;padding: 10px 20px; box-sizing: border-box;}
+.ge1-box2 {width: 300px; height: 100px;border-left: 1px solid #272727; border-right:1px solid #272727;box-sizing: border-box;}
+.ge1-box3 {width: 350px; height: 100px;padding: 10px 20px; box-sizing: border-box;}
+/*第一行*/
+.ge1-box1 p {margin:10px 0; }
+.ge1-box1 p input {border:none; border-bottom: 1px solid #272727;}
+.ge1-box2 h5 {text-align: center; font-size: 14px; margin-top: 10px;}
+.ge1-box2 h2 {text-align: center; font-size: 30px; margin-top: 5px;}
+.ge1-box2 p {text-align: center;margin-top: 5px;}
+.ge1-box2 p span { text-align: center; font-size: 16px; font-weight: 200; }
+.ge1-box2 p i {width: 25px; font-size: 16px; border:none; border-bottom: 1px solid #272727; font-style:normal;}
+.ge1-box3 p {margin-top: 12px; font-size: 16px; line-height: 26px;}
+/*第二行*/
+.ge2-box1{width: 255px;padding-left: 20px;}
+.ge2-box2 {width: 430px; }
+.ge2-box3 {width: 295px;}
+/*第三行*/
+.ge3-box1 {float: left; width: 700px; }
+.ge3-box2 {float: left; width: 300px; }
+.ge3-box1 div:nth-child(1) {float: left; width: 100px; line-height: 65px; text-align: center; border-right: 1px solid #272727;}
+.ge3-box1 div:nth-child(2) {float: left; width: 599px;line-height: 65px; box-sizing: border-box;}
+.ge3-box2 div {float: left; width: 100px; height: 65px; border-left: 1px solid #272727;box-sizing: border-box;}
+.ge3-box2 div span:nth-child(1) {height: 20px; line-height: 20px; text-align: center; display: block; border-bottom: 1px solid #272727;}
+.ge3-box2 div span:nth-child(2) {height: 44px; line-height: 44px; text-align: center; display: block; border-bottom: 1px solid #272727;}
+/*第四行*/
+.ge4-box1 {float: left; width: 700px; }
+.ge4-box2 {float: left; width: 300px; }
+.ge4-box1 div{float: left; border-left: 1px solid #272727;width: 100px; height: 65px; text-align: center; line-height: 65px; box-sizing: border-box;}
+.ge4-box1 div:nth-child(1) {width: 100px; height: 65px; text-align: center; line-height: 65px; border-left: none;}
+.ge4-box1 div:nth-child(5) span {display: block; height: 32px; line-height: 32px;}
+.ge4-box1 div:nth-child(5) span:nth-child(1) {border-bottom: 1px solid #272727;}
+.ge4-box2 div{float: left; width: 150px; height: 65px; border-left:1px solid #272727;box-sizing: border-box; text-align: center; line-height: 65px;}
+.ge4-box2 div span {display: block; height: 32px; line-height: 32px; text-align: center;}
+.ge4-box2 div:nth-child(1) span:nth-child(1) {border-bottom: 1px solid #272727;}
+.ge4-box2 div:nth-child(2) span:nth-child(1) {border-bottom: 1px solid #272727;}
+/*第五行*/
+.ge5-box1 {float: left; width: 700px; }
+.ge5-box2 {float: left; width: 300px; }
+.ge5-box1 div{float: left; border-left: 1px solid #272727;width: 100px; height: 49px; text-align: center; line-height: 49px; box-sizing: border-box;}
+.ge5-box1 div:nth-child(1) {width: 100px; height: 49px; text-align: center; line-height: 49px; border-left: none;}
+.ge5-box1 div:nth-child(4) {width: 200px; height: 49px; line-height: 49px;}
+.ge5-box2 div{float: left; width: 150px; height: 49px; border-left:1px solid #272727;box-sizing: border-box; text-align: center; line-height: 49px;}
+.ge5-box1 span {display:block;width:199px; height:24px;line-height:24px;font-size:12px;}
+/*第六行*/
+.ge6-box1 {float: left; width: 500px; height: 49px; overflow: hidden;}
+.ge6-box2 {float: left; width: 500px; overflow: hidden;}
+.ge6-box1 div:nth-child(1) {float: left; width: 100px; height: 49px; text-align: center; padding-top:5px; }
+.ge6-box1 div:nth-child(2) {float: left; width: 400px; height: 49px; box-sizing: border-box; text-align: center; line-height: 49px; border-left: 1px solid #272727;}
+.ge6-box2 div:nth-child(1) {float: left; width: 100px; height: 49px; text-align: center; padding:5px; box-sizing: border-box; border-left: 1px solid #272727; }
+.ge6-box2 div:nth-child(2) {float: left; width: 400px; height: 49px; line-height: 49px; text-align: center; box-sizing: border-box; border-left: 1px solid #272727; }
+/*第七行*/
+.ge7-box1 {float: left; width: 100px; height: 90px; line-height: 90px; text-align: center; }
+.ge7-box2 {float: left; width: 900px; height: 90px; border-left: 1px solid #272727; box-sizing: border-box; padding-left: 15px; padding-top:2px;}
+.ge7-box2 span {display: inline-block; }
+.ge7-box2 span:nth-child(1) {width: 470px}
+.ge7-box2 span:nth-child(2) {width: 350px}
+.ge7-box2 span:nth-child(3) {width: 470px}
+.ge7-box2 span:nth-child(4) {width: 350px}
+.ge7-box2 span:nth-child(5) {width: 470px}
+.ge7-box2 span:nth-child(6) {width: 350px}
+/*第八行*/
+.ge8-box1 {float: left; width: 100px; height: 35px; line-height: 35px; text-align: center; }
+.ge8-box2 {float: left; width: 900px; height: 35px; line-height: 35px; text-align: center; border-left: 1px solid #272727; box-sizing: border-box; padding-left: 15px; padding-top:2px;}
+/*第九行*/
+.ge9-box1 {width: 166px; height: 141px; float: left;}
+.ge9-box1 div {height: 70px;}
+.n-box1 { height: 70px; padding: 5px 0 0 5px;box-sizing: border-box;}
+.ge9-box1 div span{display: block; height: 35px; padding-top:4px; padding-left: 4px; box-sizing: border-box;}
+.ge9-box1 div:nth-child(2) {height: 71px; border-top:1px solid #272727;}
+.ge9-box2 {width: 166px; height: 141px;float: left; border-left: 1px solid #272727;box-sizing: border-box;}
+.ge9-box2 span:nth-child(1) {display: block; height: 108px; padding-top:4px; padding-left: 4px; box-sizing: border-box;}
+.ge9-box2 span:nth-child(2) {display: block; height: 35px; padding-top:4px; padding-left: 4px; box-sizing: border-box; }
+.ge9-box3 {width: 668px; height: 141px;float: left; border-left: 1px solid #272727;box-sizing: border-box;}
+.ge9-box3 div {height: 70px;}
+.ge9-box3 .n-box3 {height: 71px; border-top:1px solid #272727;}
+.ge9-box3 .aaa {padding: 5px 0 0 5px;}
+.ge9-box3 div:nth-child(2) div {width: 166px;height: 65px; float: left; border-left:1px solid #272727;box-sizing: border-box;}
+.ge9-box3 div span{display: block; height: 35px; padding-top:4px; padding-left: 4px; box-sizing: border-box; }
+.ge9-box3 div:nth-child(2) div.n-box3-box {border: none;}
+.wenzi {text-align: center;font-size:14px;letter-spacing:1px}
+</style><script>
+$(function(){
+$("#print").on("click",function(){
+$("#print_zone").print({
+globalStyles: true,
+mediaPrint: false,
+stylesheet: null,
+noPrintSelector: ".no-print",
+iframe: true,
+append: null,
+prepend: null,
+manuallyCopyFormValues: true,
+deferred: $.Deferred(),
+timeout: 750,
+title: null,
+doctype: '<!doctype html>'
+});
+})
+})
+</script>
+		
+<body>
+	
+
+	<!--startprint-->
+<div id="print_zone">
+		<div class="z-table"  >
+			<ul>
+				<li>
+					<div class="ge1-box1">
+					{%for item in t_business_channel%}
+						<span>{{item.income_name}}</span> <input disable type="checkbox" disabled {%if t_project.channel_id==item.id%}checked{%end%}>
+						{%end%}
+						<p><span>在线客服</span>:{%if t_projects_members_bfrom.member_name%}{{t_projects_members_bfrom.member_name}}{%end%}</p>
+
+					{%for item in t_income_type%}
+						<span>{{item.income_name}}</span> <input type="checkbox" disabled {%if t_project.busniess_from_id==item.id%}checked{%end%}>
+					{%end%}
+
+					</div>
+					<div class="ge1-box2">
+							<h5>编号：{{t_project.id}}</h5>
+						<h2>收入确认单</h2>
+
+						<p>
+							<span>20</span><i>{{t_project_income_title.created_at.strftime("%y")}}</i><span>年</span>
+							<i>{{t_project_income_title.created_at.strftime("%m")}}</i><span>月</span>
+							<i>{{t_project_income_title.created_at.strftime("%d")}}</i><span>日</span>
+						</p>
+					</div>
+					<div class="ge1-box3" >
+						{%for item in t_company%}
+								<span>{{item.income_name}}</span> <input type="checkbox" disabled {%if t_project.company_id==item.id%}checked{%end%}>
+						{%end%}
+
+						<p>
+						{%for item in t_pay_type%}
+								<span style="font-size:14px">{{item.income_name}}</span> <input type="checkbox" disabled
+								 {%if t_project_income_title.pay_type_id==item.id%}checked{%end%}>
+						{%end%}
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="ge2-box1">
+						客户姓名：{%if t_project.customer_name%}{{t_project.customer_name}}{%end%}
+					</div>
+					<div class="ge2-box2">
+						企业姓名：{%if t_project.customer_company%}{{t_project.customer_company}} {%end%}
+					</div>
+					<div class="ge2-box3">
+						联系方式：{%if t_project.customer_tel%}{{t_project.customer_tel}} {%end%}
+					</div>
+				</li>
+				<li>
+					<div class="ge3-box1">
+						<div>业务内容</div>
+						<div style="padding-left:10px; line-height:18px; padding-top:10px;box-sizing: border-box;font-size:16px"> {{t_project.project_name}}</div>
+					</div>
+					<div class="ge3-box2">
+						<div>
+							<span>签约场景</span>
+							<span>
+
+				{{ t_project.contract_sign_type_name}}
+							</span>
+						</div>
+						<div>
+							<span>合同情况</span>
+							<span>{{t_project.contract_confirm_id_name}}</span>
+						</div>
+						<div>
+							<span>是否记账</span>
+							<span>
+									 {%if t_project.is_finance%} 是 {%else%} 否{%end%}</span>
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="ge4-box1">
+						<div>总服务费</div>
+						<div>{%if  t_project.all_income %}{{t_project.all_income}} 元{%end%}</div>
+						<div>合同定金</div>
+						<div>{%if t_project.pre_income and  t_project_income.income_name!=u"办结尾款"%}{{t_project.pre_income}} 元{%end%}</div>
+						<div>
+							<span>合同确认</span>
+							<span>			
+						{%if t_project.contract_confirm_at%}{{t_project.contract_uid_name}} 
+						{%end%}</span>
+						</div>
+						<div>实收定金</div>
+						<div>
+
+						{%if t_project_income.is_other==0 and t_project_income.income_state_uid_name and t_project_income.income_name!=u"办结尾款"%}
+						{{t_project_income.income_money}}元
+						{%end%}
+						</div>
+					</div>
+					<div class="ge4-box2">
+						<div>
+							<span>收回尾款</span>
+							<span>代收款项</span>
+						</div>
+						<div><span>{%if t_project_income.income_name==u"办结尾款"%}{{t_project_income.income_money}}{%end%}</span>
+							<span>{%if t_project_income.is_other==1%}{{t_project_income.income_money}}{%end%}</span></div>
+					</div>
+				</li>
+				<li>
+					<div class="ge5-box1">
+						<div>余额</div>
+						<div></div>
+						<div>合同编号</div>
+
+						<div>
+					
+			
+						<span style="{%if t_project.contract_remark%} {%if len(t_project.contract_remark) > 20%} font-size:12px {%else%} font-size:14px {%end%}{%end%}">
+						{%if t_project.contract_remark%} 
+						{{t_project.contract_remark}}{%end%}
+						</span>
+					
+						</div>
+				
+
+						<div>出纳确认</div>
+						<div>
+						{%if t_project_income.is_other==0%}
+								{{t_project_income.income_state_uid_name}}
+						{%end%}
+						</div>
+					</div>
+					<div class="ge5-box2">
+						<div>
+							出纳确认
+						</div>
+						<div>
+						{%if t_project_income.is_other==1%}
+						{{t_project_income.income_state_uid_name}}
+							{%end%}
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="ge6-box1">
+						<div>二期定金/定金不足说明</div>
+						<div>{%if t_project_income.remark%}{{t_project_income.remark}}{%end%}</div>
+					</div>
+					<div class="ge6-box2">
+						<div>负责人审批意见</div>
+						<div></div>
+					</div>
+				</li>
+				<li>
+					<div class="ge7-box1">
+						资料交接明细
+					</div>
+					<div class="ge7-box2">
+
+
+						{%for item in t_projects_file%}
+
+							{%raw getFile(item,item.file_type_name)%}
+
+						{%end%}
+
+
+					</div>
+				</li>
+<li>
+					<div class="ge8-box1">
+						其他交接资料
+					</div>
+					<div class="ge8-box2"></div>
+				</li>
+				<li>
+					<div class="ge9-box1">
+						<div class="n-box1">
+								楼盘名称: {%if t_project.building_id_name%}
+						{{t_project.building_id_name}}{%end%}	
+						</div>
+						<div>
+										<span>推荐客户:
+							{%if t_project.recommend_by%}
+						{{t_project.recommend_by}}{%end%}</span>
+						
+						<span>推荐员工:
+								{%if t_project.recommend_staff%}
+						{{t_project.recommend_staff}}{%end%}
+
+
+						</span>
+						</div>
+					</div>
+					<div class="ge9-box2">
+						<span>跟单：<br/>
+						{% raw getMemberNameCQ(t_project_members,"跟单")%}</span>
+					
+					</div>
+					<div class="ge9-box3">
+						<div class="aaa">
+							其他事项：
+						</div>
+						<div class="n-box3">
+							<div class="n-box3-box">
+										{%raw getMemberNameByType(t_project_members,"业务员")%}
+							</div>
+							<div>
+										{%raw getMemberNameByType(t_project_members,"电销")%}	
+							</div>
+							<div>
+									{%raw getMemberNameByType(t_project_members,"组长")%}
+							</div>
+					<div>
+								<span>财务确认：</span>
+								<span>时间：20&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;</span>
+							</div>
+
+
+						</div>
+					</div>
+				</li>
+
+
+			</ul>
+					
+		</div>
+<div class="wenzi">
+			<span>一式五联：第一联(白 联)出纳做帐</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<span>第二联(红 联)工商保存</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<span> 第三联(蓝 联)会计部</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<span>第四联(黄 联)仓库保存</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<span>第五联(绿 联)业务员保存</span>
+		</div>
+
+</div>
+	<!--endprint-->
+	
+    <button id="print">打印</button>
+</body>
+</html>

@@ -1,0 +1,120 @@
+
+ {% extends "../base.html" %} {%block title%}客服顾问业绩统计{%end%} {% block body %}
+
+
+ <ol class="breadcrumb">
+   <li class="breadcrumb-item">
+     主面板
+   </li>
+   <li class="breadcrumb-item active">客服顾问业绩统计
+    {%if all_income%}
+    <a class="btn btn-info kf_count" href="/project?tag=kf_count">单数统计</a>
+    {%else%}    
+    <a class="btn btn-info kf_all_income" href="/project?tag=kf_count&all_income=1" >服务费统计</a>
+    {%end%}
+</li>
+ </ol>
+
+ <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link {%if not todo%}active {%end%}" id="nav-home-tab"
+            href="/project?tag=kf_count{%if all_income%}&all_income=1{%end%}" >全 部
+        </a>
+          <a class="nav-item nav-link {%if todo=='1'%}active{%end%}"
+            href="/project?tag=kf_count {%if all_income%}&all_income=1{%end%}&todo=1" style="font-size:13px;">推广
+            </a>
+            <a class="nav-item nav-link {%if todo=='2'%}active{%end%}"
+            href="/project?tag=kf_count{%if all_income%}&all_income=1{%end%}&todo=2" style="font-size:13px;">客户推荐
+            </a>
+            <a class="nav-item nav-link {%if todo=='3'%}active{%end%}"
+            href="/project?tag=kf_count{%if all_income%}&all_income=1{%end%}&todo=3" style="font-size:13px;">内部推荐
+            </a>
+            <a class="nav-item nav-link {%if todo=='4'%}active{%end%}"
+            href="/project?tag=kf_count{%if all_income%}&all_income=1{%end%}&todo=4" style="font-size:13px;">楼盘
+            </a>
+           </div>
+      </nav>
+
+<div class="row" style="padding:10px;">
+
+<div class="col-lg-6">
+<!-- /input-group -->
+</div>
+<!-- /.col-lg-6 -->
+</div>
+
+<table id="right_table2" class="table table-bordered" >
+<thead class="thead-dark">
+<tr class="active">
+<th>日期</th>
+{%for item in kf_name%}
+<th>{{item.uid_name}}</th>
+{%end%}
+</tr>
+</thead>
+<tbody>
+        {%if all_income%}
+        {%for  data in all_incomes%}
+        <tr>
+            {%for item in data%}
+        <td>{{item}}</td>
+        {%end%}
+    </tr>
+        {%end%}
+        {%else%}
+        {%for  data in datas%}
+        <tr>
+            {%for item in data%}
+        <td>{{item}}</td>
+        {%end%}
+    </tr>
+        {%end%}
+        {%end%}
+</tbody>
+ </table>
+
+ <ul class="pagination">
+        {% if pagination.has_prev %}
+             <li class="paginate_button page-item previous " id="dataTable_previous">
+             <a href="/project?tag=kf_count&page={{ pagination.page - 1}}{%if all_income%}&all_income=1{%end%}{%if todo%}&todo={{todo}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+    
+            {% end %}
+            {%for page in pagination.iter_pages() %}
+             {% if page %}
+             {% if page != pagination.page %}
+             <li class="paginate_button page-item ">
+                 <a href="/project?tag=kf_count&page={{page}}{%if all_income%}&all_income=1{%end%}{%if todo%}&todo={{todo}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+             {% else %}
+              <li class="paginate_button page-item active">
+                <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+              {% end %}
+               {% else %}
+              <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+              {% end %}
+              {% end %} 
+    
+             {% if pagination.has_next %}
+             <li class="paginate_button page-item next" id="dataTable_next"><a href="project?tag=kf_count&page={{pagination.page+1}}{%if all_income%}&all_income=1{%end%}{%if todo%}&todo={{todo}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         {% end %} </ul>
+
+</div>
+</div>                
+
+    </div>   </div>   
+ {% end %} 
+ 
+ {%block js%}
+<script>
+_xsrf = getCookie("_xsrf");
+$(function(){
+
+$("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+$("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+
+})
+
+
+</script>
+{%end%}

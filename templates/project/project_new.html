@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>新建项目</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+  <link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+</head>
+
+<body class="bg-dark">
+  <div class="container">
+    <div class="card card-register mx-auto mt-5">
+      <div class="card-header">新建项目 (
+      <a href="/project?tag={{form_tag}}">项目管理</a>)</div>
+      <div class="card-body">
+        <form method="post" id="form_submit">
+
+        
+          <div class="form-group">
+            <label for="exampleInputEmail1">业务所属公司:</label>
+
+           {% for idx, item in enumerate(t_company) %}
+                 <input type="radio" name="company"  value="{{item.id}}|{{item.income_name}}" {%if idx==0%}checked{%end%}/> &nbsp;{{item.income_name}}
+           {% end %}
+
+          </div>
+       <div class="form-group">
+            <label for="exampleInputEmail1">业务来源:</label>
+
+           {% for idx, item in enumerate(t_income_type) %}
+
+                 <input type="radio" name="busniess_from"  value="{{item.id}}|{{item.income_name}}" {%if idx==0%}checked{%end%}/> &nbsp;{{item.income_name}}
+           {% end %}
+
+          </div>
+
+      <div id="div_building" class="well">
+
+         <div class="form-group">
+            <label for="exampleInputEmail1">所属楼盘:</label>
+        <select name="building_id" id="building_id"  class="form-control">
+             <option value="0">==请选择楼盘==</option>
+           {% for idx, item in enumerate(t_building) %}
+
+              <option 
+               value="{{item.id}}|{{item.income_name}}">
+              {{item.income_name}}
+                </option>
+           {% end %}
+      </select>
+          </div>
+      </div>
+
+   <div id="div_recommend_by"  style="  border:1px solid #eee; padding:15px;">
+          <div class="form-group">
+            <label for="exampleInputEmail1">推荐客户人:</label>
+            <input class="form-control"  type="text" name="recommend_by" id="recommend_by" placeholder="谁帮我们介绍的客户" value="">
+          </div>
+  </div>
+
+
+
+   <div id="div_recommend_staff"  style="  border:1px solid #eee; padding:15px;">
+          <div class="form-group">
+            <label for="exampleInputEmail1">内部推荐人:</label>
+            <select name="recommend_staff" id="recommend_staff"  class="form-control">
+                      <option value="0">==请选择推荐员工==</option>
+                    {% for idx, item in enumerate(t_users) %}
+
+                        <option 
+                        value="{{item.id}}|{{item.name}}">
+                        {{item.name}}
+                          </option>
+                    {% end %}
+                </select>
+          </div>
+  </div>
+  
+
+
+      <div id="div_from_word"  style="  border:1px solid #eee; padding:15px;">
+       <div class="form-group" >
+            <label for="exampleInputEmail1">来源关键词:</label>
+            <input class="form-control"  type="text" name="from_word" id="from_word" placeholder="" value="无"/>
+        
+
+
+          </div>
+         <div class="form-group">
+            <label for="exampleInputEmail1">推广来源渠道:</label>
+
+           {% for idx, item in enumerate(t_business_channel) %}
+
+                 <input type="radio" name="business_channel"  value="{{item.id}}|{{item.income_name}}" {%if idx==0%}checked{%end%}/> &nbsp;{{item.income_name}}
+           {% end %}
+
+          </div>
+          </div>
+       <div class="form-group">
+            <label for="exampleInputEmail1">成交周期(天）:</label>
+
+            <input class="form-control"  type="text" name="deal_day" id="deal_day" placeholder="" value="1"/>
+          </div>
+
+
+
+       <div class="form-group">
+            <label for="exampleInputEmail1">签约方式:</label>
+
+           {% for idx, item in enumerate(t_sign_type) %}
+                 <input type="radio" name="sign_type_id"  value="{{item.id}}|{{item.income_name}}"
+                  {%if idx==0%}checked{%end%}/> &nbsp;{{item.income_name}}
+           {% end %}
+
+          </div>
+       <div class="form-group">
+            <label for="exampleInputEmail1">来源方式:</label>
+
+           {% for idx, item in enumerate(t_talk_type) %}
+                 <input type="radio" name="talk_type"  value="{{item.id}}|{{item.income_name}}"
+                  {%if idx==0%}checked{%end%}/> &nbsp;{{item.income_name}}
+           {% end %}
+
+          </div>
+                 <div class="form-group">
+            <label for="exampleInputEmail1">是否记账:</label>
+
+    
+                 <input type="radio" name="is_finance"  value="0"
+                 checked/> &nbsp;否
+    
+           <input type="radio" name="is_finance"  value="1"
+                 /> &nbsp;是
+          </div>
+          
+
+
+          
+
+                <div class="form-group">
+            <label for="exampleInputEmail1">业务内容:</label>
+            <input class="form-control"  type="text"  name="project_name" id="project_name" placeholder="业务内容 摘要">
+          </div>
+      <div class="form-group">
+            <label for="exampleInputEmail1">客户姓名:</label>
+            <input class="form-control"  type="text" name="customer_name" id="customer_name" placeholder="客户姓名 称呼">
+          </div>
+
+
+          <div class="form-group">
+            <label for="exampleInputEmail1">企业名称:</label>
+            <input class="form-control"  type="text" name="customer_company"  placeholder="企业名称">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">联系方式:</label>
+            <input class="form-control"  type="text" name="customer_tel" placeholder="手机号码">
+          </div>
+
+            <input class="form-control"  type="hidden" name="all_income" id="all_income" placeholder="" value="0">
+
+          <div class="form-group">
+            <label for="exampleInputEmail1">预计合同定金:</label>
+            <input class="form-control"  type="text" name="pre_income" id="pre_income" placeholder="" value="0">
+          </div>
+           <input class="form-control"  type="hidden" name="true_income" placeholder="" value="0">
+
+           <input class="form-control"  type="hidden" name="true_income" placeholder="" value="0">
+           <div class="form-group">
+            <label for="exampleInputEmail1">备注</label>
+            <textarea class="form-control"  type="textarea" name="remark"  placeholder=""></textarea>
+          </div>
+
+          <input type="submit" class="btn btn-primary btn-block" value="保存" />
+            {% module xsrf_form_html() %}
+
+        </form>
+        <div class="text-center">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+      <script>
+        $(function () {
+
+     $("#div_building").hide()
+    $("#div_recommend_by").hide()
+    $("#div_recommend_staff").hide()
+
+
+
+          $("input[name=busniess_from]").change(function(){
+                  bf_value = $(this).val().split('|')[0]
+            
+              if (bf_value=="2"){
+                  $("#div_from_word").show()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").hide()
+                  $("#div_recommend_staff").hide()
+              }else if(bf_value=="3"){
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").show()
+                   $("#div_recommend_staff").show()
+              }else if(bf_value=="4"){
+                  $("#div_from_word").hide()
+                  $("#div_building").show()
+                  $("#div_recommend_by").hide()
+                   $("#div_recommend_staff").hide()
+                  
+              } else if(bf_value=="81"){
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").hide()
+                 $("#div_recommend_staff").show()
+             
+              }
+              else{
+                   $("#div_from_word").hide()
+                   $("#div_building").hide()
+                   $("#div_recommend_by").hide()
+                    $("#div_recommend_staff").hide()
+
+              }
+
+
+              
+          })
+
+
+
+
+            $("#form_submit").on("submit",function(){
+                all_income = $("#all_income")
+                pre_income = $("#pre_income")
+                project_name = $("#project_name")
+                customer_name=$("#customer_name")
+                busniess_from = $("input[name=busniess_from]:checked")
+                recommend_by =$("#recommend_by")
+                deal_day = $("#deal_day")
+                recommend_staff = $("#recommend_staff")
+                b = $.isNumeric(pre_income.val())
+                b_all_income = $.isNumeric(all_income.val())
+                b_deal_day= $.isNumeric(deal_day.val())
+                bf_value = busniess_from.val().split('|')[0]
+         
+                if(project_name.val()==""){
+                    alert("业务名称不能为空哦")
+                    project_name.focus()
+                  return false
+                }
+                else if(customer_name.val()==""){
+                    alert("客户名称不能为空哦")
+                    customer_name.focus()
+                  return false
+                }
+                else if(b==false){
+                    alert("预计合同定金必须是数值哦！")
+                    pre_income.focus()
+                    return false
+                }
+                else if(b_deal_day==false){
+                    alert("成交周期的天数必须是数值哦！")
+                    deal_day.focus()
+                    return false
+                }
+                else if (deal_day.val()==""){
+                    alert("成交周期不能为空哦！")
+                     deal_day.focus()
+                    return false   
+                }else if(bf_value=="3" && recommend_by.val()==""){
+                    alert("客户推荐的客户，要写客户推荐人哦！")
+                    recommend_by.focus()
+                    return false
+                }
+                else if(bf_value=="81" && recommend_staff.val()=="0"){
+                                    alert("内部推荐的客户，要选择内部推荐人哦！")
+                      recommend_staff.focus()
+                      return false
+                }
+
+                
+
+              
+            })
+              
+
+        })
+      </script>
+</body>
+
+</html>

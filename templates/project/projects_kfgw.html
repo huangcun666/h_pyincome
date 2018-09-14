@@ -1,0 +1,171 @@
+
+ {% extends "../base.html" %} {%block title%}订单流转动态{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          主面板
+        </li>
+        <li class="breadcrumb-item active">订单流转动态列表</li>
+      </ol>
+
+
+
+
+      <nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-item nav-link {%if not last_milepost_id and not ntag=="wait"%}active{%end%}" id="nav-home-tab"
+      href="/project?tag=projects_kfgw" >全 部  <span class="badge badge-info">{{all_count.count}}</span></a>
+      <a class="nav-item nav-link {%if  ntag=="wait"%}active{%end%}" id="nav-home-tab"
+      href="/project?tag=projects_kfgw&ntag=wait" >待分配
+      <span class="badge badge-info">{{wait_count.count}}</span>
+      </a>
+    {%for idx,item in enumerate(project_btypes)%}
+    <a class="nav-item nav-link " btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"
+      href="/project?tag=projects_kfgw&last_milepost_id={{item.id}}" style="font-size:13px;">{{item.income_name}} <span class="badge badge-info">{{item.c}}</span></a>
+    {%end%}
+     </div>
+</nav>
+<br/>
+
+<div class="tab-content" id="nav-tabContent">
+
+  <div class="tab-pane fade show  active " >
+
+
+<div class="table-responsive">
+    {%if not t_projects%}
+<div class="alert alert-info alert-dismissable fade show">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>温馨提示!</strong> 当前没有数据哦
+</div>
+        
+    {%else%}
+                  <table class="table table-hover " id="dataTable" width="2000px" style="font-size:13px;">
+                    <thead>
+                        <tr  class="table-info">
+
+                           <th width="20">
+                            编号
+                            </th>
+                             <th>业务名称</th>
+
+                                <th width="200">公司名称</th>
+                             <th width="100">客户名称</th>
+
+
+
+                             <th width="100">
+                            跟单专员
+                            </th>
+
+     <th width="100">
+                            业务名称
+                            </th>
+                             <th width="140">最新流转状态</th>
+
+<th width="160">流转更新时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for item in t_projects%}
+                        <tr id="{{item.id}}">
+                               <td>
+                               <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}" class="btn " title="{{item.id}}" style="font-size:13px;"> {{item.id}}</a>
+
+                            </td>
+                            <td>
+                               <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}" class="btn " title="{{item.id}}" style="font-size:13px;"> {{item.project_name}}</a>
+
+                            </td>
+                                      <td>
+                                {{item.customer_company}}
+                            </td>
+                          <td>
+                                {{item.customer_name}}
+                            </td>
+
+                             <td>
+                                    {%if item.last_milepost_id_name%}
+                    {{item.member_name}}
+  {%end%}
+
+                            </td>
+                            <td>
+  {%if item.btype_id_name%}
+                     {{item.btype_id_name}}
+                    {%end%}
+
+                            </td>
+                            <td>
+                          {%if item.last_milepost_id_name%}
+                                {{item.last_milepost_id_name}}
+                            {%else%}
+                                    等待工商接单
+
+                            {%end%}
+                            </td>
+
+
+                              <td>
+                        {%if item.last_milepost_id_at%}
+                                {{item.last_milepost_id_at}}
+                            {%else%}
+                                     {{item.cq_created_at}}
+
+                            {%end%}
+
+
+
+
+                            </td>
+
+                        </tr>
+                        {%end%}
+                    </tbody>
+                </table>
+     {%end%}
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=projects_kfgw&{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+
+
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=projects_kfgw{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% end %} {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_kfgw{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>
+ </div> </div>
+         </div>
+         </div>
+      {% end %} {%block js%}
+<script>
+       function getCookie(name) {
+            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+            return r ? r[1] : undefined;
+        }
+$(document).ready(function() {
+    window.prettyPrint && prettyPrint();
+
+
+    $("#nav-home-tab{{last_milepost_id}}").tab('show')
+
+
+})
+</script>
+{%end%}

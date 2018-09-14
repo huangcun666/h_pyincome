@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>订单表</title>
+	<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+	<script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="/static/js/jQuery.print.js"></script>
+
+</head>
+	<style>body{font-family
+:"微软雅黑"}
+		*{margin: 0; padding: 0;}
+		ul,ol{list-style:none;}
+		.z-table {width: 1000px; height: auto; margin:0px auto 0px; border:1px solid #272727; }
+		.z-table ul li {border-top: 1px solid #272727; height: 49px;}
+		.z-table ul li:nth-child(1) {border-top:none; height: 90px;}
+		.z-table ul li:nth-child(2) { height: 40px;}
+		.z-table ul li:nth-child(3) { height: 65px;}
+		.z-table ul li:nth-child(4) { height: 65px;}
+		.z-table ul li:nth-child(5) { height: 200px;}
+		.z-table ul li:nth-child(6) { height: 141px;}
+		.z-table ul li:nth-child(1) div {float: left;}
+		.z-table ul li:nth-child(2) div {float: left; line-height: 40px;}
+		.ge1-box1 {width: 350px; height: 90px;padding: 10px 20px; box-sizing: border-box;}
+		.ge1-box2 {width: 300px; height: 90px;border-left: 1px solid #272727; border-right:1px solid #272727;box-sizing: border-box;}
+		.ge1-box3 {width: 350px; height: 90px;padding: 10px 20px; box-sizing: border-box;}
+		/*第一行*/
+		.ge1-box1 p {line-height: 24px; }
+		.ge1-box2 h5 {text-align: center; font-size: 14px; margin-top: 5px;}
+		.ge1-box2 h2 {text-align: center; font-size: 26px; }
+		.ge1-box2 p {text-align: center;}
+		.ge1-box2 p span { text-align: center;  font-size: 16px; font-weight: 200; }
+		.ge1-box2 p i {width: 25px; font-size: 16px; border:none; border-bottom: 1px solid #272727; font-style:normal;}
+		.ge1-box3 p {margin-top: 12px; font-size: 16px; line-height: 15px;} 
+		/*第二行*/
+		.ge2-box1{width: 255px;padding-left: 20px;}
+		.ge2-box2 {width: 430px; }
+		.ge2-box3 {width: 295px;}
+		/*第三行*/
+		.ge3-box1 {float: left; width: 700px; }
+		.ge3-box2 {float: left; width: 300px; }
+		.ge3-box1 div:nth-child(1) {float: left; width: 100px; line-height: 65px; text-align: center; border-right: 1px solid #272727;}
+		.ge3-box1 div:nth-child(2) {float: left; width: 599px;line-height: 65px;  box-sizing: border-box; text-align: center;}
+		.ge3-box2 div {float: left; width: 100px; height: 65px; border-left: 1px solid #272727;box-sizing: border-box;}
+		.ge3-box2 div span:nth-child(1) {height: 20px; line-height: 20px; text-align: center; display: block; border-bottom: 1px solid #272727;}
+		.ge3-box2 div span:nth-child(2) {height: 44px; line-height: 44px; text-align: center; display: block; border-bottom: 1px solid #272727;}
+		/*第四行*/
+		.ge4-box1 {float: left; width: 700px; }{{t_project_income_wait.aa}}
+		.ge4-box2 {float: left; width: 300px; }
+		.ge4-box1 div{float: left; border-left: 1px solid #272727;width: 100px; height: 65px; text-align: center; line-height: 65px; box-sizing: border-box;}
+		.ge4-box1 div:nth-child(1) {width: 100px; height: 65px; text-align: center; line-height: 65px; border-left: none;}
+		.ge4-box1 div:nth-child(2) {width: 132px;}
+		.ge4-box1 div:nth-child(4) {width: 133px;}
+		.ge4-box1 div:nth-child(6) {width: 133px;}
+		.ge4-box2 div{float: left; height: 65px; border-left:1px solid #272727;box-sizing: border-box; text-align: center; line-height: 65px;}
+		.ge4-box2 div:nth-child(1) {width: 100px;}
+		.ge4-box2 div:nth-child(2) {width: 200px;}
+		.ge4-box2 div span {width: 200px; display: block; height: 66px; line-height: 24px; font-size: 12px;}
+		/*第五行*/
+		.z-table ul li:nth-child(5) { height: 230px;}
+		.z-table ul li:nth-child(5) i{display: block; font-style: normal; padding: 5px; font-size: 12px; box-sizing: border-box; line-height: 24px; height: 190px;}
+		.ge5-box1 {float: left;width: 332px; height: 230px;}
+		.ge5-box2 {float: left;width: 333px; height: 230px; border-left: 1px solid #272727; border-right: 1px solid #272727;}
+		.ge5-box3 {float: left;width: 332px; height: 230px;}
+		.z-table ul li:nth-child(5) span {width: 100%; display: block; height: 40px; line-height: 40px; text-align: center; border-bottom: 1px solid #272727; box-sizing: border-box;}
+ 		
+		/*第六行*/
+		.ge9-box1 {width: 166px; height: 141px; float: left;}
+		.ge9-box1 div {height: 70px;}
+		.n-box1 {  height: 70px; padding: 5px 0 0 5px;box-sizing: border-box;}
+		.ge9-box1 div span{display: block; height: 35px; padding-top:4px; padding-left: 4px; box-sizing: border-box;}
+		.ge9-box1 div:nth-child(2) {height: 71px; border-top:1px solid #272727;}
+		.ge9-box2 {width: 166px; height: 141px;float: left; border-left: 1px solid #272727;box-sizing: border-box;}
+		.ge9-box2 span:nth-child(1) {display: block; height: 108px; padding-top:4px; padding-left: 4px; box-sizing: border-box;}
+		.ge9-box2 span:nth-child(2) {display: block; height: 35px; padding-top:4px; padding-left: 4px; box-sizing: border-box; font-size: 14px;}
+		.ge9-box3 {width: 668px; height: 141px;float: left; border-left: 1px solid #272727;box-sizing: border-box;}
+		.ge9-box3 div {height: 70px;}
+		.ge9-box3 .n-box3 {height: 71px; border-top:1px solid #272727;}
+		.ge9-box3 .aaa {padding: 5px 0 0 5px;}
+		.ge9-box3 div:nth-child(2) div {width: 166px;height: 65px; float: left;  border-left:1px solid #272727;box-sizing: border-box;}
+		.ge9-box3 div span{display: block; height: 35px; padding-top:4px; padding-left: 4px; box-sizing: border-box; font-size: 14px;}
+		.ge9-box3 div:nth-child(2) div.n-box3-box {border: none;}
+		.wenzi {text-align: center;font-size:14px;letter-spacing:1px}
+		
+	</style>
+	<script>
+$(function(){
+
+function getCookie(name) {
+        var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+        return r ? r[1] : undefined;
+    }
+_xsrf =  getCookie("_xsrf")
+			$('.p').click(function(){
+				var uid=$(this).attr('id');
+				var val=$(this).val();
+				var but=$(this);
+				if(val=='0'){
+				$.post(
+					'project?tag=not_print',
+					{
+						'uid':uid,
+						"_xsrf":_xsrf
+					   
+					},
+					function (data) { 
+						but.val(1);
+						but.text('已打印');
+						but.css({'background': 'gray','color':'white','border-radius': '5px'});
+					
+					 }
+				)
+				}else{
+					$.post(
+					'project?tag=already_print',
+					{
+						'uid':uid,
+						"_xsrf":_xsrf
+					   
+					},
+					function (data) { 
+						but.val(0);
+						but.text('尚未打印');
+						but.css({'background': '','color':'','border-radius': '5px'});
+					
+					 }
+				)
+				}
+			})
+$("#print").on("click",function(){
+var name=$(this).attr('name');
+$("#print_zone").print({
+globalStyles: true,
+mediaPrint: false,
+stylesheet: null,
+noPrintSelector: ".no-print",
+iframe: true,
+append: null,
+prepend: null,
+manuallyCopyFormValues: true,
+deferred: $.Deferred(),
+timeout: 750,
+title: null,
+doctype: '<!doctype html>'
+});
+var uid=$('.p').attr('id');
+var val=$('.p').val();
+var but=$('.p');
+if(val=='0' & (name=='2' || name=='3')){
+	$.post(
+		'project?tag=not_print',
+		{
+			'uid':uid,
+			"_xsrf":_xsrf
+					   
+		},
+		function (data) { 
+				but.val(1);
+				but.text('已打印');
+				but.css({'background': 'gray','color':'white','border-radius': '5px'});
+					
+				}
+		)
+	}
+		
+})
+})
+</script>
+		
+<body>
+<div id="print_zone">
+		<div class="z-table">
+			<ul>
+				<li>
+					<div class="ge1-box1">
+							{%if t_project.busniess_from_id==2%}
+									<p><span>来源平台:</span><span>{%if t_project.channel_id_name%}{{t_project.channel_id_name}}{%end%}</span></p>
+									<p><span>在线客服: </span><span>{%if t_projects_members_bfrom.member_name%}{{t_projects_members_bfrom.member_name}}{%end%}</span></p>
+									<p><span>来源渠道:</span><span>{{t_project.busniess_from_id_name}}
+									
+									</span></p>
+							{%end%}
+							{%if t_project.busniess_from_id==3%}
+									<p><span>客户推荐人:</span><span>{%if t_project.recommend_by%}{{t_project.recommend_by}}{%end%}</span></p>
+									<p><span>内部推荐人:</span><span>
+									{%if t_project.recommend_staff%}{{t_project.recommend_staff}} {%else%}无{%end%}
+									</span></p>
+									<p><span>来源渠道:</span><span>{{t_project.busniess_from_id_name}}
+									
+									</span></p>
+							{%end%}
+							{%if t_project.busniess_from_id==81%}
+									<p><span>内部推荐人:</span><span>
+									{%if t_project.recommend_staff%}{{t_project.recommend_staff}} {%else%}无{%end%}
+									</span></p>
+									<p><span>来源渠道:</span><span>{{t_project.busniess_from_id_name}}
+									
+									</span></p>
+							{%end%}
+							{%if t_project.busniess_from_id==4%}
+	
+									<p><span>楼盘名称:</span><span>
+									{%if t_project.building_id_name%}{{t_project.building_id_name}} {%else%}无{%end%}
+									</span></p>
+									<p><span>来源渠道:</span><span>{{t_project.busniess_from_id_name}}
+									
+									</span></p>
+							{%end%}
+
+
+
+
+
+					</div>
+					<div class="ge1-box2">
+						<h5>编号：{{t_project.id}}</h5>
+						<h2>收入确认单</h2>
+						<p>
+							<span>20</span><i>{{t_project_income_title.income_at.strftime("%y")}}</i><span>年</span>
+							<i>{{t_project_income_title.income_at.strftime("%m")}}</i><span>月</span>
+							<i>{{t_project_income_title.income_at.strftime("%d")}}</i><span>日</span>
+						</p>
+					</div>
+					<div class="ge1-box3">
+						<p><span>收入公司：</span><span>{%if t_project_income_title.company_id%}{{t_project_income_title.company_id_name}}{%end%}</span></p>
+						<p><span>地址类型:</span><span>{%if t_project.addr_type%}{{t_project.addr_type}}{%end%}</span></p>
+					</div>
+				</li>
+				<li>
+					<div class="ge2-box1">
+						客户姓名：{%if t_project.customer_name%}{{t_project.customer_name}}{%end%}
+					</div>
+					<div class="ge2-box2">
+						企业姓名：{%if t_project.customer_company%}{{t_project.customer_company}} {%end%}
+					</div>
+					<div class="ge2-box3">
+						联系方式：{%if t_project.customer_tel%}{{t_project.customer_tel}} {%end%}
+					</div>
+				</li>
+				<li>
+					<div class="ge3-box1">
+						<div>业务内容</div>
+					<div style="padding-left:10px; line-height:18px; padding-top:10px;box-sizing: border-box;font-size:16px"> {{t_project.project_name}}</div>
+					</div>
+					<div class="ge3-box2">
+						<div>
+							<span>签约场景</span>
+							<span>{%if t_project.contract_sign_type_name%}{{t_project.contract_sign_type_name}} {%end%}</span>
+						</div>
+						<div>
+							<span>是否记账</span>
+							<span>{%if t_project.is_finance%} 是 {%else%} 否{%end%}</span>
+						</div>
+						<div>
+							<span>合同确认</span>
+							<span>	{%if t_project.contract_confirm_at%}{{t_project.contract_uid_name}} 
+						{%end%}</span>
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="ge4-box1">
+						<div>总服务费</div>
+						<div>{%if  t_project.all_income %}{{t_project.all_income}} 元{%end%}</div>
+						<div>约定定金</div>
+						<div>{{t_project.pre_income}}</div>
+						<div>余额</div>
+						<div>{{(t_project.all_income - t_project_income_wait.dd)}}</div>
+					</div>
+					<div class="ge4-box2">
+						<div>合同编号</div>
+						<div>
+						<span style="{%if t_project.contract_remark%} {%if len(t_project.contract_remark) > 20%} font-size:12px {%else%} font-size:14px {%end%}{%end%}">
+						{%if t_project.contract_remark%} {{t_project.contract_remark}}{%end%}
+						</span>
+						</div>
+					</div>
+
+
+				</li>
+				<li>
+					<div class="ge5-box1"> 
+						<span>合同定金 (合计: {{t_project_income_wait.aa}} 元)</span>
+						<i> 
+						{%for item in t_project_income%}
+						{%if item.income_id==40%}
+
+
+								第{{item.income_num}}笔 {{item.income_money}}元 
+								
+								{{item.pay_type_name}}  {{item.income_at_a.strftime("%Y-%m-%d")}}
+								
+								
+								<br>
+								
+								{%if item.remark %}备注:{{item.remark}} <br>{%end%}	
+						{%end%}
+						{%end%}
+		
+						</i>
+					</div>
+					<div class="ge5-box2">
+						<span>尾款 (合计: {{t_project_income_wait.bb}} 元)</span>	<i> 
+						{%for item in t_project_income%}
+								{%if item.income_id==43%}
+								第{{item.income_num}}笔 {{item.income_money}}元  
+							{{item.pay_type_name}}  {{item.income_at_a.strftime("%Y-%m-%d")}}	 <br>
+								
+								{%if item.remark %}备注:{{item.remark}} <br>{%end%}	
+						{%end%}	{%end%}</i>
+					</div>
+					<div class="ge5-box3">
+						<span>代收款 (合计: {{t_project_income_wait.cc}} 元)</span>	<i style="font-size:12px;"> 
+			
+						
+									{%for item in t_project_income%}
+								{%if item.income_id>43%}
+								第{{item.income_num}}笔 {{item.income_name}}  {{item.income_money}}元  
+							{{item.pay_type_name}}  {{item.income_at_a.strftime("%Y-%m-%d")}}	 <br>
+								
+								{%if item.remark %}备注:{{item.remark}} <br>{%end%}	
+						{%end%}	{%end%}
+							</i>
+					</div>
+				</li>
+				<!-- <li>
+					<div class="ge8-box1">
+						其他交接资料
+					</div>
+					<div class="ge8-box2">dd</div>
+				</li> -->
+				<li>
+					<div class="ge9-box1">
+						<div class="n-box1">
+							成交周期(天）:  {%if t_project.deal_day%}
+						{{t_project.deal_day}}{%end%}
+						</div>
+						<div>
+							<span>推荐客户：{%if t_project.recommend_by%}
+						{{t_project.recommend_by}}{%end%}</span>
+							<span>推荐员工：{%if t_project.recommend_staff%}
+						{{t_project.recommend_staff}}{%end%}</span>
+						</div>
+					</div>
+					<div class="ge9-box2">
+						<span style="font-size:13px">工商专员：<br/>
+						{% raw getMemberNameCQ(t_project_members,"工商专员")%}
+
+						</span>
+					</div>
+					<div class="ge9-box3">
+						<div class="aaa">
+								<p >其他事项：{%if t_project.remark%}{{t_project.remark}}{%end%}
+									{%if t_project_note%}
+									<font style="font-size:50%">{%for item in t_project_note%}{{item.creatd_at}}{{item.uid_name}}:{{item.msg}}{%end%};
+									</font>
+								{%end%}
+							</p>
+						</div>
+						<div class="n-box3">
+							<div class="n-box3-box">
+							{%raw getMemberNameByType(t_project_members,"销售顾问")%}
+													</div>
+							<div>
+								{%raw getMemberNameByType(t_project_members,"组长")%}
+							</div>
+							<div>
+							{%raw getMemberNameByType(t_project_members,"客服顾问")%}
+							</div>
+							<div>
+								<span>财务确认：{%if t_project_income_title.fi_confirm_uid%}{{t_project_income_title.fi_confirm_uid_name}}{%end%}</span>
+								<span>时间：{%if t_project_income_title.fi_confirm_at%}{{t_project_income_title.fi_confirm_at.strftime("%Y-%m-%d")}}{%end%}</span>
+							</div>
+						</div>
+					</div>
+				</li>
+				<!-- <li>
+					<div>
+						楼盘名称： ssdsdsdsd
+					</div>
+					<div>
+						其他事项： ssdsdsdsd
+					</div>
+				</li>
+				<li>
+					<div>
+						<span>推荐客户：dsds</span>
+						<span>推荐员工：sdsd</span>
+					</div>
+					<div>
+						<span>业务员：</span>
+						<span>时间：20&nbsp;&nbsp;&nbsp;&nbsp;年&nbsp;&nbsp;月&nbsp;&nbsp;日</span>
+					</div>
+					<div>
+						<span>电销：</span>
+						<span>时间：20&nbsp;&nbsp;&nbsp;&nbsp;年&nbsp;&nbsp;月&nbsp;&nbsp;日</span>
+					</div>
+					<div>
+						<span>组长：</span>
+						<span>时间：20&nbsp;&nbsp;&nbsp;&nbsp;年&nbsp;&nbsp;月&nbsp;&nbsp;日</span>
+					</div>
+					<div>
+						<span>跟单：</span>
+						<span>时间：20&nbsp;&nbsp;&nbsp;&nbsp;年&nbsp;&nbsp;月&nbsp;&nbsp;日</span>
+					</div>
+					<div>
+						<span>财务确认：</span>
+						<span>时间：20&nbsp;&nbsp;&nbsp;&nbsp;年&nbsp;&nbsp;月&nbsp;&nbsp;日</span>
+					</div>
+				</li> -->
+			</ul>
+		</div>
+		<div class="wenzi" >
+			<span>一式五联：第一联(白 联)出纳做帐</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<span>第二联(红 联)工商保存</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<span> 第三联(蓝 联)会计部</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<span>第四联(黄 联)仓库保存</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<span>第五联(绿 联)业务员保存</span>
+		</div>
+	</div><br/>
+	   <center> 
+		   <button id="print" style="padding:8px; font-size:15px;margin-left: 200px;" name="{{role}}">打印确认单</button>
+				{%if t_project_income_title.is_print==0%}
+				<button id="{{t_project_income_title.id}}" class="not_print p" style="padding:5px; font-size:12px;margin-left: 100px;" value="0">
+				尚未打印</button>
+				{%else%}
+				<button id="{{t_project_income_title.id}}" class="already_print p" style="padding:5px; font-size:12px;margin-left: 100px;background: gray;color:white;border-radius: 5px;" value="1">
+				已打印</button>				
+				{%end%}
+		</center>
+
+</body>
+
+</html>

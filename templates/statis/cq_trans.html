@@ -1,0 +1,251 @@
+
+ {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          主面板
+        </li>
+        <li class="breadcrumb-item active">跟单分配列表 </li>
+      </ol>
+
+
+     
+
+
+
+
+
+
+
+<form>
+
+
+<select name="cq" style="height:35px;" >
+  <option  value="0">工商专员</option>
+    {%for idx,item in enumerate(t_user_cq)%}
+        <option value="{{item.id}}" {%if params["cq"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+    {%end%}
+</select>
+<input type="text" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
+<input type="text" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+<input type="hidden" name="tag" value="{{tag}}"/>
+
+<input type="submit" value="检索" />
+
+</form>
+<div class="alert alert-secondary" role="alert">
+ 共 {{pagination.total_count}} 条记录
+</div>
+                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="font-size:12px;" >
+                  <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                        <tr>                       
+                           
+                           <th width="60">
+                            编号
+                            </th>
+                             <th>公司名称</th>  
+
+                                <th  width="200">工商专员</th>  
+                             <th width="100">核名周期</th>  
+                     
+                            
+                            
+                             <th width="120">
+                            审查资料周期
+                            </th>
+                            
+                              <th width="120">核名周期</th>
+                               
+                          
+                             <th width="80">选经营范围周期</th>
+<th width="160">地址安排周期</th>
+
+                            <th width="50">执照受理周期</th>
+ <th width="50">领取执照周期</th>
+  <th width="50">刻章备案周期</th>
+   <th width="50">开户周期</th>
+    <th width="50">办结周期</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for item in t_projects_trans_data%}
+                        <tr >
+                               <td><a href="project?tag=show&guid={{item.project_guid}}&id={{item.project_id}}" target="_blank">{{item.project_id}}</a>
+                            </td>  
+                            <td>
+                               <a href="project?tag=show&guid={{item.project_guid}}&id={{item.project_id}}" target="_blank">{{item.company}}</a>
+
+                            </td>  
+                         <td>
+                                {{item.cq_uid_name}}
+                            </td>  
+                          <td>
+                                
+                              
+                                {%if not  item.start_date%}
+                                    N
+                                {%elif not  item.set_cq_day_date%}
+                                    N
+                                {%else%}
+                                     <h4> {{(item.set_cq_day_date- item.start_date ).days}}</h4>
+                               {%end%}
+                            </td>  
+                           
+                             <td>
+                                {%if not  item.req_day_date%}
+                                    N
+                                {%elif not  item.set_cq_day_date%}
+                                    N
+                                {%else%}
+                                    <h4> {{(item.req_day_date- item.set_cq_day_date ).days}}</h4>
+                               {%end%}
+                            </td>
+                            <td>
+
+
+                               {%if not  item.req_day_date%}
+                                    N
+                                {%elif not  item.check_name_day_date%}
+                                    N
+                                {%else%}
+                              
+                                   <h4> {{(item.check_name_day_date- item.req_day_date ).days}}</h4>
+
+                               {%end%}
+
+                              
+
+
+
+                            </td>
+                                <td>
+
+
+                                {%if not  item.check_name_day_date%}
+                                    N
+                                {%elif not  item.range_day_date%}
+                                    N
+                                {%else%}
+                                    <h4>  {{(item.range_day_date- item.check_name_day_date ).days}}</h4>
+                               {%end%}
+
+                            </td>
+                             <td>
+                                {%if not  item.range_day_date%}
+                                    N
+                                {%elif not  item.addr_day_date%}
+                                    N
+                                {%else%}
+                                   <h4>  {{(item.addr_day_date- item.range_day_date ).days}}</h4>
+                               {%end%}
+
+                            </td> 
+                            <td>
+                               
+
+                                {%if not  item.addr_day_date%}
+                                    N
+                                {%elif not  item.in_day_date%}
+                                    N
+                                {%else%}
+                                    <h4> {{(item.in_day_date- item.addr_day_date ).days}}</h4>
+                               {%end%}
+
+
+                            </td> <td>
+                               
+
+                                  {%if not  item.in_day_date%}
+                                    N
+                                {%elif not  item.get_day_date%}
+                                    N
+                                {%else%}
+                                    <h4> {{(item.get_day_date- item.in_day_date ).days}}</h4>
+                               {%end%}
+                            </td>
+                             <td>
+                               
+
+                                  {%if not  item.get_day_date%}
+                                    N
+                                {%elif not  item.kez_day_date%}
+                                    N
+                                {%else%}
+                                    <h4> {{(item.kez_day_date- item.get_day_date ).days}}</h4>
+                               {%end%}
+                            </td>
+                             <td>
+                                
+
+                                  {%if not  item.kez_day_date%}
+                                    N
+                                {%elif not  item.openaccount_day_date%}
+                                    N
+                                {%else%}
+                                   <h4>  {{(item.openaccount_day_date- item.kez_day_date ).days}}</h4>
+                               {%end%}
+                            </td> 
+ <td>
+                               
+
+                                  {%if not  item.start_date%}
+                                    N
+                                {%elif not  item.endtime_day_date%}
+                                    N
+                                {%else%}
+                                   <h4>  {{(item.endtime_day_date- item.start_date).days}}</h4>
+                               {%end%}
+                            </td> 
+
+
+                            </tr>
+                            {%end%}
+                    </tbody>
+                </table>
+
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="/statis?tag=cq_trans&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+
+
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="/statis?tag=cq_trans&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+           {% else %}
+          <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+          {% end %}
+          {% end %} 
+
+         {% if pagination.has_next %}
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/statis?tag=cq_trans&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>                
+
+         </div>   </div>   
+      {% end %} 
+      
+      {%block js%}
+<script>
+     _xsrf = getCookie("_xsrf");
+     $(function(){
+    
+   $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+    $("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+
+     })
+
+    
+</script>
+{%end%}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>开收据系统-出库单详情</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/css/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+</head>
+
+<body class="fixed-nav sticky-footer" id="page-top">
+  <!-- Navigation-->
+  <div class="content" style="font-size: 16px;">
+    <div class="container-fluid">
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-table"></i>出库单详情</div>
+        <div class="card-body">
+          <div class="table-responsive">
+        <div class="form-group">
+            <div class="form-row">
+            <div class="col-md-4">
+                <p>序号:{{out.serial_num}}</p>
+            </div>
+            <div class="col-md-4">
+                    <p>编号: {{out.num}}</p>
+            </div>
+            <div class="col-md-4">
+                    <p>收入确认时间: {{out.rev_time}}</p>
+            </div>
+            </div>
+            <div class="form-row">
+                    <div class="col-md-4">
+                        <p>分配时间(跟单): {{out.dis_time}}</p>
+                    </div>
+                    <div class="col-md-4">
+                            <p>业务员: {{out.saleman}}</p>
+                    </div>
+                    <div class="col-md-4">
+                            <p>电销: {{out.telemark}}</p>
+                    </div>
+                    </div>
+                    <div class="form-row">
+                            <div class="col-md-4">
+                                <p>组长: {{out.group_leader}}</p>
+                            </div>
+                            <div class="col-md-4">
+                                    <p>跟单: {{out.gen_dan}}</p>
+                            </div>
+                            <div class="col-md-4">
+                                    <p>商机来源: {{out.source_bus}}</p>
+                            </div>
+                            </div>    
+                            <div class="form-row">
+                                    <div class="col-md-4">
+                                        <p>客户姓名: {{out.customer_name}}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                            <p>企业名称: {{out.company_name}}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                                <p>注册号: {{out.regist_id}}</p>
+                                            </div>
+                                    </div> 
+                                    <div class="form-row">
+                                            <div class="col-md-4">
+                                                <p>业务内容: {{out.bus_content}}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <p>公司类型: {{out.company_type}}</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                        <p>法人: {{out.legal_person}}</p>
+                                                    </div>
+                                            </div>   
+                                 <div class="form-row">
+                                            <div class="col-md-4">
+                                                <p>监事: {{out.supervisor}}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <p>股东: {{out.share_holder}}</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                        <p>注册资金: {{out.regist_money}}</p>
+                                                    </div>
+                                            </div>   
+                                    <div class="form-row">
+                                            <div class="col-md-4">
+                                                <p>地址类型: {{out.address_type}}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <p>办理进度: {{out.progress}}</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                        <p>是否记账: {{out.tally}}</p>
+                                                    </div>
+                                            </div>
+                                        <div class="form-row">
+                                            <div class="col-md-4">
+                                                <p>总服务费: {{out.server_money}}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <p>实收定金: {{out.rec_money}}</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                        <p>合同确认: {{out.contract_confirm}}</p>
+                                                    </div>
+                                            </div>
+                                        <div class="form-row">
+                                            <div class="col-md-4">
+                                                <p>办结时间: {{out.baijie_time}}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <p>备注: {{out.remarks}}</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                        <p>移交资料时间: {{out.move_time}}</p>
+                                                    </div>
+                                            </div> 
+                                        <div class="form-row">
+                                            <div class="col-md-4">
+                                                <p>执照交接明细: {{out.zhizhao_detail}}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <p>接收人签名: {{out.accept_man}}</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                        <p>备注: {{out.other_remarks}}</p>
+                                                    </div>
+                                            </div>  
+                                        <div class="form-row">
+                                            <div class="col-md-4">
+                                                <p>出库时间: {{out.out_time}}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <p>开票地址租凭合同日期: {{out.date_kaipiao}}</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                        <p>联系方式: {{out.phone}}</p>
+                                                    </div>
+                                            </div>
+                                            <div class="form-row">
+                                                    <div class="col-md-4">
+                                                        <p>是否有尾款: {{out.retainage}}</p>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                            <p>办结周期: {{out.banjie_cycle}}</p>
+                                                        </div>
+                                                    </div>                                        
+                            <div class="container col-md-2">
+                               
+                                <a class="btn btn-block back_btn" href="/out">返回</a>
+                        
+                    </div> 
+            </div>
+            
+        </div>
+        </div>
+        </div>
+    </div>
+    </div>
+    <script src="/static/js/vendor/jquery/jquery.min.js"></script>
+    <script src="/static/js/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/static/js/myjquery.js"></script>
+    <script src="/static/css/datatables/jquery.dataTables.js"></script>
+    <script src="/static/css/datatables/dataTables.bootstrap4.js"></script>
+    <script src="/static/js/sb-admin.min.js"></script>
+    <script src="/static/js/sb-admin-datatables.min.js"></script>
+
+    
+ 
+   
+  </div>
+</body>
+
+</html>

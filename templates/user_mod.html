@@ -1,0 +1,22 @@
+
+
+{%for item in t_temp_mods%}
+    <li>{{item.mod_name}}
+        {%if item.mod_type=="article"%}
+          <!--  <a href="/articles?site_id={{item.site_id}}" target="blank">管理</a> -->
+
+        {%else%}
+
+
+            {%if item.mod_type=="nav"%}
+                     <!-- <a href="/sites?tag=nav&site_id={{item.site_id}}" target="blank">管理</a> -->
+            {%else%}
+
+              <a href="/preview1?ms_id={{item.ms_id}}&site_id={{item.site_id}}" target="blank">管理</a>
+
+            {%end%}
+
+
+        {%end%}
+        </li>
+{%end%}

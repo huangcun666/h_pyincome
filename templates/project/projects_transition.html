@@ -1,0 +1,384 @@
+{% extends "../base.html" %} {%block title%}资料交接{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">资料交接 
+            {%if launch%}<a class="btn btn-info btn-sm a_add_trans" href="javascript:void(0)">新建交接</a>{%end%}
+        </li>
+
+      </ol>
+<nav>
+<div class="nav nav-tabs" id="nav-tab" role="tablist">
+<a class="nav-item nav-link {%if not launch%}active{%end%}" href="/project?tag=projects_transition">资料交接</a>
+<a class="nav-item nav-link {%if launch%}active{%end%}" id="a_add_trans" href="/project?tag=projects_transition&launch=1" style="font-size:13px;">发起交接</a>
+
+</div>
+
+
+</nav>
+
+<br>
+{%if not launch%}
+<form>
+  <table>
+    <thread>
+    <tr>
+      <th>订单编号</th>
+      <th>发起人</th>
+      <th>公司名称</th>
+      <th>确认状态</th>
+      <th></th>
+    </tr>
+  </thread>
+  <tbody>
+    <tr>
+      <td><input type="text" name="id" placeholder="订单编号" class="form-control" value="{%if params['id']%}{{params['id']}}{%end%}"></td>
+      <td><input type="text" name="fq_name" placeholder="发起人" class="form-control" value="{%if params['fq_name']%}{{params['fq_name']}}{%end%}"></td>
+      <td><input type="text" name="company" placeholder="公司名称" class="form-control" value="{%if params['company']%}{{params['company']}}{%end%}"></td>
+      <td><input type="radio" name="status"  value="1" {%if params['status']=='1'%}checked{%end%}>已确认
+          <input type="radio" name="status"  value="0" {%if params['status']=='0'%}checked{%end%}>待确认
+      </td>
+      <td>
+        <input type="hidden" name="tag" value="{{tag}}"/>
+        <input type="submit" value="检索">
+      </td>
+      </tr>
+  </tbody>
+  </table>
+</form>
+{%end%}
+<div class="table-responsive">
+                  <table class="table table-bordered" id="dataTable">
+                    <thead style="background-color:#000;color:#fff ; font-size:12px;">
+                        <tr>
+                     
+                            <th width="80">订单编号</th>
+                     <th width="100">发起人</th>
+                        <th width="180">公司名称</th>
+                          <th>交接明细</th>
+                          <th width="100">确认状态</th>
+
+   <th width="100">交接日期</th>
+   <th width="80"></th>
+                        </tr>
+                    </thead>
+                    <tbody style=" font-size:12px;">
+                    {%if t_projects%}
+                        {%for item in t_projects%}
+                        
+                        <tr >
+ 
+                         <td>
+           
+                        {{item.id}}
+                         </td>
+                                          <td>
+                          {{item.post_by_name}}
+                            </td>
+                         <td>
+                                  {{item.customer_company}}
+                            </td>
+   <td>
+                         {{item.type_names}}
+                            </td>
+ <td  {%if not item.rec_by_uid_at%} style="background-color:#eee;" {%else %} style="background-color:#D6EAF8;" {%end%}>
+                        {%if item.rec_by_uid_at%}
+                           已确认
+                            {{item.rec_by_uid_at}}
+                        {%else%}
+                           待确认
+                        {%end%}
+                         </td>
+            <td>
+                         {{item.created_at.strftime("%Y-%m-%d")}}
+                            </td>
+
+                             <td>
+                              {%if launch%}
+                              <a href="/project?tag=t_company{%if item.project_id%}&project_id={{item.project_id}}{%end%}&company={{item.customer_company}}{%if item.company_code%}&company_code={{item.company_code}}{%end%}" class="btn-primary btn">详细</a>
+                              {%else%}
+                              <a href="/project?tag=projects_transition_details&id={{item.pt_id}}&project_id={{item.project_id}}" class="btn-primary btn">详细</a>
+                              {%end%}
+                            </td>
+
+      
+       
+
+
+                        </tr>
+                        {%end%}
+
+                        {%else%}
+                        <tr>
+                                <td colspan="26">没有交接数据哦。</td>
+                        </tr>
+
+                          {%end%}
+                    </tbody>
+                </table>
+</div>
+
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=projects_transition{%if params['id']%}&id={{params['id']}}{%end%}{%if params['fq_name']%}&
+         fq_name={{params['fq_name']}}{%end%}{%if params['company']%}&company={{params['company']}}{%end%}
+         {%if params['status']%}&status={{params['status']}}{%end%}
+         &page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=projects_transition{%if params['id']%}&id={{params['id']}}{%end%}{%if params['fq_name']%}&
+          fq_name={{params['fq_name']}}{%end%}{%if params['company']%}&company={{params['company']}}{%end%}
+          {%if params['status']%}&status={{params['status']}}{%end%}&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% else %}
+          <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+          {% end %} 
+          
+          {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=projects_transition
+          {%if params['id']%}&id={{params['id']}}{%end%}{%if params['fq_name']%}&
+          fq_name={{params['fq_name']}}{%end%}{%if params['company']%}&company={{params['company']}}{%end%}
+          {%if params['status']%}&status={{params['status']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>
+
+
+<!-- Modal -->
+<div id="a_add_trans_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="myModalLabel_trans">选择资料交接公司</h3>
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body form-horizontal">
+ 
+              <form>
+                  <table>
+                     <tr>
+                       <td>公司名称</td>
+                       <td>信用代码</td>
+                       <td></td>
+              </tr>
+              <tr>
+                  <td><input type="text" class="form-control" id="company" placeholder="请输入公司名称"/></td>
+                  <td><input type="text" class="form-control" id="company_code" placeholder="请输入信用代码"/></td>
+                  <td><a class="btn btn-info" href="javascript:void(0);" id="search_transition">查询</a></td>
+              </tr>
+              </table>
+              </form>
+              <div id="search_result">
+
+              </div>
+     
+    </div>
+  
+  
+  
+  
+  
+    <div class="modal-footer">
+    <div class="alert alert-danger " role="alert" id="show_msg_by_transition">
+  
+  </div>
+      <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+      <button class="btn btn-primary" id="btn_create_trans">选择</button>
+    </div>
+    </div>
+    </div>
+  </div>
+
+{%end%}
+
+
+
+ {%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+    $("#tran_at").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#allcheck_trans").on("change",function(){
+    $('input[name=check_projects_type_trans]').not(this).prop('checked', this.checked);
+})
+
+$(".a_add_trans").on("click", function () {
+    $('input[name=check_projects_type_trans]').prop('checked', false); 
+        $("#delete_transition").hide()
+        $("#btn_save_trans").attr("transition_id","0")
+         $("#btn_save_trans").attr("project_id","0")
+         // $("#tran_by").val("")
+          $("#rec_by").val("")
+           $("#tran_at").val("")
+           $("#trans_remark").val("")
+           $("#use_type").val("")
+          $("#a_add_trans_modal").modal('show')
+           $("#show_msg_by_transition").hide()
+           $("#btn_save_trans").show()
+  })
+
+$("#btn_save_trans").on("click",function(){
+
+// var tran_by = $("#tran_by").val()
+var company_name=$('#company_name').val()
+ var rec_by = $("#rec_by").val()
+ var tran_at = $("#tran_at").val()
+ var trans_remark =$("#trans_remark").val()
+ var transition_id =$("#btn_save_trans").attr("transition_id")
+ var is_inner =  $("input[name=is_inner]:checked").val()
+ var use_type = $("#use_type").val()
+   var type_ids=[]
+   var type_names=[]
+   var remark=$('#projects_type_remark').val();
+
+   $('input[name=check_projects_type_trans]:checked').each(function () { 
+         type_ids.push($(this).val());
+         type_names.push($(this).attr('income_name'))
+    })
+    type_ids=type_ids.join(',')
+    type_names=type_names.join(',')
+
+ if (is_inner==undefined){
+   is_inner = 0
+ }
+ if(rec_by==""){
+     $("#rec_by").focus()
+      $("#show_msg_by_transition").text("签收方不能为空")
+ }
+ else if(tran_at==""){
+       $("#show_msg_by_transition").text("交接时间不能为空")
+       $("#tran_at").focus()
+   }
+   else{
+
+   var formData = new FormData();
+   formData.append('file', $('#tran_file')[0].files[0]);
+   formData.append('_xsrf', _xsrf)
+   formData.append("trans_remark",trans_remark)
+   formData.append("tran_at", tran_at)
+   formData.append("is_inner",is_inner)
+   formData.append("rec_by", rec_by)
+   formData.append("type_ids", type_ids)
+   formData.append("type_names", type_names)
+   formData.append("transition_id", transition_id)
+   formData.append("use_type", use_type)
+   formData.append('company_name',company_name)
+
+
+   //$(this).text("保存中..")
+   // $(this).attr("disabled", "disabled")
+
+   $.ajax({
+         url: '/project?tag=add_tran',
+         type: 'POST',
+         data: formData,
+         processData: false,  // tell jQuery not to process the data
+         contentType: false,  // tell jQuery not to set contentType
+         success: function (data) {
+           if(data >=0){
+             location.reload()
+
+           }
+           else{
+               if(data=="内部交接:签收用户不存在哦."){
+                   $("#rec_by").focus()
+               }
+               $("#show_msg_by_transition").show()
+               $("#show_msg_by_transition").text(data)
+
+           }
+
+         }
+       });
+   }
+
+})
+$('#search_transition').on('click',function () { 
+  var company=$('#company').val()
+  var company_code=$('#company_code').val()
+  $.get(
+    '/project?tag=search_transition',
+    {
+      'company':company,
+      'company_code':company_code
+    },function (result) {
+      $('#search_result').children().remove();
+      if(result['project']!=undefined){
+        item=result['project']
+        var text='<table class="table table-striped"><thead><tr><th>公司名称</th><th>信用代码</th><th></th></tr></thread><tbody>'
+        for(var i=0;i<item.length;i++){
+          if(item[i].company_uid==null){
+            text+='<tr><td>'+item[i].customer_company+'</td><td>无</td><td><input type="radio" name="choose" value="'+item[i].id+'-'+item[i].customer_company+'-'+'" /> </td><tr>'
+          }else{
+          text+='<tr><td>'+item[i].customer_company+'</td><td>'+item[i].company_uid+'</td><td><input type="radio" name="choose" value="'+item[i].id+'-'+item[i].customer_company+'-'+item[i].company_uid+'" /> </td><tr>'
+         }
+        }
+        text+='</tbody></table>'
+        $('#search_result').append(text)
+      }else if(result['customer']!=undefined){
+        item=result['customer']
+        var text='<table class="table table-striped"><thead><tr><th>公司名称</th><th>信用代码</th><th></th></tr></thread><tbody>'
+        for(var i=0;i<item.length;i++){
+          if(item[i].company_reguid=='' |item[i].company_reguid==null){
+            text+='<tr><td>'+item[i].company+'</td><td>无</td><td><input type="radio" name="choose" value="-'+item[i].company+'-'+'" /> </td><tr>'
+          }else{
+          text+='<tr><td>'+item[i].company+'</td><td>'+item[i].company_reguid+'</td><td><input type="radio" name="choose" value="-'+item[i].company+'-'+item[i].company_reguid+'" /> </td><tr>'
+         }
+        }
+        text+='</tbody></table>'
+        $('#search_result').append(text)
+      }
+      else{
+        $('#search_result').append('<br><span>没找到~</span><a class="btn btn-info" href="javascript:void(0);" id="">创建</a>')
+      }
+    }
+  )
+ })
+
+ $('#btn_create_trans').on('click',function () { 
+   var value=$('input[name=choose]:checked').val()
+   value=value.split('-')
+   location.href='/project?tag=t_company&project_id='+value[0]+'&company='+value[1]+'&company_code='+value[2]
+  })
+
+$('#company').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf,'tag':'company'}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+$('input[name=fq_name]').typeahead({
+  source:function (query,process) { 
+  return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+  return process(JSON.parse(data));
+});
+   }
+})
+$('input[name=company]').typeahead({
+  source:function (query,process) { 
+  return $.post('/api', { query: query ,"_xsrf":_xsrf,'tag':'company'}, function (data) {
+  return process(JSON.parse(data));
+});
+   }
+})
+ })
+ </script>
+
+{%end%}

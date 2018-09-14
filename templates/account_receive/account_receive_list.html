@@ -1,0 +1,488 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">记账应收管理
+            <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add_account_receive" >新 建 </a>
+        </li>
+      </ol>
+      <form>
+          <table>
+              <tbody>
+                    <tr>    
+                       
+                            <th>客户编号</th>
+                            <th>公司名称</th>
+                            <th>客服会计</th>
+                            <th>销售顾问</th>
+                            <th>客服顾问</th>
+                            <th width="50">结算周期</th>
+                            <th>成立时间</th>
+                            <th></th>
+                          
+                        </tr>
+                        <tr>
+                        <td><input type="text" class="form-control" name="s_id" placeholder="客户编号" {%if params['s_id']%}value="{{params['s_id']}}"{%end%}></td>
+                        <td><input type="text" class="form-control" name="s_company" placeholder="公司名称" {%if params['s_company']%}value="{{params['s_company']}}"{%end%}></td>
+                        <td><input type="text" class="form-control" name="s_kf_kuaiji" id="s_kf_kuaiji" placeholder="客服会计" {%if params['s_kf_kuaiji']%}value="{{params['s_kf_kuaiji']}}"{%end%}></td>
+                        <td><input type="text" class="form-control" name="s_sale_guwen" id="s_sale_guwen" placeholder="销售顾问" {%if params['s_sale_guwen']%}value="{{params['s_sale_guwen']}}"{%end%}></td>
+                        <td><input type="text" class="form-control" name="s_kf_guwen" id="s_kf_guwen" placeholder="客服顾问" {%if params['s_kf_guwen']%}value="{{params['s_kf_guwen']}}"{%end%}></td>
+                        <td>
+                            <select name="s_jiesuan_cycle">
+                            <option value="">选择结算周期</option>
+                            <option value="年付" {%if params['s_jiesuan_cycle']=='年付'%}selected{%end%}>年付</option>
+                            <option value="半年付" {%if params['s_jiesuan_cycle']=='半年付'%}selected{%end%}>半年付</option>
+                            <option value="季付" {%if params['s_jiesuan_cycle']=='季付'%}selected{%end%}>季付</option>
+                            <option value="月付" {%if params['s_jiesuan_cycle']=='月付'%}selected{%end%}>月付</option>
+                            </select>
+                            </td>
+                              <td>
+                                  <input type="text" class="form-control" name="s_chengli_start" id="s_chengli_start" placeholder="开始时间" {%if params['s_chengli_start']%}value="{{params['s_chengli_start']}}"{%end%}>
+                              </td>
+                              <td>
+                                  <input type="text" class="form-control" name="s_chengli_end" id="s_chengli_end" placeholder="结束时间" {%if params['s_chengli_end']%}value="{{params['s_chengli_end']}}"{%end%}>
+                                  </td> 
+                              </tr>
+                        <tr>
+                              <th>记账费到期时间</th>
+                              <th></th>
+                              <th>账册费到期时间</th>
+                              <th></th>
+                              <th>最新已收明细</th>
+                              <th>应收明细</th> 
+                              <th>最新跟进记录</th>
+                              <th></th>
+                        </tr>
+             
+                    <tr>
+                    <td>
+                    <input type="text" class="form-control" name="s_account_charge_end_start" id="s_account_charge_end_start" placeholder="开始时间" {%if params['s_account_charge_end_start']%}value="{{params['s_account_charge_end_start']}}"{%end%}>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" name="s_account_charge_end_end" id="s_account_charge_end_end" placeholder="结束时间" {%if params['s_account_charge_end_end']%}value="{{params['s_account_charge_end_end']}}"{%end%}>
+                        </td>
+                  
+                    <td>
+                    <input type="text" class="form-control" name="s_zhangce_charge_end_start" id="s_zhangce_charge_end_start" placeholder="开始时间" {%if params['s_zhangce_charge_end_start']%}value="{{params['s_zhangce_charge_end_start']}}"{%end%}>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" name="s_zhangce_charge_end_end" id="s_zhangce_charge_end_end" placeholder="结束时间" {%if params['s_zhangce_charge_end_end']%}value="{{params['s_zhangce_charge_end_end']}}"{%end%}>
+                        </td>
+                    <td><input type="text" class="form-control" name="s_new_yishou_detail" placeholder="最新已收明细" {%if params['s_new_yishou_detail']%}value="{{params['s_new_yishou_detail']}}"{%end%}></td>
+                    <td><input type="text" class="form-control" name="s_yingshou_detail" placeholder="应收明细" {%if params['s_yingshou_detail']%}value="{{params['s_yingshou_detail']}}"{%end%}></td>
+                    <td><input type="text" class="form-control" name="s_last_updated_msg" placeholder="最新跟进记录" {%if params['s_last_updated_msg']%}value="{{params['s_last_updated_msg']}}"{%end%}></td>
+                    <td><input name="tag" value="{{tag}}" hidden>
+                    <input type="submit" value="检索">
+                    </td>
+                    </tr>
+              </tbody>
+          </table>
+      </form>
+      <div class="card mb-3">
+            <div class="card-body">
+
+            <div class="table-responsive">
+            
+            <table class="table table-bordered" id="dataTable" style="width:2400px" cellspacing="0">
+            <thead style="background-color:#000;color:#fff">
+                <tr>
+                    <th width="50">客户编号</th>
+                    <th width="100">公司名称</th>
+                    <th width="15">客服会计</th>
+                    <th width="15">销售顾问</th>
+                    <th width="15">客服顾问</th>
+                    <th width="15">客户类型</th>
+                    <th width="70">注册地址类型</th>
+                    <th width="110">开票地址租赁合同日期</th>
+                    <th width="15">结算周期</th>
+                    <th width="50" >年度费用</th>
+                    
+                    <th width="15">月度费用</th>
+                    <th width="15">帐册费</th>
+                    <th width="60">成立时间</th>
+                    <th width="60">记账费到期时间</th>
+                    <th width="60">账册费到期时间</th>
+                    <th width="80">最新已收明细</th>
+                    <th  width="80">所有的未收明细</th>
+                    <th  width="80">最新跟进记录</th>
+                    <th width="1"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {%if account_receive%}
+                {%for item in account_receive%}
+                <tr>
+                    <td>{{item.id}}</td>
+                    <td>{{item.company}}</td>
+                    <td>{{item.kf_kuaiji}}</td>
+                    <td>{{item.sale_guwen}}</td>
+
+                    <td>{{item.kf_guwen}}</td>
+                    <td>{%if item.is_loupan==1%}楼盘{%elif item.is_loupan==0%}非楼盘{%end%}</td>
+                    <td>{%if item.register_addr_type%}{{item.register_addr_type}}{%end%}</td>
+                    <td>{%if item.kp_addr_date_start%}{{item.kp_addr_date_start.strftime("%Y-%m-%d")}}-{{item.kp_addr_date_end.strftime("%Y-%m-%d")}}{%end%}</td>
+                    <td>{{item.new_jiesuan_cycle}}</td>
+                    <td>{{item.new_year_charge}}</td>
+                    <td>{{item.new_month_charge}}</td>
+                    <td>{{item.new_zhangce_charge}}</td>
+                    <td>{{item.chengli_date.strftime("%Y-%m-%d")}}</td>
+
+                    <td>{%if item.new_account_charge_end_date%}{{item.new_account_charge_end_date.strftime("%Y-%m-%d")}}{%end%}</td>
+                    <td>{%if item.new_zhangce_charge_end_date%}{{item.new_zhangce_charge_end_date.strftime("%Y-%m-%d")}}{%end%}</td>
+                    <td>{{item.new_new_yishou_detail}}</td>
+                    <td>{{item.new_yingshou_detail}}</td>
+                    <td>{%if item.last_updated%}{{item.last_updated_msg}} {{item.last_updated}}{%end%}</td>
+                    <td><a href="/account_receive?tag=show&id={{item.id}}&guid={{item.guid}}" class="btn btn-info">查看</a></td>
+                </tr>
+                {%end%}
+                {%else%}
+                <td colspan="20">还没有哦</td>
+                {%end%}
+            </tbody>
+            </table>
+
+            <div class="col-sm-12 col-md-7">
+                    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                       <ul class="pagination">
+                     {% if pagination.has_prev %}
+                          <li class="paginate_button page-item previous " id="dataTable_previous">
+                          <a href="?tag=account_receive&page={{ pagination.page - 1}}
+                          {%if params['s_id']%}&s_id={{params['s_id']}}{%end%}{%if params['s_company']%}&s_company={{params['s_company']}}{%end%}
+                          {%if params['s_kf_kuaiji']%}&s_kf_kuaiji={{params['s_kf_kuaiji']}}{%end%}{%if params['s_sale_guwen']%}&s_sale_guwen={{params['s_sale_guwen']}}{%end%}
+                          {%if params['s_kf_guwen']%}&s_kf_guwen={{params['s_kf_guwen']}}{%end%}{%if params['s_jiesuan_cycle']%}&s_jiesuan_cycle={{params['s_jiesuan_cycle']}}{%end%}
+                          {%if params['s_chengli_start']%}&s_chengli_start={{params['s_chengli_start']}}{%end%}{%if params['s_chengli_end']%}&s_chengli_end={{params['s_chengli_end']}}{%end%}
+                          {%if params['s_account_charge_end_start']%}&s_account_charge_end_start={{params['s_account_charge_end_start']}}{%end%}{%if params['s_account_charge_end_end']%}&s_account_charge_end_end={{params['s_account_charge_end_end']}}{%end%}
+                          {%if params['s_zhangce_charge_end_start']%}&s_zhangce_charge_end_start={{params['s_zhangce_charge_end_start']}}{%end%}{%if params['s_zhangce_charge_end_end']%}&s_zhangce_charge_end_end={{params['s_zhangce_charge_end_end']}}{%end%}
+                          {%if params['s_new_yishou_detail']%}&s_new_yishou_detail={{params['s_new_yishou_detail']}}{%end%}{%if params['s_yingshou_detail']%}&s_yingshou_detail={{params['s_yingshou_detail']}}{%end%}{%if params['s_last_updated_msg']%}&s_last_updated_msg={{params['s_last_updated_msg']}}{%end%}
+                          " aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+                         {% end %}
+                         {%for page in pagination.iter_pages() %}
+                          {% if page %}
+                          {% if page != pagination.page %}
+                          <li class="paginate_button page-item "><a href="?tag=account_receive&page={{page}}{%if params['s_id']%}&s_id={{params['s_id']}}{%end%}{%if params['s_company']%}&s_company={{params['s_company']}}{%end%}
+                            {%if params['s_kf_kuaiji']%}&s_kf_kuaiji={{params['s_kf_kuaiji']}}{%end%}{%if params['s_sale_guwen']%}&s_sale_guwen={{params['s_sale_guwen']}}{%end%}
+                            {%if params['s_kf_guwen']%}&s_kf_guwen={{params['s_kf_guwen']}}{%end%}{%if params['s_jiesuan_cycle']%}&s_jiesuan_cycle={{params['s_jiesuan_cycle']}}{%end%}
+                            {%if params['s_chengli_start']%}&s_chengli_start={{params['s_chengli_start']}}{%end%}{%if params['s_chengli_end']%}&s_chengli_end={{params['s_chengli_end']}}{%end%}
+                            {%if params['s_account_charge_end_start']%}&s_account_charge_end_start={{params['s_account_charge_end_start']}}{%end%}{%if params['s_account_charge_end_end']%}&s_account_charge_end_end={{params['s_account_charge_end_end']}}{%end%}
+                            {%if params['s_zhangce_charge_end_start']%}&s_zhangce_charge_end_start={{params['s_zhangce_charge_end_start']}}{%end%}{%if params['s_zhangce_charge_end_end']%}&s_zhangce_charge_end_end={{params['s_zhangce_charge_end_end']}}{%end%}
+                            {%if params['s_new_yishou_detail']%}&s_new_yishou_detail={{params['s_new_yishou_detail']}}{%end%}{%if params['s_yingshou_detail']%}&s_yingshou_detail={{params['s_yingshou_detail']}}{%end%}{%if params['s_last_updated_msg']%}&s_last_updated_msg={{params['s_last_updated_msg']}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                          {% else %}
+                           <li class="paginate_button page-item active">
+                             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+                           {% end %}
+                           {% else %}
+                           <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+                           {% end %} 
+                           
+                           {%end %}
+                 
+                          {% if pagination.has_next %}
+                          <li class="paginate_button  page-item next" id="dataTable_next"><a href="/account_receive?tag=account_receive&page={{pagination.page+1}} {%if params['s_id']%}&s_id={{params['s_id']}}{%end%}{%if params['s_company']%}&s_company={{params['s_company']}}{%end%}
+                            {%if params['s_kf_kuaiji']%}&s_kf_kuaiji={{params['s_kf_kuaiji']}}{%end%}{%if params['s_sale_guwen']%}&s_sale_guwen={{params['s_sale_guwen']}}{%end%}
+                            {%if params['s_kf_guwen']%}&s_kf_guwen={{params['s_kf_guwen']}}{%end%}{%if params['s_jiesuan_cycle']%}&s_jiesuan_cycle={{params['s_jiesuan_cycle']}}{%end%}
+                            {%if params['s_chengli_start']%}&s_chengli_start={{params['s_chengli_start']}}{%end%}{%if params['s_chengli_end']%}&s_chengli_end={{params['s_chengli_end']}}{%end%}
+                            {%if params['s_account_charge_end_start']%}&s_account_charge_end_start={{params['s_account_charge_end_start']}}{%end%}{%if params['s_account_charge_end_end']%}&s_account_charge_end_end={{params['s_account_charge_end_end']}}{%end%}
+                            {%if params['s_zhangce_charge_end_start']%}&s_zhangce_charge_end_start={{params['s_zhangce_charge_end_start']}}{%end%}{%if params['s_zhangce_charge_end_end']%}&s_zhangce_charge_end_end={{params['s_zhangce_charge_end_end']}}{%end%}
+                            {%if params['s_new_yishou_detail']%}&s_new_yishou_detail={{params['s_new_yishou_detail']}}{%end%}{%if params['s_yingshou_detail']%}&s_yingshou_detail={{params['s_yingshou_detail']}}{%end%}{%if params['s_last_updated_msg']%}&s_last_updated_msg={{params['s_last_updated_msg']}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                      {% end %} </ul>
+                    </div>
+                 </div>
+
+
+
+            </div>
+  
+        </div>
+    </div>
+<!-- <modal> -->
+      
+<div class="modal fade" id="account_receive_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document" >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="income_title_type">新增记账
+    
+          </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+    
+    
+            <div class="modal-body" id="site_mod">
+                <div class="form-group">
+                <div class="col-sm-12">
+                    <label>公司名称</label>
+                    <input class="form-control" type="text" id="company" placeholder="公司名称">
+                    <div class="alert alert-danger" id="e_company" style="display:none;"></div>
+                </div>
+                </div>
+                        <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label>客服会计</label>
+                                    <input type="text" id="kf_kuaiji" class="form-control" placeholder="客服会计">
+                                    <div class="alert alert-danger" id="e_kf_kuaiji" style="display:none;"></div>
+                                </div>
+                                </div>
+
+                        <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label>销售顾问</label>
+                                    <input id="sale_guwen" type="text" class="form-control" placeholder="销售顾问">
+                                    <div class="alert alert-danger" id="e_sale_guwen" style="display:none;"></div>
+                                </div>
+                                </div>
+
+                        <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label>客服顾问</label>
+                                    <input id="kf_guwen" type="text" class="form-control" placeholder="客服顾问">
+                                    <div class="alert alert-danger" id="e_kf_guwen" style="display:none;"></div>
+                                </div>
+                                </div>
+                    <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="col-sm-4 control-label">客户类型：</label>
+                                    <input type="radio" name="loupan" value="1">楼盘
+                                    <input type="radio" name="loupan" value="0">非楼盘
+                                    <div class="alert alert-danger" id="e_loupan" style="display:none;"></div>
+                            </div>
+                            </div>
+                    <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="col-sm-4 control-label">结算周期：</label>
+                                    <input type="radio" name="jiesuan_cycle" value="年付">年付
+                                    <input type="radio" name="jiesuan_cycle" value="半年付">半年付
+                                    <input type="radio" name="jiesuan_cycle" value="季付">季付
+                                    <input type="radio" name="jiesuan_cycle" value="月付">月付
+                                
+                            </div>
+                            </div>
+                           <div class="form-group">
+                <div class="col-sm-12">
+                            <label>注册地址类型	</label>
+                            <input type="text" placeholder="注册地址类型" class="form-control" id="register_addr_type">
+                            <div class="alert alert-danger" id="e_register_addr_type" style="display:none;"></div>
+                        </div>
+                    </div>
+                <div class="form-group">
+                        <label class="col-sm-5 control-label" >开票地址租赁合同日期</label>
+                        <div class="col-sm-12">
+                                
+                                <input type="text" style="width:48% ;display:inline-block;" placeholder="开始日期" readonly class="form-control" id="kp_addr_date_start">
+                                - <input type="text" style="width:48% ;display:inline-block;" placeholder="结束日期" readonly class="form-control" id="kp_addr_date_end">
+                                <div class="alert alert-danger" id="e_register_addr_type" style="display:none;"></div>
+                            </div>
+                </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>年度费用</label>
+                            <input type="text" placeholder="年度费用" class="form-control" id="year_charge">
+                            <div class="alert alert-danger" id="e_year_charge" style="display:none;"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>月度费用</label>
+                            <input type="text" placeholder="月度费用" class="form-control" id="month_charge">
+                            <div class="alert alert-danger" id="e_month_charge" style="display:none;"></div>
+                        </div>
+                    </div>
+          
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>账册费</label>
+                            <input type="text" placeholder="账册费" class="form-control" id="zhangce_charge">
+                            <div class="alert alert-danger" id="e_zhangce_charge" style="display:none;"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>成立日期</label>
+                            <input type="text" readonly class="form-control" id="chengli_date">
+                            <div class="alert alert-danger" id="e_chengli_date" style="display:none;"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>记账费到期时间</label>
+                            <input type="text" readonly class="form-control" id="account_charge_end_date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>账册费到期时间</label>
+                            <input type="text" readonly class="form-control" id="zhangce_charge_end_date">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>应收明细</label>
+                            <textarea type="text" placeholder="应收明细" class="form-control" id="yingshou_detail"></textarea>
+                        </div>
+                    </div>
+
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary create_account_receive">新增</button>
+                  </div>
+          </div>
+        </div>
+</div>
+</div>        
+{%end%}
+
+{%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+    $("#chengli_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#account_charge_end_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#zhangce_charge_end_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+
+    $("#s_chengli_start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#s_chengli_end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#s_account_charge_end_start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#s_account_charge_end_end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#s_zhangce_charge_end_start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#s_zhangce_charge_end_end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+
+    $("#kp_addr_date_start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#kp_addr_date_end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $('#kf_kuaiji').typeahead({
+    source: function (query, process) {
+    return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+    return process(JSON.parse(data));
+    });
+    }
+});
+$('#sale_guwen').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+    });
+    }
+});
+$('#kf_guwen').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+    });
+    }
+});
+
+
+$('#s_kf_kuaiji').typeahead({
+    source: function (query, process) {
+    return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+    return process(JSON.parse(data));
+    });
+    }
+});
+$('#s_sale_guwen').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+    });
+    }
+});
+$('#s_kf_guwen').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+    });
+    }
+});
+
+$("#btn_add_account_receive").on('click',function () { 
+    $('#account_receive_modal').modal("show")
+ })
+$(".create_account_receive").on('click',function () { 
+    var company=$('#company').val()
+    var kf_kuaiji=$('#kf_kuaiji').val()
+    var sale_guwen=$('#sale_guwen').val()
+    var kf_guwen=$('#kf_guwen').val()
+    var jiesuan_cycle=$('input[name="jiesuan_cycle"]:checked').val()
+    var is_loupan=$('input[name="loupan"]:checked').val()
+    var year_charge=$('#year_charge').val()
+    var month_charge=$('#month_charge').val()
+    var zhangce_charge=$('#zhangce_charge').val()
+    var chengli_date=$('#chengli_date').val()
+    var account_charge_end_date=$('#account_charge_end_date').val()
+    var zhangce_charge_end_date=$('#zhangce_charge_end_date').val()
+    var yingshou_detail=$('#yingshou_detail').val()
+    var kp_addr_date_start=$('#kp_addr_date_start').val()
+    var kp_addr_date_end=$('#kp_addr_date_end').val()
+    var register_addr_type=$('#register_addr_type').val()
+    if(company==''){
+        $('#e_company').text('公司名不能为空')
+        $('#e_company').show()
+    }
+    else if(isNaN(year_charge)){
+        $('#e_year_charge').text('费用必须为数字')
+        $('#e_year_charge').show()
+    }
+    else if(isNaN(month_charge)){
+        $('#e_month_charge').text('费用必须为数字')
+        $('#e_month_charge').show()
+    }
+    else if(isNaN(zhangce_charge)){
+        $('#e_zhangce_charge').text('费用必须为数字')
+        $('#e_zhangce_charge').show()
+    }
+    else if(is_loupan==undefined){
+        $('#e_loupan').text('请选择是否楼盘')
+        $('#e_loupan').show()
+    }
+    else if(chengli_date==''){
+        $('#e_chengli_date').text('成立时间不能为空')
+        $('#e_chengli_date').show()
+    }else{
+        $(this).attr('disabled','disabled')
+        $(this).text('保存中...')
+        $.post('/account_receive?tag=account_receive',
+        {
+            '_xsrf':_xsrf,
+            'company':company,
+            'kf_kuaiji':kf_kuaiji,
+            'sale_guwen':sale_guwen,
+            'kf_guwen':kf_guwen,
+            'jiesuan_cycle':jiesuan_cycle,
+            'year_charge':year_charge,
+            'month_charge':month_charge,
+            'zhangce_charge':zhangce_charge,
+            'chengli_date':chengli_date,
+            'is_loupan':is_loupan,
+            'account_charge_end_date':account_charge_end_date,
+            'zhangce_charge_end_date':zhangce_charge_end_date,
+            'kp_addr_date_start':kp_addr_date_start,
+            'kp_addr_date_end':kp_addr_date_end,
+            'register_addr_type':register_addr_type,
+            'yingshou_detail':yingshou_detail   
+        },function (result) { 
+            location.reload()
+         }
+        )
+    }
+ })
+})
+</script>
+{%end%}

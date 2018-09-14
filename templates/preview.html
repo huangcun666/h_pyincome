@@ -1,0 +1,473 @@
+<!doctype html>
+<title>发业在线编辑器</title>
+<meta charset="utf-8" />
+<link rel=stylesheet href=/static/lib/codemirror.css>
+<script src=/static/lib/codemirror.js></script>
+<script src=/static/mode/xml/xml.js></script>
+<script src=/static/mode/javascript/javascript.js></script>
+<script src=/static/mode/css/css.js></script>
+<script src=/static/mode/htmlmixed/htmlmixed.js></script>
+<script src="/static/vendor/jquery/jquery.min.js"></script>
+
+
+<style type=text/css>
+.CodeMirror {
+    width: 100%;
+    height: 100px;
+    border: 1px solid black;
+}
+
+iframe {
+    width: 100%;
+    float: left;
+    height: 650px;
+    border: 1px solid black;
+    border-left: 0px;
+}
+</style>
+
+
+<textarea id="faye_code" name="code">
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>{%if t_temp_mod.site_title%}{{t_temp_mod.site_title}}{%else%}{{t_temp_mod.site_name}}{%end%}</title>
+    <link href="/static/theme/default/css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="/static/theme/default/js/jquery-1.11.0.min.js"></script>
+    <!-- Custom Theme files -->
+    <link href="/static/theme/default/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <!-- Custom Theme files -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="{{t_temp_mod.site_keyword}}" />
+    <meta name="description" content="{{t_temp_mod.site_desc}}" />
+    <link href="/static/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/js/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/js/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+    <!-- start-smoth-scrolling -->
+    <script type="text/javascript" src="/static/theme/default/js/move-top.js"></script>
+    <script type="text/javascript" src="/static/theme/default/js/easing.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/theme/default/css/style_common.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/style4.css" />
+     <link rel="stylesheet" href="/static/jqup/jquery.fileupload.css">
+
+    <style>
+.tag {
+    font-size: 14px;
+    font-family: 'Droid Serif';
+    text-align: center;
+    color: #000;
+    float: right;
+    z-index: 100000;
+    display: block;
+}
+
+#tag {
+
+    top: 1em;
+    right: 1em;
+}
+
+.white-popup {
+    background: #fff none repeat scroll 0 0;
+    margin: 60px auto;
+    max-width: 650px;
+    padding: 20px 30px;
+    position: relative;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+  <div class="tag rightmenu"  id="a_m"> <button id="btnsave" class="btn btn_primary">保 存</button></div>
+<!--fayecontent1Donotdelete-->
+
+
+
+
+{{t_temp_mod.code}}
+<!--fayecontent2Donotdelete-->
+ {%if t_temp_mod.mod_id==1%}
+ <form method="post" id="form" >
+  <!-- Modal -->
+<div class="modal fade" id="manage_modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">修改背景图片</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+
+      <div class="modal-body">
+
+          <img height="100" id="img_show">
+
+    <span class="btn btn-success fileinput-button">
+        <i class="glyphicon glyphicon-plus"></i>
+        <span>点击选择本地文件...</span>
+        <input id="file1" type="file" name="file1">
+    </span>
+
+      </div>
+
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" value="保存"/>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+      </div>
+
+  {% module xsrf_form_html() %}
+    </div>
+  </div>
+</div></form> {%end%}
+{%if t_temp_mod.mod_id==7%}
+ <form method="post" id="form_list" >
+  <!-- Modal -->
+<div class="modal fade" id="manage_modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">列表修改</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+
+      <div class="modal-body">
+
+          <div class="form-group">
+        <select name="oplist" id="oplist">
+      <option value="n">选择项目</option>
+        </select>
+      </div>
+         <div class="form-group">
+
+
+        <span class="btn btn-success fileinput-button">
+        <i class="glyphicon glyphicon-plus"></i>
+        <span>点击选择本地文件...</span>
+        <input id="file2" type="file" name="file1">
+    </span>
+
+</div>
+  <div class="form-group">
+    <input type="text" name="project_fyname" />
+
+   </div>
+  <div class="form-group">
+    <input type="text" name="p_txt" />
+
+   </div>
+  <div class="form-group">
+    <input type="text" name="p_link" />
+
+   </div>
+         <div class="form-group">
+          <img height="100" id="img_show">
+
+      </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" value="保存"/>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+      </div>
+
+  {% module xsrf_form_html() %}
+    </div>
+  </div>
+</div></form> {%end%}
+
+<script type="text/javascript" src="/static/js/froala_editor.pkgd.min.js"></script>
+<script src="/static/js/jquery.editable.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+           function getCookie(name) {
+            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+            return r ? r[1] : undefined;
+        }
+    $(document).ready(function($) {
+
+  {%if t_temp_mod.mod_id==7%}
+  $(".view-fourth").each(function(index,ele){
+     // img = $(this).find(".img-responsive").attr('src')
+     name = $(this).find("h3").text()
+     // $("#img_show").attr("src",img)
+     $("#oplist").append("<option value='"+index+"'>"+name+"</option>")
+  })
+
+   $("#file2").on("change",function(evt){
+         index_id  = $("#oplist").val()
+
+          if (index_id=="n"){
+              alert("请选择项目")
+            return false
+          }
+
+           var files = evt.target.files;
+        ele = $(".view-fourth").eq(index_id)
+        ele.find(".img-responsive").attr('src', window.URL.createObjectURL(this.files[0]) )
+        $("#img_show").attr("src", window.URL.createObjectURL(this.files[0]))
+    })
+
+    $("#a_m").append(" <a href='javaScript:void(0)' class='btn btn-info' id='edit_list'>修改列表</a>")
+     $("#edit_list").on("click",function(){
+            $("#manage_modal2").modal("show")
+     })
+     $("#oplist").on("change",function(){
+        index_id = $(this).val()
+
+        if (index_id=="n"){
+        $("#img_show").attr("src","")
+        $("input[name=project_fyname]").val("")
+        $("input[name=p_txt]").val("")
+        $("input[name=p_link]").val("")
+          return false
+        }
+        ele = $(".view-fourth").eq(index_id)
+        img = ele.find(".img-responsive").attr('src')
+        name = ele.find("h3").text()
+
+        p_txt = ele.find("p").text()
+        p_link = ele.find("a").attr("href")
+        $("#img_show").attr("src",img)
+        $("input[name=project_fyname]").val(name)
+        $("input[name=p_txt]").val(p_txt)
+        $("input[name=p_link]").val(p_link)
+     })
+
+
+  $("#form_list").on("submit",function(evt){
+      evt.preventDefault();
+      index_id  = $("#oplist").val()
+
+      if (index_id=="n"){
+          alert("请选择项目")
+        return false
+      }
+      name = $("input[name=project_fyname]").val()
+      ele = $(".view-fourth").eq(index_id)
+      p_txt = $("input[name=p_txt]").val()
+      p_link =  $("input[name=p_link]").val()
+      if ($('#file2').get(0).files.length === 0) {
+         ele.find("h3").text(name)
+         ele.find("p").text(p_txt)
+         ele.find("a").attr("href",p_link)
+         a = $('body')
+             _xsrf = getCookie("_xsrf");
+             $.post("/preview1",{"code":a.html(),"id":{{t_temp_mod.ms_id}},"_xsrf":_xsrf},function(result){
+              if(result==0){
+                alert("{{t_temp_mod.mod_name}}, 保存成功")
+                  $("#manage_modal2").modal("hide")
+           } else{ alert("保存失败,稍后再试.") } })
+
+
+      }else{
+
+      var formData = new FormData($(this)[0]);
+
+       $.ajax({
+           url: '/img?site_id='+{{t_temp_mod.site_id}},
+           type: 'POST',
+           data: formData,
+           async: false,
+           cache: false,
+           contentType: false,
+           enctype: 'multipart/form-data',
+           processData: false,
+           success: function (response) {
+            ele.find("a").attr("href",p_link)
+            ele.find("p").text(p_txt)
+           ele.find("h3").text(name)
+           ele.find(".img-responsive").attr('src',response.link)
+           $("#img_show").attr("src",response.link)
+
+           a = $('body')
+             _xsrf = getCookie("_xsrf");
+             $.post("/preview1",{"code":a.html(),"id":{{t_temp_mod.ms_id}},"_xsrf":_xsrf},function(result){
+              if(result==0){
+                alert("{{t_temp_mod.mod_name}}, 保存成功")
+                 $("#manage_modal2").modal("hide")
+           } else{ alert("保存失败,稍后再试.") } })
+
+           }
+       });
+
+        }
+   return false;
+  })
+
+  {%end%}
+
+      {%if t_temp_mod.mod_id==1%}
+          $("#a_m").append(" <a href='javaScript:void(0)' class='btn btn-info' id='show_change_bg'>修改背景</a>")
+          $("#show_change_bg").on("click",function(){
+          var bg = $("#banner").css("background-image")
+            bg = bg.replace(/.*\s?url\([\'\"]?/, '').replace(/[\'\"]?\).*/, '')
+
+            $("#img_show").attr("src",bg)
+
+             $("#manage_modal1").modal("show")
+          })
+
+
+   $("form").submit(function(evt){
+      evt.preventDefault();
+      var formData = new FormData($(this)[0]);
+   $.ajax({
+       url: '/img?site_id='+{{t_temp_mod.site_id}},
+       type: 'POST',
+       data: formData,
+       async: false,
+       cache: false,
+       contentType: false,
+       enctype: 'multipart/form-data',
+       processData: false,
+       success: function (response) {
+          $("#img_show").attr("src",response.link)
+          $('#banner').attr('style',"background-image:url('"+response.link+"')");
+          a = $('body')
+         _xsrf = getCookie("_xsrf");
+         $.post("/preview1",{"code":a.html(),"id":{{t_temp_mod.ms_id}},"_xsrf":_xsrf},function(result){
+          if(result==0){
+            alert("{{t_temp_mod.mod_name}}, 保存成功")
+       } else{ alert("保存失败,稍后再试.") } })
+
+       }
+   });
+   return false;
+ });
+
+
+           $("#file1").on("change",function(evt){
+              var files = evt.target.files;
+                 $("#img_show").attr("src",window.URL.createObjectURL(this.files[0]))
+                $('#banner').css('background-image', 'url(' + window.URL.createObjectURL(this.files[0]) + ')');
+
+        })
+      {%end%}
+
+
+
+
+
+
+        $(".scroll").click(function(event) {
+            event.preventDefault();
+            $('html,body').animate({ scrollTop: $(this.hash).offset().top }, 1000);
+        });
+    // $('div:has(.mask)').addClass('add_img_editor');
+
+// $(".mask").each(function(){
+//      $(this).append("<span class='btn_'></span>")
+// })
+
+
+ // $('#file').fileupload({
+ //                autoUpload: true,
+ //                formData: {_xsrf: getCookie("_xsrf"),"fileupload_type":"bg"},
+ //                type:"post",
+ //                done: function (e, data) {
+ //                   $('#banner').css('background-image', 'url(' + data.result+ ')');
+ //                    // fileupload_id = $("#fileupload_type").val()
+
+ //                    // if(fileupload_id=="img_backgroundimage"){
+ //                    //   $("#"+fileupload_id).css('background-image', 'url("'+data.result+'")');
+
+ //                    // }else
+ //                    // {
+ //                    //     // alert($("#"+fileupload_id).attr("src"))
+ //                    //      $("#"+fileupload_id).attr("src",""+data.result+"");
+ //                    // }
+
+
+ //                },
+ //                fail: function(e, data) {
+ //                  alert('Fail!');
+ //                }
+
+ //            });
+  $(".fy_edit").editable();
+    $(".img_editor").froalaEditor({
+       imageUploadParam: 'file1',
+        imageUploadURL: '/img',
+         imageAllowedTypes: ['jpeg', 'jpg', 'png'],
+          imageMaxSize: 1 * 1024 * 1024,
+          imageUploadMethod: 'POST',
+         imageUploadParams: {_xsrf: getCookie("_xsrf"),"smid":"{{t_temp_mod.ms_id}}","site_id":{{t_temp_mod.site_id}}},
+         language: 'zh_cn',
+          toolbarInline: true,
+          charCounterCount: false,
+         initOnClick: true,
+          toolbarButtons: ['Bord', 'italic', 'underline', 'strikeThrough', 'color', 'emoticons', '-', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+
+     })
+        $("#btnsave").on("click",function(){
+          a = $('body')
+         _xsrf = getCookie("_xsrf");
+         $.post("/preview1",{"code":a.html(),"id":{{t_temp_mod.ms_id}},"_xsrf":_xsrf},function(result){
+          if(result==0){
+            alert("{{t_temp_mod.mod_name}}, 保存成功")
+
+       } else{ alert("保存失败,稍后再试.") } })
+
+       })
+    });
+
+
+    </script>
+</body>
+</html>
+</textarea>
+    <iframe id=preview></iframe>
+    <script>
+   function getCookie(name) {
+        var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+        return r ? r[1] : undefined;
+    }
+      var delay;
+      // Initialize CodeMirror editor with a nice html5 canvas demo.
+      var editor = CodeMirror.fromTextArea(document.getElementById('faye_code'), {
+        mode: 'text/html',
+           lineNumbers: true,
+           lineWrapping: true,
+            extraKeys: {"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }},
+          foldGutter: true,
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+           extraKeys: {
+        "F11": function(cm) {
+          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+        },
+        "Esc": function(cm) {
+          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+        }
+      }
+      });
+      editor.on("change", function() {
+        clearTimeout(delay);
+        delay = setTimeout(updatePreview, 300);
+      });
+
+      function updatePreview() {
+        var previewFrame = document.getElementById('preview');
+        var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+        preview.open();
+        preview.write(editor.getValue());
+        preview.close();
+      }
+      setTimeout(updatePreview, 300)
+
+
+
+</script>
+

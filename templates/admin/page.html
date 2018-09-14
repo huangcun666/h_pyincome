@@ -1,0 +1,23 @@
+<div class="span12">
+<div class="pagination">  <ul>
+ {% if pagination.has_prev %} <li><a href="{{ pagination.page - 1}}">&laquo; 上页</a></li> {% endif %}
+{%- for page in pagination.iter_pages() %}
+    {% if page %}
+    {% if page != pagination.page %}
+        <li>
+    <a href="{{ page }}">{{ page }}</a></li>
+    {% else %}
+      <li><span class="disabled">{{ page }}</span></li>
+    {% endif %}
+    {% else %}
+    <li>…</li>
+    {% endif %}
+    {%- endfor %}
+    {% if pagination.has_next %}
+        <li><a href="/mobile
+      }}">下页 &raquo;</a></li>
+    {% endif %}
+      </ul>
+</div></div>
+
+

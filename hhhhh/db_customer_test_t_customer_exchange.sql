@@ -1,0 +1,56 @@
+-- MySQL dump 10.13  Distrib 5.7.22, for Linux (x86_64)
+--
+-- Host: 192.168.2.169    Database: db_customer_test
+-- ------------------------------------------------------
+-- Server version	5.7.21
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `t_customer_exchange`
+--
+
+DROP TABLE IF EXISTS `t_customer_exchange`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `t_customer_exchange` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `msg` varchar(500) DEFAULT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `uid` int(11) DEFAULT NULL,
+  `uid_name` varchar(45) DEFAULT NULL,
+  `file_path` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `t_customer_exchange`
+--
+
+LOCK TABLES `t_customer_exchange` WRITE;
+/*!40000 ALTER TABLE `t_customer_exchange` DISABLE KEYS */;
+INSERT INTO `t_customer_exchange` VALUES (2,'6666',4082,'2018-08-30 06:10:58',116,'陈太智',NULL),(3,'777',4082,'2018-08-30 06:22:36',116,'陈太智',NULL),(4,'11111',4083,'2018-08-30 06:24:59',116,'陈太智',NULL),(5,'222',4083,'2018-08-30 06:31:09',116,'陈太智',NULL),(6,'333',4083,'2018-08-30 06:31:35',116,'陈太智',NULL),(7,'444',4083,'2018-08-30 06:31:42',116,'陈太智',NULL),(8,'534',4083,'2018-08-30 06:34:43',116,'陈太智',NULL),(9,'908',4083,'2018-08-30 06:38:46',116,'陈太智',NULL),(10,'2',4083,'2018-08-30 08:13:30',116,'陈太智',NULL),(11,'21321',4083,'2018-08-30 08:23:04',116,'陈太智',NULL),(12,'3434',4083,'2018-08-30 08:24:46',116,'陈太智',NULL),(13,'22222222',4083,'2018-08-30 08:25:19',116,'陈太智',NULL),(14,'77777',4083,'2018-08-30 08:28:49',116,'陈太智',NULL),(15,'123',4083,'2018-08-30 08:30:25',116,'陈太智',NULL),(16,'范德萨',4082,'2018-08-30 08:52:50',98,'吴蔚亮',NULL),(17,'123',4087,'2018-09-10 03:01:52',116,'陈太智',NULL),(18,'444',4087,'2018-09-10 03:02:38',116,'陈太智',NULL),(19,'555',4087,'2018-09-10 03:02:46',116,'陈太智',NULL),(20,'分分分分分',4087,'2018-09-10 07:08:11',116,'陈太智','/static/customer_record/4087/c6c70384-e512-45c1-8085-33f8e6958a61_4087.jpg'),(21,'6666',4087,'2018-09-10 07:14:59',116,'陈太智','');
+/*!40000 ALTER TABLE `t_customer_exchange` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2018-09-14 11:34:39

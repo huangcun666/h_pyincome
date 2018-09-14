@@ -1,0 +1,164 @@
+{% extends "../base.html" %} {%block title%}销售计划{%end%} {% block body %}
+
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        主面板
+    </li>
+    <li class="breadcrumb-item active">销售计划
+
+
+
+
+    </li>
+
+</ol>
+<nav>
+    <div class="nav faye-a nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link {%if not todo%}active{%end%}" id="nav-home-tab"
+        href="/plan?tag=list_plan{%if my%}&my=1{%end%}" >全 部
+        <span class="badge badge-danger">{{sums.a}}</span></a></a>
+    <a class="nav-item nav-link {%if todo=='1'%}active{%end%}"
+      href="/plan?tag=list_plan&todo=1{%if my%}&my=1{%end%}" style="font-size:13px;">待完成
+      <span class="badge badge-danger">{{sums.b}}</span></a>
+      <a class="nav-item nav-link {%if todo=='2'%}active{%end%}"
+      href="/plan?tag=list_plan&todo=2{%if my%}&my=1{%end%}" style="font-size:13px;"> 已完成
+      <span class="badge badge-danger">{{sums.c}}</span></a>
+      <a class="nav-item nav-link {%if todo=='3'%}active{%end%}"
+      href="/plan?tag=list_plan&todo=3{%if my%}&my=1{%end%}" style="font-size:13px;"> 已过期
+      <span class="badge badge-danger">{{sums.d}}</span></a>
+    </div>
+</nav>
+<br>
+    <div class="card mb-3">
+    <table class="table table-bordered" style="width: 100%;" >
+        <thead style="background-color:#000;color:#fff ; font-size:12px;">
+            <tr>
+
+                <th width="80">来源</th>
+
+                <th  >计划内容</th>
+                <th width="100">实施时间</th>
+                <th width="80">计划类型</th>
+
+                <th width="80">创建人</th>
+                <th width="120">创建时间</th>
+                <th width='120'>到期时间</th>
+                <th width='80'>查看</th>
+                {%if todo!='2'%}
+                <th width="80"></th>
+                {%end%}
+            </tr>
+        </thead>
+        <tbody style=" font-size:12px;">
+            {%if t_plan%} {%for item in t_plan%}
+
+            <tr>
+<td>
+    {{item.rtype_name}}
+</td>
+                <td>
+                  {{item.plan_body}}
+                </td>
+                <td>
+                    {{item.reminder_at}}
+                </td>
+                <td>
+                    {{item.plan_type_id_name}}
+                </td>
+                <td>
+                    {{item.uid_name}}
+                </td>
+                <td>
+                    {{item.created_at}}
+                </td>
+                <td>{%if item.is_read==1%}已完成{%elif item.dq<0 %}已过期{{abs(item.dq)}}天{%elif item.dq==0%}今天到期{%else%}{{item.dq}}{%end%}</td>
+                <td><a class="btn btn-info" href="{{item.rel_url}}">查看</a></td>
+                {%if todo!='2'%}<td>{%if item.is_read==0%}<a class="btn btn-info confirm_finish" id="{{item.id}}" rel_id="{{item.rel_id}}" href="javascript:void(0);">确认完成</a>{%end%}</td>   
+                    {%end%}
+            </tr>
+            {%end%} {%else%}
+            <tr>
+                <td colspan="26">加油哦, 目前还没有没有数据哦。</td>
+            </tr>
+
+            {%end%}
+        </tbody>
+    </table>
+
+    <div class="col-sm-12 col-md-7">
+        <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+            <ul class="pagination">
+                {% if pagination.has_prev %}
+                <li class="paginate_button page-item previous " id="dataTable_previous">
+                    <a href="?tag=list_plan&page={{ pagination.page - 1}}{% if todo%}&todo={{todo}}{%end%}{%if params["my"]%}&my={{params["my"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a>
+                </li>
+
+
+
+                {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                <li class="paginate_button page-item ">
+                    <a href="?tag=list_plan&page={{page}}{% if todo%}&todo={{todo}}{%end%}{%if params["my"]%}&my={{params["my"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
+                </li>
+                {% else %}
+                <li class="paginate_button page-item active">
+                    <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a>
+                </li>
+                {% end %} {% else %}
+                <li class="paginate_button page-item ">
+                    <span class="active">
+                        <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a>
+                    </span>
+                </li>
+                {% end %} {%end %} {% if pagination.has_next %}
+                <li class="paginate_button  page-item next" id="dataTable_next">
+                    <a href="?tag=list_plan&page={{pagination.page+1}}{% if todo%}&todo={{todo}}{%end%}{%if params["my"]%}&my={{params["my"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
+                </li>
+                {% end %} </ul>
+        </div>
+    </div>
+
+</div></div></div></div>
+
+<!-- Modal -->
+
+
+
+{%end%} {%block js%}
+
+<script>
+    $(function () {
+        _xsrf = getCookie("_xsrf")
+        $("#start").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+        $("#end").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+
+
+            $("#collapseMulti_plan_nv").click()
+    
+    $('.confirm_finish').on('click',function () {
+        plan_id=$(this).attr('id') 
+        rel_id=$(this).attr('rel_id')
+        if(confirm('确认完成？')){
+            $.post('/plan?tag=add',
+            {
+                '_xsrf':_xsrf,
+                'plan_id':plan_id,
+                'rel_id':rel_id
+            },function (result) { 
+                location.reload()
+             }
+            )
+        }
+     })
+
+
+
+
+    })
+</script> {%end%}

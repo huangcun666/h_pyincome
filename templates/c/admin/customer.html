@@ -1,0 +1,184 @@
+
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>客户详情  <a class="btn btn-primary btn-sm  customer_new "  href="customer?tag=add" >新建客户</a></h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+
+<fieldset>
+
+
+          {%if 'time_list' in globals()%}
+              <form action="/searchdate",method="GET" class="form-inline">
+                <div class="form-group">
+<div class="main" >
+              <select name="select_date"  style="height:40px;">
+                {% if time_list[0]=='end_hetong'%}
+                  <option value="end_hetong" selected='selected'>合同到期</option>
+                  {%else%}
+                  <option value="end_hetong">合同到期</option>                 
+                  {%end%}
+                  {% if time_list[0]=='date_zhizhao'%}
+                  <option value="date_zhizhao" selected='selected'>执照期限</option>
+                  {%else%}
+                  <option value="date_zhizhao">执照期限</option>
+                  {%end%}
+                  {% if time_list[0]=='date_address'%}
+                  <option value="date_address" selected='selected'>地址期限</option>
+                  {%else%}
+                  <option value="date_address">地址期限</option>
+                  {%end%}
+                </select>
+         
+                <input value="{{time_list[1]}}" placeholder="起始时间" aria-controls="dataTable" type="date" name="start_time">
+             
+                至
+                <input value="{{time_list[2]}}" placeholder="结束时间" aria-controls="dataTable" type="date" name="end_time">
+                <input type="submit" class="insert" value="查询">
+                </div>
+                </form>
+                {%else%}
+                <form action="/searchdate",method="GET" class="form-inline">
+                  <div class="form-group">
+                  <select name="select_date" style="height:40px;">>
+                      <option value="end_hetong">合同到期</option>                 
+                      <option value="date_zhizhao">执照期限</option>
+                      <option value="date_address">地址期限</option>
+                    </select>
+                    <input  placeholder="起始时间"  aria-controls="dataTable" type="date" name="start_time">
+                    至
+                    <input placeholder="结束时间" aria-controls="dataTable" type="date" name="end_time">
+                    <input type="submit" class="insert" value="查询">
+                    </div>
+                    </form>
+           {%end%}
+
+          <div class="widget widget-table action-table">
+            <div class="widget-header"> <i class="icon-th-list"></i>
+              <h3>我的客户列表</h3>
+            </div>
+            <!-- /widget-header -->
+            <div class="widget-content">
+            
+              <table class="table" style="margin:5px;">
+                     <thead>
+                                <tr>
+                                <th>客户编号</th>
+                                <th>公司名称</th>
+                                <th style="min-width:40px;">联系人</th>
+                                <th style="min-width:30px;">电话</th>
+                                <th>业务内容</th>
+                                <th>地址类型</th>
+                                <th>合同起始</th>
+                                <th>合同到期</th>
+                                <th>成立日期</th>
+                                <th>执照期限</th>
+                                <th>地址期限</th>
+                                <th>客服顾问</th>
+                                <th>销售顾问</th>
+                                <th>工商专员</th>
+                                <th>会计</th>
+                                <th style="min-width:67px;">地址供应商</th>
+                                <th></th>
+                                </tr>
+                            </thead>
+                <tbody>
+     {%for customer in customers%}
+                    <tr id={{customer.id}}>
+                        <td>{{customer.customer_id}}</td>
+                        <td>{{customer.company}}</td>
+                        <td>{{customer.linkman}}</td>
+                        <td>{{customer.phone}}</td>
+                        <td>{{customer.yewu_content}}</td>
+                        <td>{{customer.address_style}}</td>
+                        <td>
+                          {%if customer.start_hetong == None%}
+                          {%else%}
+                          {{customer.start_hetong}}×
+￼
+
+                          {%end%}
+                        </td>
+                        <td>
+                          {%if customer.end_hetong == None%}
+                          {%else%}
+                          {{customer.end_hetong}}
+                          {%end%}
+                        </td>
+                        <td>
+                          {%if customer.date_chengli == None%}
+                          {%else%}
+                          {{customer.date_chengli}}
+                          {%end%}
+                        </td>
+                        <td>
+                          {%if customer.date_zhizhao == None%}
+                          {%else%}
+                          {{customer.date_zhizhao}}
+                          {%end%}
+                        </td>
+                        <td>
+                          {%if customer.date_address == None%}
+                          {%else%}
+                          {{customer.date_address}}
+                          {%end%}
+                        </td>
+                        <td>{{customer.kf_name}}</td>
+                        <td>{{customer.sale_name}}</td>
+                        <td>{{customer.zhuanshang}}</td>
+                        <td>{{customer.kuaiji}}</td>
+                        <td>{{customer.address_gongying}}</td>
+                        <td><a href="#myModal" role="button" class="btn" data-toggle="modal">查看演示案例</a><a class="btn customer_detail btn-sm control"  type='button' href="/customer_detail/{{customer.id}}">查看</a></td>
+
+                     
+                    </tr>
+                    {%end%}
+                
+                </tbody>
+              </table>
+            </div>
+            <!-- /widget-content --> 
+          </div>
+         
+        </div>
+
+      		<!-- Button to trigger modal -->
+</fieldset>
+
+</div>
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+
+
+ 
+
+    {%end%} 
+
+    {%block js%}
+
+<script>
+
+$(function () {
+	
+
+});
+
+</script>
+
+
+    {%end%}

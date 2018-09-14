@@ -1,0 +1,1133 @@
+
+ {% extends "base.html" %} {%block title%}客户管理{%end%} {% block body %}
+<div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>客户详情 <a class="btn btn-danger btn-sm delete customer_delete " type="button" name={{customer.customer_id}} id={{customer.id}} data-toggle="modal"
+                data-target="#delete_modle">删除</a></h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+<form id="edit-profile" class="form-horizontal">
+<fieldset>
+<div class="card mb-3">
+<style>
+.faye-table {width: 100%; height: auto; /*background-color: purple;*/ margin: 0% auto; font-weight: bold;}
+.faye-table ul {overflow: hidden; margin: 0; padding: 0;}
+.faye-table ul li {width: 100%; list-style: none; box-sizing: border-box; border-bottom: 1px solid #dedede; width: 100%; height:40px; overflow: hidden;}
+.faye-table ul li div {float: left; height: 40px; line-height: 40px; text-align: center; border-left: 1px solid #dedede;}
+.faye-table ul li div.fayet {width:8%; background-color:#eee; border-bottom: 1px solid #dedede; }
+.faye-table ul li div.fayet1 {width:12%;}
+.faye-table ul li div.fayet3 {width:92%;}
+.faye-table ul li div.fayet4 {width:10%;}
+.faye-table ul li div.fayet5 {width:15%;}
+.faye-table ul li div.fayet6 {width:33%; height: 180px; border-left: 1px solid #dedede; }
+.faye-table ul li div.fayet7 {width:34%; height: 180px; border-left: 1px solid #dedede;}
+.faye-table ul li.gaodu {height: 180px;}
+.faye-table ul li div.direction {text-align: left; padding-left: 10px; box-sizing: border-box;}
+.faye-table ul li div.fayet6 span {display: block; width: 100%; height: 40px; border-bottom: 1px solid #dedede; background-color:#eee; }
+.faye-table ul li div.fayet7 span {display: block; width: 100%; height: 40px; border-bottom: 1px solid #dedede; background-color:#eee; }
+.faye-table ul li div.fayet6 i {display: block; width: 100%; height: 140px; line-height: 22px; font-style: normal; padding-top:8px; box-sizing: border-box;}
+.faye-table ul li div.fayet7 i {display: block; width: 100%; height: 140px; line-height: 22px; font-style: normal; padding-top:8px; box-sizing: border-box;}
+.message-item {
+margin-bottom: 5px;
+margin-left: 40px;
+position: relative;
+}
+.message-item .message-inner {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 10px;
+position: relative;
+}
+.message-item .message-inner:before {
+border-right: 10px solid #ddd;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -20px;
+top: 6px;
+width: 0;
+}
+.message-item .message-inner:after {
+border-right: 10px solid #fff;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -18px;
+top: 6px;
+width: 0;
+}
+.message-item:before {
+background: #fff;
+border-radius: 2px;
+bottom: -30px;
+box-shadow: 0 0 3px rgba(0,0,0,0.2);
+content: "";
+height: 100%;
+left: -30px;
+position: absolute;
+width: 3px;
+}
+.message-item:after {
+background: #fff;
+border: 2px solid #ccc;
+border-radius: 50%;
+box-shadow: 0 0 5px rgba(0,0,0,0.1);
+content: "";
+height: 15px;
+left: -36px;
+position: absolute;
+top: 10px;
+width: 15px;
+}
+.clearfix:before, .clearfix:after {
+content: " ";
+display: table;
+}
+.message-item .message-head {
+border-bottom: 1px solid #eee;
+margin-bottom: 8px;
+padding-bottom: 8px;
+}
+.message-item .message-head .avatar {
+margin-right: 20px;
+}
+.message-item .message-head .user-detail {
+overflow: hidden;
+}
+.message-item .message-head .user-detail h5 {
+font-size: 16px;
+font-weight: bold;
+margin: 0;
+}
+.message-item .message-head .post-meta {
+float: left;
+padding: 0 15px 0 0;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item img {
+min-height: 25px;
+max-height: 25px;
+}
+.modal-ku {
+width: 1750px;
+margin: auto;
+}
+</style>
+<div class="faye-table">
+<ul>
+<li>
+<div class="fayet" style="border-left: none;">客户编号: </div>
+ {% extends "base.html" %} {%block title%}客户管理{%end%} {% block body %}
+<div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>客户详情 <a class="btn btn-danger btn-sm delete customer_delete " type="button" name={{customer.customer_id}} id={{customer.id}} data-toggle="modal"
+                data-target="#delete_modle">删除</a></h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+<form id="edit-profile" class="form-horizontal">
+<fieldset>
+<div class="card mb-3">
+<style>
+.faye-table {width: 100%; height: auto; /*background-color: purple;*/ margin: 0% auto; font-weight: bold;}
+.faye-table ul {overflow: hidden; margin: 0; padding: 0;}
+.faye-table ul li {width: 100%; list-style: none; box-sizing: border-box; border-bottom: 1px solid #dedede; width: 100%; height:40px; overflow: hidden;}
+.faye-table ul li div {float: left; height: 40px; line-height: 40px; text-align: center; border-left: 1px solid #dedede;}
+.faye-table ul li div.fayet {width:8%; background-color:#eee; border-bottom: 1px solid #dedede; }
+.faye-table ul li div.fayet1 {width:12%;}
+.faye-table ul li div.fayet3 {width:92%;}
+.faye-table ul li div.fayet4 {width:10%;}
+.faye-table ul li div.fayet5 {width:15%;}
+.faye-table ul li div.fayet6 {width:33%; height: 180px; border-left: 1px solid #dedede; }
+.faye-table ul li div.fayet7 {width:34%; height: 180px; border-left: 1px solid #dedede;}
+.faye-table ul li.gaodu {height: 180px;}
+.faye-table ul li div.direction {text-align: left; padding-left: 10px; box-sizing: border-box;}
+.faye-table ul li div.fayet6 span {display: block; width: 100%; height: 40px; border-bottom: 1px solid #dedede; background-color:#eee; }
+.faye-table ul li div.fayet7 span {display: block; width: 100%; height: 40px; border-bottom: 1px solid #dedede; background-color:#eee; }
+.faye-table ul li div.fayet6 i {display: block; width: 100%; height: 140px; line-height: 22px; font-style: normal; padding-top:8px; box-sizing: border-box;}
+.faye-table ul li div.fayet7 i {display: block; width: 100%; height: 140px; line-height: 22px; font-style: normal; padding-top:8px; box-sizing: border-box;}
+.message-item {
+margin-bottom: 5px;
+margin-left: 40px;
+position: relative;
+}
+.message-item .message-inner {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 10px;
+position: relative;
+}
+.message-item .message-inner:before {
+border-right: 10px solid #ddd;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -20px;
+top: 6px;
+width: 0;
+}
+.message-item .message-inner:after {
+border-right: 10px solid #fff;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -18px;
+top: 6px;
+width: 0;
+}
+.message-item:before {
+background: #fff;
+border-radius: 2px;
+bottom: -30px;
+box-shadow: 0 0 3px rgba(0,0,0,0.2);
+content: "";
+height: 100%;
+left: -30px;
+position: absolute;
+width: 3px;
+}
+.message-item:after {
+background: #fff;
+border: 2px solid #ccc;
+border-radius: 50%;
+box-shadow: 0 0 5px rgba(0,0,0,0.1);
+content: "";
+height: 15px;
+left: -36px;
+position: absolute;
+top: 10px;
+width: 15px;
+}
+.clearfix:before, .clearfix:after {
+content: " ";
+display: table;
+}
+.message-item .message-head {
+border-bottom: 1px solid #eee;
+margin-bottom: 8px;
+padding-bottom: 8px;
+}
+.message-item .message-head .avatar {
+margin-right: 20px;
+}
+.message-item .message-head .user-detail {
+overflow: hidden;
+}
+.message-item .message-head .user-detail h5 {
+font-size: 16px;
+font-weight: bold;
+margin: 0;
+}
+.message-item .message-head .post-meta {
+float: left;
+padding: 0 15px 0 0;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item img {
+min-height: 25px;
+max-height: 25px;
+}
+.modal-ku {
+width: 1750px;
+margin: auto;
+}
+</style>
+<div class="faye-table">
+<ul>
+<li>
+<div class="fayet" style="border-left: none;">客户编号: </div>
+<div class="fayet1">{{customer.id}}</div>
+<div class="fayet">公司名称</div>
+<div class="fayet1"> {{customer.company}}
+</div>
+<div class="fayet">客户联系人</div>
+<div class="fayet1">
+{{customer.linkman}}
+</div>
+<div class="fayet">电话</div>
+<div class="fayet1"> 
+{{customer.phone}}
+</div>
+<div class="fayet">创建时间</div>
+<div class="fayet1"> 
+{{customer.created_at}}
+</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">业务内容</div>
+<div class="fayet3"> 
+天河虚拟地址注册合伙企业3000
+</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">地址类型</div>
+<div class="fayet3"> 
+天河虚拟
+</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">合同情况</div>
+<div class="fayet3">
+合同在途
+
+
+<span class="bg-info" style="color:#fff;font-size:16px; padding:5px;"> <b>待合同岗确认
+</b></span>
+
+</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">来源关键词</div>
+<div class="fayet3">
+
+<span style="background-color:yellow">非推广业务 无关键词</span>
+
+</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">是否记账</div>
+<div class="fayet1">  否 </div>
+<div class="fayet">来源关键词</div>
+<div class="fayet1">SEO
+</div>
+<div class="fayet">签约场景</div>
+<div class="fayet1"> 
+远程
+</div>
+<div class="fayet">成交周期</div>
+<div class="fayet1"> 21 </div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">来源渠道</div>
+<div class="fayet1">推广</div>
+<div class="fayet">来源方式</div>
+<div class="fayet1">  在线咨询 </div>
+<div class="fayet">创建人</div>
+<div class="fayet1">  庄培润 </div>
+<div class="fayet">在线客服</div>
+<div class="fayet1">陈小奋</div>
+<div class="fayet">客户推荐人</div>
+<div class="fayet1"> </div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">客服顾问</div>
+<div class="fayet1">陈小奋</div>
+<div class="fayet">销售顾问</div>
+<div class="fayet1">庄培润</div>
+<div class="fayet">工商专员</div>
+<div class="fayet1">陈小银&nbsp;</div>
+<div class="fayet">内部推荐人</div>
+<div class="fayet1"></div>
+<div class="fayet">组长</div>
+<div class="fayet1"> 冯恒冠</div>
+</li>
+<li>
+<div class="fayet">备注</div>
+<div class="fayet1"> 陈小银做资料快递给客户</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">总服务费</div>
+<div class="fayet1">  3000.00 </div>
+<div class="fayet">约定定金</div>
+<div class="fayet1">  2400.00 </div>
+<div class="fayet">合同到款</div>
+<div class="fayet1"> 2400.00</div>
+<div class="fayet">余额</div>
+<div class="fayet1">600.00</div>
+</li>
+<li class="gaodu">
+<div class="fayet6" style="border-left: none;">
+<span>合同定金 (合计: 2400.00 元)</span>
+<i>
+
+
+第1笔 2400.00元
+基本户 2018-05-02
+<br>
+
+
+
+</i>
+</div>
+<div class="fayet7">
+<span>尾款 (合计: 0.00 元)</span>
+<i>
+
+ 
+</i>
+</div>
+<div class="fayet6">
+<span>代收款（合计：0.00 元）</span>
+<i>
+
+ 
+</i>
+</div>
+</li>
+</ul>
+</div>
+<div class="card-footer text-muted"> 最后更新时间 2018-04-10 03:21:29</div>
+</div>
+</fieldset>
+</form>
+</div>
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+</div>
+
+<div class="main"  style="margin:50px;">
+<body class="fixed-nav sticky-footer" id="page-top">
+  <!-- Navigation-->
+  <div class="content" style="font-size: 16px;">
+    <div class="container-fluid">
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-table"></i>客户详情 <a class="btn btn-danger btn-sm delete customer_delete " type="button" name={{customer.customer_id}} id={{customer.id}} data-toggle="modal"
+                data-target="#delete_modle">删除</a>
+        
+        <a class="btn customer_change btn-sm" type="button" id="change" href="/changecustomer/{{customer.id}}">修改</a>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+        <div class="form-group">
+            <div class="form-row">
+            <div class="col-md-4">
+                <p>客户编号:{{customer.customer_id}}</p>
+            </div>
+            <div class="col-md-4">
+                    <p>公司名称:{{customer.company}}</p>
+            </div>
+            <div class="col-md-4">
+                    <p>联系人:{{customer.linkman}}</p>
+            </div>
+            </div>
+            <div class="form-row">
+                    <div class="col-md-4">
+                        <p>电话:{{customer.phone}}</p>
+                    </div>
+                    <div class="col-md-4">
+                            <p>业务内容:{{customer.yewu_content}}</p>
+                    </div>
+                    <div class="col-md-4">
+                            <p>地址类型:{{customer.address_style}}</p>
+                    </div>
+                    </div>
+                    <div class="form-row">
+                            <div class="col-md-4">
+                                <p>合同起始:{{customer.start_hetong}}</p>
+                            </div>
+                            <div class="col-md-4">
+                                    <p>合同到期:{{customer.end_hetong}}</p>
+                            </div>
+                            <div class="col-md-4">
+                                    <p>成立日期:{{customer.date_chengli}}</p>
+                            </div>
+                            </div>    
+                            <div class="form-row">
+                                    <div class="col-md-4">
+                                        <p>执照期限:{{customer.date_zhizhao}}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                            <p>地址期限:{{customer.date_address}}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                                <p>客服顾问:{{customer.kf_name}}</p>
+                                            </div>
+                                    </div> 
+                                    <div class="form-row">
+                                            <div class="col-md-4">
+                                                <p>销售顾问:{{customer.sale_name}}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <p>工商专员:{{customer.zhuanshang}}</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                        <p>会计:{{customer.kuaiji}}</p>
+                                                    </div>
+                                            </div>   
+                                    <div class="form-row">
+                                        <div class="col-md-4">
+                                                <p>地址供应商:{{customer.address_gongying}}</p>
+                                        </div>
+                                    </div>
+
+                   
+            </div>
+            
+        </div>
+
+        
+        </div>
+        </div>
+    </div>
+
+    
+    </div>
+    <div class="col-lg-12">
+<!-- Card Columns Example Social Feed-->
+
+<!-- Example Social Card-->
+
+<div class="card mb-3">
+<div class="card-body ">
+<h6 class="card-title mb-1 "><a href="#">办理业务记录</a>
+</h6>
+</div>
+<hr class="my-0">
+
+
+<div class="card-body py-2 ">
+<span class="clearfix z-1">
+
+（编号：154 ） 2018-04-23 变更股权+地址1500+申请一般纳税人资格1200+记账（小规模18年3月-4月460元）
+
+ 
+
+
+
+</span>
+</div>
+
+<div class="card-body py-2 ">
+<span class="clearfix z-1">
+
+（编号：152 ） 2018-04-23  18年5月-19年4月7200元+账册300记账半年一付，账册后半年再付
+
+
+
+
+</span>
+</div>
+
+
+ <hr class="my-0">
+
+
+<div class="card-footer text-muted small">当前有 条业务记录
+</div>
+</div>
+
+
+
+
+<!-- Example Social Card-->
+
+<div class="card mb-3">
+        <div class="card-body ">
+                <h6 class="card-title mb-1 ">
+                        <a href="#">业务到期管理</a> / 
+
+                        <a href="">新建</a>
+                </h6>
+        </div>
+        <hr class="my-0">
+
+
+<table class="table" style="margin:5px;">
+        <thead>
+                <tr>
+                        <th>合同内容
+</th>
+                
+                        <th style="min-width:40px;">合同开始时间
+</th>
+                        <th style="min-width:30px;">合同结束时间</th>
+                        <th>创建人</th>
+                        <th>建立时间</th>
+                        <th>最后更新时间</th>
+                        <th>当前状态</th>
+         
+                </tr>
+        </thead>
+        <tbody>
+      
+                <tr>
+                                <td>18年5月-19年4月7200元+账册300记账半年
+                                </td>
+                                <td>2018-04-26
+                                </td>
+                                <td >2019-04-26
+                                </td>
+                                <td>周萍</td>
+                                <td>2018-04-26</td>
+                                <td>2018-04-26</td>
+                                <td><font color='green'>正常</font></td>
+                
+                </tr>
+
+<tr>
+        <td>17年5月-18年4月7200元+账册300记账半年
+        </td>
+        <td>2017-04-26
+        </td>
+        <td>2018-05-26
+        </td>
+        <td>周萍</td>
+        <td>2017-04-26</td>
+        <td>2017-04-26</td>
+        <td><font color='blue'>即将过期</font></td>
+
+</tr>
+
+<tr>
+        <td>17年5月-18年4月7200元+账册300记账半年
+        </td>
+        <td>2017-04-26
+        </td>
+        <td>2018-05-26
+        </td>
+        <td>周萍</td>
+        <td>2017-04-26</td>
+        <td>2017-04-26</td>
+        <td>
+                <font color='red'>已过期</font>
+        </td>
+
+</tr>
+                </tbody>
+                </table>
+
+
+        <hr class="my-0">
+
+
+        <div class="card-footer text-muted small">当前有 条业务记录
+        </div>
+</div>
+
+<!-- Example Social Card-->
+
+<div class="card mb-3">
+        <div class="card-body ">
+                <h6 class="card-title mb-1 ">
+                        <a href="#">办理业务记录</a>
+                </h6>
+        </div>
+        <hr class="my-0">
+
+
+        <div class="card-body py-2 ">
+                <span class="clearfix z-1">
+
+                        （编号：154 ） 2018-04-23 变更股权+地址1500+申请一般纳税人资格1200+记账（小规模18年3月-4月460元）
+
+
+
+
+
+                </span>
+        </div>
+
+        <div class="card-body py-2 ">
+                <span class="clearfix z-1">
+
+                        （编号：152 ） 2018-04-23 18年5月-19年4月7200元+账册300记账半年一付，账册后半年再付
+
+
+
+
+                </span>
+        </div>
+
+
+        <hr class="my-0">
+
+
+        <div class="card-footer text-muted small">当前有 条业务记录
+        </div>
+</div>
+<!-- /Card Columns-->
+</div>
+        
+        </div>
+        <!-- /span6 --> 
+
+    {%end%} 
+<div class="fayet1">{{customer.id}}</div>
+<div class="fayet">公司名称</div>
+<div class="fayet1"> {{customer.company}}
+</div>
+<div class="fayet">客户联系人</div>
+<div class="fayet1">
+{{customer.linkman}}
+</div>
+<div class="fayet">电话</div>
+<div class="fayet1"> 
+{{customer.phone}}
+</div>
+<div class="fayet">创建时间</div>
+<div class="fayet1"> 
+{{customer.created_at}}
+</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">业务内容</div>
+<div class="fayet3"> 
+天河虚拟地址注册合伙企业3000
+</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">地址类型</div>
+<div class="fayet3"> 
+天河虚拟
+</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">合同情况</div>
+<div class="fayet3">
+合同在途
+
+
+<span class="bg-info" style="color:#fff;font-size:16px; padding:5px;"> <b>待合同岗确认
+</b></span>
+
+</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">来源关键词</div>
+<div class="fayet3">
+
+<span style="background-color:yellow">非推广业务 无关键词</span>
+
+</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">是否记账</div>
+<div class="fayet1">  否 </div>
+<div class="fayet">来源关键词</div>
+<div class="fayet1">SEO
+</div>
+<div class="fayet">签约场景</div>
+<div class="fayet1"> 
+远程
+</div>
+<div class="fayet">成交周期</div>
+<div class="fayet1"> 21 </div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">来源渠道</div>
+<div class="fayet1">推广</div>
+<div class="fayet">来源方式</div>
+<div class="fayet1">  在线咨询 </div>
+<div class="fayet">创建人</div>
+<div class="fayet1">  庄培润 </div>
+<div class="fayet">在线客服</div>
+<div class="fayet1">陈小奋</div>
+<div class="fayet">客户推荐人</div>
+<div class="fayet1"> </div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">客服顾问</div>
+<div class="fayet1">陈小奋</div>
+<div class="fayet">销售顾问</div>
+<div class="fayet1">庄培润</div>
+<div class="fayet">工商专员</div>
+<div class="fayet1">陈小银&nbsp;</div>
+<div class="fayet">内部推荐人</div>
+<div class="fayet1"></div>
+<div class="fayet">组长</div>
+<div class="fayet1"> 冯恒冠</div>
+</li>
+<li>
+<div class="fayet">备注</div>
+<div class="fayet1"> 陈小银做资料快递给客户</div>
+</li>
+<li>
+<div class="fayet" style="border-left: none;">总服务费</div>
+<div class="fayet1">  3000.00 </div>
+<div class="fayet">约定定金</div>
+<div class="fayet1">  2400.00 </div>
+<div class="fayet">合同到款</div>
+<div class="fayet1"> 2400.00</div>
+<div class="fayet">余额</div>
+<div class="fayet1">600.00</div>
+</li>
+<li class="gaodu">
+<div class="fayet6" style="border-left: none;">
+<span>合同定金 (合计: 2400.00 元)</span>
+<i>
+
+
+第1笔 2400.00元
+基本户 2018-05-02
+<br>
+
+
+
+</i>
+</div>
+<div class="fayet7">
+<span>尾款 (合计: 0.00 元)</span>
+<i>
+
+ 
+</i>
+</div>
+<div class="fayet6">
+<span>代收款（合计：0.00 元）</span>
+<i>
+
+ 
+</i>
+</div>
+</li>
+</ul>
+</div>
+<div class="card-footer text-muted"> 最后更新时间 2018-04-10 03:21:29</div>
+</div>
+</fieldset>
+</form>
+</div>
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+</div>
+
+<div class="main"  style="margin:50px;">
+<body class="fixed-nav sticky-footer" id="page-top">
+  <!-- Navigation-->
+  <div class="content" style="font-size: 16px;">
+    <div class="container-fluid">
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-table"></i>客户详情 <a class="btn btn-danger btn-sm delete customer_delete " type="button" name={{customer.customer_id}} id={{customer.id}} data-toggle="modal"
+                data-target="#delete_modle">删除</a>
+        
+        <a class="btn customer_change btn-sm" type="button" id="change" href="/changecustomer/{{customer.id}}">修改</a>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+        <div class="form-group">
+            <div class="form-row">
+            <div class="col-md-4">
+                <p>客户编号:{{customer.customer_id}}</p>
+            </div>
+            <div class="col-md-4">
+                    <p>公司名称:{{customer.company}}</p>
+            </div>
+            <div class="col-md-4">
+                    <p>联系人:{{customer.linkman}}</p>
+            </div>
+            </div>
+            <div class="form-row">
+                    <div class="col-md-4">
+                        <p>电话:{{customer.phone}}</p>
+                    </div>
+                    <div class="col-md-4">
+                            <p>业务内容:{{customer.yewu_content}}</p>
+                    </div>
+                    <div class="col-md-4">
+                            <p>地址类型:{{customer.address_style}}</p>
+                    </div>
+                    </div>
+                    <div class="form-row">
+                            <div class="col-md-4">
+                                <p>合同起始:{{customer.start_hetong}}</p>
+                            </div>
+                            <div class="col-md-4">
+                                    <p>合同到期:{{customer.end_hetong}}</p>
+                            </div>
+                            <div class="col-md-4">
+                                    <p>成立日期:{{customer.date_chengli}}</p>
+                            </div>
+                            </div>    
+                            <div class="form-row">
+                                    <div class="col-md-4">
+                                        <p>执照期限:{{customer.date_zhizhao}}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                            <p>地址期限:{{customer.date_address}}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                                <p>客服顾问:{{customer.kf_name}}</p>
+                                            </div>
+                                    </div> 
+                                    <div class="form-row">
+                                            <div class="col-md-4">
+                                                <p>销售顾问:{{customer.sale_name}}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <p>工商专员:{{customer.zhuanshang}}</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                        <p>会计:{{customer.kuaiji}}</p>
+                                                    </div>
+                                            </div>   
+                                    <div class="form-row">
+                                        <div class="col-md-4">
+                                                <p>地址供应商:{{customer.address_gongying}}</p>
+                                        </div>
+                                    </div>
+
+                   
+            </div>
+            
+        </div>
+
+        
+        </div>
+        </div>
+    </div>
+
+    
+    </div>
+    <div class="col-lg-12">
+<!-- Card Columns Example Social Feed-->
+
+<!-- Example Social Card-->
+
+<div class="card mb-3">
+<div class="card-body ">
+<h6 class="card-title mb-1 "><a href="#">办理业务记录</a>
+</h6>
+</div>
+<hr class="my-0">
+
+
+<div class="card-body py-2 ">
+<span class="clearfix z-1">
+
+（编号：154 ） 2018-04-23 变更股权+地址1500+申请一般纳税人资格1200+记账（小规模18年3月-4月460元）
+
+ 
+
+
+
+</span>
+</div>
+
+<div class="card-body py-2 ">
+<span class="clearfix z-1">
+
+（编号：152 ） 2018-04-23  18年5月-19年4月7200元+账册300记账半年一付，账册后半年再付
+
+
+
+
+</span>
+</div>
+
+
+ <hr class="my-0">
+
+
+<div class="card-footer text-muted small">当前有 条业务记录
+</div>
+</div>
+
+
+
+
+<!-- Example Social Card-->
+
+<div class="card mb-3">
+        <div class="card-body ">
+                <h6 class="card-title mb-1 ">
+                        <a href="#">业务到期管理</a> / 
+
+                        <a href="">新建</a>
+                </h6>
+        </div>
+        <hr class="my-0">
+
+
+<table class="table" style="margin:5px;">
+        <thead>
+                <tr>
+                        <th>合同内容
+</th>
+                
+                        <th style="min-width:40px;">合同开始时间
+</th>
+                        <th style="min-width:30px;">合同结束时间</th>
+                        <th>创建人</th>
+                        <th>建立时间</th>
+                        <th>最后更新时间</th>
+                        <th>当前状态</th>
+         
+                </tr>
+        </thead>
+        <tbody>
+      
+                <tr>
+                                <td>18年5月-19年4月7200元+账册300记账半年
+                                </td>
+                                <td>2018-04-26
+                                </td>
+                                <td >2019-04-26
+                                </td>
+                                <td>周萍</td>
+                                <td>2018-04-26</td>
+                                <td>2018-04-26</td>
+                                <td><font color='green'>正常</font></td>
+                
+                </tr>
+
+<tr>
+        <td>17年5月-18年4月7200元+账册300记账半年
+        </td>
+        <td>2017-04-26
+        </td>
+        <td>2018-05-26
+        </td>
+        <td>周萍</td>
+        <td>2017-04-26</td>
+        <td>2017-04-26</td>
+        <td><font color='blue'>即将过期</font></td>
+
+</tr>
+
+<tr>
+        <td>17年5月-18年4月7200元+账册300记账半年
+        </td>
+        <td>2017-04-26
+        </td>
+        <td>2018-05-26
+        </td>
+        <td>周萍</td>
+        <td>2017-04-26</td>
+        <td>2017-04-26</td>
+        <td>
+                <font color='red'>已过期</font>
+        </td>
+
+</tr>
+                </tbody>
+                </table>
+
+
+        <hr class="my-0">
+
+
+        <div class="card-footer text-muted small">当前有 条业务记录
+        </div>
+</div>
+
+<!-- Example Social Card-->
+
+<div class="card mb-3">
+        <div class="card-body ">
+                <h6 class="card-title mb-1 ">
+                        <a href="#">办理业务记录</a>
+                </h6>
+        </div>
+        <hr class="my-0">
+
+
+        <div class="card-body py-2 ">
+                <span class="clearfix z-1">
+
+                        （编号：154 ） 2018-04-23 变更股权+地址1500+申请一般纳税人资格1200+记账（小规模18年3月-4月460元）
+
+
+
+
+
+                </span>
+        </div>
+
+        <div class="card-body py-2 ">
+                <span class="clearfix z-1">
+
+                        （编号：152 ） 2018-04-23 18年5月-19年4月7200元+账册300记账半年一付，账册后半年再付
+
+
+
+
+                </span>
+        </div>
+
+
+        <hr class="my-0">
+
+
+        <div class="card-footer text-muted small">当前有 条业务记录
+        </div>
+</div>
+<!-- /Card Columns-->
+</div>
+        
+        </div>
+        <!-- /span6 --> 
+
+    {%end%} 

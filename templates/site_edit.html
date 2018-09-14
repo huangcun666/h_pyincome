@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>站点管理</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+  <link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+</head>
+
+<body class="bg-dark">
+  <div class="container">
+    <div class="card card-register mx-auto mt-5">
+      <div class="card-header">修改站点 (<a href="/sites?tag={{form_tag}}">站点管理</a>)</div>  {%if msg%}
+
+            <div class="alert {%if result==0%}alert-success {%else%}alert-danger{%end%}" role="alert">
+  <strong>{{msg}} </strong>
+</div>    {%end%}
+      <div class="card-body">
+        <form method="post" >
+       <div class="form-group">
+            <label for="exampleInputEmail1">模 板 :</label>
+
+                   <input type="radio" name="temp_id" value="{{t_user_site.temp_id}}" checked="true" /> &nbsp;{{t_user_site.temp_name}}
+
+
+
+          </div>
+                <div class="form-group">
+            <label for="exampleInputEmail1">站点名称:</label>
+            <input class="form-control"  type="text"  name="site_name" placeholder="如 发业工商网" value="{{t_user_site.site_name}}">
+          </div>
+      <div class="form-group">
+            <label for="exampleInputEmail1">域名:</label>
+            <input class="form-control"  type="text" name="site_domain" placeholder="如 gzfaye.com 不要包含www" value="{{t_user_site.site_domain}}">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">首页标题:</label>
+            <input class="form-control"  type="text" name="site_title" placeholder="如 发业工商网|您值得信任的朋友" value="{{t_user_site.site_title}}">
+          </div>
+
+          <div class="form-group">
+            <label for="exampleInputEmail1">SEO关键词</label>
+            <input class="form-control"  type="text" name="site_keyword"  placeholder="发业 前景" value="{{t_user_site.site_keyword}}">
+          </div>
+             <div class="form-group">
+            <label for="exampleInputEmail1">SEO站点描述</label>
+            <textarea class="form-control"  type="textarea" name="site_desc"  placeholder="发业工商网是一家经过18年的历程 现在已经成功打造 成一站式企业服务商。">{{t_user_site.site_desc}}</textarea>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">所属用户</label>
+            <input type="hidden"  id="uid" name="uid" value="{{t_user_site.uid}}" />
+
+            <select name="site_uid" id="site_uid" class="form-control" {%if int(role) != 2%}disabled="disabled" {%end%}>
+              {%for item in users%} <option value="{{item.id}}" {%if item.id==t_user_site.uid%}selected{%end%}>{{item.name}}</option> {%end%}
+           </select>
+          </div>
+
+
+          <button class="btn btn-primary btn-block" >保存</button>
+            {% module xsrf_form_html() %}
+
+        </form>
+
+        <div class="text-center">
+
+        </div>
+      </div>
+        {%if msg%}
+
+            <div class="alert {%if result==0%}alert-success {%else%}alert-danger{%end%}" role="alert">
+  <strong>{{msg}}</strong>
+</div>    {%end%}
+    </div>
+  </div>
+  <!-- Bootstrap core JavaScript-->
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Core plugin JavaScript-->
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+          <script>
+            $(function () {
+
+              $("#site_uid").on("change", function () {
+                uid = $(this).val()
+
+                $("#uid").val(uid)
+              })
+            })
+          </script>
+</body>
+
+</html>

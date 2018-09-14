@@ -1,0 +1,172 @@
+
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+
+<h3>合同到期 
+    {%if is_manager=='1'%}
+    {%if all%}
+    <a class="btn btn-info" href="/customer?tag=contract_expire">个人</a>
+    {%else%}
+    <a class="btn btn-info" href="/customer?tag=contract_expire&all=1">全部</a>{%end%}{%end%}</h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+
+<fieldset>
+    <form class="form-search" id="query_form">
+        <input value="" name="keyword2" class="input-medium search-expire" placeholder="请输入到期天数" type="text">
+        <button type="submit" class="btn">检 索</button>
+        <input value="contract_expire" name="tag" type="hidden">
+        </form>
+        <ul class="nav nav-tabs" id="myTab">
+                <li  {%if not expire_day%} class="active"{%end%}>
+                        <a href="/customer?tag=contract_expire{%if all%}&all={{all}}{%end%}" id="customer_tab">全部</a>
+                    </li>
+             <li  {%if expire_day=='90'%} class="active"{%end%} >
+                 <a href="/customer?tag=contract_expire&expire_day=90{%if all%}&all={{all}}{%end%}" id="customer_tab">三个月到期</a>
+             </li>
+             <li  {%if expire_day=='60'%} class="active"{%end%}>
+                 <a href="/customer?tag=contract_expire&expire_day=60{%if all%}&all={{all}}{%end%}" id="tab_confirm">两个月到期</a>
+             </li>
+             <li  {%if expire_day=='30'%} class="active"{%end%}>
+                 <a href="/customer?tag=contract_expire&expire_day=30{%if all%}&all={{all}}{%end%}" id="tb_manager_confirm">一个月到期</a>
+             </li>
+             <li  {%if expire_day=='0'%} class="active"{%end%}>
+                <a href="/customer?tag=contract_expire&expire_day=0{%if all%}&all={{all}}{%end%}" id="tb_manager_confirm">当天到期</a>
+            </li>
+            <li  {%if expire_day=='-1'%} class="active"{%end%}>
+                <a href="/customer?tag=contract_expire&expire_day=-1{%if all%}&all={{all}}{%end%}" id="tb_manager_confirm">已过期</a>
+            </li>
+        </ul>
+              <table class="table" style="margin:5px;">
+                     <thead>
+                             
+                                <tr style="background-color: black; color:#fff;">
+
+                                <th style="min-width:60px;">编号</th>
+                                <th style="min-width:60px;">公司名称</th>
+                                <th style="min-width:60px;">合同内容</th>
+                                <th style="min-width:180px;">合同开始时间</th>
+                                            <th>合同结束时间</th>
+                                     
+                                      <th>最后更新时间</th>
+                                <th style="min-width:150px;">客服会计</th>
+                                <th style="min-width:60px;">当前状态</th>
+                                <th>合同期限状态</th>
+                                <th style="min-width:60px;"></th>
+                                </tr>
+                            </thead>
+                <tbody>
+                    {% for item in t_contracts%}
+                    <tr>
+                        <td>{{item.customer_id}}</td>
+                        <td>{{item.company}}</td>
+                        <td>{{item.title}}</td>
+                        <td>{{item.start_time}}</td>
+                        <td>{{item.end_time}}</td>
+                        <td>{{item.updated_at}}</td>
+                        <td>{{item.acc_uid_name}}</td>
+                        <td>
+                            {%if item.state_id==0%}
+                            <font color='green'>正常</font>
+                            {%end%}
+                            
+                                {%if item.state_id==1%}
+                                  <font color='red'>关闭</font>
+                               {%end%}
+                        </td>
+                        <td>
+                            {%if item.state_id==0%}
+                            {%if  item.expire_day >= 0 %}
+                            
+                               <span style='color:blue'>还有 {{item.expire_day}} 天就到期了。</span>
+
+                            {%else%}
+                                {%if item.expire_day%} <span style='color:red'>已经过期{{abs(item.expire_day)}} 天</span>
+{%else%}
+合同日期异常/无合同
+                                {%end %}
+                            {%end %}
+
+
+{%else%}
+该合同已经结束或新签
+{%end %}
+                        </td>
+                    <td><a class="btn btn-info" href="/customer?tag=show&id={{item.cus_id}}&guid={{item.cus_guid}}"> 查看</a></td>
+                    </tr>
+                    {%end%}
+                </tbody>
+              </table>
+                    <!-- <a href="javascript:void(0)" class="btn btn-primary" id="submit_check">确定</a> -->
+                              <div class="pagination">
+                                <ul>
+                                    {% if pagination.has_prev %}
+                                    {%if key%}
+                                    <li><a href="/customer?tag={{tag}}&keyword2=={{key}}&page={{ pagination.page - 1}}">&laquo; 上页</a></li>
+                                    {%else%}
+                                    <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if expire_day%}&expire_day={{expire_day}}{%end%}{%if all%}&all={{all}}{%end%}">&laquo; 上页</a></li> {% end %}
+                                    {%end%}
+                                    {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                    {%if key%}
+                                    <li>
+                                            <a href="/customer?tag={{tag}}&keyword2={{key}}&page={{ page }}">{{ page }}</a></li>
+                                    {%else%}
+                                    <li> 
+                                        <a href="/customer?tag={{tag}}&page={{ page }}{%if expire_day%}&expire_day={{expire_day}}{%end%}{%if all%}&all={{all}}{%end%}">{{ page }}</a></li>
+                                    {%end%}
+                                    {% else %}
+                                    <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                                    {% end %} {% else %}
+                                    <li><span class="active"><a href="#">....</a></span></li>
+                                    {% end %} {%end %} {% if pagination.has_next %}
+                                    {%if key%}
+                                    <li><a href="/customer?tag={{tag}}&keyword2={{key}}&page={{pagination.page+1}}">下页 &raquo;</a></li>
+                                    {%else%}
+                                    <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if expire_day%}&expire_day={{expire_day}}{%end%}{%if all%}&all={{all}}{%end%}">下页 &raquo;</a></li>
+                                    {%end%}
+                                    {% end %}
+                                </ul>         
+                    </div>       
+</fieldset>
+
+</div>
+   
+
+               
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+ 
+
+    {%end%} 
+
+    {%block js%}
+
+<script>
+
+$(function () {
+    _xsrf = getCookie("_xsrf")
+	
+
+});
+
+</script>
+
+
+    {%end%}

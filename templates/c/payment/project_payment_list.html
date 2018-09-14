@@ -1,0 +1,375 @@
+
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>记账应收管理
+
+<a href="/payment?tag=list">记账应收管理</a> /
+    <a href="/payment?tag=project_payment_list">记账最新到款列表</a> / <a href="/payment?tag=project_customer_list">最新记账入库客户列表</a></h3>
+
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+
+
+
+<ul class="nav nav-tabs" id="myTab">
+
+    <li {%if req_state==0%} class="active"{%end%}>
+        <a href="/payment?tag=project_payment_list&req_state=0" id="customer_tab">待处理</a>
+    </li>
+    <li {%if req_state==1%} class="active"{%end%}>
+        <a href="/payment?tag=project_payment_list&req_state=1" id="tab_confirm">已处理</a>
+    </li>
+
+
+
+
+</ul>
+
+
+<fieldset>
+
+
+
+                        {%if customers%}
+              <table class="table" style="margin:5px;">
+                     <thead>
+                                <tr style="background-color: black; color:#fff;">
+
+                                <th style="min-width:200px;">公司名称</th>
+
+                                <th>项目名称</th>
+
+
+                                <th style="min-width:150px;">到款信息</th>
+
+                {%if req_state==0%}
+
+                                <th width="80"></th>
+                                {%end%}
+                                </tr>
+                            </thead>
+                <tbody>
+
+     {%for item in customers%}
+                    <tr>
+
+                        <td><a target="_blank" href="/customer?tag=show&id={{item.a_customer_id}}&guid={{item.a_customer_guid}}">{{item.customer_company}}</a></td>
+     <td><a target="_blank" href="/project?tag=show&guid={{item.project_guid}}&id={{item.project_id}}">{{item.project_name}}</a></td>
+
+                   <td width="350">
+<a href="/project?tag=print&project_id={{item.project_id}}&project_guid={{item.project_guid}}&title_id={{item.income_title_id}}" target="_blank">{{item.income_at}}  {{item.add_by}} 入账-{{item.income_title}}-
+                {{item.company_id_name}}-{{item.pay_type_name}}                       {{item.all_income}}</a>
+</td>
+
+                {%if req_state==0%}
+                        <td>
+
+
+                          <a class="btn handler_detail btn-sm control"  type='button'
+
+                        income_id="{{item.income_title_id}}"
+                        customer_id="{{item.a_customer_id}}"
+                        project_id="{{item.project_id}}"
+                        customer_pay_type_id = "{{item.customer_pay_type_id}}"
+                        customer_service_amount = "{{item.customer_service_amount}}"
+                        customer_service_amount_month = "{{item.customer_service_amount_month}}"
+                        customer_book_amount = "{{item.customer_book_amount}}"
+
+
+
+                         href="javascript:void(0)">处理</a></td>
+  {%end%}
+
+                    </tr>
+                    {%end%}
+
+
+
+                </tbody>
+              </table>
+
+                    {%else%}
+                        还没有客户哦。
+
+                    {%end%}
+                              <div class="pagination">
+                        <ul>
+                            {% if pagination.has_prev %}
+                            <li><a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li>
+                                <a href="/payment?tag={{tag}}&page={{ page }}">{{ page }}</a></li>
+                            {% else %}
+                            <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                            {% end %} {% else %}
+                            <li><span class="active"><a href="#">....</a></span></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li><a href="/payment?tag={{tag}}&page={{pagination.page+1}}">下页 &raquo;</a></li>
+                            {% end %}
+                        </ul>
+                    </div>
+</fieldset>
+
+</div>
+
+
+
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+
+<div id="a_handler_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel_account">新建
+
+
+
+    </h3>
+  </div>
+  <div class="modal-body">
+    <div class="control-group">
+
+
+                                                <label class="control-label" for="type_id">付款方式</label>
+                                                <div class="controls">
+{%for idx,item in enumerate(t_payment_type)%}
+             <input type="radio" name="pay_type_id" fee="{{item.fee}}"
+             value="{{item.id}}" pay_typeid_name="{{item.name}}"
+             {%if item.name==u"无" %} checked="true" {%end%}/> {{item.name}}
+   {%end%}
+          <p id="msg_type_id" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                                        <div class="control-group">
+
+                                                <label class="control-label" for="service_amount">总服务费
+
+                                                </label>
+                                                <div class="controls">
+                                                    <input type="text" class="span4 " id="service_amount" name="service_amount" value="0">
+                                                    <p id="msg_service_amount" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                      <div class="control-group">
+
+                                                <label class="control-label" for="account">月服务费
+
+                                                </label>
+                                                <div class="controls">
+                                                    <input type="text" class="span4 " id="service_month_amount" name="service_month_amount" value="0">
+                                                    <p id="msg_service_month_amount" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+                                      <div class="control-group">
+
+                                                <label class="control-label" for="account">账册费
+
+                                                </label>
+                                                <div class="controls">
+                                                    <input type="text" class="span4 " id="book_amount" name="book_amount" value="0">
+                                                    <p id="msg_book_amount" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+
+                                      <div class="control-group">
+
+                                                <label class="control-label" for="acc_end">记账费到期时间
+
+                                                </label>
+                                                <div class="controls">
+                                                    <input type="text" class="span4 " id="acc_end" name="acc_end" value="">
+                                                    <p id="msg_acc_end" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                      <div class="control-group">
+
+                                                <label class="control-label" for="account">账册费到期时间
+
+                                                </label>
+                                                <div class="controls">
+                                                    <input type="text" class="span4 " id="acc_book_end" name="acc_book_end" value="">
+                                                    <p id="msg_acc_book_end" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+
+
+
+                                      <div class="control-group">
+                                          <label class="control-label" for="al_remark">已收明细</label>
+                                          <div class="controls">
+                                              <textarea type="text" class="span4" id="al_remark" name="al_remark" value="" style="height: 50px;"></textarea>
+                                          </div>
+                                          <!-- /controls -->
+                                      </div>
+         <div class="control-group">
+                                          <label class="control-label" for="lastname">未收明细</label>
+                                          <div class="controls">
+                                              <textarea type="text" class="span4" id="pb_remark" name="pb_remark" value="" style="height: 50px;"></textarea>
+                                          </div>
+                                          <!-- /controls -->
+                                      </div>
+
+         <div class="control-group">
+                                          <label class="control-label" for="lastname">备 注</label>
+                                          <div class="controls">
+                  <textarea type="text" class="span4" id="remark" name="remark" value="" style="height: 50px;"></textarea>
+                                          </div>
+                                          <!-- /controls -->
+                                      </div>
+
+
+
+  </div>
+  <div class="modal-footer">
+
+    <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+    <button class="btn btn-primary" id="btn_save">保存</button>
+  </div>
+</div>
+
+    {%end%}
+
+    {%block js%}
+
+<script>
+
+$(function () {
+    _xsrf = getCookie("_xsrf")
+
+    $(".handler_detail").on("click",function(){
+        income_id = $(this).attr("income_id")
+        customer_id =$(this).attr("customer_id")
+        project_id= $(this).attr("project_id")
+        customer_pay_type_id = $(this).attr("customer_pay_type_id")
+        customer_service_amount =  $(this).attr("customer_service_amount")
+        customer_service_amount_month =  $(this).attr("customer_service_amount_month")
+        customer_book_amount =   $(this).attr("customer_book_amount")
+        customer_fee = $(this).attr('customer_fee')
+
+        $("#btn_save").attr("customer_id",customer_id)
+        $("#btn_save").attr("income_id",income_id)
+        $("#btn_save").attr("project_id",project_id)
+
+        // $("#btn_save").attr("customer_pay_type_id",customer_pay_type_id)
+        // $("#btn_save").attr("customer_service_amount",customer_service_amount)
+        // $("#btn_save").attr("customer_service_amount_month",customer_service_amount_month)
+        // $("#btn_save").attr("customer_book_amount",inccustomer_book_amountome_id)
+        // $("#btn_save").attr("customer_fee",customer_fee)
+         $("#service_amount").val(customer_service_amount)
+         $("#service_month_amount").val(customer_service_amount_month)
+         $("#book_amount").val(customer_book_amount)
+        $('input[type="radio"][name="pay_type_id"]').each(function(){
+
+            console.log($(this).val()+"___"+customer_pay_type_id)
+            if ($(this).val()==customer_pay_type_id)
+                        {
+                         $(this).attr("checked",true)
+                        }else{
+                             $(this).attr("checked",false)
+                        }
+        });
+        $("#a_handler_modal").modal("show")
+    })
+function intToFloat(val){
+        return new Number(val).toFixed(2);
+}
+    $('input[type="radio"][name="pay_type_id"]').click(function(){
+        service_amount = $("#service_amount").val()
+                if ($(this).is(':checked'))
+                    {
+                      all_total = service_amount / $(this).attr("fee");
+    $("#service_month_amount").val(intToFloat(all_total))
+                    }
+    });
+
+       $('#service_amount').keyup(function() {
+                all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
+                        $("#service_month_amount").val(intToFloat(all_total))
+
+
+        });
+
+         laydate.render({
+                    elem: '#acc_end' //指定元素
+           });
+
+         laydate.render({
+                    elem: '#acc_book_end' //指定元素
+           });
+       laydate.render({
+                    elem: '#rent_start' //指定元素
+           });
+         laydate.render({
+                    elem: '#rent_end' //指定元素
+           });
+
+
+
+         laydate.render({
+                    elem: '#con_start' //指定元素
+           });
+
+                  laydate.render({
+                    elem: '#con_end' //指定元素
+           });
+         $("#btn_save").on("click",function(){
+            service_amount = $("#service_amount").val()
+            fee = $("input[name='pay_type_id']:checked").attr("fee")
+            service_month_amount = $("#service_month_amount").val()
+            book_amount =  $("#book_amount").val()
+            pay_typeid = $("input[name='pay_type_id']:checked").val()
+            pay_typeid_name = $("input[name='pay_type_id']:checked").attr("pay_typeid_name")
+
+            acc_end = $("#acc_end").val()
+            acc_book_end = $("#acc_book_end").val()
+            rent_start = $("#rent_start").val()
+            rent_end = $("#rent_end").val()
+            con_start = $("#con_start").val()
+            con_end = $("#con_end").val()
+            remark = $("#remark").val()
+            pb_remark= $("#remark").val()
+            al_remark = $("#al_remark").val()
+            income_id = $(this).attr("income_id")
+            customer_id =$(this).attr("customer_id")
+            project_id= $(this).attr("project_id")
+            $.post("/payment?tag=add",{"service_amount":service_amount,"fee":fee,"service_month_amount":service_month_amount,"pay_typeid":pay_typeid,"pay_typeid_name":pay_typeid_name,
+                "book_amount":book_amount,"acc_end":acc_end,"acc_book_end":acc_book_end,"rent_start":rent_start,
+                "rent_end":rent_end,"con_start":con_start,"con_end":con_end,"remark":remark,
+                "customer_id":customer_id,
+                "income_id":income_id,
+                "project_id":project_id,
+                "pb_remark":pb_remark,"al_remark":al_remark,"_xsrf":_xsrf},function(result){
+                    location.reload()
+            })
+         })
+
+
+});
+
+</script>
+    {%end%}

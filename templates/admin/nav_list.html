@@ -1,0 +1,80 @@
+ {% extends "../base.html" %} {%block title%}终端管理{%end%} {% block body %}
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/">主面板</a>
+        </li>
+        <li class="breadcrumb-item active">{{site.site_name}} 导航栏列表</li>
+
+      </ol>
+   <div class="card mb-3">
+
+
+        <div class="card-body">
+          <div class="table-responsive">
+            <form method="post">
+                <p>
+                 <button class="btn btn-info" id="btn_save">保 存</button>
+                </p>
+                 {%if msg%}
+
+            <div class="alert alert-info" role="alert">
+  <strong>{{msg}} </strong>
+</div>    {%end%}
+                 {% module xsrf_form_html() %}
+                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>导航名称</th>
+                            <th>标题</th>
+                            <th width="80">显示</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {%for index,item in enumerate(t_mod_nav)%}
+                            <tr id="{{item.id}}">
+                                <td>
+                                        <input type="text" value="{{item.bname}}" name="bname"/>
+  <input type="hidden" value="{{item.id}}" name="ids"/>
+                                </td>
+                                        <td>
+                                        <input type="text" value="{{item.link}}" name="link" />
+                                </td>
+                                <td>
+                                        <input type="checkbox" name="is_show_nav" {%if item.is_show_nav==1%}checked {%end%} value="{{item.id}}">
+                                </td>
+                            </tr>
+                        {%end%}
+                    </tbody>
+                </table>
+        </form>
+         </div>
+        </div>
+        <div class="card-footer small text-muted"></div>
+      </div>
+{% end %} {%block js%}
+
+<script type="text/javascript">
+  $(function(){
+      $("input[type=checkbox]").change(function(){
+          nav_id = $(this).val()
+          is_show_nav =0
+          if(this.checked){
+            is_show_nav = 1
+          }
+          else{
+            is_show_nav=0
+          }
+          _xsrf=getCookie("_xsrf");
+          $.post('/sites?tag=set_nav_show',{"is_show_nav":is_show_nav,"nav_id":nav_id,"_xsrf":_xsrf},function(result){
+            console.log(result)
+          })
+
+      })
+
+  })
+
+</script>
+
+{%end%}

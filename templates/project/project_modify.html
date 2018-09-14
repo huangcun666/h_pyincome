@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>新建项目</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+  <link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+</head>
+
+<body class="bg-dark">
+  <div class="container">
+    <div class="card card-register mx-auto mt-5">
+      <div class="card-header">新建项目 (
+      <a href="/project?tag={{form_tag}}">项目管理</a>)</div>
+      <div class="card-body">
+        <form method="post" id="form_submit">
+       <div class="form-group">
+            <label for="exampleInputEmail1">业务来源:</label>
+
+           {% for idx, item in enumerate(t_income_type) %}
+
+                 <input type="radio" name="busniess_from"  value="{{item.id}}" {%if item.id==t_project.busniess_from%}checked{%end%}/> &nbsp;{{item.income_name}}
+           {% end %}
+
+          </div>
+
+       <div class="form-group">
+            <label for="exampleInputEmail1">业务类型:</label>
+
+           {% for idx, item in enumerate(t_business_type) %}
+
+                 <input type="checkbox" name="busniess_type"  value="{{item.id}}" {%if setCheckbox(t_project.busniess_type,item.id)%}checked{%end%}/> &nbsp;{{item.income_name}}
+
+                
+
+           {% end %}
+
+          </div>
+
+       <div class="form-group">
+            <label for="exampleInputEmail1">签约方式:</label>
+
+           {% for idx, item in enumerate(t_sign_type) %}
+                 <input type="radio" name="sign_type_id"  value="{{item.id}}"
+                  {%if item.id==t_project.contract_sign_type_id%}checked{%end%}/> &nbsp;{{item.income_name}}
+           {% end %}
+
+          </div>
+
+                <div class="form-group">
+            <label for="exampleInputEmail1">业务内容:</label>
+            <input class="form-control"  type="text"  name="project_name" id="project_name" placeholder="" value="{{t_project.project_name}}">
+          </div>
+      <div class="form-group">
+            <label for="exampleInputEmail1">客户姓名:</label>
+            <input class="form-control"  type="text" name="customer_name" id="customer_name" placeholder="" value="{{t_project.customer_name}}">
+          </div>
+
+
+          <div class="form-group">
+            <label for="exampleInputEmail1">企业名称:</label>
+            <input class="form-control"  type="text" name="customer_company"  placeholder="" value="{{t_project.customer_company}}">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">联系方式:</label>
+            <input class="form-control"  type="text" name="customer_tel" placeholder="" value="{{t_project.customer_tel}}">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">总服务费:</label>
+            <input class="form-control"  type="text" name="all_income" id="all_income" placeholder="" value="{{t_project.all_income}}">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">预计合同定金:</label>
+            <input class="form-control"  type="text" name="pre_income" id="pre_income" placeholder="" value="{{t_project.pre_income}}">
+          </div>
+           <input class="form-control"  type="hidden" name="true_income" placeholder=""  value="{{t_project.true_income}}">
+
+           <div class="form-group">
+            <label for="exampleInputEmail1">备注</label>
+            <textarea class="form-control"  type="textarea" name="remark"  placeholder="">{{t_project.remark}}</textarea>
+          </div>
+
+          <input type="submit" class="btn btn-primary btn-block" value="保存" />
+            {% module xsrf_form_html() %}
+           
+        </form>
+        <div class="text-center">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Core plugin JavaScript-->
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+      <script>
+        $(function () {
+
+            $("#form_submit").on("submit",function(){
+               all_income = $("#all_income")
+               pre_income = $("#pre_income")
+               project_name = $("#project_name")
+                customer_name=$("#customer_name")
+                b = $.isNumeric(pre_income.val())
+                b_all_income = $.isNumeric(all_income.val())
+
+                if(project_name.val()==""){
+                    alert("业务名称不能为空哦")
+                    project_name.focus()
+                  return false
+                }
+                else if(customer_name.val()==""){
+                    alert("业务名称不能为空哦")
+                    customer_name.focus()
+                  return false
+                }
+                else if(b==false){
+                    alert("预计合同定金必须是数值哦！")
+                    pre_income.focus()
+                    return false
+                }
+                else if(b_all_income==false){
+                    alert("总服务费必须是数值0哦！")
+                    all_income.focus()
+                    return false
+                }
+                else if(all_income.val() <= 0){
+                     alert("总服务费必须大于0哦！")
+                     all_income.focus()
+                    return false
+                }
+                else if(all_income.val() < pre_income.val()){
+                     alert("总服务费必须大于定金哦！")
+                     all_income.focus()
+                    return false          
+                }
+
+              
+            })
+              
+
+        })
+      </script>
+</body>
+
+</html>

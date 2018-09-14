@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>新增出库单</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/css/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+</head>
+
+<body class="bg-secondary">
+  <div class="container" >
+    <div class="card card-register mx-auto mt-5">
+      <div class="card-header">新增</div>
+      <div class="card-body" >
+        {%if 'out' in globals()%}
+        <form action="/out_change/{{out.id}}" method="POST">
+          {% raw xsrf_form_html() %}
+          <div class="form-group">
+                        <div class="form-row">
+                            <div class="col-md-2">
+                                <label for="serial_num">序号</label>
+                                <input value="{{out.serial_num}}" class="form-control" name="serial_num" 
+                                id="serial_num" type="text" aria-describedby="nameHelp" placeholder="输入序号">
+                              </div>
+                          <div class="col-md-2">
+                            <label for="num">编号</label>
+                            <input value="{{out.num}}" class="form-control" name="num" 
+                            id="num" type="text" aria-describedby="nameHelp" placeholder="输入编号">
+                          </div>
+                          <div class="col-md-4">
+                                <label for="rev_time">收入确认时间</label>
+                                <input value="{{out.rev_time}}" class="form-control" 
+                                id="rev_time" name="rev_time" type="date" aria-describedby="nameHelp" placeholder="收入确认时间">
+                              </div>
+                            <div class="col-md-4">
+                                    <label for="dis_time">分配时间(跟单)</label>
+                                    <input value="{{out.dis_time}}" class="form-control" 
+                                    id="dis_time" name="dis_time" type="date" aria-describedby="nameHelp" placeholder="分配时间">
+                                  </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                          <div class="form-row">
+                            <div class="col-md-3">
+                        <label for="saleman">业务员</label>
+                        <input value="{{out.saleman}}" class="form-control" 
+                              id="saleman" name="saleman" type="text" aria-describedby="nameHelp" placeholder="业务员">
+                        </div>
+                            <div class="col-md-3">
+                                <label for="telemark">电销</label>
+                                <input value="{{out.telemark}}" class="form-control" id="telemark"
+                                 name="telemark" type="text" placeholder="电销">
+                              </div>
+            
+                              <div class="col-md-3">
+                                    <label for="group_leader">组长</label>
+                                    <input value="{{out.group_leader}}" class="form-control" id="group_leader"
+                                     name="group_leader" type="text" placeholder="组长">
+                                  </div>
+            
+                            <div class="col-md-3">
+                                <label for="gen_dan">跟单</label>
+                                <input value="{{out.gen_dan}}" class="form-control" id="gen_dan"
+                                 name="gen_dan" type="text" placeholder="跟单">
+                              </div>
+                      </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="form-row">
+                                    <div class="col-md-4">
+                                            <label for="source_bus">商机来源</label>
+                                            <input value="{{out.source_bus}}" class="form-control" id="source_bus"
+                                            name="source_bus" type="text" placeholder="商机来源">   
+                                    </div>
+                            <div class="col-md-3">
+                                 <label for="customer_name">客户姓名</label>
+                                 <input value="{{out.customer_name}}" class="form-control" id="customer_name"
+                                    name="customer_name" type="text" placeholder="客户姓名">
+                            </div>
+                          <div class="col-md-5">
+                            <label for="company_name">企业名称</label>
+                            <input value="{{out.company_name}}" class="form-control" name="company_name" id="company_name" 
+                                type="text" placeholder="企业名称">
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                            <div class="form-row">
+                                    <div class="col-md-5">
+                                            <label for="regist_id">注册号</label>
+                                            <input value="{{out.regist_id}}" class="form-control" id="regist_id" 
+                                            name="regist_id" type="text" placeholder="注册号">
+                                    </div>
+            
+                                    <div class="col-md-5">
+                                            <label for="bus_content">业务内容</label>
+                                            <input value="{{out.bus_content}}" class="form-control" id="bus_content" 
+                                            name="bus_content" type="text" placeholder="业务内容">
+                                          </div>
+                                    <div class="col-md-2">
+                                            <label for="company_type">公司类型</label>
+                                            <select name="company_type" id="company_type">
+                                                    <option value="">选择类型</option>
+                                                    {% if out.company_type=='一人'%}                 
+                                                    <option value="一人" selected="selected">一人</option>
+                                                    {%else%}
+                                                    <option value="一人">一人</option>
+                                                    {%end%}
+                                                    {% if out.company_type=='多人'%} 
+                                                    <option value="多人" selected="selected">多人</option>
+                                                    {%else%}
+                                                    <option selected="selected">多人</option>
+                                                    {%end%}
+                                                  </select> 
+                                    </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                                <div class="form-row">
+                                    <div class="col-md-3">
+                                            <label for="legal_person">法人</label>
+                                                    <input value="{{out.legal_person}}" class="form-control" id="legal_person" 
+                                            name="legal_person" type="text" placeholder="法人">
+                                    </div>
+                                    <div class="col-md-3">
+                                            <label for="supervisor">监事</label>
+                                                    <input value="{{out.supervisor}}" class="form-control" id="supervisor" 
+                                                    name="supervisor" type="text" placeholder="监事">
+                                             </div>
+            
+                                        <div class="col-md-3">
+                                                <label for="share_holder">股东</label>
+                                                <input value="{{out.share_holder}}" class="form-control" id="share_holder" 
+                                                name="share_holder" type="text" placeholder="股东">
+                                              </div>
+                                        <div class="col-md-3">
+                                                <label for="regist_money">注册资金</label>
+                                                <input value="{{out.regist_money}}" class="form-control" id="regist_money" 
+                                                name="regist_money" type="text" placeholder="注册资金">
+                                        </div>
+                                       
+                                </div>
+                    
+                              </div>
+                              <div class="form-group">
+                                    <div class="form-row">
+                                            <div class="col-md-3">
+                                                    <label for="address_type">地址类型</label>
+                                                    <input value="{{out.address_type}}" class="form-control" id="address_type" 
+                                                    name="address_type" type="text" placeholder="注册资金">
+                                    </div>
+                                     <div class="col-md-3">
+                                            <label for="progress">办理进度</label>
+                                                    <input value="{{out.progress}}" class="form-control" id="progress" 
+                                                    name="progress" type="text" placeholder="办理进度">
+                                    </div>
+            
+                                    <div class="col-md-3">
+                                             <label for="tally">是否记账</label>
+                                            <select name="tally" id="tally">
+                                                     <option value="">选择类型</option>
+                                                     {%if out.tally=='是'%}                 
+                                                    <option value="是" selected="selected">是</option>
+                                                    {%else%}
+                                                    <option value="是">是</option>
+                                                    {%end%}
+                                                    {%if out.tally=='否'%}  
+                                                    <option value="否" selected="selected">否</option>
+                                                    {%else%}
+                                                    <option value="否">否</option>
+                                                    {%end%}
+                                            </select> 
+                                    </div>
+                                            <div class="col-md-3">
+                                                    <label for="server_money">总服务费</label>
+                                                    <input value="{{out.server_money}}" class="form-control" id="server_money" 
+                                                    name="server_money" type="text" placeholder="总服务费">
+                                            </div>
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                        <div class="form-row">
+                                                    <div class="col-md-4">
+                                                                    <label for="rec_money">实收定金</label>
+                                                                    <input value="{{out.rec_money}}" class="form-control" id="rec_money" 
+                                                                    name="rec_money" type="text" placeholder="实收定金">
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                    <label for="contract_confirm">合同确认</label>
+                                                                    <select name="contract_confirm" id="contract_confirm">
+                                                                            <option value="">选择类型</option>
+                                                                            {%if out.contract_confirm=='是'%}              
+                                                                            <option value="是" selected="selected">是</option>
+                                                                            {%else%}
+                                                                            <option value="是">是</option>
+                                                                            {%end%}
+                                                                            {%if out.contract_confirm=='否'%} 
+                                                                            <option value="否">否</option>
+                                                                            {%else%}
+                                                                            <option value="否">否</option>
+                                                                            {%end%}
+                                                                          </select> 
+                                                            </div>  
+                                                <div class="col-md-5">
+                                                    <label for="baijie_time">办结时间</label>
+                                                    <input value="{{out.baijie_time}}" class="form-control" id="baijie_time" 
+                                                    name="baijie_time" type="date">
+                                                      </div>
+                                        </div>
+                                      </div>
+                                      <div class="form-group">
+                                            <div class="form-row">
+                                                    <div class="col-md-4">
+                                                            <label for="remarks">备注</label>
+                                                            <input value="{{out.remarks}}" class="form-control" id="remarks" 
+                                                            name="remarks" type="text" placeholder="备注">
+                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                            <label for="move_time">移交资料时间</label>
+                                                                            <input value="{{out.move_time}}" class="form-control" id="move_time" 
+                                                                            name="move_time" type="date">
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                                    <label for="accept_man">接受人签名</label>
+                                                                                        <input value="{{out.accept_man}}" class="form-control" id="accept_man" 
+                                                                                            name="accept_man" type="text" placeholder="接受人签名">
+                                                                            </div>
+                                    </div>
+                                    </div>
+            
+                                    <div class="form-group">
+                                            <div class="form-row">
+                                                            <div class="col-md-6">
+                                                                            <label for="zhizhao_detail">执照交接明细</label>
+                                                                            <textarea  rows="4" cols="30" placeholder="执照交接明细" name="zhizhao_detail" id="zhizhao_detail">
+                                                                                {{out.zhizhao_detail}}
+                                                                            </textarea>
+                                                        </div>
+                                                    <div class="col-md-6">
+                                                            <label for="other_remarks">备注</label>
+                                                            <textarea rows="4" cols="30" placeholder="备注" name="other_remarks" id="other_remarks">
+                                                                        {{out.other_remarks}}
+                                                            </textarea>
+                                                    </div>      
+                                            </div>
+                                          </div>
+                                          <div class="form-group">
+                                              <div class="form-row">
+                                                            <div class="col-md-4">
+                                                                            <label for="out_time">出库时间</label>
+                                                                            <input  value="{{out.out_time}}" class="form-control" id="out_time" 
+                                                                            name="out_time" type="date">
+                                                                              </div>
+                                                                        <div class="col-md-4">
+                                                                                <label for="date_kaipiao">开票地址租凭合同日期</label>
+                                                                                <input  value="{{out.date_kaipiao}}" class="form-control" id="date_kaipiao" 
+                                                                                name="date_kaipiao" type="date">
+                                                                        </div>
+            
+                                                    <div class="col-md-4">
+                                                            <label for="phone">联系方式</label>
+                                                            <input  value="{{out.phone}}" class="form-control" id="phone" 
+                                                            name="phone" type="text" placeholder="联系方式">
+                                                    </div>
+                                              </div>
+                                          </div>
+                                          <div class="form-group">
+                                            <div class="form-row">
+                                                            <div class="col-md-4">
+                                                                            <label for="retainage">是否有尾款</label>
+                                                                            <input  value="{{out.retainage}}" class="form-control" id="retainage" 
+                                                                            name="retainage" type="text" placeholder="尾款">
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                            <label for="banjie_cycle">办结周期(天)</label>
+                                                                            <input  value="{{out.banjie_cycle}}" class="form-control" id="banjie_cycle" 
+                                                                            name="banjie_cycle" type="text" placeholder="办结周期(天)">
+                                                                    </div>
+                                            </div>
+            
+                                          </div>
+            
+                      <input type="submit" value="提交" class="btn btn-primary btn-block">
+        </form>
+        {%else%}
+        <form action="/insert_out" method="POST">
+          {% raw xsrf_form_html() %}
+          <div class="form-group">
+            <div class="form-row">
+                <div class="col-md-2">
+                    <label for="serial_num">序号</label>
+                    <input  class="form-control" name="serial_num" 
+                    id="serial_num" type="text" aria-describedby="nameHelp" placeholder="输入序号">
+                  </div>
+              <div class="col-md-2">
+                <label for="num">编号</label>
+                <input  class="form-control" name="num" 
+                id="num" type="text" aria-describedby="nameHelp" placeholder="输入编号">
+              </div>
+              <div class="col-md-4">
+                    <label for="rev_time">收入确认时间</label>
+                    <input  class="form-control" 
+                    id="rev_time" name="rev_time" type="date" aria-describedby="nameHelp" placeholder="收入确认时间">
+                  </div>
+                <div class="col-md-4">
+                        <label for="dis_time">分配时间(跟单)</label>
+                        <input  class="form-control" 
+                        id="dis_time" name="dis_time" type="date" aria-describedby="nameHelp" placeholder="分配时间">
+                      </div>
+            </div>
+          </div>
+          <div class="form-group">
+              <div class="form-row">
+                <div class="col-md-3">
+            <label for="saleman">业务员</label>
+            <input  class="form-control" 
+                  id="saleman" name="saleman" type="text" aria-describedby="nameHelp" placeholder="业务员">
+            </div>
+                <div class="col-md-3">
+                    <label for="telemark">电销</label>
+                    <input  class="form-control" id="telemark"
+                     name="telemark" type="text" placeholder="电销">
+                  </div>
+
+                  <div class="col-md-3">
+                        <label for="group_leader">组长</label>
+                        <input  class="form-control" id="group_leader"
+                         name="group_leader" type="text" placeholder="组长">
+                      </div>
+
+                <div class="col-md-3">
+                    <label for="gen_dan">跟单</label>
+                    <input  class="form-control" id="gen_dan"
+                     name="gen_dan" type="text" placeholder="跟单">
+                  </div>
+          </div>
+          </div>
+          <div class="form-group">
+            <div class="form-row">
+                        <div class="col-md-4">
+                                <label for="source_bus">商机来源</label>
+                                <input  class="form-control" id="source_bus"
+                                name="source_bus" type="text" placeholder="商机来源">   
+                        </div>
+                <div class="col-md-3">
+                     <label for="customer_name">客户姓名</label>
+                     <input  class="form-control" id="customer_name"
+                        name="customer_name" type="text" placeholder="客户姓名">
+                </div>
+              <div class="col-md-5">
+                <label for="company_name">企业名称</label>
+                <input  class="form-control" name="company_name" id="company_name" 
+                    type="text" placeholder="企业名称">
+                </div>
+            </div>
+          </div>
+          <div class="form-group">
+                <div class="form-row">
+                        <div class="col-md-5">
+                                <label for="regist_id">注册号</label>
+                                <input  class="form-control" id="regist_id" 
+                                name="regist_id" type="text" placeholder="注册号">
+                        </div>
+
+                        <div class="col-md-5">
+                                <label for="bus_content">业务内容</label>
+                                <input  class="form-control" id="bus_content" 
+                                name="bus_content" type="text" placeholder="业务内容">
+                              </div>
+                        <div class="col-md-2">
+                                <label for="company_type">公司类型</label>
+                                <select name="company_type" id="company_type">
+                                        <option value="">选择类型</option>                 
+                                        <option value="一人">一人</option>
+                                        <option value="多人">多人</option>
+                                      </select> 
+                        </div>
+                </div>
+              </div>
+              <div class="form-group">
+                    <div class="form-row">
+                        <div class="col-md-3">
+                                <label for="legal_person">法人</label>
+                                        <input  class="form-control" id="legal_person" 
+                                name="legal_person" type="text" placeholder="法人">
+                        </div>
+                        <div class="col-md-3">
+                                <label for="supervisor">监事</label>
+                                        <input  class="form-control" id="supervisor" 
+                                        name="supervisor" type="text" placeholder="监事">
+                                 </div>
+
+                            <div class="col-md-3">
+                                    <label for="share_holder">股东</label>
+                                    <input  class="form-control" id="share_holder" 
+                                    name="share_holder" type="text" placeholder="股东">
+                                  </div>
+                            <div class="col-md-3">
+                                    <label for="regist_money">注册资金</label>
+                                    <input  class="form-control" id="regist_money" 
+                                    name="regist_money" type="text" placeholder="注册资金">
+                            </div>
+                           
+                    </div>
+        
+                  </div>
+                  <div class="form-group">
+                        <div class="form-row">
+                                <div class="col-md-3">
+                                        <label for="address_type">地址类型</label>
+                                        <input  class="form-control" id="address_type" 
+                                        name="address_type" type="text" placeholder="注册资金">
+                        </div>
+                         <div class="col-md-3">
+                                <label for="progress">办理进度</label>
+                                        <input  class="form-control" id="progress" 
+                                        name="progress" type="text" placeholder="办理进度">
+                        </div>
+
+                        <div class="col-md-3">
+                                 <label for="tally">是否记账</label>
+                                <select name="tally" id="tally">
+                                         <option value="">选择类型</option>                 
+                                        <option value="是">是</option>
+                                        <option value="否">否</option>
+                                </select> 
+                        </div>
+                                <div class="col-md-3">
+                                        <label for="server_money">总服务费</label>
+                                        <input  class="form-control" id="server_money" 
+                                        name="server_money" type="text" placeholder="总服务费">
+                                </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                            <div class="form-row">
+                                        <div class="col-md-4">
+                                                        <label for="rec_money">实收定金</label>
+                                                        <input  class="form-control" id="rec_money" 
+                                                        name="rec_money" type="text" placeholder="实收定金">
+                                                </div>
+                                                <div class="col-md-3">
+                                                        <label for="contract_confirm">合同确认</label>
+                                                        <select name="contract_confirm" id="contract_confirm">
+                                                                <option value="">选择类型</option>                 
+                                                                <option value="是">是</option>
+                                                                <option value="否">否</option>
+                                                              </select> 
+                                                </div>  
+                                    <div class="col-md-5">
+                                        <label for="baijie_time">办结时间</label>
+                                        <input  class="form-control" id="baijie_time" 
+                                        name="baijie_time" type="date">
+                                          </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                                <div class="form-row">
+                                        <div class="col-md-4">
+                                                <label for="remarks">备注</label>
+                                                <input  class="form-control" id="remarks" 
+                                                name="remarks" type="text" placeholder="备注">
+                                        </div>
+                                                        <div class="col-md-4">
+                                                                <label for="move_time">移交资料时间</label>
+                                                                <input  class="form-control" id="move_time" 
+                                                                name="move_time" type="date">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                                        <label for="accept_man">接受人签名</label>
+                                                                            <input  class="form-control" id="accept_man" 
+                                                                                name="accept_man" type="text" placeholder="接受人签名">
+                                                                </div>
+                        </div>
+                        </div>
+
+                        <div class="form-group">
+                                <div class="form-row">
+                                                <div class="col-md-6">
+                                                                <label for="zhizhao_detail">执照交接明细</label>
+                                                                <textarea rows="4" cols="30" placeholder="执照交接明细" name="zhizhao_detail" id="zhizhao_detail"></textarea>
+                                            </div>
+                                        <div class="col-md-6">
+                                                <label for="other_remarks">备注</label>
+                                                <textarea rows="4" cols="30" placeholder="备注" name="other_remarks" id="other_remarks"></textarea>
+                                        </div>      
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                  <div class="form-row">
+                                                <div class="col-md-4">
+                                                                <label for="out_time">出库时间</label>
+                                                                <input  class="form-control" id="out_time" 
+                                                                name="out_time" type="date">
+                                                                  </div>
+                                                            <div class="col-md-4">
+                                                                    <label for="date_kaipiao">开票地址租凭合同日期</label>
+                                                                    <input  class="form-control" id="date_kaipiao" 
+                                                                    name="date_kaipiao" type="date">
+                                                            </div>
+
+                                        <div class="col-md-4">
+                                                <label for="phone">联系方式</label>
+                                                <input  class="form-control" id="phone" 
+                                                name="phone" type="text" placeholder="联系方式">
+                                        </div>
+                                  </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="form-row">
+                                                <div class="col-md-4">
+                                                                <label for="retainage">是否有尾款</label>
+                                                                <input  class="form-control" id="retainage" 
+                                                                name="retainage" type="text" placeholder="尾款">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                                <label for="banjie_cycle">办结周期(天)</label>
+                                                                <input  class="form-control" id="banjie_cycle" 
+                                                                name="banjie_cycle" type="text" placeholder="办结周期(天)">
+                                                        </div>
+                                </div>
+
+                              </div>
+
+          <input type="submit" value="提交" class="btn btn-primary btn-block">
+        </form>
+        {%end%}
+        <div class="text-center">
+            <a class="d-block small mt-3" href="/customer">返回</a>
+        </div>
+        {% if 'error_id' in globals() %}
+        <p class="error_message" style="display:none;">{{error_id}}</p>
+        {%end%}
+        </div>
+      </div>
+    </div>
+  <script src="/static/js/vendor/jquery/jquery.min.js"></script>
+  <script src="static/js/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="/static/js/myjquery.js"></script>
+</body>
+
+</html>

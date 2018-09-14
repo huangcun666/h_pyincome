@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>业务往来款项告知函</title>
+	<script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jQuery.print.js"></script>
+
+<style>
+	* {margin: 0; padding: 0;}
+	i {font-style:normal; margin: 0 20px;}
+	u {margin: 0 2px;}
+	.body {width: 650px; height: 978px; background-color: #fff;margin: 0 auto; font-family: "宋体";}
+	.body h2 {width: 100%; text-align: center; margin: 15px 0;}
+	.body p {padding: 7px 50px; box-sizing: border-box; letter-spacing:0.1em;}
+	.zifu {text-indent:2em;}
+	.di {border-bottom:1px solid #000; display: block; width: 100%;}
+	.xun {border-bottom: 1px dashed #000; display: block; width: 100%; margin-top: 20px;}
+</style>
+<script>
+$(function(){
+$("#btnprint").on("click",function(){
+$("#print").print({
+globalStyles: true,
+mediaPrint: false,
+stylesheet: null,
+noPrintSelector: ".no-print",
+iframe: true,
+append: null,
+prepend: null,
+manuallyCopyFormValues: true,
+deferred: $.Deferred(),
+timeout: 750,
+title: null,
+doctype: '<!doctype html>'
+});
+})
+})
+</script>
+</head>
+<body>
+	<div class="body" id="print">
+		<h2>业务往来款项告知函</h2>
+		<p>尊敬的客户(名称）: <span>{{t_income_print.customer_name}}</span></p>
+		<p class="zifu">您好！为了保证发业集团与您的往来款项账账相符，现将我公司</p>
+		<p>应收款项余额通知如下：</p>
+		<p class="zifu">我司为您所提供的服务已办结。合同总价</p>
+		<p>金额共计<u>{{t_income_print.all_income}}</u>(大写：<b>{{rmb_convert(t_income_print.all_income)}}</b>)。服务内容如下：</p>
+		<p > <b class="di">{{t_income_print.project_name}}</b></p>
+		
+	
+		<p>截止<span>20{{t_income_print.end_date.strftime("%y")}}</span>年<span>{{t_income_print.end_date.strftime("%m")}}</span>月<span>{{t_income_print.end_date.strftime("%d")}}</span>日我司应收款项余额为人民币:<u>{{t_income_print.wait_income}}</u>元。</p>
+			{%if t_income_print.wait_income > 0%}<p>应收款项余额明细如下：</p>
+		<p>{{t_income_print.ys_remark}}</p>
+		{%end%}
+{%if t_income_print.wait_income > 0%}
+		<p class="zifu">为了便于双方今后更好的合作,请在<span>20</span>{{t_income_print.end_date1.strftime("%y")}}<span>年</span>{{t_income_print.end_date1.strftime("%m")}}<span>月</span>{{t_income_print.end_date1.strftime("%d")}}<span></span>日前付清合同余</p>
+		<p>款，同时再次感谢您对我司的支持与配合！</p>
+		{%else%}
+
+				<p class="zifu">感谢您对我司的支持与配合!</p>
+				
+		{%end%}
+		{%if t_income_print.remark!=None%}<p><b>{{t_income_print.remark}}</b></p>{%end%}
+
+		<p><i class="zifu">顺颂</i><i style="margin-left: 340px;">发业集团</i></p>
+		<p><i class="zifu">商祺</i><i style="margin-left: 340px;"><span>20{{t_income_print.end_date.strftime("%y")}}</span>年<span>{{t_income_print.end_date.strftime("%m")}}</span>月<span>{{t_income_print.end_date.strftime("%d")}}</span>日</i></p>
+		<p><b class="xun"></b></p>
+		<h2>回执</h2>
+		<p>尊敬的客户(名称）: <span>{{t_income_print.customer_name}}</span></p>
+		<p class="zifu">我司为您所提供的服务已办结。合同总价</p>
+		<p>金额共计<u>{{t_income_print.all_income}}</u>(大写：<b>{{rmb_convert(t_income_print.all_income)}}</b>)。
+		服务内容如下：</p>
+		<p > <b class="di">{{t_income_print.project_name}}</b></p>
+	<p>截止<span>{{t_income_print.end_date.strftime("%y")}}</span>年<span>{{t_income_print.end_date.strftime("%m")}}</span>月<span>{{t_income_print.end_date.strftime("%d")}}</span>我司应收款项余额为人民币:<u>{{t_income_print.wait_income}}</u>元。</p>
+			{%if t_income_print.wait_income > 0%}	<p>应收款项余额明细如下：</p>
+		<p>{{t_income_print.ys_remark}}</p>{%end%}
+		<p>请您确认上述款项、及收到办结资料并签字。感谢您的配合！</p>
+		{%if t_income_print.remark!=None%}<p><b>{{t_income_print.remark}}</b></p>{%end%}
+		<p><i style="margin-left: 350px;">客户签字：</i><span></span></p>
+	</div>
+
+
+	
+	 <center><a href="/project?tag=print_to_customer_preview&project_id={{t_income_print.project_id}}&project_guid={{t_project.guid}}&title_id={{t_income_print.title_id}}">返回</a><button id="btnprint" style="padding:8px; font-size:15px;">保存</button>
+	 
+	 {%if t_income_print%}<span style="font-size:14px;color:red;">最后保存{{t_income_print.updated_at}}</span>{%else%}未保存过数据{%end%} 
+	 
+	 </center>
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>站点管理</title>
+  <!-- Bootstrap core CSS-->
+  <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+  <link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom styles for this template-->
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
+        <link href="/static/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+     <link href="/static/js/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/js/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="bg-dark">
+  <div class="container">
+    <div class="card card-register mx-auto mt-5">
+      <div class="card-header">编辑文章 (<a href="/articles?site_id={{site.id}}">返回列表</a>)
+      <a href="javaScript:void(0)" id="delete_article" class="btn btn-danger">删除文章</a>
+      </div>
+          {%if msg%}
+
+            <div class="alert alert-success" role="alert">
+  <strong>{{msg}} </strong> <a href="/articles?site_id={{site.id}}">返回列表</a>
+</div>    {%end%}
+      <div class="card-body">
+        <form method="post" id="post_form" >
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">标题:</label>
+            <input class="form-control"  type="text"  name="title" placeholder="如 发业工商网" value="{{item.title}}">
+          </div>
+
+
+
+          <div class="form-group">
+            <label for="exampleInputEmail1">正文:</label>
+            <textarea class="form-control text_editor"   name="content"  placeholder="发业 前景">{{item.content}}</textarea>
+          </div>
+
+                    <div class="form-group">
+            <label for="exampleInputEmail1">关键词:</label>
+            <input class="form-control"  type="text" name="keyword" placeholder="公司注册 广州注册公司" value="{{item.keyword}}">
+          </div>
+
+          <div class="form-group">
+            <label for="exampleInputEmail1">描述:</label>
+            <textarea class="form-control"   name="description"  placeholder="发业 前景" >{{item.description}}</textarea>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">发布人:</label>
+                <input class="form-control"  type="text" name="post_by" placeholder="公司注册 广州注册公司" value="{{item.post_by}}">
+          </div>
+
+
+           <div class="form-group">
+            <label for="exampleInputEmail1">发布状态:</label>
+
+            <input type="radio" name="published" value="1" {%if item.published==1%}checked="true" {%end%}> 发布
+            <input type="radio" name="published" value="0" {%if item.published==0%}checked="true" {%end%}> 文稿
+          </div>
+          <input type="hidden" id="site_id" value="{{site.id}}"/>
+
+          <button class="btn btn-primary btn-block" >保存</button>
+            {% module xsrf_form_html() %}
+
+        </form>
+        <div class="text-center">
+
+        </div>
+      </div>
+      {%if msg%}
+
+            <div class="alert alert-success" role="alert">
+  <strong>{{msg}} </strong> <a href="/articles?site_id={{site.id}}">返回列表</a>
+</div>    {%end%}
+    </div>
+  </div>
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Core plugin JavaScript-->
+  <script type="text/javascript" src="/static/js/froala_editor.pkgd.min.js"></script>
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <script type="text/javascript">
+   function getCookie(name) {
+            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+            return r ? r[1] : undefined;
+        }
+    $(function(){
+        $("#delete_article").on("click",function(){
+           if(confirm("确认删除吗?")){
+
+
+              $.post("/articles?tag=delete",{"articleid":{{item.id}},"_xsrf": getCookie("_xsrf"),"site_id":{{item.site_id}}},function(result){
+                alert("删除成功!")
+                location.href="/articles?site_id="+{{item.site_id}}
+            })
+
+        }
+
+
+        })
+
+              $(".text_editor").froalaEditor({
+                       imageUploadParam: 'file1',
+        imageUploadURL: '/img',
+         imageAllowedTypes: ['jpeg', 'jpg', 'png'],
+
+          imageUploadParams: {"_xsrf": getCookie("_xsrf"),"smid":"article"},
+                          imageUploadURL: '/img',
+                          height: 300,
+                                    language: 'zh_cn',
+                                    toolbarInline: false,
+                                    charCounterCount: false,
+                                    initOnClick: false,
+                                    toolbarButtons: ['Bord', 'italic', 'underline', 'strikeThrough', 'color', 'emoticons', '-', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+                                })
+
+
+      $("#post_form").on("submit",function(){
+         title =  $("input[name=title]").val()
+         if (title=="") {
+          alert("标题不能为空.")
+           $("input[name=title]").focus()
+              return false
+         }
+         content =  $("textarea[name=content]").val()
+         if (content=="") {
+          alert("正文不能为空.")
+           $("textarea[name=content]").focus()
+              return false
+         }
+
+
+      })
+    })
+  </script>
+</body>
+
+</html>
