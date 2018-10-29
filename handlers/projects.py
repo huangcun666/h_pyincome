@@ -12,7 +12,7 @@ import sys
 import events
 reload(sys)
 sys.setdefaultencoding('utf8')
-
+# **********
 class ProjectHandler(BaseHandler):
 
     def write_income(self,val,id):
