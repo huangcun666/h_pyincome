@@ -78,8 +78,6 @@ class MilePostHandler(BaseHandler):
                         print "l.......1"
                         return self.write("-100") #需要补资料
                 elif milepost.type_name==u'仓管通知销售交接':
-
-
                     t_projects_transfile = self.db.get('''
                         select * from t_projects_transfile where project_id=%s and pm_id=%s and mtype=1 and cq_uid =0
                         ''', project_id, milepost.member_id)
@@ -138,8 +136,8 @@ class MilePostHandler(BaseHandler):
                 elif milepost.type_name == u'仓管确认交接完成':
                     if mid :
                         self.db.execute("""
-                                update t_projects_transition set rec_by_uid_at=now() where project_id=%s and mid=%s and is_customer=1
-                            """,project_id,mid)
+                                update t_projects_transition set rec_by_uid_at=%s where project_id=%s and mid=%s and is_customer=1
+                            """,dt,project_id,mid)
 
                 # elif milepost.type_name==u"销售顾问接受交接":
                 #     t_projects_transfile = self.db.get('''
@@ -160,7 +158,15 @@ class MilePostHandler(BaseHandler):
                         milepost.type_id, milepost.type_name, dt,
                         milepost.member_id, project_id)
 
+                t_projects_member = self.db.get(
+                    " select * from t_projects_member where mid=%s and project_id=%s",
+                    milepost.member_id, project_id)
+                if t_projects_member:
+                    if milepost.type_name != u'待接单' or  milepost.type_name != u'办理中' and  t_projects_member.btype_id_name==u"公司注册" :
 
+                        self.db.execute(
+                            "update t_projects set reg_state=2 where id=%s",
+                            project_id)
 
                 return self.write(str(bresult))
         elif tag == "group_confirm": #批量接单

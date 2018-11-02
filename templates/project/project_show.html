@@ -1,5 +1,4 @@
-show
- {% extends "../base.html" %} {%block title%}收入管理{%end%}
+{% extends "../base.html" %} {%block title%}收入管理{%end%}
 
  {% block body %}
 
@@ -168,9 +167,90 @@ color: #FFF;
 color: #ff0;
 background-color: #007bff;
 }
+
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+.file {
+    position: relative;
+    display: inline-block;
+    background: #D0EEFF;
+    border: 1px solid #99D3F5;
+    border-radius: 4px;
+    padding: 4px 12px;
+    overflow: hidden;
+    color: #1E88C7;
+    text-decoration: none;
+    text-indent: 0;
+    line-height: 20px;
+}
+.file input {
+    position: absolute;
+    font-size: 100px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+}
+.file:hover {
+    background: #AADFFD;
+    border-color: #78C3F3;
+    color: #004974;
+    text-decoration: none;
+}
+
 </style>
 
-      <ol class="breadcrumb">
+<div style="width:91%;position: fixed; top: 56px; left: 9%; z-index: 99; background-color: #6683ad; padding:13px; padding-left:20px; margin-bottom:10px;margin-left:20px;">   
+       <a href="#yewushouru" style="margin:5px;color:#FFF;">收入明细<span class="fa fa-fw fa-reply"></span></a>
+        <a href="#daokuanjiesuan" style="margin:5px;color:#FFF">到款信息<span class="fa fa-fw fa-reply"></span></a>
+          <a href="#jiaodaishixiang" style="margin:5px;color:#FFF">交代事项<span class="fa fa-fw fa-reply"></span></a>
+            <a href="#banlijindu" style="margin:5px;color:#FFF">办理进度<span class="fa fa-fw fa-reply"></span></a>
+              <a href="#addr_list" style="margin:5px;color:#FFF">安排地址<span class="fa fa-fw fa-reply"></span></a>
+                <a href="#xiezhu_list" style="margin:5px;color:#FFF">业务协助<span class="fa fa-fw fa-reply"></span></a>
+                  <a href="#yewuxiangguan" style="margin:5px;color:#FFF">业务人员<span class="fa fa-fw fa-reply"></span></a>
+                    <a href="#dingdanliuzhuan" style="margin:5px;color:#FFF">流转动态<span class="fa fa-fw fa-reply"></span></a>
+                      <a href="#xiangguanlianxiren" style="margin:5px;color:#FFF">相关联系人<span class="fa fa-fw fa-reply"></span></a>  
+                      <a href="#ziliaojiaojie" style="margin:5px;color:#FFF">资料交接<span class="fa fa-fw fa-reply"></span></a>            
+                      <a href="#shangchuanfujian" style="margin:5px;color:#FFF">上传附件<span class="fa fa-fw fa-reply"></span></a>                      
+                      <a href="#kuaidi" style="margin:5px;color:#FFF">快递<span class="fa fa-fw fa-reply"></span></a>            
+                    </div>
+
+      <ol class="breadcrumb" style="margin-top:40px;">
         <li class="breadcrumb-item">
          主面板
         </li>
@@ -183,19 +263,18 @@ background-color: #007bff;
           <a href="/project?tag=project_recode&id={{t_project.id}}" id='btn_recode'>业务记录</a>
           <a href="/project?tag=manage_addr&id={{t_project.id}}" id='btn_recode'>办理地址管理</a>
 
-{%if t_project.is_expedited==1%}
-<font color='red' style="font-size:18px;"> <b>(加急业务)</b></font>
-{%end%}
         </li>
-
+        
       </ol>
 
 
-<div class="row">
+<div class="row" >
+    
 <div class="col-lg-12">
 <div class="card mb-3">
 <div class="faye-table" style="font-size:12px;">
 	<ul>
+
 		<li>
 			<div class="fayet" style="border-left: none;">订单编号</div>
 			<div class="fayet1">{{t_project.id}}
@@ -245,6 +324,20 @@ background-color: #007bff;
       </div>
     </li>
     {%end%}
+    <li><div class="fayet" style="border-left: none;">变动纪录</div>
+    <div class="fayet3">
+        {%if t_project_chuna_history%}{{t_project_chuna_history.uid_name}} {{t_project_chuna_history.updated_at.strftime("%Y-%m-%d")}} 对信息继续改动：
+        {%if  (len(t_project_chuna_history.company.split('|'))==2 and t_project_chuna_history.company.split('|')[1]!='') or len(t_project_chuna_history.company.split('|'))!=2 %}
+        公司：{%if t_project_chuna_history.company.replace('|','➡')[-1]=='➡'%}{{t_project_chuna_history.company.replace('|','➡')[:-1]}}{%else%}{{t_project_chuna_history.company.replace('|','➡')}}{%end%}{%end%}
+        {%if  (len(t_project_chuna_history.customer_name.split('|'))==2 and t_project_chuna_history.customer_name.split('|')[1]!='') or len(t_project_chuna_history.customer_name.split('|'))!=2 %}
+        &nbsp;客户：{%if t_project_chuna_history.customer_name.replace('|','➡')[-1]=='➡'%}{{t_project_chuna_history.customer_name.replace('|','➡')[:-1]}}{%else%}{{t_project_chuna_history.customer_name.replace('|','➡')}}{%end%}{%end%}
+        {%if  (len(t_project_chuna_history.customer_tel.split('|'))==2 and t_project_chuna_history.customer_tel.split('|')[1]!='') or len(t_project_chuna_history.customer_tel.split('|'))!=2 %}
+        &nbsp;电话：{%if t_project_chuna_history.customer_tel.replace('|','➡')[-1]=='➡'%}{{t_project_chuna_history.customer_tel.replace('|','➡')[:-1]}}{%else%}{{t_project_chuna_history.customer_tel.replace('|','➡')}}{%end%}{%end%}
+        {%if  (len(t_project_chuna_history.project_name.split('|'))==2 and t_project_chuna_history.project_name.split('|')[1]!='') or len(t_project_chuna_history.project_name.split('|'))!=2 %}
+        &nbsp;业务内容：{%if t_project_chuna_history.project_name.replace('|','➡')[-1]=='➡'%}{{t_project_chuna_history.project_name.replace('|','➡')[:-1]}}{%else%}{{t_project_chuna_history.project_name.replace('|','➡')}}{%end%}{%end%}
+        {%end%}
+    </div>
+    </li>
 		<li>
         <div class="fayet" style="border-left: none;">公司曾用名</div>
         <div class="fayet3">
@@ -269,7 +362,21 @@ background-color: #007bff;
                     {%end%}
         </div>
     </li>
+   <!-- <li>
+      <div class="fayet" style="border-left: none;">应收记录</div>
+      <div class="fayet3"> 
 
+上期应收: 2018.6-2018.11月服务费已收，2018.6-2019.5月账册费已收
+
+
+
+
+
+
+
+
+      </div>
+    </li>-->
 
 		<li>
 			<div class="fayet" style="border-left: none;">地址类型</div>
@@ -489,7 +596,7 @@ background-color: #007bff;
 							{{item.pay_type_name}}  {{item.income_at_a.strftime("%Y-%m-%d")}}	 <br>
 
 								{%if item.remark %}备注:{{item.remark}} <br>{%end%}
-						{%end%}	{%end%}
+            {%end%}	{%end%}
 				</i>
 			</div>
 			<div class="fayet6">
@@ -527,13 +634,13 @@ background-color: #007bff;
 
 
 
-               <div class="card mb-12">
+               <div class="card mb-12" id="yewushouru">
 
-              <div class="card-body">
+              <div class="card-body" >
                 <h6 class="card-title mb-1"><a href="#">业务收入明细</a>
 
 
-                  {%if  (t_project.uid==int(uid) or int(getMemberId(t_project_members,"销售顾问")) == int(uid) )and not t_project.contract_uid_name%}
+                  {%if  (t_project.uid==int(uid) or int(getMemberId(t_project_members,"销售顾问")) == int(uid) or int(getMemberId(t_project_members,"客服顾问")) == int(uid) )and not t_project.contract_uid_name%}
 
                  <a href="javascript:void(0)" id="a_add_service"
                    class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>设置</a>
@@ -577,9 +684,831 @@ background-color: #007bff;
               <div class="card-footer  text-muted"> 合计总服务费  {{t_project.all_income}} 元 </div>
             </div>
 
+            <div class="card-columns">
+                <div class="card mb-12" id='daokuanjiesuan'>
+            
+                          <div class="card-body">
+                        <h6 class="card-title mb-1"><a href="#">到款结算信息</a>
+                                {%if t_project.uid==int(uid) or role== "2" or role== "3" or role=="8" or int(getMemberId(t_project_members,"销售顾问")) == int(uid)  or int(getMemberId(t_project_members,"客服顾问")) == int(uid)%} /
+                                 <a href="javascript:void(0)" id="new_income_other1" class=" mr-3 d-inline-block">
+                                  <i class="fa fa-fw fa-comment"></i>新建</a>{%end%}
+            
+            
+            
+             </h6>
+            
+                          </div>
+            
+            
+                          <hr class="my-0">
+            
+                        {%if t_project_income_title%}
+                        {%for item in t_project_income_title%}
+                       <div class="card-body py-2 ">
+                       {%if item.income_uid%} <a target="_blank" href="project?tag=print&project_id={{t_project.id}}&project_guid={{t_project.guid}}&title_id={{item.id}}">
+                       <img width="20" src="/static/images/print.png">打印</a>{%end%}
+            
+                       {%if item.fi_confirm_uid%} <a target="_blank" href="project?tag=print_to_customer_preview&project_id={{t_project.id}}&project_guid={{t_project.guid}}&title_id={{item.id}}">
+                       <img width="20" src="/static/images/print.png">打印客户告知函</a>{%end%}
+            
+                   {%if ( role=="3") or (role=="2"  and not item.income_uid) or  (t_project.uid==int(uid) and not item.income_uid) %}
+                          <a alt="删除该条记录" href="javascript:void(0)" class="delete_income"
+                          income_curr_id="{{item.id}}" income_curr_guid="{{item.guid}}">
+                       <img width="20" src="/static/images/delete.png">删除</a>
+            {%end%}
+            
+            
+             <!-- {%if ( role=="3") or (role=="2"  and not item.income_uid) or (t_project.uid==int(uid) or not item.income_uid) %}{%end%} -->
+            {%if  (role=='2' or role=='3' or role=='5') or (not item.income_uid) %}
+            
+                        <a href="javascript:void(0)" income_at="{{item.income_at}}" pay_type_id="{{item.pay_type_id}}" pay_type_name="{{item.pay_type_name}}" parent_id="{{item.id}}" company_id="{{item.company_id}}" company_id_name="{{item.company_id_name}}"  class="show_income_modify" >
+                        <img width="20" src="/static/images/modify.png"> 修改</a>{%end%}
+                            {{item.income_at}}  {{item.uid_name}} 入账-{{item.income_title}}-
+                            {{item.company_id_name}}-{{item.pay_type_name}} <b>合计:{{item.income_money_total}} 元</b>
+            
+            
+            
+                         {%if item.income_uid%}
+                          <span class="bg-success" style="color:#fff;font-size:14px; padding:5px;">  <b>出纳({{item.income_uid_name}})于{{item.income_uid_at}}确认</b></span>
+            
+                            {%if item.fi_confirm_uid%}
+                            <span class="bg-success" style="color:#fff;font-size:14px; padding:5px;">
+                             <b>{{item.fi_confirm_uid_name}}(财务)于{{item.fi_confirm_at}}确认</b></span>
+            
+                            {%else%}
+                            {%if role=="3"%}
+                                  <input type="button" income_id="{{item.id}}" class="btn btn-info btn_confirm" value="确认"
+                                   title_guid="{{item.guid}}"
+                                    title_id="{{item.id}}" ctype="2" />
+                              {%else%}
+                                 <span class="bg-info" style="color:#fff;font-size:14px; padding:5px;">  <b>待财务确认</b>   </span>
+                              {%end%}
+                            {%end%}
+                           {%if role=="3" or role=="2" or (t_project.uid==int(uid)) and not item.income_uid%}   </a>{%end%}
+                           {%if item.is_print==0%}
+                           <span class="bg-info" style="color:#fff;font-size:14px; padding:5px;margin-left:3px;">  <b>尚未打印</b>   </span>
+                           {%else%}
+            
+                           <span class="bg-dark" style="color:#fff;font-size:14px; padding:5px;margin-left: 3px;">  <b>已打印</b>   </span>
+                           {%end%}
+                         {%else%}
+            
+                            {%if role=="2"%}
+                                <input type="button" title_id="{{item.id}}"  ctype="1"  class="btn_confirm" value="确认"
+                              title_guid="{{item.guid}}"
+                              />
+            
+                              {%else%}
+                               <span class="bg-info" style="color:#fff;font-size:16px; padding:8px;">   <b>待出纳确认</b>      </span>
+            
+                              {%end%}
+            
+            
+                         {%end%}
+            
+            
+                         </div>        <hr class="my-0">
+            
+                          {%end%}
+            
+                            {%else%}
+                                <div class="card-body py-2 ">
+                                          还没有代收款项结算信息哦
+                                      </div>
+                            {%end%}
+            
+            
+                          <div class="card-footer  text-muted small">{{len(t_project_income_title)}} 笔到款
+            
+                          合同金额：{{t_project.all_income}} 元|  待确认合同: {{wait_rec_income_money}} 元 |
+                          已确认合同: {{rec_income_money}} 元
+            
+                            代收合计：{{wait_rec_income_money_other.c+wait_rec_income_money_other.c}}
+                             元|  待确认代收: {{wait_rec_income_money_other.c}} 元 |
+                            已确认代收: {{rec_income_money_other.c}} 元
+            
+            
+            
+                          </div>
+                </div>
+                <div class="card mb-12" id='yewuxiangguan'>
 
+                    <div class="card-body">
+                      <h6 class="card-title mb-1"><a href="#">业务相关人员</a>
+       {%if   t_project.uid==int(uid) or role=="7" or role=="8"  or int(getMemberId(t_project_members,"客服顾问")) == int(uid) %} /
+                       <a href="javascript:void(0)" id="a_add_team" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>设置</a>
+      
+       {%end%}
+         {%if (role=="7") or (role=="8") %}
+                             <a href="javascript:void(0)" id="a_add_team_cq" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i><b>新增工商专员</b></a>
+                          {%end%}
+       </h6> </div>
+                    <hr class="my-0">
+                    <div class="card-body  bg-faded">
+                    {%if t_project_members %}
+                       <div class="row">
+                      {%for item in t_project_members%}
+                      <div class="media col-xl-4 col-sm-6 mb-3">
+                        <img class="d-flex mr-3" src="/static/images/avatar.jpeg" width="65" alt="{{item.team_name}}">
+                        <div class="media-body">
+                          <h6 class="mt-0 mb-1">
+                          <a href="#">{{item.name}}</a></h6>{{item.team_name}}
+                          {%if item.btype_id%}
+      ({{item.btype_id_name}})
+                          {%end%}
+      
+      
+      
+                       {%if role=="7" and item.team_id==38%}
+                       {%if item.name=="周萍" or item.name=="外资"%}(无需流转){%end%}
+                        <a href="javascript:void(0)"
+                          team_id="{{item.team_id}}"
+                          project_id="{{item.project_id}}"
+                             mid="{{item.mid}}"
+                             guid="{{item.guid}}" class="a_delete_member" guid="{{item.guid}}" staff_name="{{item.name}}">
+                             <img width="20" src="/static/images/delete.png"/>
+                             </a>
+                      {%else%}
+      
+      
+                          {%if t_project.uid==int(uid) and item.team_id!=38%}
+      
+                            <a href="javascript:void(0)"
+                                team_id="{{item.team_id}}" project_id="{{item.project_id}}"
+                                 mid="0"
+                                  guid="{{item.guid}}" class="a_delete_member" guid="{{item.guid}}" staff_name="{{item.name}}">
+                                  <img width="20" src="/static/images/delete.png"/>
+                                  </a>
+                        {%end%}
+      
+      
+                          {%end%}
+      
+      
+      
+                                  <ul class="list-inline mb-0">
+                            <li class="list-inline-item">
+                              {{item.created_at}}
+                            </li>
+      
+      
+                          </ul>
+                        </div>
+                      </div>  {%end%}
+      
+      
+                      </div>
+                      {%else%}
+                      还没有设置相关人员哦
+      
+                      {%end%}
+      
+                    </div>
+                    <div class="card-footer  text-muted small"> 当前有 {{len(t_project_members)}} 位成员</div>
+                  </div>
+             <!-- Example Social Card-->
+                        <div class="card mb-12" id='jiaodaishixiang'>
+            
+                          <div class="card-body">
+                            <h6 class="card-title mb-1"><a href="#">交代事项</a>
+            
+                               <a href="javascript:void(0)" id="a_add_note"
+                               class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                               {%if role!='6'%}
+                               <a href="javascript:void(0)" id="a_read_note"
+                               class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-align-justify"></i>查看</a>
+                               {%end%}
+                               {%if is_check=='1'%}
+                               <a href="javascript:void(0)" id="a_check_note" class="mr-3 d-inline-block">
+                                 <i class="fa fa-fw fa-align-justify"></i>审核
+                               </a>
+                               {%end%}
+             </h6></div>
+            
+            
+                          <hr class="my-0">
+            
+                          <div class="card-body  bg-faded">
+                         {%if project_note%}
+                         {% if visible_note%}
+                         {%for item in project_note%}
+                         <div class="card-body py-2" {%if item.is_check==1 %}style="background-color:#D6EAF8;"{%end%}>
+                       <span class="clearfix  z-1 ">
+            
+                {%if item.note_id%}
+                    <a class="mr-3 d-inline-block cancel_note" href="javascript:void(0)" note_id='{{item.aid}}' is_cancel='{{item.is_cancel}}'>
+                        {%if item.is_cancel==0%}作废{%else%}恢复{%end%}</a>
+                {%else%}
+                 <a href="javascript:void(0)" class="a_change_note"  id="{{item.aid}}" note="{{item.msg}}">
+                  <img  alt="修改该条记录" src="/static/images/modify.png" width="25" /></a>
+                 <a href="javascript:void(0)" class="a_delete_note"  id="{{item.aid}}">
+                   <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
+                  {%end%}
+            <b>{%if item.state_id==0%} <span class="badge badge-info">已通过</span>{%elif item.state_id==1%} <span class="badge badge-danger">未通过</span>{%elif item.is_check==1%}<span class="badge badge-dark">待审核</span>{%end%}{{item.uid_name}} ({{item.creatd_at}} )</b> :<span style="font-size:20px; color:red;">
+               <b>{%if item.is_cancel==1%}<s>{{item.msg}}</s>{%else%}{{item.msg}}{%end%}{%if item.remark%} 备注：{{item.remark}}{%end%}</b>
+               <!--
+            {%if item.note_id%}<span class="bg-primary" style="color:#fff;font-size: 80%;padding:5px;">已读</span>{%else%}
+            <span class="bg-danger" style="color:#fff;font-size: 80%;padding:5px;">未读</span>{%end%}
+                       </span>-->
+            
+            {%if item.read_name%}
+            {%for strs in item.read_name.split(",")%}
+                {%if strs%}
+              <span class="badge badge-info">{{strs}}</span>
+                {%end%}
+            {%end%}{% if item.created_name%}{{item.created_name}}{%if item.state_id==0%}审核通过{%else%}驳回{%end%}
+            {%if item.remark%}&nbsp;备注：{{item.remark}}{%end%}{%end%}{%end%}
+            {%if role=='3'%}
+            {%if item.is_add_to_print==0%}
+            <a href="javascript:void(0);" class="button btn-secondary btn-sm add_to_print" id="{{item.id}}" >添加到打印</a>
+            {%else%}
+            <a href="javascript:void(0);" class="button btn-secondary btn-sm delete_from_print" id="{{item.id}}">从打印移除</a>
+            {%end%}
+            {%end%}
+            </div>  <hr class="my-0">
+                       {%end%}
+            
+                         {%else%}
+                        {%for item in project_note%}
+                          <div class="card-body py-2 ">
+                        <span class="clearfix  z-1">
+            
+                  <a href="javascript:void(0)" class="a_delete_note"  id="{{item.aid}}">
+                    <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
+            <b> {{item.creatd_at}} {{item.uid_name}}</b> :<span style="font-size:20px; color:red;"> <b>{{item.msg}}</b>
+            
+            
+                        </span>
+            
+            {%if item.read_name%}
+            {%for strs in item.read_name.split(",")%}
+              <span class="badge badge-info">{{strs}}</span>
+            {%end%}
+            
+            {%end%}
+            {% if item.created_name%}{{item.created_name}}{%if item.state_id==0%}审核通过{%else%}驳回{%end%}
+            {%if item.remark%}备注：{{item.remark}}{%end%}{%end%}
+            {%if role=='3'%}
+            {%if item.is_add_to_print==0%}
+            <a href="javascript:void(0);" class="button btn-secondary btn-sm add_to_print" id="{{item.id}}" >添加到打印</a>
+            {%else%}
+            <a href="javascript:void(0);" class="button btn-secondary btn-sm delete_from_print" id="{{item.id}}">从打印移除</a>
+            {%end%}
+            {%end%}
+                         </div>  <hr class="my-0">
+                        {%end%}
+                        {%end%}
+                      {%else%}
+                          <hr class="my-0"><div class="card-body py-2 ">
+                            还没有交代事项哦
+            </div>
+                            {%end%}
+            
+                          </div>
+                          <div class="card-footer  text-muted"> 合计总服务费  {{t_project.all_income}} 元 </div>
+                        </div>
+            
+            
+            
+             <div class="card mb-3" id="banlijindu">
+            
+                          <div class="card-body ">
+                            <h6 class="card-title mb-1 ">
+            
+            办理进度更新记录
+            
+            {%if t_project.is_expedited==1%}
+                 <font color='red' style="font-size:18px;"> <b>(加急业务)</b></font>
+            {%end%}
+            
+            
+                               {%if t_project.building_id > 0%}
+                                <font color='green'> (此业务为楼盘客户) </font>
+            
+            
+            
+                               {%end%}
+                               <!-- <a href="javascript:void(0)"
+                               type_id="2"
+                                class=" mr-3 d-inline-block a_project_state_modal" style="font-size:14px;">
+                                 <i class="fa fa-fw fa-comment"></i>新增</a> -->
+                            </h6>
+            
+                          </div>
+            
+             <hr class="my-0">
+            
+            <div class="row">
+            <div class="col">
+            
+            
+            <div style="margin-top:10px;margin-bottom:40px">
+            
+                <div class="qa-message-list" id="wallmessages">
+                          <center> <h6 class="card-title mb-1 "><a href="#">公司注册办理进度</a>
+            
+                           {%if t_project.building_id > 0%}
+            
+                           <span id="show_building_link_span">
+                            <a target="_blank" class="show_building_link" href="http://building.gzfaye.com/show?modal_show=1&tag=customer_state&qid={{t_project.id}}&building_name={{t_project.building_id_name}}&urgent={{t_project.is_expedited}}&sales={{getMemberName(t_project_members,"销售顾问")}}&customer_tel={{t_project.customer_tel}}&customer_name={{t_project.customer_name}}&customer_company={{t_project.customer_company}}"
+                            class=" mr-3 d-inline-block" style="font-size:14px;" type_id="1"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                            <a target="_blank" class="show_building_link" href="http://building.gzfaye.com/show?tag=customer_state&qid={{t_project.id}}&building_name={{t_project.building_id_name}}&urgent={{t_project.is_expedited}}&sales={{getMemberName(t_project_members,"销售顾问")}}&customer_tel={{t_project.customer_tel}}&customer_name={{t_project.customer_name}}&customer_company={{t_project.customer_company}}"
+                            class=" mr-3 d-inline-block " style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+                            </span>
+            
+            
+            
+                            <a target="_blank" class="show_building_link"
+                              href="http://building.gzfaye.com/show?tag=list&is_my=1" class=" mr-3 d-inline-block" style="font-size:14px;">
+                             <span class="fa fa-fw fa-align-justify"></span> 进入楼盘系统</a>
+                           {%else%}
+                            <a href="javascript:void(0)"
+                            class=" mr-3 d-inline-block a_project_state_modal" style="font-size:14px;" type_id="1"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                            <a href="javascript:void(0)"
+                            class=" mr-3 d-inline-block show_all1" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+            
+               {%end%}
+            
+            
+                          </h5></center>
+            
+            
+            {%if t_project.building_id > 0%}
+                    <div id="show_building_status">
+            
+            
+            
+                    </div>
+            
+            {%else%}
+                     {%if t_project_state_msg1%}
+            
+                      {%for item in t_project_state_msg1[:4]%}
+                      <div class="message-item" id="m9">
+                        <div class="message-inner">
+                          <div class="message-head clearfix">
+            
+                            <div class="avatar pull-left"><img  src="/static/images/avatar.jpeg"></div>
+                            <div class="user-detail">
+                              <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
+                               {{item.state_id_name}}</span>
+                               </h5>
+            
+                            </div>
+                          </div>
+                          {%if item.state_remark%}
+                          <div class="qa-message-content">
+                            {{item.state_remark}}
+                          </div>
+                          {%else%}
+                          无描述
+                          {%end%}
+            
+                      </div>
+            
+            
+                      </div>
+            
+                      {%end%}
+                             {%else%}
+                            <div class="card-body py-2 "><div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div></div>
+                            {%end%}   {%end%}
+                    </div>
+            
+            </div>
+            
+            
+            
+            
+            </div>
+            
+              <div class="col">
+            
+            
+                <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
+            
+                  <div class="qa-message-list" id="wallmessages">
+                    <center>
+                      <h6 class="card-title mb-1 ">
+                        <a href="#">公司变更办理进度</a>
+                        <a href="javascript:void(0)"
+                        class=" mr-3 d-inline-block a_project_state_modal1" style="font-size:14px;" type_id="2">
+                        <i class="fa fa-fw fa-comment"></i>新增</a>
+                        <a href="javascript:void(0)"
+                        class=" mr-3 d-inline-block show_all2" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+                        </h5>
+                    </center>
+            
+                    {%if t_project_state_msg2%}
+                     {%for item in t_project_state_msg2[:4]%}
+            
+                    <div class="message-item" id="m9">
+                      <div class="message-inner">
+                        <div class="message-head clearfix">
+            
+                          <div class="avatar pull-left">
+                            <img src="/static/images/avatar.jpeg">
+                          </div>
+                          <div class="user-detail">
+                            <h5 class="handle">{{item.uid_name}}
+                              <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
+                              </span>
+                            </h5>
+            
+                          </div>
+                        </div>
+                        {%if item.state_remark%}
+                        <div class="qa-message-content">
+                          {{item.state_remark}}
+                        </div>
+                        {%else%} 无描述 {%end%}
+            
+                      </div>
+            
+            
+                    </div>
+            
+                    {%end%} {%else%}
+                    <div class="card-body py-2 ">
+                      <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                    </div>
+                    {%end%}
+                  </div>
+            
+                </div>
+            
+            
+            
+            
+              </div>
+            
+            </div>
+            <div class="row">
+                <div class="col">
+            
+            
+                <div style="margin-top:10px;margin-bottom:40px">
+            
+                    <div class="qa-message-list" id="wallmessages">
+                              <center> <h6 class="card-title mb-1 "><a href="#">解除异常办理进度</a>
+                                <a href="javascript:void(0)"
+                                class=" mr-3 d-inline-block a_project_state_modal2" style="font-size:14px;" type_id="3"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                                <a href="javascript:void(0)"
+                                class=" mr-3 d-inline-block show_all3" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+                              </h5></center>
+            
+                         {%if t_project_state_msg3%}
+                          {%for item in t_project_state_msg3[:4]%}
+                          <div class="message-item" id="m9">
+                            <div class="message-inner">
+                              <div class="message-head clearfix">
+            
+                                <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
+                                <div class="user-detail">
+                                  <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
+                                   {{item.state_id_name}}</span>
+                                   </h5>
+            
+                                </div>
+                              </div>
+                              {%if item.state_remark%}
+                              <div class="qa-message-content">
+                                {{item.state_remark}}
+                              </div>
+                              {%else%}
+                              无描述
+                              {%end%}
+            
+                          </div>
+            
+            
+                          </div>
+            
+                          {%end%}
+                                 {%else%}
+                                <div class="card-body py-2 ">
+                                  <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                                </div>
+                                {%end%}
+                        </div>
+            
+                </div>
+            
+            
+            
+            
+                </div>
+            
+                  <div class="col">
+            
+            
+                    <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
+            
+                      <div class="qa-message-list" id="wallmessages">
+                        <center>
+                          <h6 class="card-title mb-1 ">
+                            <a href="#">公司注销办理进度</a>
+                            <a href="javascript:void(0)"
+                            class=" mr-3 d-inline-block a_project_state_modal3" style="font-size:14px;" type_id="4">
+                            <i class="fa fa-fw fa-comment"></i>新增</a>
+                            <a href="javascript:void(0)"
+                            class=" mr-3 d-inline-block show_all4" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+            
+                            </h5>
+                        </center>
+            
+                        {%if t_project_state_msg4%}
+                         {%for item in t_project_state_msg4[:4]%}
+            
+                        <div class="message-item" id="m9">
+                          <div class="message-inner">
+                            <div class="message-head clearfix">
+            
+                              <div class="avatar pull-left">
+                                <img src="/static/images/avatar.jpeg">
+                              </div>
+                              <div class="user-detail">
+                                <h5 class="handle">{{item.uid_name}}
+                                  <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
+                                  </span>
+                                </h5>
+            
+                              </div>
+                            </div>
+                            {%if item.state_remark%}
+                            <div class="qa-message-content">
+                              {{item.state_remark}}
+                            </div>
+                            {%else%} 无描述 {%end%}
+            
+                          </div>
+            
+            
+                        </div>
+            
+                        {%end%} {%else%}
+                        <div class="card-body py-2 ">
+                          <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                        </div>
+                        {%end%}
+                      </div>
+            
+                    </div>
+            
+            
+            
+            
+                  </div>
+            
+                </div>
+            <div class="row">
+                    <div class="col">
+            
+            
+                    <div style="margin-top:10px;margin-bottom:40px">
+            
+                        <div class="qa-message-list" id="wallmessages">
+                                  <center> <h6 class="card-title mb-1 "><a href="#">许可证办理进度</a>
+                                    <a href="javascript:void(0)"
+                                    class=" mr-3 d-inline-block a_project_state_modal4" style="font-size:14px;" type_id="5"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                                    <a href="javascript:void(0)"
+                                    class=" mr-3 d-inline-block show_all5" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+                                  </h5></center>
+            
+                             {%if t_project_state_msg5%}
+                              {%for item in t_project_state_msg5[:4]%}
+                              <div class="message-item" id="m9">
+                                <div class="message-inner">
+                                  <div class="message-head clearfix">
+            
+                                    <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
+                                    <div class="user-detail">
+                                      <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
+                                       {{item.state_id_name}}</span>
+                                       </h5>
+            
+                                    </div>
+                                  </div>
+                                  {%if item.state_remark%}
+                                  <div class="qa-message-content">
+                                    {{item.state_remark}}
+                                  </div>
+                                  {%else%}
+                                  无描述
+                                  {%end%}
+            
+                              </div>
+            
+            
+                              </div>
+            
+                              {%end%}
+                                     {%else%}
+                                    <div class="card-body py-2 ">
+                                      <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                                    </div>
+                                    {%end%}
+                            </div>
+            
+                    </div>
+            
+            
+            
+            
+                    </div>
+            
+                      <div class="col">
+            
+            
+                        <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
+            
+                          <div class="qa-message-list" id="wallmessages">
+                            <center>
+                              <h6 class="card-title mb-1 ">
+                                <a href="#">商标办理进度</a>
+                                <a href="javascript:void(0)"
+                                class=" mr-3 d-inline-block a_project_state_modal5" style="font-size:14px;" type_id="6">
+                                <i class="fa fa-fw fa-comment"></i>新增</a>
+                                <a href="javascript:void(0)"
+                                class=" mr-3 d-inline-block show_all6" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+                                </h5>
+                            </center>
+            
+                            {%if t_project_state_msg6%}
+                             {%for item in t_project_state_msg6[:4]%}
+            
+                            <div class="message-item" id="m9">
+                              <div class="message-inner">
+                                <div class="message-head clearfix">
+            
+                                  <div class="avatar pull-left">
+                                    <img src="/static/images/avatar.jpeg">
+                                  </div>
+                                  <div class="user-detail">
+                                    <h5 class="handle">{{item.uid_name}}
+                                      <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
+                                      </span>
+                                    </h5>
+            
+                                  </div>
+                                </div>
+                                {%if item.state_remark%}
+                                <div class="qa-message-content">
+                                  {{item.state_remark}}
+                                </div>
+                                {%else%} 无描述 {%end%}
+            
+                              </div>
+            
+            
+                            </div>
+            
+                            {%end%} {%else%}
+                            <div class="card-body py-2 ">
+                              <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                            </div>
+                            {%end%}
+                          </div>
+            
+                        </div>
+            
+            
+            
+            
+                      </div>
+            
+              </div>
+            <div class="row">
+                    <div class="col">
+            
+            
+                    <div style="margin-top:10px;margin-bottom:40px">
+            
+                        <div class="qa-message-list" id="wallmessages">
+                                  <center> <h6 class="card-title mb-1 "><a href="#">特殊业务办理进度</a>
+                                    <a href="javascript:void(0)"
+                                    class=" mr-3 d-inline-block a_project_state_modal6" style="font-size:14px;" type_id="7"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                                    <a href="javascript:void(0)"
+                                    class=" mr-3 d-inline-block show_all7" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+                                  </h5></center>
+            
+                             {%if t_project_state_msg7%}
+                              {%for item in t_project_state_msg7[:4]%}
+                              <div class="message-item" id="m9">
+                                <div class="message-inner">
+                                  <div class="message-head clearfix">
+            
+                                    <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
+                                    <div class="user-detail">
+                                      <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
+                                       {{item.state_id_name}}</span>
+                                       </h5>
+            
+                                    </div>
+                                  </div>
+                                  {%if item.state_remark%}
+                                  <div class="qa-message-content">
+                                    {{item.state_remark}}
+                                  </div>
+                                  {%else%}
+                                  无描述
+                                  {%end%}
+            
+                              </div>
+            
+            
+                              </div>
+            
+                              {%end%}
+                                     {%else%}
+                                    <div class="card-body py-2 ">
+                                      <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                                    </div>
+                                    {%end%}
+                            </div>
+            
+                    </div>
+            
+            
+            
+            
+                    </div>
+            
+                      <div class="col">
+            
+            
+                        <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
+            
+                          <div class="qa-message-list" id="wallmessages">
+                            <center>
+                              <h6 class="card-title mb-1 ">
+                                <a href="#">其他业务办理进度</a>
+                                <a href="javascript:void(0)"
+                                class=" mr-3 d-inline-block a_project_state_modal7" style="font-size:14px;" type_id="8">
+                                <i class="fa fa-fw fa-comment"></i>新增</a>
+                                <a href="javascript:void(0)"
+                                class=" mr-3 d-inline-block show_all8" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+                                </h5>
+                            </center>
+            
+                            {%if t_project_state_msg8%}
+                             {%for item in t_project_state_msg8[:4]%}
+            
+                            <div class="message-item" id="m9">
+                              <div class="message-inner">
+                                <div class="message-head clearfix">
+            
+                                  <div class="avatar pull-left">
+                                    <img src="/static/images/avatar.jpeg">
+                                  </div>
+                                  <div class="user-detail">
+                                    <h5 class="handle">{{item.uid_name}}
+                                      <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
+                                      </span>
+                                    </h5>
+            
+                                  </div>
+                                </div>
+                                {%if item.state_remark%}
+                                <div class="qa-message-content">
+                                  {{item.state_remark}}
+                                </div>
+                                {%else%} 无描述 {%end%}
+            
+                              </div>
+            
+            
+                            </div>
+            
+                            {%end%} {%else%}
+                            <div class="card-body py-2 ">
+                              <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                            </div>
+                            {%end%}
+                          </div>
+            
+                        </div>
+            
+            
+            
+            
+                      </div>
+            
+              </div>
+            
+            
+            
+            
+            
+            
+                          <div class="card-footer  text-muted small">
+                          </div>
+                        </div>
+            
+            
+                    </div>
 
-                <div class="card-columns" >
+                <div class="card-columns">
                     <!-- Example Social Card-->
                        <div class="card mb-12" id="addr_list">
 
@@ -861,840 +1790,12 @@ background-color: #007bff;
 
 <div class="card-columns">
 
-            <div class="card mb-12">
-
-              <div class="card-body">
-                <h6 class="card-title mb-1"><a href="#">业务相关人员</a>
- {%if (role=="1" and  t_project.uid==int(uid)) or role=="7" or role=="8"  %} /
-                 <a href="javascript:void(0)" id="a_add_team" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>设置</a>
-
- {%end%}
-   {%if (role=="7") or (role=="8") %}
-                       <a href="javascript:void(0)" id="a_add_team_cq" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i><b>新增工商专员</b></a>
-                    {%end%}
- </h6> </div>
-              <hr class="my-0">
-              <div class="card-body  bg-faded">
-              {%if t_project_members %}
-                 <div class="row">
-                {%for item in t_project_members%}
-                <div class="media col-xl-4 col-sm-6 mb-3">
-                  <img class="d-flex mr-3" src="/static/images/avatar.jpeg" width="65" alt="{{item.team_name}}">
-                  <div class="media-body">
-                    <h6 class="mt-0 mb-1">
-                    <a href="#">{{item.name}}</a></h6>{{item.team_name}}
-                    {%if item.btype_id%}
-({{item.btype_id_name}})
-                    {%end%}
-
-
-
-                 {%if role=="7" and item.team_id==38%}
-                 {%if item.name=="周萍" or item.name=="外资"%}(无需流转){%end%}
-                  <a href="javascript:void(0)"
-                    team_id="{{item.team_id}}"
-                    project_id="{{item.project_id}}"
-                       mid="{{item.mid}}"
-                       guid="{{item.guid}}" class="a_delete_member" guid="{{item.guid}}" staff_name="{{item.name}}">
-                       <img width="20" src="/static/images/delete.png"/>
-                       </a>
-                {%else%}
-
-
-                    {%if t_project.uid==int(uid) and item.team_id!=38%}
-
-                      <a href="javascript:void(0)"
-                          team_id="{{item.team_id}}" project_id="{{item.project_id}}"
-                           mid="0"
-                            guid="{{item.guid}}" class="a_delete_member" guid="{{item.guid}}" staff_name="{{item.name}}">
-                            <img width="20" src="/static/images/delete.png"/>
-                            </a>
-                  {%end%}
-
-
-                    {%end%}
-
-
-
-                            <ul class="list-inline mb-0">
-                      <li class="list-inline-item">
-                        {{item.created_at}}
-                      </li>
-
-
-                    </ul>
-                  </div>
-                </div>  {%end%}
-
-
-                </div>
-                {%else%}
-                还没有设置相关人员哦
-
-                {%end%}
-
-              </div>
-              <div class="card-footer  text-muted small"> 当前有 {{len(t_project_members)}} 位成员</div>
-            </div>
-
-
-
                       <input type="hidden" id="income_a_type" value='0'/>
                         <input type="hidden" id="income_curr_id" value='0'/>
                           <input type="hidden" id="income_curr_guid" value='0'/>
 
 
-<div class="card-columns">
-    <div class="card mb-12">
 
-              <div class="card-body">
-            <h6 class="card-title mb-1"><a href="#">到款结算信息1</a>
-
-                    {%if t_project.uid==int(uid) or role== "2" or role== "3" or role=="8" or int(getMemberId(t_project_members,"销售顾问")) == int(uid) %} /
-                     <a href="javascript:void(0)" id="new_income_other1" class=" mr-3 d-inline-block">
-                      <i class="fa fa-fw fa-comment"></i>新建</a>{%end%}
-
-
-
-
- </h6>
-
-              </div>
-
-
-              <hr class="my-0">
-
-            {%if t_project_income_title%}
-            {%for item in t_project_income_title%}
-           <div class="card-body py-2 ">
-           {%if item.income_uid%} <a target="_blank" href="project?tag=print&project_id={{t_project.id}}&project_guid={{t_project.guid}}&title_id={{item.id}}">
-           <img width="20" src="/static/images/print.png">打印</a>{%end%}
-
-           {%if item.fi_confirm_uid%} <a target="_blank" href="project?tag=print_to_customer_preview&project_id={{t_project.id}}&project_guid={{t_project.guid}}&title_id={{item.id}}">
-           <img width="20" src="/static/images/print.png">打印客户告知函</a>{%end%}
-
-       {%if ( role=="3") or (role=="2"  and not item.income_uid) or  (t_project.uid==int(uid) and not item.income_uid) %}
-              <a alt="删除该条记录" href="javascript:void(0)" class="delete_income"
-              income_curr_id="{{item.id}}" income_curr_guid="{{item.guid}}">
-           <img width="20" src="/static/images/delete.png">删除</a>
-{%end%}
-
-
- {%if ( role=="3") or (role=="2"  and not item.income_uid) or (t_project.uid==int(uid) and not item.income_uid) %}
-
-
-            <a href="javascript:void(0)" income_at="{{item.income_at}}" pay_type_id="{{item.pay_type_id}}" pay_type_name="{{item.pay_type_name}}" parent_id="{{item.id}}" company_id="{{item.company_id}}" company_id_name="{{item.company_id_name}}"  class="show_income_modify" >
-            <img width="20" src="/static/images/modify.png"> 修改</a>{%end%}
-                {{item.income_at}}  {{item.uid_name}} 入账-{{item.income_title}}-
-                {{item.company_id_name}}-{{item.pay_type_name}} <b>合计:{{item.income_money_total}} 元</b>
-
-
-
-             {%if item.income_uid%}
-              <span class="bg-success" style="color:#fff;font-size:14px; padding:5px;">  <b>出纳({{item.income_uid_name}})于{{item.income_uid_at}}确认</b></span>
-
-                {%if item.fi_confirm_uid%}
-                <span class="bg-success" style="color:#fff;font-size:14px; padding:5px;">
-                 <b>{{item.fi_confirm_uid_name}}(财务)于{{item.fi_confirm_at}}确认</b></span>
-
-                {%else%}
-                {%if role=="3"%}
-                      <input type="button" income_id="{{item.id}}" class="btn btn-info btn_confirm" value="确认"
-                       title_guid="{{item.guid}}"
-                        title_id="{{item.id}}" ctype="2" />
-                  {%else%}
-                     <span class="bg-info" style="color:#fff;font-size:14px; padding:5px;">  <b>待财务确认</b>   </span>
-                  {%end%}
-                {%end%}
-               {%if role=="3" or role=="2" or (t_project.uid==int(uid)) and not item.income_uid%}   </a>{%end%}
-               {%if item.is_print==0%}
-               <span class="bg-info" style="color:#fff;font-size:14px; padding:5px;margin-left:3px;">  <b>尚未打印</b>   </span>
-               {%else%}
-
-               <span class="bg-dark" style="color:#fff;font-size:14px; padding:5px;margin-left: 3px;">  <b>已打印</b>   </span>
-               {%end%}
-             {%else%}
-
-                {%if role=="2"%}
-                    <input type="button" title_id="{{item.id}}"  ctype="1"  class="btn_confirm" value="确认"
-                  title_guid="{{item.guid}}"
-                  />
-
-                  {%else%}
-                   <span class="bg-info" style="color:#fff;font-size:16px; padding:8px;">   <b>待出纳确认</b>      </span>
-
-                  {%end%}
-
-
-             {%end%}
-
-
-             </div>        <hr class="my-0">
-
-              {%end%}
-
-                {%else%}
-                    <div class="card-body py-2 ">
-                              还没有代收款项结算信息哦
-                          </div>
-                {%end%}
-
-
-              <div class="card-footer  text-muted small">{{len(t_project_income_title)}} 笔到款
-
-              合同金额：{{t_project.all_income}} 元|  待确认合同: {{wait_rec_income_money}} 元 |
-              已确认合同: {{rec_income_money}} 元
-
-                代收合计：{{wait_rec_income_money_other.c+wait_rec_income_money_other.c}}
-                 元|  待确认代收: {{wait_rec_income_money_other.c}} 元 |
-                已确认代收: {{rec_income_money_other.c}} 元
-
-
-
-              </div>
-    </div>
-
- <!-- Example Social Card-->
-            <div class="card mb-12">
-
-              <div class="card-body">
-                <h6 class="card-title mb-1"><a href="#">交代事项</a>
-
-                   <a href="javascript:void(0)" id="a_add_note"
-                   class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>新增</a>
-                   {%if role!='6'%}
-                   <a href="javascript:void(0)" id="a_read_note"
-                   class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-align-justify"></i>查看</a>
-                   {%end%}
-                   {%if is_check=='1'%}
-                   <a href="javascript:void(0)" id="a_check_note" class="mr-3 d-inline-block">
-                     <i class="fa fa-fw fa-align-justify"></i>审核
-                   </a>
-                   {%end%}
- </h6></div>
-
-
-              <hr class="my-0">
-
-              <div class="card-body  bg-faded">
-             {%if project_note%}
-             {% if visible_note%}
-             {%for item in project_note%}
-             <div class="card-body py-2" {%if item.is_check==1 %}style="background-color:#D6EAF8;"{%end%}>
-           <span class="clearfix  z-1 ">
-
-    {%if item.note_id%}
-        <a class="mr-3 d-inline-block cancel_note" href="javascript:void(0)" note_id='{{item.aid}}' is_cancel='{{item.is_cancel}}'>
-            {%if item.is_cancel==0%}作废{%else%}恢复{%end%}</a>
-    {%else%}
-     <a href="javascript:void(0)" class="a_change_note"  id="{{item.aid}}" note="{{item.msg}}">
-      <img  alt="修改该条记录" src="/static/images/modify.png" width="25" /></a>
-     <a href="javascript:void(0)" class="a_delete_note"  id="{{item.aid}}">
-       <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
-      {%end%}
-<b>{%if item.state_id==0%} <span class="badge badge-info">已通过</span>{%elif item.state_id==1%} <span class="badge badge-danger">未通过</span>{%elif item.is_check==1%}<span class="badge badge-dark">待审核</span>{%end%}{{item.uid_name}} ({{item.creatd_at}} )</b> :<span style="font-size:20px; color:red;">
-   <b>{%if item.is_cancel==1%}<s>{{item.msg}}</s>{%else%}{{item.msg}}{%end%}{%if item.remark%} 备注：{{item.remark}}{%end%}</b>
-   <!--
-{%if item.note_id%}<span class="bg-primary" style="color:#fff;font-size: 80%;padding:5px;">已读</span>{%else%}
-<span class="bg-danger" style="color:#fff;font-size: 80%;padding:5px;">未读</span>{%end%}
-           </span>-->
-
-{%if item.read_name%}
-{%for strs in item.read_name.split(",")%}
-    {%if strs%}
-  <span class="badge badge-info">{{strs}}</span>
-    {%end%}
-{%end%}{% if item.created_name%}{{item.created_name}}{%if item.state_id==0%}审核通过{%else%}驳回{%end%}
-{%if item.remark%}&nbsp;备注：{{item.remark}}{%end%}{%end%}{%end%}
-{%if role=='3'%}
-{%if item.is_add_to_print==0%}
-<a href="javascript:void(0);" class="button btn-secondary btn-sm add_to_print" id="{{item.id}}" >添加到打印</a>
-{%else%}
-<a href="javascript:void(0);" class="button btn-secondary btn-sm delete_from_print" id="{{item.id}}">从打印移除</a>
-{%end%}
-{%end%}
-</div>  <hr class="my-0">
-           {%end%}
-
-             {%else%}
-            {%for item in project_note%}
-              <div class="card-body py-2 ">
-            <span class="clearfix  z-1">
-
-      <a href="javascript:void(0)" class="a_delete_note"  id="{{item.aid}}">
-        <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
-<b> {{item.creatd_at}} {{item.uid_name}}</b> :<span style="font-size:20px; color:red;"> <b>{{item.msg}}</b>
-
-
-            </span>
-
-{%if item.read_name%}
-{%for strs in item.read_name.split(",")%}
-  <span class="badge badge-info">{{strs}}</span>
-{%end%}
-
-{%end%}
-{% if item.created_name%}{{item.created_name}}{%if item.state_id==0%}审核通过{%else%}驳回{%end%}
-{%if item.remark%}备注：{{item.remark}}{%end%}{%end%}
-{%if role=='3'%}
-{%if item.is_add_to_print==0%}
-<a href="javascript:void(0);" class="button btn-secondary btn-sm add_to_print" id="{{item.id}}" >添加到打印</a>
-{%else%}
-<a href="javascript:void(0);" class="button btn-secondary btn-sm delete_from_print" id="{{item.id}}">从打印移除</a>
-{%end%}
-{%end%}
-             </div>  <hr class="my-0">
-            {%end%}
-            {%end%}
-          {%else%}
-              <hr class="my-0"><div class="card-body py-2 ">
-                还没有交代事项哦
-</div>
-                {%end%}
-
-              </div>
-              <div class="card-footer  text-muted"> 合计总服务费  {{t_project.all_income}} 元 </div>
-            </div>
-
-
-
- <div class="card mb-3">
-
-              <div class="card-body ">
-                <h6 class="card-title mb-1 ">
-
-办理进度更新记录
-
-{%if t_project.is_expedited==1%}
-     <font color='red' style="font-size:18px;"> <b>(加急业务)</b></font>
-{%end%}
-
-
-                   {%if t_project.building_id > 0%}
-                    <font color='green'> (此业务为楼盘客户) </font>
-
-
-
-                   {%end%}
-                   <!-- <a href="javascript:void(0)"
-                   type_id="2"
-                    class=" mr-3 d-inline-block a_project_state_modal" style="font-size:14px;">
-                     <i class="fa fa-fw fa-comment"></i>新增</a> -->
-                </h6>
-
-              </div>
-
- <hr class="my-0">
-
-<div class="row">
-<div class="col">
-
-
-<div style="margin-top:10px;margin-bottom:40px">
-
-    <div class="qa-message-list" id="wallmessages">
-              <center> <h6 class="card-title mb-1 "><a href="#">公司注册办理进度</a>
-
-               {%if t_project.building_id > 0%}
-
-               <span id="show_building_link_span">
-                <a target="_blank" class="show_building_link" href="http://building.gzfaye.com/show?modal_show=1&tag=customer_state&qid={{t_project.id}}&building_name={{t_project.building_id_name}}&urgent={{t_project.is_expedited}}&sales={{getMemberName(t_project_members,"销售顾问")}}&customer_tel={{t_project.customer_tel}}&customer_name={{t_project.customer_name}}&customer_company={{t_project.customer_company}}"
-                class=" mr-3 d-inline-block" style="font-size:14px;" type_id="1"> <i class="fa fa-fw fa-comment"></i>新增</a>
-                <a target="_blank" class="show_building_link" href="http://building.gzfaye.com/show?tag=customer_state&qid={{t_project.id}}&building_name={{t_project.building_id_name}}&urgent={{t_project.is_expedited}}&sales={{getMemberName(t_project_members,"销售顾问")}}&customer_tel={{t_project.customer_tel}}&customer_name={{t_project.customer_name}}&customer_company={{t_project.customer_company}}"
-                class=" mr-3 d-inline-block " style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-                </span>
-
-
-
-                <a target="_blank" class="show_building_link"
-                  href="http://building.gzfaye.com/show?tag=list&is_my=1" class=" mr-3 d-inline-block" style="font-size:14px;">
-                 <span class="fa fa-fw fa-align-justify"></span> 进入楼盘系统</a>
-               {%else%}
-                <a href="javascript:void(0)"
-                class=" mr-3 d-inline-block a_project_state_modal" style="font-size:14px;" type_id="1"> <i class="fa fa-fw fa-comment"></i>新增</a>
-                <a href="javascript:void(0)"
-                class=" mr-3 d-inline-block show_all1" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-
-   {%end%}
-
-
-              </h5></center>
-
-
-{%if t_project.building_id > 0%}
-        <div id="show_building_status">
-
-
-
-        </div>
-
-{%else%}
-         {%if t_project_state_msg1%}
-
-        	{%for item in t_project_state_msg1[:4]%}
-					<div class="message-item" id="m9">
-						<div class="message-inner">
-							<div class="message-head clearfix">
-
-								<div class="avatar pull-left"><img  src="/static/images/avatar.jpeg"></div>
-								<div class="user-detail">
-									<h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
-                   {{item.state_id_name}}</span>
-                   </h5>
-
-								</div>
-							</div>
-              {%if item.state_remark%}
-							<div class="qa-message-content">
-								{{item.state_remark}}
-							</div>
-              {%else%}
-              无描述
-              {%end%}
-
-					</div>
-
-
-          </div>
-
-          {%end%}
-                 {%else%}
-                <div class="card-body py-2 "><div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div></div>
-                {%end%}   {%end%}
-				</div>
-
-</div>
-
-
-
-
-</div>
-
-  <div class="col">
-
-
-    <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
-
-      <div class="qa-message-list" id="wallmessages">
-        <center>
-          <h6 class="card-title mb-1 ">
-            <a href="#">公司变更办理进度</a>
-            <a href="javascript:void(0)"
-            class=" mr-3 d-inline-block a_project_state_modal1" style="font-size:14px;" type_id="2">
-            <i class="fa fa-fw fa-comment"></i>新增</a>
-            <a href="javascript:void(0)"
-            class=" mr-3 d-inline-block show_all2" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-            </h5>
-        </center>
-
-        {%if t_project_state_msg2%}
-         {%for item in t_project_state_msg2[:4]%}
-
-        <div class="message-item" id="m9">
-          <div class="message-inner">
-            <div class="message-head clearfix">
-
-              <div class="avatar pull-left">
-                <img src="/static/images/avatar.jpeg">
-              </div>
-              <div class="user-detail">
-                <h5 class="handle">{{item.uid_name}}
-                  <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
-                  </span>
-                </h5>
-
-              </div>
-            </div>
-            {%if item.state_remark%}
-            <div class="qa-message-content">
-              {{item.state_remark}}
-            </div>
-            {%else%} 无描述 {%end%}
-
-          </div>
-
-
-        </div>
-
-        {%end%} {%else%}
-        <div class="card-body py-2 ">
-          <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
-        </div>
-        {%end%}
-      </div>
-
-    </div>
-
-
-
-
-  </div>
-
-</div>
-<div class="row">
-    <div class="col">
-
-
-    <div style="margin-top:10px;margin-bottom:40px">
-
-        <div class="qa-message-list" id="wallmessages">
-                  <center> <h6 class="card-title mb-1 "><a href="#">解除异常办理进度</a>
-                    <a href="javascript:void(0)"
-                    class=" mr-3 d-inline-block a_project_state_modal2" style="font-size:14px;" type_id="3"> <i class="fa fa-fw fa-comment"></i>新增</a>
-                    <a href="javascript:void(0)"
-                    class=" mr-3 d-inline-block show_all3" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-                  </h5></center>
-
-             {%if t_project_state_msg3%}
-              {%for item in t_project_state_msg3[:4]%}
-              <div class="message-item" id="m9">
-                <div class="message-inner">
-                  <div class="message-head clearfix">
-
-                    <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
-                    <div class="user-detail">
-                      <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
-                       {{item.state_id_name}}</span>
-                       </h5>
-
-                    </div>
-                  </div>
-                  {%if item.state_remark%}
-                  <div class="qa-message-content">
-                    {{item.state_remark}}
-                  </div>
-                  {%else%}
-                  无描述
-                  {%end%}
-
-              </div>
-
-
-              </div>
-
-              {%end%}
-                     {%else%}
-                    <div class="card-body py-2 ">
-                      <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
-                    </div>
-                    {%end%}
-            </div>
-
-    </div>
-
-
-
-
-    </div>
-
-      <div class="col">
-
-
-        <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
-
-          <div class="qa-message-list" id="wallmessages">
-            <center>
-              <h6 class="card-title mb-1 ">
-                <a href="#">公司注销办理进度</a>
-                <a href="javascript:void(0)"
-                class=" mr-3 d-inline-block a_project_state_modal3" style="font-size:14px;" type_id="4">
-                <i class="fa fa-fw fa-comment"></i>新增</a>
-                <a href="javascript:void(0)"
-                class=" mr-3 d-inline-block show_all4" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-
-                </h5>
-            </center>
-
-            {%if t_project_state_msg4%}
-             {%for item in t_project_state_msg4[:4]%}
-
-            <div class="message-item" id="m9">
-              <div class="message-inner">
-                <div class="message-head clearfix">
-
-                  <div class="avatar pull-left">
-                    <img src="/static/images/avatar.jpeg">
-                  </div>
-                  <div class="user-detail">
-                    <h5 class="handle">{{item.uid_name}}
-                      <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
-                      </span>
-                    </h5>
-
-                  </div>
-                </div>
-                {%if item.state_remark%}
-                <div class="qa-message-content">
-                  {{item.state_remark}}
-                </div>
-                {%else%} 无描述 {%end%}
-
-              </div>
-
-
-            </div>
-
-            {%end%} {%else%}
-            <div class="card-body py-2 ">
-              <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
-            </div>
-            {%end%}
-          </div>
-
-        </div>
-
-
-
-
-      </div>
-
-    </div>
-<div class="row">
-        <div class="col">
-
-
-        <div style="margin-top:10px;margin-bottom:40px">
-
-            <div class="qa-message-list" id="wallmessages">
-                      <center> <h6 class="card-title mb-1 "><a href="#">许可证办理进度</a>
-                        <a href="javascript:void(0)"
-                        class=" mr-3 d-inline-block a_project_state_modal4" style="font-size:14px;" type_id="5"> <i class="fa fa-fw fa-comment"></i>新增</a>
-                        <a href="javascript:void(0)"
-                        class=" mr-3 d-inline-block show_all5" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-                      </h5></center>
-
-                 {%if t_project_state_msg5%}
-                  {%for item in t_project_state_msg5[:4]%}
-                  <div class="message-item" id="m9">
-                    <div class="message-inner">
-                      <div class="message-head clearfix">
-
-                        <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
-                        <div class="user-detail">
-                          <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
-                           {{item.state_id_name}}</span>
-                           </h5>
-
-                        </div>
-                      </div>
-                      {%if item.state_remark%}
-                      <div class="qa-message-content">
-                        {{item.state_remark}}
-                      </div>
-                      {%else%}
-                      无描述
-                      {%end%}
-
-                  </div>
-
-
-                  </div>
-
-                  {%end%}
-                         {%else%}
-                        <div class="card-body py-2 ">
-                          <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
-                        </div>
-                        {%end%}
-                </div>
-
-        </div>
-
-
-
-
-        </div>
-
-          <div class="col">
-
-
-            <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
-
-              <div class="qa-message-list" id="wallmessages">
-                <center>
-                  <h6 class="card-title mb-1 ">
-                    <a href="#">商标办理进度</a>
-                    <a href="javascript:void(0)"
-                    class=" mr-3 d-inline-block a_project_state_modal5" style="font-size:14px;" type_id="6">
-                    <i class="fa fa-fw fa-comment"></i>新增</a>
-                    <a href="javascript:void(0)"
-                    class=" mr-3 d-inline-block show_all6" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-                    </h5>
-                </center>
-
-                {%if t_project_state_msg6%}
-                 {%for item in t_project_state_msg6[:4]%}
-
-                <div class="message-item" id="m9">
-                  <div class="message-inner">
-                    <div class="message-head clearfix">
-
-                      <div class="avatar pull-left">
-                        <img src="/static/images/avatar.jpeg">
-                      </div>
-                      <div class="user-detail">
-                        <h5 class="handle">{{item.uid_name}}
-                          <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
-                          </span>
-                        </h5>
-
-                      </div>
-                    </div>
-                    {%if item.state_remark%}
-                    <div class="qa-message-content">
-                      {{item.state_remark}}
-                    </div>
-                    {%else%} 无描述 {%end%}
-
-                  </div>
-
-
-                </div>
-
-                {%end%} {%else%}
-                <div class="card-body py-2 ">
-                  <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
-                </div>
-                {%end%}
-              </div>
-
-            </div>
-
-
-
-
-          </div>
-
-  </div>
-<div class="row">
-        <div class="col">
-
-
-        <div style="margin-top:10px;margin-bottom:40px">
-
-            <div class="qa-message-list" id="wallmessages">
-                      <center> <h6 class="card-title mb-1 "><a href="#">特殊业务办理进度</a>
-                        <a href="javascript:void(0)"
-                        class=" mr-3 d-inline-block a_project_state_modal6" style="font-size:14px;" type_id="7"> <i class="fa fa-fw fa-comment"></i>新增</a>
-                        <a href="javascript:void(0)"
-                        class=" mr-3 d-inline-block show_all7" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-                      </h5></center>
-
-                 {%if t_project_state_msg7%}
-                  {%for item in t_project_state_msg7[:4]%}
-                  <div class="message-item" id="m9">
-                    <div class="message-inner">
-                      <div class="message-head clearfix">
-
-                        <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
-                        <div class="user-detail">
-                          <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
-                           {{item.state_id_name}}</span>
-                           </h5>
-
-                        </div>
-                      </div>
-                      {%if item.state_remark%}
-                      <div class="qa-message-content">
-                        {{item.state_remark}}
-                      </div>
-                      {%else%}
-                      无描述
-                      {%end%}
-
-                  </div>
-
-
-                  </div>
-
-                  {%end%}
-                         {%else%}
-                        <div class="card-body py-2 ">
-                          <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
-                        </div>
-                        {%end%}
-                </div>
-
-        </div>
-
-
-
-
-        </div>
-
-          <div class="col">
-
-
-            <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
-
-              <div class="qa-message-list" id="wallmessages">
-                <center>
-                  <h6 class="card-title mb-1 ">
-                    <a href="#">其他业务办理进度</a>
-                    <a href="javascript:void(0)"
-                    class=" mr-3 d-inline-block a_project_state_modal7" style="font-size:14px;" type_id="8">
-                    <i class="fa fa-fw fa-comment"></i>新增</a>
-                    <a href="javascript:void(0)"
-                    class=" mr-3 d-inline-block show_all8" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-                    </h5>
-                </center>
-
-                {%if t_project_state_msg8%}
-                 {%for item in t_project_state_msg8[:4]%}
-
-                <div class="message-item" id="m9">
-                  <div class="message-inner">
-                    <div class="message-head clearfix">
-
-                      <div class="avatar pull-left">
-                        <img src="/static/images/avatar.jpeg">
-                      </div>
-                      <div class="user-detail">
-                        <h5 class="handle">{{item.uid_name}}
-                          <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
-                          </span>
-                        </h5>
-
-                      </div>
-                    </div>
-                    {%if item.state_remark%}
-                    <div class="qa-message-content">
-                      {{item.state_remark}}
-                    </div>
-                    {%else%} 无描述 {%end%}
-
-                  </div>
-
-
-                </div>
-
-                {%end%} {%else%}
-                <div class="card-body py-2 ">
-                  <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
-                </div>
-                {%end%}
-              </div>
-
-            </div>
-
-
-
-
-          </div>
-
-  </div>
-
-
-
-
-
-
-              <div class="card-footer  text-muted small">
-              </div>
-            </div>
-
-
-        </div>
 
 
 
@@ -1702,7 +1803,7 @@ background-color: #007bff;
 
        <div class="card-columns" id="trans_list">
             <!-- Example Social Card-->
-               <div class="card mb-12">
+               <div class="card mb-12" id='dingdanliuzhuan'>
 
               <div class="card-body">
                 <h6 class="card-title mb-1"><a href="#">订单流转动态</a>
@@ -1716,6 +1817,7 @@ background-color: #007bff;
  <div class="card-body  bg-faded">
 
 <ul class="nav nav-tabs" id="myTab" role="tablist">
+{%set cg_confirm_at=0%}
 {%if project_btypes%}
     {%for idx,item in enumerate(project_btypes)%}
 
@@ -1799,11 +1901,7 @@ background-color: #007bff;
 
 {%end%}
 
-
  {%for idxe,row in enumerate(project_milepost_type)%}
-
-
-
   {%if  item.mid==row.member_id%}
 
     {%if row.income_name==u"待接单"%}
@@ -2283,9 +2381,8 @@ background-color: #007bff;
        {{row.income_name}}
 
        {%if   row.confirm_at%}
-
+       {%set  cg_confirm_at+=1%}
         <span class="badge badge-success">{{row.uid_name}} 确认已交接完成 该业务已经结束 {{row.confirm_at}} </span>
-
 
          {%else%}
 
@@ -2334,7 +2431,7 @@ background-color: #007bff;
 
 </div> </div>  </div>
 
-          <div class="card mb-3">
+          <div class="card mb-3" id='xiangguanlianxiren'>
 
             <div class="card-body ">
               <h6 class="card-title mb-1 ">
@@ -2415,7 +2512,7 @@ background-color: #007bff;
 
 
 
-          <div class="card mb-3">
+          <div class="card mb-3" id='ziliaojiaojie'>
 
             <div class="card-body ">
               <h6 class="card-title mb-1 ">
@@ -2524,7 +2621,8 @@ background-color: #007bff;
                       <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
 
                       <td>
-                          {%if item.uid==int(uid) %}
+                          {%if (item.uid==int(uid) or role=='11') and cg_confirm_at!=len(project_btypes) %}
+
                           <a href="javascript:void(0)"
                            rec_by ="{{item.rec_by}}"
                             class="btn btn-info btn-sm modify_transition"
@@ -2566,7 +2664,7 @@ background-color: #007bff;
                 </table>
               </div>
 
-              <div class="card mb-3">
+              <div class="card mb-3" id='shangchuanfujian'>
 
                 <div class="card-body ">
                   <h6 class="card-title mb-1 ">
@@ -2578,7 +2676,7 @@ background-color: #007bff;
 
                   </h6>
 
-                </div>
+                </div>    
                 <hr class="my-0">
 
                     <table class="table table-striped" style="padding:10px;">
@@ -2603,8 +2701,10 @@ background-color: #007bff;
                         {{item.uid_name}} {%end%}</td>
 
                           <td>
+                              {%if (item.uid==int(uid) or role=='11') and cg_confirm_at!=len(project_btypes) %}
                               <a href="javascript:void(0)"  class="btn btn-info btn-sm modify_transition1" transition_id="{{item.id}}"
-                        >删除</a>
+                        >删除
+                      {%end%}</a>
 
 
                           </td>
@@ -2618,14 +2718,238 @@ background-color: #007bff;
 
                       </tbody>
                     </table>
-                  </div>
+                
+                </div>
 
+              <div class="card mb-3" id='kuaidi'>
+
+                    <div class="card-body ">
+                      <h6 class="card-title mb-1 ">
+             快递
+    
+              <div class="dropdown">
+                <a href="javascript:void(0)" class=" mr-3 d-inline-block" id="apply_express" title="{{t_project.id}}" style="font-size:14px;">
+                  <i class="fa fa-fw fa-comment"></i>新增</a>
+                <div class="dropdown-content">
+                  <a href="javascript:void(0)"  id="btn_add_express" >新建寄件 </a>
+                  <a href="javascript:void(0)"  id="btn_add_express_rec" >新建收件 </a>
+                </div>
+              </div>
+            
+            </h3>
+    
+                      </h6>
+    
+                    </div>
+                    <hr class="my-0">
+                    <div class="card-body  bg-faded">
+
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                          <li class="nav-item">
+                            <a class="nav-link {%if int(express_list_type)==0%}active{%end%}"
+                            href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&express_list_type=0#kuaidi">
+                          寄件  
+                          </a>
+                          </li>
+                          <li>
+                          <a class="nav-link {%if int(express_list_type)==1%}active{%end%}"
+                          href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&express_list_type=1#kuaidi">
+                        收件  
+                        </a>
+                          </li>
+                          </ul>
+                          
+                        {%if express_list_type=='0'%}
+                        <table class="table table-striped" style="padding:10px;">
+                          <thead>
+                            <tr>
+                           <th width="80">附件</th>
+                           <th width='110'>申请时间</th>
+                           <th width='100'>发件时间</th>
+                           <th width='200'>快递单号</th>
+                           <th width='100'>客户名称</th>
+                           <th width='100'>收件人电话</th>
+                           <th width='250'>资料明细</th>
+                           <th width='100'>其他资料</th>
+                           <th width='100'>付款方式</th>
+                           <th width='150'>寄件人/收件人</th>
+                           <th width='100'>创建人</th>
+                           <th width='150'>状态</th>
+                           <th width='80'></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {%if t_express_send%}
+                            {%for item in t_express_send%}
+                            <tr>
+                                <td><a href="javascript:void(0);" class="filepath_detail" id="{{item.id}}" 
+                                  file_path="{{item.file_path}}" uid_name="{{item.uid_name}}" send_at_name="{{item.send_at_name}}">附件</a></td>
+                                <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+                                <td>{%if item.created_send_at %}{{item.created_send_at.strftime("%Y-%m-%d")}}{%end%}</td>
+                                <td>{%if item.express_number%}{{item.express_number}}{%end%}</td>
+                                <td>{{item.rec_name}}</td>
+                                <td>{{item.rec_tel}}</td>
+                                <td>{{item.rec_file}}</td>
+                                <td>{{item.other_rec_file}}</td>
+                                <td>{{item.payment_type_id_name }}</td>
+                                <td>{{item.send_at_name}}/{{item.rec_name}}</td>
+                                <td>{{item.uid_name}}</td>
+                                <td>
+                                  {%if item.send_at%}
+                                  {{item.send_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}确认发件
+                                  {%elif not item.accept_at%}待审核
+                                  {%elif item.accept_state==1%}
+                                  {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核通过
+                                  {%elif item.accept_state==2%}
+                                  {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核不通过 备注:{{item.accept_uid_remark}}
+                                  {%end%}</td>
+                                <td>
+                                  {%if item.accept_state==1 and express_manage=='1' and not item.send_at %}
+                                  <a class="btn btn-info confirm_send_express" id="{{item.id}}" href="javascript:void(0);">确认发件</a>
+                                  {%elif not item.accept_at and express_manage=='1'%}
+                                  <a class="btn btn-info check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
+                                  {%else%}
+                                  <a class="btn btn-info edit_express" href="javascript:void(0);"
+                                  id="{{item.id}}" rec_name="{{item.rec_name}}" rec_tel="{{item.rec_tel}}" created_send_at="{%if item.created_send_at%}{{item.created_send_at}}{%end%}"
+                                  rec_addr="{{item.rec_addr}}"  rec_file="{{item.rec_file}}" rec_company="{{item.rec_company}}"
+                                  express_type_id="{{item.express_type_id}}" created_at="{{item.created_at}}" other_rec_file="{{item.other_rec_file}}"
+                                  payment_type_id="{{item.payment_type_id}}" send_at_name="{{item.send_at_name}}" remark="{{item.remark}}" accept_at="{{item.accept_at}}"
+                                  rec_file_ids="{{item.rec_file_ids}}" express_number="{{item.express_number}}" uid_name="{{item.uid_name}}"
+                                  send_or_rec="{{item.send_or_rec}}"
+                                >查看</a>
+                                  {%end%}
+                                </td>
+                            </tr>
+                            {%end%}
+                            {%else%}
+                            <tr>
+                              <td colspan="7">还没有哦。</td>
+    
+                            </tr>
+                           {%end%}
+    
+                          </tbody>
+                        </table>
+                        {%elif express_list_type=='1'%}
+                        <table class="table table-striped" style="padding:10px;">
+                            <thead>
+                              <tr>
+                             <th width="80">附件</th>
+                             <th width='100'>申请时间</th>
+                             <th width="100">收件时间</th>
+                             <th width='200'>快递单号</th>
+                             <th width='100'>客户名称</th>
+                             <th width='100'>寄件人电话</th>
+                             <th width='250'>资料明细</th>
+                             <th width='100'>其他资料</th>
+                             <th width='100'>付款方式</th>
+                             <th width='150'>寄件人/收件人</th>
+                             <th width='100'>创建人</th>
+                             <th width='150'>状态</th>
+                             <th width='80'></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {%if t_express_rec%}
+                              {%for item in t_express_rec%}
+                              <tr>
+                                  <td><a href="javascript:void(0);" class="filepath_detail" id="{{item.id}}" 
+                                    file_path="{{item.file_path}}" uid_name="{{item.uid_name}}" send_at_name="{{item.send_at_name}}">附件</a></td>
+                                  <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+                                  <td>{%if item.created_send_at %}{{item.created_send_at.strftime("%Y-%m-%d")}}{%end%}</td>
+                                  <td>{%if item.express_number%}{{item.express_number}}{%end%}</td>
+                                  <td>{{item.rec_name}}</td>
+                                  <td>{{item.rec_tel}}</td>
+                                  <td>{{item.rec_file}}</td>
+                                  <td>{{item.other_rec_file}}</td>
+                                  <td>{{item.payment_type_id_name }}</td>
+                                  <td>{{item.rec_name}}/{{item.send_at_name}}</td>
+                                  <td>{{item.uid_name}}</td>
+                                  <td>
+                                    {%if item.send_at%}
+                                    {{item.send_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}确认发件
+                                    {%elif not item.accept_at%}待审核
+                                    {%elif item.accept_state==1%}
+                                    {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核通过
+                                    {%elif item.accept_state==2%}
+                                    {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核不通过 备注:{{item.accept_uid_remark}}
+                                    {%end%}</td>
+                                  <td>
+                                    {%if item.accept_state==1 and express_manage=='1' and not item.send_at %}
+                                    <a class="btn btn-info confirm_send_express" id="{{item.id}}" href="javascript:void(0);">确认发件</a>
+                                    {%elif not item.accept_at and express_manage=='1'%}
+                                    <a class="btn btn-info check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
+                                    {%else%}
+                                    <a class="btn btn-info edit_express" href="javascript:void(0);"
+                                    id="{{item.id}}" rec_name="{{item.rec_name}}" rec_tel="{{item.rec_tel}}" created_send_at="{%if item.created_send_at%}{{item.created_send_at}}{%end%}"
+                                    rec_addr="{{item.rec_addr}}"  rec_file="{{item.rec_file}}" rec_company="{{item.rec_company}}"
+                                    express_type_id="{{item.express_type_id}}" created_at="{{item.created_at}}" other_rec_file="{{item.other_rec_file}}"
+                                    payment_type_id="{{item.payment_type_id}}" send_at_name="{{item.send_at_name}}" remark="{{item.remark}}" accept_at="{{item.accept_at}}"
+                                    rec_file_ids="{{item.rec_file_ids}}" express_number="{{item.express_number}}" uid_name="{{item.uid_name}}" send_or_rec="{{item.send_or_rec}}"
+                                  >查看</a>
+                                    {%end%}
+                                  </td>
+                              </tr>
+                              {%end%}
+                              {%else%}
+                              <tr>
+                                <td colspan="7">还没有哦。</td>
+      
+                              </tr>
+                             {%end%}
+      
+                            </tbody>
+                          </table>
+                        {%end%}
+                      </div>
+                      </div>
 
             </div>
         </div>
    </div></div>
 </div>
+<div class="modal fade" id="check_express_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="xiezhu_title">审核快递
 
+      </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>        
+
+        <div class="modal-body" id="site_mod">
+            <div class="form-group">
+            <div class="col-sm-10">
+                <input type="radio" id="accept_state" name="accept_state" value="1">通过
+                <input type="radio" id="accept_state" name="accept_state" value="2">不通过
+                <div class="alert alert-danger" role="alert" style="display:none;" id="er_accept_state">
+                </div>
+                </div>
+                
+            </div>
+            <div class="form-group">
+              <div class="col-sm-10">
+                  <label for="recode">备注</label>
+                  <textarea id="accept_uid_remark" placeholder="备注"></textarea>
+                  <div class="alert alert-danger" role="alert" style="display:none;" id="er_accept_uid_remark">
+                  </div>
+                  </div>
+              </div>
+              
+        </div>
+
+
+        <div class="modal-footer">
+            <input type="hidden" value="0" id="is_other" name="is_other" />
+                   <button class="btn btn-primary" target="_blank" id="btn_check_express">保存</button>
+
+        </div>
+      </div>
+    </div>
+  </div>   
 <div id="add_linkman_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document" >
         <div class="modal-content">
@@ -3769,8 +4093,6 @@ background-color: #007bff;
   </div>
 </div>
 
-
-
 <div id="a_add_trans_modal1" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document" >
       <div class="modal-content">
@@ -3911,7 +4233,45 @@ background-color: #007bff;
     </div>
   </div>
 </div>
+<div class="modal fade" id="express_filepath_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">附件
 
+      </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>        
+
+        <div class="modal-body" id="site_mod">
+            <div class="form-group">
+                <label class="control-label file_label" for="lastname" >上传附件</label>
+                <div class="controls">
+                    <a href="javascript:;" class="file">选择文件
+                  <input type="file" accept="image/*" multiple=""  id="uploaderInput1">
+                  </a>
+                  <div class="alert alert-danger" id='er_uploaderInput' style="display:none;">请选择上传附件</div>
+                  <ul id="uploaderFiles1"></ul>
+                  <hr class="my-0 file_label">
+                  <label class="control-label" for="lastname">已上传附件</label>
+                  <ul id="showFiles"></ul>
+                </div>
+                
+            </div>
+              
+        </div>
+
+
+        <div class="modal-footer">
+            <input type="hidden" value="0" id="is_other" name="is_other" />
+                   <button class="btn btn-primary" target="_blank" id="btn_express_filepath">上传</button>
+
+        </div>
+      </div>
+    </div>
+  </div>   
 <!-- Modal -->
 <div class="modal fade" id="income_modal_delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" >
@@ -4457,12 +4817,12 @@ background-color: #007bff;
   {%for item in t_projects_service_income%}
 
     <div class="form-group" id="income_detail">
-
     <label for="inputEmail3" class="col-sm-12 control-label" id="">{{item.service_name}}</label>
     <div class="col-sm-12">
           <input type="text" sid="{{item.sid}}"  name="service_money"
           service_name="{{item.service_name}}" guid="{{item.guid}}"
            class="form-control" value="{{item.service_money}}" />
+           <input type="checkbox" name="is_free" value="{{item.sid}}">免收费
     </div>
   </div>
     {%end%}
@@ -4471,6 +4831,7 @@ background-color: #007bff;
         <div class="col-sm-12">
               <input type="text"   name="income_name" id="{{item.id}}"
                class="form-control" value="{{item.income_name}}" />
+
         </div>
       </div>
        {%end%}
@@ -4648,7 +5009,7 @@ background-color: #007bff;
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle_license">修改业务信息
-            {%if role=='8' or t_project.uid==uid%}
+            {%if role=='8' or (t_project.uid==int(uid) and not t_project.contract_uid_name )%}
             <button type="button" class="btn btn-danger" id="btn_delete_project" data-dismiss="modal">删除</button>
             {%end%}
         </h5>
@@ -4669,7 +5030,7 @@ background-color: #007bff;
 
             </div>
       {%end%}
-
+<!-- 
           <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">业务所属公司:</label>
 
@@ -4677,7 +5038,7 @@ background-color: #007bff;
                  <input type="radio" name="company"  value="{{item.id}}|{{item.income_name}}" {%if t_project.company_id==item.id%}checked{%end%}/> &nbsp;{{item.income_name}}
            {% end %}
 
-          </div>
+          </div> -->
        <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">业务来源:</label>
 
@@ -4826,6 +5187,7 @@ background-color: #007bff;
 
            <input type="radio" name="is_finance"  value="1"
                   {%if t_project.is_finance==1%}checked{%end%} /> &nbsp;是
+           <small id="err_is_finance" class="text-danger"></small>
           </div>
                          <div class="form-group">
   <label for="exampleInputEmail1"  class="col-sm-4 control-label">合同情况:</label>
@@ -5191,6 +5553,113 @@ background-color: #007bff;
     </div>
   </div>
 
+<div class="modal fade" id="project_type_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="income_title_type">设置金额
+
+
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+
+      <div class="modal-body form-horizontal" id="site_mod">
+
+        {%for item in t_income_other_type%} {%if item.income_name.encode('utf-8') in ['CA费用','税控盘','印花税','罚款','其他','退款']%}
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-12 control-label">
+            <b>{{item.income_name}}</b>
+          </label>
+          <div class="col-sm-10">
+            <div class="row">
+
+
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="{{item.id}}" name="{{item.income_name}}" placeholder="填写金额" value="{%if t_projects_income_all%}{% for t_projects_income in t_projects_income_all %}
+             {%if t_projects_income['income_name']==item.income_name%}
+             {{t_projects_income['income_money']}}{%end%}{%end%}{%end%}" />
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+        {%end%} {%end %}
+
+      </div>
+
+
+      <div class="modal-footer">
+        <input type="hidden" value="0" id="is_other" name="is_other" />
+        <button class="btn btn-primary" target="_blank" id="btn_save_project_type_money">保 存</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="income_detail_modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="income_deital_title">合同到款明细
+
+
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+
+      <div class="modal-body form-horizontal" id="site_mod">
+
+
+      <div class="card-body  bg-faded">
+        {%if t_projects_service_income_list%} {%for item in t_projects_service_income_list%}
+        <div class="card-body py-2 ">
+          <span class="clearfix  z-1">
+          <b>{{item.service_name}}({{item.service_money}} 元)</b>
+           <input type="text"
+            service_name="{{item.service_name}}"
+            service_id="{{item.service_id}}"
+            name="txt_income_detail"
+            id="txt_income_detail_{{item.service_id}}"
+            class="form-control"/>
+          </span>
+        </div>
+        <hr class="my-0"> {%end%} {%else%}
+        <hr class="my-0">
+        <div class="card-body py-2 ">
+          还没有业务收入明细哦
+        </div>
+        {%end%}
+
+      </div>
+
+
+
+        <div class="modal-footer">
+          <input type="hidden" value="0" id="is_other" name="is_other" />
+         <button class="btn " target="_blank" id="btn_save_income_detail_back">返 回</button>
+
+          <button class="btn btn-primary" target="_blank" id="btn_save_income_detail">保 存</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- Modal -->
 <div class="modal fade" id="income_modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
@@ -5242,7 +5711,7 @@ background-color: #007bff;
 
 
   <div class="form-group">
-    <label for="inputEmail3" class="col-sm-4 control-label">入账日期</label>
+    <label for="inputEmail3" class="col-sm-6 control-label">收款日期(客户付款当天日期)</label>
     <div class="col-sm-10">
       <input type="text" class="form-control form_datetime" value="{{created_at.strftime('%Y-%m-%d %H:%M')}}" readonly value="" size="16"  id="income_at" name="income_at">
     </div>
@@ -5256,7 +5725,50 @@ background-color: #007bff;
 
     {%for row in range(1,4)%}
       <div class="col-sm-4">第{{row}}笔
-          <input type="text" remark="" parent_id="0" class="form-control" id="income_{{item.id}}_{{row}}"  income_id_num="{{item.id}}_{{row}}" income_id="{{item.id}}" name="income_val" income_name="{{item.income_name}}" num="{{row}}" placeholder="第{{row}}笔"/>
+
+
+
+{%if item.income_name.encode('utf-8') not  in ['CA费用','税控盘','印花税','罚款','其他','退款']%}
+       <a
+       href="javascript:void(0)"
+       title_name="{{item.income_name}}"
+       num="{{row}}"
+       class="a_income_pay_detail"
+       income_input_id="income_{{item.id}}_{{row}}"
+       income_id="{{item.id}}"
+       income_name="{{item.income_name}}"
+       id="a_income_{{item.id}}_{{row}}"
+       >设置</a>
+
+     <input type="text" remark=""
+        parent_id="0"
+        class="form-control"
+        id="income_{{item.id}}_{{row}}"
+        income_id_num="{{item.id}}_{{row}}"
+        name="income_val"
+        income_id="{{item.id}}"
+        income_name="{{item.income_name}}"
+         num="{{row}}"
+             disabled="disabled"
+
+        placeholder="第{{row}}笔"/>
+       {%else%}
+
+        <input type="text" remark=""
+        parent_id="0"
+        class="form-control"
+        id="income_{{item.id}}_{{row}}"
+        income_id_num="{{item.id}}_{{row}}"
+        name="income_val"
+        income_id="{{item.id}}"
+        income_name="{{item.income_name}}"
+         num="{{row}}"
+        placeholder="第{{row}}笔"/>
+
+{%end%}
+
+
+
       </div>
     {%end %}
 
@@ -5270,12 +5782,6 @@ background-color: #007bff;
     </div>
   </div>
   {%end %}
-
-
-
-
-
-
 
 
 
@@ -5795,7 +6301,182 @@ background-color: #007bff;
           </div>
         </div>
 
+        <div class="modal fade" id="add_express_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog" role="document" >
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" ><span id="express_title">发起快递申请</span>
+                  <a class="btn btn-info btn-sm" id="choose_cutomer_addr_msg" href="javascript:void(0);">选择收件人信息</a>
+            </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+  
+  
+              <div class="modal-body" id="site_mod">
+                  <div class="form-group">
+                  <div class="col-sm-10">
+                      <label for="recode" id="l_rec_name">收件人</label>
+                      <input class="form-control" name="rec_name" id="rec_name" type="text" placeholder="收件人" value="{%if  t_project.customer_name%}
+                      {{t_project.customer_name}}{%end%}">
+                      <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_name">
+                        </div>
+                      </div>
+                      
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-10">
+                        <label for="recode" id="l_rec_tel">收件人电话</label>
+                        <input class="form-control" name="rec_tel" id="rec_tel" type="text" placeholder="收件人电话" value="{%if  t_project.customer_tel%}
+                        {{t_project.customer_tel}}{%else%}无{%end%}">
+                        <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_tel">
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-10">
+                          <label for="recode" id="l_rec_addr">收件人地址</label>
+                          <input class="form-control" name="rec_addr" id="rec_addr" type="text" placeholder="收件人地址" value="{%if  t_project.true_reg_addr%}
+                          {{t_project.true_reg_addr}}{%end%}">
+                          <input type="checkbox" name="save_customer_add_msg" value="1" checked hidden>
+                          <span hidden>收件人信息存入系统</span>
+                          <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_addr">
+                            </div>
+                          </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="control-label" for="tran_at">交接明细 </label>
+                  
+                         <input type="checkbox" name="allcheck_express" id="allcheck_express"/>全选
+                        <div class="col-sm-10">
+                        {% for item in t_projects_type1%}
+                        <input type="checkbox" style="margin:0 0 0 10px;" name="rec_file" id="rec_file_{{item.id}}"
+                        income_name="{{item.income_name}}" value="{{item.id}}"
+                         >{{item.income_name}}
+                         {%if item.id==176 or item.id==209 %}
+                         <br><hr>
+                         {%end%}
+                          {%end%}
+                  </p>
+                        </div>
+                        <!-- /controls -->
+                      </div>
+                      <!-- /control-group -->
+                          <div class="form-group">
+                        <label class="control-label" for="lastname">其他资料</label>
+                        <div class="col-sm-10">
+                          <textarea type="text"  class="form-control" id="other_rec_file" name="other_rec_file" value="" style="height: 60px;"></textarea>
+                          <div class="alert alert-danger" role="alert" style="display:none;" id="er_other_rec_file">
+                          </div>
+                        </div>
 
+                        <!-- /controls -->
+                      </div>
+                             <div class="form-group">
+                    <div class="col-sm-10">
+                        <label for="recode">公司名称</label>
+                        <input class="form-control" name="rec_company" id="rec_company" type="text" placeholder="公司名称" value="{%if  t_project.customer_company%}
+                        {{t_project.customer_company}}{%else%}无{%end%}">
+                        <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_company">
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-10">
+                        <label for="recode">快递单号</label>
+                        <input class="form-control" id="express_number" placeholder="快递单号">
+                        <div class="alert alert-danger" role="alert" style="display:none;" id="er_express_number">
+                        </div>
+                       </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                          <label for="recode">快递类型</label>
+                          <select  name="express_type" class="form-control" id="express_type">
+                            {% for item in express_type%}
+                            <option value="{{item.id}}">{{item.income_name}}</option>
+                            {%end%}
+                          </select>
+                         </div>
+                      </div>
+                      <div class="form-group">
+                          <div class="col-sm-10">
+                            <label for="recode">快递付费</label>
+                            <select  name="payment_type" class="form-control" id="payment_type">
+                              {% for item in payment_type%}
+                              <option value="{{item.id}}">{{item.income_name}}</option>
+                              {%end%}
+                            </select>
+                           </div>
+                        </div>
+                        <div class="form-group" id="created_send_div">
+                            <div class="col-sm-10">
+                                <label for="recode" id='l_created_send_at'>发件时间</label>
+                                <input class="form-control" name="created_send_at" id="created_send_at" type="text" readonly="readonly">
+                                <div class="alert alert-danger" role="alert" style="display:none;" id="er_created_send_at">
+                                  </div>  
+                              </div>
+                            </div>
+                      <div class="form-group">
+                        <div class="col-sm-10">
+                            <label for="recode" id="l_send_name">发件人</label>
+                            <input class="form-control" name="send_name" id="send_name" type="text" placeholder="申请人" value="{{name}}">
+                            <div class="alert alert-danger" role="alert" style="display:none;" id="er_send_name">
+                              </div>  
+                          </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <label for="recode">备注</label>
+                                <textarea class="form-control" name="express_remark" id="express_remark" type="text" placeholder="备注">
+                      </textarea>
+                                
+                              </div>
+                            </div>
+              </div>
+  
+  
+              <div class="modal-footer">
+                  <div class="alert alert-danger" role="alert" style="display:none;" id="er_express">
+                      已审核不能修改
+                    </div>
+                         <button class="btn btn-primary" target="_blank" id="btn_save_express" >保存</button>
+  
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="choose_customer_addr_msg_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" >选择 寄/收 件人信息
+                    
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              
+              <div class="modal-body" id="site_mod">
+                {% for item in t_cutomer_addr_msg%}
+                  <div class="form-group">
+                  <div class="col-sm-10">
+                    <input type="radio" name="choose_customer_addr" c_name="{{item.name}}" addr="{{item.addr}}" tel="{{item.tel}}">{{item.name}}<br> 
+                    {{item.addr}} {{item.tel}}
+                  </div>
+              </div>
+              {%end%}
+            </div>
+            <div class="modal-footer">
+
+                <button class="btn btn-primary" target="_blank" id="btn__save_customer_addr_msg">填入</button>
+
+     </div>
+              </div>
+              </div>
+            </div>
 
 <input type="hidden" value="0" name="parent_id_hide" id="parent_id_hide" />
 
@@ -5812,6 +6493,8 @@ background-color: #007bff;
 <script>
 
 $(function(){
+
+
 $("#show_msg_by_transition").hide()
 {%if mid%}
  $("#home-tab{{mid}}").tab('show')
@@ -5827,11 +6510,7 @@ _xsrf =  getCookie("_xsrf")
         msg = "确认申请取消该订单业务吗?"
     {%end%}
 
-
-
-
     if(confirm(msg)){
-
         mid = $(this).attr("mid")
         guid = $(this).attr("guid")
         atype = $(this).attr("atype")
@@ -5849,14 +6528,14 @@ _xsrf =  getCookie("_xsrf")
 
         $("#show_building_link_span").hide()
 
-    {%for item in t_project_members%}
-          {%if item.team_id==38 and item.member_id==int(uid)%}
-           $("#show_building_link_span").show()
-            {%break%}
+        {%for item in t_project_members%}
+              {%if item.team_id==38 and item.member_id==int(uid)%}
+              $("#show_building_link_span").show()
+                {%break%}
+            {%end%}
         {%end%}
-    {%end%}
-
         $("#show_building_status").html('<div class="card-body py-2 "><div class="alert alert-secondary" role="alert">请找工商专员创建楼盘客户或直接进入楼盘系统哦</div></div>')
+
     }else{
             $('#show_building_status').html(data);
            $("#show_building_link_span").show()
@@ -5873,6 +6552,11 @@ $("#allcheck_trans").on("change",function(){
 
   })
 
+$("#allcheck_express").on("change",function(){
+
+$('input[name=rec_file]').not(this).prop('checked', this.checked);
+
+})
 
 $("#checkalltrans").on("change",function(){
 
@@ -5890,6 +6574,14 @@ $("#checkalltrans_sales").on("change",function(){
 
 
 $('#rec_by').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+
+$('#send_name').typeahead({
 source: function (query, process) {
 return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
 return process(JSON.parse(data));
@@ -5916,6 +6608,230 @@ $("#addr_start_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: tru
     language: 'zh-CN',initialDate: new Date()});
 $("#addr_end_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
     language: 'zh-CN',initialDate: new Date()});
+
+$("#express_created_at").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#send_at").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+
+$("#created_send_at").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+
+$("#btn_add_express").on("click",function () {
+  $('#l_rec_name').text('收件人') 
+  $('#l_rec_tel').text('收件人电话') 
+  $('#l_rec_addr').text('收件人地址') 
+  $('#l_send_name').text('发件人')
+  $("#express_title").text('发起快递寄件申请')
+  $('#choose_cutomer_addr_msg').text('选择收件人信息')
+  $('#save_customer_add_msg').text('收件人信息存入系统')
+  $("#customer_message_title").text("选择收件人信息")
+  $("#l_created_send_at").text('发件时间')
+  $("#created_send_at").val('')
+  $('#btn_save_express').attr('send_or_rec','0')
+
+  $("#er_express").hide()
+  $('#btn_save_express').show()
+  $('#btn_save_express').removeAttr('express_id')
+  $('input[name=rec_file]').prop('checked', false)
+  $('#other_rec_file').val('')
+  $('#express_number').val('')
+  $('#express_remark').val('')
+  $("#er_rec_name").hide()
+  $("#er_rec_tel").hide()
+  $("#er_rec_addr").hide()
+  $("#er_rec_company").hide()
+  $('#er_express_number').hide()
+  $("#er_send_name").hide()
+  $("#add_express_modal").modal("show")
+ })
+ $("#btn_add_express_rec").on('click',function () {
+      $('#l_rec_name').text('寄件人') 
+      $('#l_rec_tel').text('寄件人电话') 
+      $('#l_rec_addr').text('寄件人地址') 
+      $('#l_send_name').text('收件人')
+      $("#express_title").text('发起快递收件申请')
+      $('#choose_cutomer_addr_msg').text('选择寄件人信息')
+      $("#customer_message_title").text("选择寄件人信息")
+      $('#save_customer_add_msg').text('寄件人信息存入系统')
+      $("#l_created_send_at").text('收件时间')
+      $("#created_send_at").val('')
+       $('#btn_save_express').attr('send_or_rec','1')
+       $("#er_express").hide()
+      $('#btn_save_express').show()
+      $('#btn_save_express').removeAttr('express_id') 
+      $('input[name=rec_file]').prop('checked', false)
+      $('#other_rec_file').val('')
+      $('#express_number').val('')
+      $('#express_remark').val('')
+      $("#er_rec_name").hide()
+      $("#er_rec_tel").hide()
+      $("#er_rec_addr").hide()
+      $("#er_rec_company").hide()
+      $('#er_express_number').hide()
+      $("#er_send_name").hide()
+        $("#add_express_modal").modal("show")
+      })
+ $(".edit_express").on("click",function () {
+  $('input[name=rec_file]').prop('checked', false)
+  type_ids_arr =$(this).attr('rec_file_ids').split(',')
+
+  for (var i = 0; i < type_ids_arr.length; i++) {
+    $('#rec_file_'+type_ids_arr[i]).prop('checked', true);
+
+    }
+    $('#created_send_at').val($(this).attr('created_send_at'))
+    if($(this).attr('send_or_rec')=='1'){
+      $('#l_rec_name').text('寄件人') 
+      $('#l_rec_tel').text('寄件人电话') 
+      $('#l_rec_addr').text('寄件人地址') 
+      $('#l_send_name').text('收件人')
+      $('#save_customer_add_msg').text('寄件人信息存入系统')
+      $('#choose_cutomer_addr_msg').text('选择寄件人信息')
+      $("#l_created_send_at").text('收件时间')
+      
+      
+    }
+    else if($(this).attr('send_or_rec')=='0'){
+      $('#l_rec_name').text('收件人') 
+      $('#l_rec_tel').text('收件人电话') 
+      $('#l_rec_addr').text('收件人地址') 
+      $('#l_send_name').text('发件人')
+      $('#save_customer_add_msg').text('寄件人信息存入系统')
+      $('#choose_cutomer_addr_msg').text('选择收件人信息')
+      
+    }
+  $("#other_rec_file").val($(this).attr('other_rec_file'))
+  $("#express_number").val($(this).attr('express_number'))
+  $("#rec_name").val($(this).attr('rec_name'))
+  $("#rec_tel").val($(this).attr('rec_tel'))
+  $("#rec_addr").val($(this).attr('rec_addr'))
+  $("#rec_file").val($(this).attr('rec_file'))
+
+  $("#rec_company").val($(this).attr('rec_company'))
+
+  $("#express_type").val($(this).attr('express_type_id'))
+  $("#payment_type").val($(this).attr('payment_type_id'))
+
+  $("#express_created_at").val($(this).attr('created_at'))
+  $("#send_name").val($(this).attr('send_at_name'))
+  $("#express_remark").val($(this).attr('remark'))
+  $("#btn_save_express").attr('express_id',$(this).attr('id'))
+  if($(this).attr('uid_name')!="{{name}}"  || ($(this).attr('uid_name')=="{{name}}" && $(this).attr('accept_at')!='None')){
+    $("#er_express").show()
+    $('#btn_save_express').hide()
+  }else{
+    $("#er_express").hide()
+    $('#btn_save_express').show()
+  }
+  $("#add_express_modal").modal("show")
+ })
+
+ $("#btn_save_express").on("click",function(){
+   
+    var this_btn=$(this)
+    var rec_name=$("#rec_name").val()
+    var rec_tel=$("#rec_tel").val()
+    var rec_addr=$("#rec_addr").val()
+    var rec_company=$("#rec_company").val()
+    var express_type_id=$("#express_type").val()
+    var express_type_name=$("#express_type").find("option:selected").text()
+    var send_name=$("#send_name").val()
+    var payment_type_id=$("#payment_type").val()
+    var payment_type_name=$("#payment_type").find("option:selected").text()
+    var express_remark=$("#express_remark").val()
+    var express_id=$(this).attr('express_id')
+    var other_rec_file=$("#other_rec_file").val()
+    var express_number=$("#express_number").val()
+    var save_customer_add_msg=$('input[name=save_customer_add_msg]:checked').val()
+    var send_or_rec=$(this).attr('send_or_rec')
+    var created_send_at=$('#created_send_at').val()
+    var type_ids=[]
+    var type_names=[]
+    $('input[name=rec_file]:checked').each(function () {
+                type_ids.push($(this).val());
+                type_names.push($(this).attr('income_name'))
+           })
+    
+    type_ids=type_ids.join(',')
+    type_names=type_names.join(',')
+ 
+    if(rec_name==''){
+      $('#rec_name').focus()
+      $('#er_rec_name').text('收件人不能为空')
+      $("#er_rec_name").show()
+    }else if(rec_tel==''){
+      $('#rec_tel').focus()
+      $('#er_rec_tel').text('收件人电话不能为空')
+      $("#er_rec_tel").show()
+    }
+    else if(rec_addr==''){
+      $('#rec_addr').focus()
+      $('#er_rec_addr').text('收件人地址不能为空')
+      $("#er_rec_addr").show()
+    }
+    else if(type_ids=='' && other_rec_file.replace(/\r\n|\n|\s/g,'')==''){
+      $('#er_other_rec_file').text('交接明细和其他资料需填其一')
+      $("#er_other_rec_file").show()
+    }
+    else if(rec_company==''){
+      $('#er_rec_company').text('公司名不能为空')
+      $("#er_rec_company").show()
+    }
+    else if(express_number==''){
+      $('#er_express_number').text('快递单号不能为空')
+      $('#er_express_number').show()
+    }
+    else if(created_send_at=='' && send_or_rec=='0'){
+      $('#er_created_send_at').text('发件时间不能为空')
+      $('#er_created_send_at').show()
+    }
+    else if(send_name==''){
+      $('#er_send_name').text('申请人不能为空')
+      $("#er_send_name").show()
+    }else{
+      $(this).text('保存中...')
+      $(this).attr('disabled','disabled')
+    $.post("/project?tag=express",{
+      'source':0,
+      'rec_name':rec_name,
+      'rec_tel':rec_tel,
+      'rec_addr':rec_addr,
+      'rec_company':rec_company,
+      'express_type_id':express_type_id,
+      'express_type_name':express_type_name,
+      'send_name':send_name,
+      'project_id':"{{t_project.id}}",
+      'send_or_rec':send_or_rec,
+      'payment_type_id':payment_type_id,
+      'payment_type_name':payment_type_name,
+      'express_remark':express_remark,
+      'express_id':express_id,
+      'other_rec_file':other_rec_file,
+      'express_number':express_number,
+      'rec_file_ids':type_ids,
+      'rec_file':type_names,
+      'guid':'{{t_project.guid}}',
+      'save_customer_add_msg':save_customer_add_msg,
+      'created_send_at':created_send_at,
+      '_xsrf':_xsrf
+      },function (result) {
+    
+         if(result=='-2'){
+          alert('已审核不能修改')
+          location.reload()
+        } else if(result=='-3'){
+          alert('寄/收 件人不存在系统中')
+          this_btn.text('保存')
+          this_btn.removeAttr('disabled')
+        }
+        else{
+          location.reload()
+        }
+        
+       })
+          }
+ })
 
 $("#company_fever").click(function () {
   if(this.checked){
@@ -6203,7 +7119,7 @@ $(".modify_transition").on("click",function(){
           }
           if (rec_by_uid_at!="" || rec_by_uid_at==undefined){
               $("#btn_save_trans").hide()
-             $("#delete_transition").hide()
+
               $("#show_msg_by_transition").show()
              $("#show_msg_by_transition").text("该交接"+rec_by+"("+rec_by_uid_at+")"+"已确认签收")
           }
@@ -6283,7 +7199,7 @@ $('#t_customer_company').hide()
   $("#div_from_word").hide()
   $("#div_building").show()
   $("#div_recommend_by").hide()
-  $("#div_recommend_staff").hide()
+  $("#div_recommend_staff").show()
   $("#div_acc").hide()
   $("#customer_company").removeAttr('readonly')
     $("#div_pre_value").show()
@@ -6897,29 +7813,6 @@ $("#btn_save_project_state7").on("click",function(){
 
 })
 
-$("input[name=income_val]").on("change",function(){
-      income_id  = $(this).attr("income_id")
-      income_name  = $(this).attr("income_name")
-      remark = $(this).attr("remark")
-      val= $(this).val()
-      num = $(this).attr("num")
-      if(val!="" && $.isNumeric(val)==false){
-
-        alert("金额必须为数值哦")
-        $(this).focus()
-        return false
-      }else if(val==""){
-        console.log("null___"+num)
-
-        }else{
-        $("#"+income_id+"_val_body").attr("num",num)
-        $("#"+income_id+"_val_body").attr("income_id",income_id)
-        $("#"+income_id+"_val_body").attr("income_name",income_name)
-        $("#"+income_id+"_val_body").val(val)
-        console.log("income_id="+income_id+ "income_name="+income_name+"val="+val+"num="+num+"remark"+remark)
-      }
-
- })
 
 
     $("textarea[name=income_remark]").on("blur",function(){
@@ -7080,6 +7973,8 @@ $("input[name=income_val]").on("change",function(){
 
 $("#btn_save_project1").on("click",function () {
   customer_company = $("#customer_company1").val();
+  is_update_company_customer=''
+  is_update_company_project=''
   if(customer_company==''){
     alert("公司名称不能为空哦")
     customer_name.focus()
@@ -7090,14 +7985,25 @@ $("#btn_save_project1").on("click",function () {
                     'customer_company':customer_company,
                     'company':"{{t_project.customer_company}}"
                   },function (res) {
-                    if(res['customer']!=undefined){
+                    if(res['customer']!=undefined && res['customer']!='-1' && res['customer']!='-2'){
                       if(confirm("公司名存在，是否要更改?")){
-                        $("#btn_save_project1").attr('disabled','disabled')
-                        $("#btn_save_project1").text("保存中...")
+                    
+                        if(res['same_customer']!=undefined){
+                        if(confirm('是否修改客户系统中相同公司的公司名？')){
+                          is_update_company_customer=1
+                        }
+                        }
+                        if(res['project']!=undefined){
+                        if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
+                          is_update_company_project=1
+                        }
+                        }
                         $.post("/project?tag=modify1",{
                         "project_id":"{{t_project.id}}",
                         "project_guid":"{{t_project.guid}}",
                         "customer_company":customer_company,
+                        "is_update_company_project":is_update_company_project,
+                        "is_update_company_customer":is_update_company_customer,
                         "_xsrf":_xsrf},function(result){
                             console.log("result"+result)
                             location.reload()
@@ -7105,11 +8011,23 @@ $("#btn_save_project1").on("click",function () {
                       }
 
                   }else{
+                      if(res['same_customer']!=undefined){
+                        if(confirm('是否修改客户系统中相同公司的公司名？')){
+                          is_update_company_customer=1
+                        }
+                        }
+                      if(res['project']!=undefined){
+                        if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
+                          is_update_company_project=1
+                        }
+                        }
                         $("#btn_save_project1").attr('disabled','disabled')
                         $("#btn_save_project1").text("保存中...")
                         $.post("/project?tag=modify1",{
                         "project_id":"{{t_project.id}}",
                         "project_guid":"{{t_project.guid}}",
+                        "is_update_company_project":is_update_company_project,
+                        "is_update_company_customer":is_update_company_customer,
                         "customer_company":customer_company,
                         "_xsrf":_xsrf},function(result){
                             console.log("result"+result)
@@ -7157,7 +8075,7 @@ $("#btn_save_project").on("click",function(){
                // remark = $("#project_remark")
                 talk_type = $("input[name=talk_type]:checked").val()
                 from_word = $("#from_word1")
-                company = $("input[name=company]:checked")
+                // company = $("input[name=company]:checked")
                 is_finance = $("input[name=is_finance]:checked")
                 building_id = $("#building_id")
                 addr_type = $("#addr_type")
@@ -7165,13 +8083,17 @@ $("#btn_save_project").on("click",function(){
                 promo_id = $("#promo_id")
                 kf_id = $("#kf_id")
                 is_company_history=''
-                if (company.val()=="0" || company.val()==undefined){
-                  $("#pcompanyHelpInline").text("请选择业务所属公司哦。")
-                  $("#company").focus()
-                   console.log("hi1")
-                  return false;
-                }
-                else if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
+                type_in_customer=''
+                is_update_company_customer=''
+                is_update_company_project=''
+
+                // if (company.val()=="0" || company.val()==undefined){
+                //   $("#pcompanyHelpInline").text("请选择业务所属公司哦。")
+                //   $("#company").focus()
+                //    console.log("hi1")
+                //   return false;
+                // }
+                if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
                   $("#business_channelHelpInline").text("请选择来源渠道哦。")
                   $("input[name=business_channel]:first").focus()
                    console.log("hi2")
@@ -7271,7 +8193,8 @@ $("#btn_save_project").on("click",function(){
                     $("#customer_nameHelpInline").text("客户名称不能为空哦")
                     customer_name.focus()
                   return false
-                } else{
+                }
+                 else{
                    // $(this).attr("disabled","disabled")
                    //$(this).text("保存中...")
                     if(bf_value=="3" || bf_value=="200"){
@@ -7286,20 +8209,46 @@ $("#btn_save_project").on("click",function(){
                         deal_day_val = 0
                     }
                 }
+                $.get("/project?tag=customer_type_name",
+                  {
+                    'customer_company':customer_company.val()
+                  },function (res) {
+                    if(res['customer']!=undefined){
+                      alert('客户管理系统中该客户为记账客户 请核实')
+                    if ( is_finance.val()==undefined || is_finance.val()=='0'){
+                  $("#err_is_finance").text("请选择记账。")
+                    console.log("hi5")
+                  $("input[name=is_finance][value=1]").focus()
+                  type_in_customer='-1';
+
+                }
+              }
+              if(type_in_customer!='-1'){
                   $.get("/project?tag=same_company",
                   {  "project_id":"{{t_project.id}}",
                     'customer_company':customer_company.val(),
                     'company':"{{t_project.customer_company}}"
                   },function (res) {
-
                     if(res['customer']!=undefined && res['customer']!='-1' && res['customer']!='-2'){
                       if(confirm("公司名存在，是否要更改?")){
                         if(confirm('是否将原公司添加到公司曾用名？')){
                           is_company_history=1
                         }
+                        if(res['same_customer']!=undefined){
+                        if(confirm('是否修改客户系统中相同公司的公司名？')){
+                          is_update_company_customer=1
+                        }
+                        }
+                        if(res['project']!=undefined){
+                        if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
+                          is_update_company_project=1
+                        }
+                        }
                         $(this).attr("disabled","disabled")
                         $(this).text("保存中...")
                         $.post("/project?tag=modify",{
+                        "is_update_company_customer":is_update_company_customer,
+                        "is_update_company_project":is_update_company_project,
                         "is_company_history":is_company_history,
                         "project_id":"{{t_project.id}}",
                         "project_guid":"{{t_project.guid}}",
@@ -7316,7 +8265,7 @@ $("#btn_save_project").on("click",function(){
                         "sign_type_id":sign_type_id.val(),
                         "talk_type":talk_type,
                         "from_word":from_word.val(),
-                        "company":company.val(),
+                        // "company":company.val(),
                         "is_finance":is_finance.val(),
                         "building_id":building_id.val(),
                         "new_contract_type_id":new_contract_type_id.val(),
@@ -7335,9 +8284,21 @@ $("#btn_save_project").on("click",function(){
                           is_company_history=1
                         }
                       }
+                      if(res['same_customer']!=undefined){
+                        if(confirm('是否修改客户系统中相同公司的公司名？')){
+                          is_update_company_customer=1
+                        }
+                        }
+                      if(res['project']!=undefined){
+                        if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
+                          is_update_company_project=1
+                        }
+                        }
                       // $('#btn_save_project').attr("disabled","disabled")
                       // $('#btn_save_project').text("保存中...")
                       $.post("/project?tag=modify",{
+                        "is_update_company_customer":is_update_company_customer,
+                        "is_update_company_project":is_update_company_project,
                         "is_company_history":is_company_history,
                         "project_id":"{{t_project.id}}",
                         "project_guid":"{{t_project.guid}}",
@@ -7356,7 +8317,7 @@ $("#btn_save_project").on("click",function(){
                         "sign_type_id":sign_type_id.val(),
                         "talk_type":talk_type,
                         "from_word":from_word.val(),
-                        "company":company.val(),
+                        // "company":company.val(),
                         "is_finance":is_finance.val(),
                         "building_id":building_id.val(),
                         "new_contract_type_id":new_contract_type_id.val(),
@@ -7370,11 +8331,11 @@ $("#btn_save_project").on("click",function(){
                     }
                    }
                   )
-
-
-
+                  }
+                   })
 
 })
+
 
 $("#btn_save_team_cq").on('click',function(){
     var member_id = $("#cq_member").val()
@@ -7707,6 +8668,7 @@ $("#btn_save_file_license").on("click",function(){
 
 $("body").on("click",'#btn_save_income_servie',function(){
       var jsonArr = [];
+      var FreeList=[];
       $("input[name=service_money]").each(function(){
           guid = $(this).attr("guid")
           service_money = $(this).val()
@@ -7729,13 +8691,18 @@ $("body").on("click",'#btn_save_income_servie',function(){
               });
           }
       })
-
-
+      $("input[name=is_free]:checked").each(function () { 
+          sid=$(this).val()
+          FreeList.push(sid)
+       })
+       FreeList=FreeList.join(',')
+      
       $(this).text("保存中..")
       $(this).attr("disabled","disabled")
 
           var formData = new FormData();
           formData.append('body',  JSON.stringify(jsonArr));
+          formData.append('free',FreeList);
           formData.append('_xsrf', _xsrf );
           formData.append("project_id",{{t_project.id}})
           $.ajax({
@@ -7932,11 +8899,13 @@ $("#btn_save_fromword").on("click",function(){
          var   income_at = $("#income_at").val()
         // var    is_other = $("#is_other").val()
         //var    remark = $("#income_remark").val()
-         var   income_a_type = $("#income_a_type").val()
-         var  parent_id= $("#parent_id_hide").val()
-        var jsonArr = [];
-        var title =""
+         var   income_a_type = $(this).attr("income_a_type")
+         var  curr_parent_id= $(this).attr("parent_id_hide")
+         var jsonArr = [];
+         var title =""
          var is_null = 0
+
+
          if (company_id==0){
            $("#company_id").focus()
 
@@ -7949,15 +8918,17 @@ $("#btn_save_fromword").on("click",function(){
           return false
         }else{
 
-        $("input[name=income_val_hide]").each(function(){
-            income_money = $(this).val()
-            console.log("income_money"+income_money)
-            if(income_money!=""){
-                income_num =  $(this).attr("num")
-                income_id =  $(this).attr("income_id")
-                income_name = $(this).attr("income_name")
-                income_remark =   $(this).attr("remark")
+        $("input[name=income_val]").each(function(){
 
+            income_money = $(this).val()
+            var  parent_id= $(this).attr("parent_id")
+
+            if(income_money!=""  &&  curr_parent_id==parent_id){
+                var income_num =  $(this).attr("num")
+                var income_id =  $(this).attr("income_id")
+                var income_name = $(this).attr("income_name")
+                var income_remark =   $(this).attr("remark")
+            //    console.log("parent_id"+parent_id+"curr_parent_id"+curr_parent_id+"income_money"+income_money)
                 if(income_remark==undefined){
                   income_remark=""
                 }
@@ -7969,11 +8940,30 @@ $("#btn_save_fromword").on("click",function(){
                 else if (income_money==""){
                   console.log("沙耶")
                 }
+                 else if (curr_parent_id  ==  0 && parent_id > 0 ){
+                  console.log("沙耶")
+                }
                 else{
-                  is_null=1
 
                     b = $.isNumeric(income_money)
-                    jsonArr.push({
+                    var income_detail = $(this).attr("income_detail")
+                    console.log(income_detail)
+                    console.log("income_detail"+income_name+income_detail+curr_parent_id)
+
+                    if(curr_parent_id > 0  && income_detail==undefined  &&  (income_name=="合同定金" || income_name=="尾款")){
+                        alert("没有设置收入明细"+income_name)
+                        return false
+                    }else{
+                      /*
+                     if (income_name!="CA费用" || income_name!="税控盘" || income_name!="印花税" || income_name!="罚款" || income_name!="其他" ){
+                      is_null=1
+
+                    }*/
+
+
+
+                    is_null=1
+                     jsonArr.push({
                         income_money:income_money,
                         income_num: income_num,
                         income_id:income_id,
@@ -7981,16 +8971,19 @@ $("#btn_save_fromword").on("click",function(){
                         pay_type_id:pay_type_id,
                         pay_type_name:pay_type_name,
                         income_at:income_at,
-                        is_other:is_other,
+                       // is_other:is_other,
                         remark:income_remark,
-                        income_a_type:income_a_type
+                        income_a_type:income_a_type,
+                        income_detail:income_detail
                     });
-              }
 
+                    }
+
+              }
            }
         })
 
-        if (parent_id > 0 && is_null==0){
+        if (curr_parent_id > 0 && is_null==0){
             alert("到款金额没有改动哦。")
             return false
         }
@@ -7998,22 +8991,22 @@ $("#btn_save_fromword").on("click",function(){
             alert("到款金额不能为空哦。")
             return false
         }
-
         else if(jsonArr.length > 0 ){
-         var formData = new FormData();
-          formData.append('body',  JSON.stringify(jsonArr));
-          formData.append('_xsrf', _xsrf );
-          formData.append("project_id",{{t_project.id}})
-          formData.append("pay_type_id",pay_type_id)
-          formData.append("pay_type_name",pay_type_name)
-          formData.append("company_id",company_id)
-          formData.append("company_id_name",company_id_name)
-          formData.append("income_a_type",income_a_type)
-           formData.append("parent_id",parent_id)
+
+          var formData = new FormData();
+           formData.append('body',  JSON.stringify(jsonArr));
+           formData.append('_xsrf', _xsrf );
+           formData.append("project_id",{{t_project.id}})
+           formData.append("pay_type_id",pay_type_id)
+           formData.append("pay_type_name",pay_type_name)
+           formData.append("company_id",company_id)
+           formData.append("company_id_name",company_id_name)
+           formData.append("income_a_type",income_a_type)
+           formData.append("parent_id",curr_parent_id)
            formData.append("income_at",income_at)
-           $(this).text('保存中')
-            $(this).attr('disabled','disabled')
-            $.ajax({
+           //$(this).text('保存中')
+          // $(this).attr('disabled','disabled')
+           $.ajax({
                     url : '/project?tag=add_income',
                     type : 'POST',
                     data : formData,
@@ -8022,15 +9015,10 @@ $("#btn_save_fromword").on("click",function(){
                     contentType: false,  // tell jQuery not to set contentType
                     async: false,
                     success : function(data) {
-                        location.reload()
+                    location.reload()
                     }
               });
-
-
-
-
         }
-
 }
   /*
         if(income_money > 1110){
@@ -8216,43 +9204,71 @@ $("#btn_save_fromword").on("click",function(){
  }
 
   $(".show_income_modify").on("click",function(){
-      getALlIncome(0);
-      $("#income_a_type").val("edit")
-      $("input[name=income_val]").removeAttr("disabled","disabled")
-       parent_id = $(this).attr("parent_id")
-       company_id = $(this).attr("company_id")
-       company_id_name= $(this).attr("company_id_name")
-       pay_type_id = $(this).attr("pay_type_id")
-       pay_type_id_name= $(this).attr("pay_type_id_name")
-       income_at = $(this).attr("income_at")
-       $("#parent_id_hide").val(parent_id)
+   //   getALlIncome(0);
+     // $("#income_a_type").val("edit")
+
+     //  $("#parent_id_hide").val(parent_id)
+
+      var  parent_id = $(this).attr("parent_id")
+      var  company_id = $(this).attr("company_id")
+      var   company_id_name= $(this).attr("company_id_name")
+      var  pay_type_id = $(this).attr("pay_type_id")
+      var  pay_type_id_name= $(this).attr("pay_type_id_name")
+      var  income_at = $(this).attr("income_at")
+     $("input[name=income_val]").attr("disabled","disabled")
+
+       $("#btn_save_income").attr("income_a_type","edit")
+       $("#btn_save_income").attr("parent_id_hide",parent_id)
       // title_id = $(this).attr("pare")
         $("#company_id").val(company_id)
         $("#pay_type_id").val(pay_type_id)
         $("#income_at").val(income_at)
+        $(".a_income_pay_detail").hide()
+        $("input[name=income_val]").css('background-color', '');
+
+
+
         $.get("/project?tag=income_detail_by_project",{"project_id":{{t_project.id}},"_xsrf":_xsrf},function(result){
 
             $.each(result.incomes,function(i,val){
+                console.log(result.incomes)
 
-                  console.log(i+"_"+val.income_id)
                   $("#income_"+val.income_id+"_"+val.income_num).attr("income_id",val.income_id)
                   $("#income_"+val.income_id+"_"+val.income_num).attr("income_num",val.income_num)
-                   $("#income_"+val.income_id+"_"+val.income_num).val(val.income_money)
-                   $("#income_"+val.income_id+"_"+val.income_num).attr("parent_id",val.parent_id)
+                  $("#income_"+val.income_id+"_"+val.income_num).val(val.income_money)
+                  $("#income_"+val.income_id+"_"+val.income_num).attr("parent_id",val.parent_id)
+
+                  $("#a_income_" + val.income_id + "_" + val.income_num).attr("income_id", val.income_id)
+                  $("#a_income_" + val.income_id + "_" + val.income_num).attr("income_num", val.income_num)
+                  $("#a_income_" + val.income_id + "_" + val.income_num).val(val.income_money)
+                  $("#a_income_" + val.income_id + "_" + val.income_num).attr("parent_id", val.parent_id)
+
+                  console.log(parent_id+"_val.parent_id"+val.parent_id)
+
+                if(parent_id== val.parent_id){
 
 
+                  $("#a_income_" + val.income_id + "_" + val.income_num).show()
+                  $("#income_"+val.income_id+"_"+val.income_num).attr("income_detail",   JSON.stringify(val.income_detail))
 
-                  if(parent_id==val.parent_id){
-
-
-
-                        $("#income_"+val.income_id+"_"+val.income_num).removeAttr("disabled","disabled")
-                        $("#income_"+val.income_id+"_"+val.income_num).attr("class","form-control is-valid")
-}
-                    else{
-
-                       $("#income_"+val.income_id+"_"+val.income_num).attr("disabled","disabled")
+                 if(val.income_name=="合同定金" || val.income_name=="尾款"){
+                    $("#income_"+val.income_id+"_"+val.income_num).attr("disabled","disabled")
                   }
+                  else{
+                      $("#income_"+val.income_id+"_"+val.income_num).removeAttr("disabled","disabled")
+
+
+                  }
+                  $("#income_"+val.income_id+"_"+val.income_num).attr("class","form-control")
+                //  $("#income_" + val.income_id + "_" + val.income_num).css('background-color', '#D6EAF8');
+
+
+
+
+                }else{
+
+
+                }
 
 
             })
@@ -8334,40 +9350,188 @@ $("#btn_save_fromword").on("click",function(){
       }
      })
 
+
+
+
+
+
+
+     $(".a_income_pay_detail").hide()
+     $(".a_income_pay_detail").on("click",function(){
+        parent_id = $(this).attr("parent_id")
+        income_id = $(this).attr("income_id")
+        income_input_id = $(this).attr("income_input_id")
+        income_name = $(this).attr("income_name")
+        service_money = $(this).val()
+        income_num =$(this).attr("num")
+
+        var pay_type_id = $("#pay_type_id").val()//
+        var pay_type_name = $("#pay_type_id option:selected").text()
+        var company_id = $("#company_id").val()
+        var company_id_name = $("#company_id option:selected").text()
+        var income_at = $("#income_at").val()
+        var income_remark = $("#income_remark_"+income_id).val()
+        $("#income_deital_title").text(income_name+"第"+income_num+"笔到款明细")
+        $("#btn_save_income_detail").attr("income_num", income_num)
+        $("#btn_save_income_detail").attr("income_id", income_id)
+        $("#btn_save_income_detail").attr("income_name", income_name)
+        $("#btn_save_income_detail").attr("service_id", $(this).attr("service_id"))
+        $("#btn_save_income_detail").attr("service_name",$(this).attr("service_name"))
+        $("#btn_save_income_detail").attr("service_money", service_money)
+        $("#btn_save_income_detail").attr("income_input_id", income_input_id)
+        $("#btn_save_income_detail").attr("parent_id", parent_id)
+        $("#btn_save_income_detail").attr("pay_type_id", pay_type_id)
+        $("#btn_save_income_detail").attr("pay_type_name", pay_type_name)
+        $("#btn_save_income_detail").attr("company_id", company_id)
+        $("#btn_save_income_detail").attr("company_id_name", company_id_name)
+        $("#btn_save_income_detail").attr("income_at", income_at)
+        $("#btn_save_income_detail").attr("income_remark", income_remark)
+
+
+        var income_detail = $("#"+income_input_id).attr("income_detail")
+        console.log(income_detail)
+        if (income_detail!=undefined){
+
+              var  income_detail_json =  JSON.parse(income_detail)
+              $.each(income_detail_json,function(i,val_detail){
+                console.log(val_detail["detail_id"])
+                      var curr_service_id = $(this).attr("service_id")
+                      $("#txt_income_detail_"+val_detail.service_id).attr("detail_id",val_detail["detail_id"])
+                      $("#txt_income_detail_"+val_detail.service_id).val(val_detail["service_money"])
+                 //   console.log(val_detail["service_money"]+"service_id______"+val_detail["service_id"])
+              })
+
+        }
+
+
+
+        $("#income_detail_modal1").modal("show")
+       $("#income_modal1").modal("hide")
+
+     })
+
+     $("#btn_save_income_detail_back").on("click",function(){
+          $("#income_detail_modal1").modal("hide")
+       $("#income_modal1").modal("show")
+     })
+
+     $("#btn_save_income_detail").on("click",function(){
+           var company_id = $(this).attr('company_id')
+           var income_id = $(this).attr("income_id")
+           var income_name = $(this).attr("income_name")
+           var income_num = $(this).attr("income_num")
+           var parent_id = $(this).attr('parent_id')
+           var pay_type_id = $(this).attr('pay_type_id')
+           var pay_type_name = $(this).attr('pay_type_name')
+           var company_id_name = $(this).attr('company_id_name')
+           var income_at = $(this).attr('income_at')
+           var income_remark = $(this).attr("income_remark")
+           var income_input_id = $(this).attr("income_input_id")
+
+
+          jsonArr = []
+          income_amount = 0
+          $("input[name=txt_income_detail]").each(function (i, obj) {
+
+            var service_id = $(obj).attr('service_id')
+            var service_name = $(obj).attr("service_name")
+            var service_money = $(obj).val()
+            var detail_id = $(obj).attr("detail_id")
+
+            if (detail_id ==undefined){
+                detail_id = 0
+            }
+            if ($(obj).val() != "") {
+
+              income_amount = income_amount + Number($(obj).val())
+              jsonArr.push({
+                service_id: service_id,
+                service_name: service_name,
+                service_money : service_money,
+                detail_id:detail_id
+
+              });
+            }
+          })
+
+
+
+        if (jsonArr.length > 0) {
+             $("#"+ income_input_id).attr("income_detail",   JSON.stringify(jsonArr))
+             $("#"+ income_input_id).val(income_amount)
+             $("#income_modal1").modal("show")
+          }
+     })
+
     $("#new_income_other1").on("click",function(){
         // getALlIncome(1)
-        $("#parent_id_hide").val("0")
-        $("input[name=income_val]").attr("disabled","disabled")
+        //$("#parent_id_hide").val("0")
+        $("input[name=income_val]").removeAttr("disabled","disabled")
+        $(".a_income_pay_detail").show()
+        $("#btn_save_income").attr("income_a_type","add")
+        $("#btn_save_income").attr("parent_id_hide","0")
         $("#income_a_type").val("add")
-
-         var json_income_arr
-          $.get("/project?tag=income_detail_by_project",
+        $("input[name=txt_income_detail]").val("")
+        var json_income_arr
+        $.get("/project?tag=income_detail_by_project",
           {"project_id":{{t_project.id}},"_xsrf":_xsrf},function(result){
               json_income_arr = result.incomes
-              console.log(result.incomes.length)
+            //  console.log(result.incomes.length)
                 if(result.incomes.length==0){
-                  $.each($("input[name=income_val]"),function(i,val){
-                        income_id= $(this).attr("income_id")
-                        income_num = $(this).attr("num")
-                        if(income_num==1 ){
-                            $(this).removeAttr("disabled","disabled")
-                        }else{
-                            $(this).attr("disabled","disabled")
-                        }
+                      $.each($("input[name=income_val]"),function(i,val){
+                              income_id= $(this).attr("income_id")
+                              income_num  = $(this).attr("num")
+                              income_name = $(this).attr("income_name")
 
-                  })
+                            //  alert(income_num)
+                              if(income_num==1 ){
+                                  $(this).removeAttr("disabled","disabled")
+                              }else{
 
-                }else{
-                       $("input[name=income_val]").removeAttr("disabled","disabled")
-                        $.each(result.incomes,function(i,val){
-                              console.log(i+"_"+val.income_id)
-                              $("#income_"+val.income_id+"_"+val.income_num).attr("income_id",val.income_id)
-                              $("#income_"+val.income_id+"_"+val.income_num).attr("income_num",val.income_num)
-                              $("#income_"+val.income_id+"_"+val.income_num).val(val.income_money)
-                              $("#income_"+val.income_id+"_"+val.income_num).attr("disabled","disabled")
+
+                                  $("#income_" + income_id + "_" + income_num).css('background-color', '#D6EAF8');
+                                  $("#a_income_" + income_id+ "_" + income_num).hide()
+                                 $("#income_"+val.income_id+"_"+val.income_num).attr("parent_id","0")
+
+                              }
+                               if(income_name=="合同定金" || income_name=="尾款"){
+                                          $(this).attr("disabled","disabled")
+                               }
+
+
+
+
+
+
                         })
 
+                }else{
+                    //    $("input[name=income_val]").removeAttr("disabled","disabled")
+                        $.each(result.incomes,function(i,val){
+                          $("#income_"+val.income_id+"_"+val.income_num).attr("income_id",val.income_id)
+                          $("#income_"+val.income_id+"_"+val.income_num).attr("income_name",val.income_name)
+                          $("#income_"+val.income_id+"_"+val.income_num).attr("parent_id",val.parent_id)
 
+                         //if(val.income_name=="合同定金" || val.income_name=="尾款"){
+
+
+
+
+                          $("#income_"+val.income_id+"_"+val.income_num).attr("disabled","disabled")
+
+
+
+                          $("#income_"+val.income_id+"_"+val.income_num).attr("income_detail",JSON.stringify(val.income_detail))
+
+
+
+                          $("#income_"+val.income_id+"_"+val.income_num).attr("income_num",val.income_num)
+                          $("#income_"+val.income_id+"_"+val.income_num).val(val.income_money)
+                         // $("#income_" + val.income_id + "_" + val.income_num).css('background-color', '#D6EAF8');
+                          $("#a_income_" + val.income_id + "_" + val.income_num).hide()
+
+
+                        })
                 }
 
           },"json")
@@ -8375,6 +9539,8 @@ $("#btn_save_fromword").on("click",function(){
 
       $("#income_modal1").modal("show")
     })
+
+
 
 
      $("#a_add_team").on("click",function() {
@@ -9128,7 +10294,7 @@ $("#btn_save_project3").on("click",function(){
         })
 
 
- var tmpl = '<li style=" width:150px;height:100px;background-image:url(#url#); background-size:150px 100px;display:inline-block;"></li>',
+var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); background-size:15px 10px;display:block;">#url1#</li>',
     all_files=[]
     $gallery = $("#gallery"),
     $galleryImg = $("#galleryImg"),
@@ -9140,12 +10306,32 @@ $("#btn_save_project3").on("click",function(){
                 for(var i = 0, len = files.length; i < len; ++i) {
                     var file = files[i];
                     if(url) {
-                        src = url.createObjectURL(file);
+                        // src = url.createObjectURL(file);
+                        src=file.name;
                     } else {
                         src = e.target.result;
                     }
 
-                    $uploaderFiles.append($(tmpl.replace('#url#', src)));
+                    $uploaderFiles.append($(tmpl.replace('#url1#', src)));
+                    all_files.push(file)
+                }
+
+            });
+    $uploaderInput1 = $("#uploaderInput1"),
+    $uploaderFiles1 = $("#uploaderFiles1");
+    $uploaderInput1.on("change", function(e) {
+                var src, url = window.URL || window.webkitURL || window.mozURL,
+                files = e.target.files;
+                for(var i = 0, len = files.length; i < len; ++i) {
+                    var file = files[i];
+                    if(url) {
+                        // src = url.createObjectURL(file);
+                        src=file.name;
+                    } else {
+                        src = e.target.result;
+                    }
+
+                    $uploaderFiles1.append($(tmpl.replace('#url1#', src)));
                     all_files.push(file)
                 }
 
@@ -9794,6 +10980,7 @@ $("#btn_save_project3").on("click",function(){
             location.reload()
            }
         )
+        location.reload()
         }
         }
 
@@ -9832,6 +11019,144 @@ $("#btn_save_project3").on("click",function(){
              })
         }
       })
+      $(".check_express").on('click',function () {
+        $("#btn_check_express").attr('express_id',$(this).attr('id')) 
+        $("#check_express_modal").modal("show")
+     })
+     $(".confirm_express").on('click',function () {
+        $("#btn_confirm_express").attr('express_id',$(this).attr('id')) 
+        $("#confrim_express_modal").modal("show")
+     })
+     $('#btn_check_express').on('click',function () { 
+   var accept_state=$('#accept_state:checked').val()
+   var accept_uid_remark=$('#accept_uid_remark').val()
+   var express_id=$(this).attr('express_id')
+  if(accept_state==undefined){
+      $("#er_accept_state").text('请先选择')
+      $("#er_accept_state").show()
+  }else if(accept_state=='2' && accept_uid_remark==''){    
+    $("#er_accept_uid_remark").text('不通过需要填写备注')
+      $("#er_accept_uid_remark").show()
+  }else{
+    $.post('/project?tag=check_express',
+    {
+      '_xsrf':_xsrf,
+      'accept_state':accept_state,
+      'accept_uid_remark':accept_uid_remark,
+      'express_id':express_id
+    },function (result) { 
+      location.reload()
+     })
+  }
+
+  })
+  $('#btn_confirm_express').on("click",function () {
+    var express_number=$("#express_number").val()
+    var send_at=$("#send_at").val()
+    var express_id=$(this).attr('express_id')
+    if(express_number==''){
+      $('#er_express_number').text('快递单号不能为空')
+      $('#er_express_number').show()
+    }
+    else if(send_at==''){
+      $('#er_send_at').text('发件时间')
+      $('#er_send_at').show()
+    }
+    else{
+    $.post('/project?tag=confrim_express',
+    { '_xsrf':_xsrf,
+      'express_number':express_number,
+      'send_at':send_at,
+      'express_id':express_id
+    },function (result) { 
+      location.reload()
+     })
+    }
+ })
+ $(".confirm_send_express").on('click',function(){
+  $.post('/project?tag=confirm_send_express',
+    { '_xsrf':_xsrf,
+      'express_id':$(this).attr('id')
+    },function (result) { 
+      location.reload()
+     })
+ })
+ $("#choose_cutomer_addr_msg").on('click',function(){
+   $('#choose_customer_addr_msg_modal').modal('show')
+ })
+ $('#btn__save_customer_addr_msg').on('click',function(){
+   var customer_name=$('input[name=choose_customer_addr]:checked').attr('c_name')
+   var customer_addr=$('input[name=choose_customer_addr]:checked').attr('addr')
+   var customer_tel=$('input[name=choose_customer_addr]:checked').attr('tel')
+   $('#rec_name').val(customer_name)
+   $('#rec_tel').val(customer_tel)
+   $('#rec_addr').val(customer_addr)
+   $('input[name=save_customer_add_msg]').prop('checked',false)
+   $('#choose_customer_addr_msg_modal').modal('hide')
+   })
+   $('#choose_customer_addr_msg_modal').on('hidden.bs.modal', function () {
+      document.getElementsByTagName('body')[0].className = 'fixed-nav sticky-footer bg-dark modal-open';
+});
+
+$('.filepath_detail').on('click',function () {
+  uid_name=$(this).attr('uid_name')
+  send_at_name=$(this).attr('send_at_name')
+  if(uid_name=="{{name}}" || send_at_name=="{{name}}"){
+    $('.file_label').show()
+    $('.file').show()
+    $('#btn_express_filepath').show()
+  }else{
+    $('.file_label').hide()
+    $('.file').hide()
+    $('#btn_express_filepath').hide()
+  }
+  $("#er_uploaderInput").hide()
+    file_path=$(this).attr('file_path')
+    file_path=file_path.split('|')
+    showFiles=$('#showFiles')
+    showFiles.children().remove()
+    if(file_path!=''){
+    for(var i=0;i<file_path.length-1;i++){
+      f=file_path[i].split('/')
+
+      showFiles.append('<br><li><a href="'+file_path[i]+'" download="'+f[f.length-1]+'">'+f[f.length-1].split('.')[0]+
+      '</a><a href="'+file_path[i]+'" class="btn" target="_blank">查看</a></li>')
+    }
+    }
+    else(
+      showFiles.append('<p>还没有上传附件哦~</p>')
+    )
+    $("#btn_express_filepath").attr('express_id',$(this).attr('id'))
+    $("#express_filepath_modal").modal("show")
+ })
+ $("#btn_express_filepath").on('click',function () { 
+    var formData = new FormData();
+    for(var i=0,len=all_files.length;i<len;i++){
+      formData.append('file'+i,all_files[i])
+    }
+    formData.append('len',all_files.length)
+    formData.append('express_id',$(this).attr('express_id'))
+    formData.append('_xsrf',_xsrf)
+    if(all_files!=''){
+      $(this).text('保存中')
+      $(this).attr('disabled','disabled')
+      $.ajax({
+                url: '/project?tag=express',
+                type: 'POST',
+                data: formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success: function (data) {
+                  location.reload()
+
+                }
+              });
+    }
+    else{
+      $("#er_uploaderInput").show()
+    }
+
+ })
 })
 
 </script>

@@ -49,7 +49,12 @@
             <span>接单管理</span>
           </a>
         </li>
-
+<li id="customer_list_rec">
+  <a href="/project?tag=my" target="_blank">
+    <i class="icon-dashboard"></i>
+    <span>我的业务</span>
+  </a>
+</li>
 
          
         {%if is_manager=="1"%}
@@ -77,8 +82,18 @@
               <a href="/finance?tag=list&qtype=my"><i class="icon-list-alt"></i>
               <span>收入确认单应收</a>
             </li>
+            {%if role=="3" or role=="8"%}
             <li>
               <a href="/payment?tag=list"><i class="icon-list-alt"></i>记账应收</a>
+            </li>
+            {%elif role=="10"%}
+            <li>
+              <a href="/payment?tag=acc_customer_payment">
+                <i class="icon-list-alt"></i>记账应收</a>
+            </li>
+            {%end%}
+            <li>
+              <a href="/payment?tag=reminders_plan"><i class="icon-list-alt"></i>催款计划</a>
             </li>
         
            
@@ -124,7 +139,7 @@
 <script src="/static/c/js/bootstrap.js"></script>
 <script language="javascript" type="text/javascript" src="/static/c/js/full-calendar/fullcalendar.min.js"></script>
  
-
+<script src="/static/c/js/jquery.messager.js"></script>
 <script src="/static/c/laydate/laydate.js"></script> <!-- 改成你的路径 -->
 
 <script src="/static/c/js/base.js"></script> 
@@ -133,6 +148,21 @@
         var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
         return r ? r[1] : undefined;
     }
+    $(function () {
+    
+      if("{{today_exchange_ids}}"!='[]'){
+      $.messager.show("提示信息",'您今天共有'+"{{len(today_exchange_ids)}}"+'条催款记录，请尽早处理！',0);
+      }
+      // $("#confirm_msg_time").on('click',function () {
+      //       $.post('/customer?tag=confirm_msg_time',
+      //       {
+      //         'today_exchange_ids':'{{today_exchange_ids}}',
+      //         '_xsrf':getCookie("_xsrf")
+      //       },function (res) { 
+      //         $.messager.close()
+      //        })
+      //   })
+     })
 </script>
 {%block js%}
 

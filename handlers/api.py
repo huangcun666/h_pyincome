@@ -49,12 +49,14 @@ class ApiHandler(BaseHandler):
         tag = self.get_argument("tag","user")
         query= self.get_argument("query")
         if tag =="user":
+
             response = []
             if query:
                 t_users = self.db.query("select * from t_user where name like  '%%"+query+"%%' ")
 
                 for item in t_users:
                     response.append(item.name)
+                    print(item.name)
             self.write(tornado.escape.json_encode(response))
         elif tag == "userandid":
             response = []
@@ -89,6 +91,21 @@ class ApiHandler(BaseHandler):
                 for item in t_users:
                     response.append(item.company)
             self.write(tornado.escape.json_encode(response))
+
+        elif tag == 'customer_company_acc_uid':
+
+            uid =self.get_secure_cookie("uid")
+            response = []
+            if len(query) > 2:
+                t_users = self.db_customer.query(
+                    "select * from t_customer where acc_uid =%s and company like  '%%"
+                    + query + "%%' ", uid)
+                for item in t_users:
+                    response.append(item.company)
+            print response,"lllll"
+            self.write(tornado.escape.json_encode(response))
+
+
 
 
 class OApiHandler(BaseHandler):

@@ -2,7 +2,7 @@
 from handlers.base import BaseHandler
 from Pagination import Pagination
 import logging
-import json
+import json,datetime
 import tornado.web
 import urllib2
 import tornado.httpclient
@@ -330,6 +330,7 @@ class CustomerTransitionHandler(BaseHandler):
         tag = self.get_argument("tag", "list")
         uid = self.get_secure_cookie("uid")
         uid_name = self.get_secure_cookie("name")
+        dt=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         result = -10
         if tag == "add":
             tran_at = self.get_argument("tran_at")
@@ -401,11 +402,11 @@ class CustomerTransitionHandler(BaseHandler):
                                 %s,
                                 %s,
                             uuid(),
-                            now(),
+                            %s,
                             %s,
                             %s,
                             %s,%s,%s);
-                    """, customer_id, remark, file_path, tran_by, rec_by,
+                    """, customer_id, remark, file_path,dt, tran_by, rec_by,
                                              tran_at, uid, uid_name)
                 self.write(str(result))
 

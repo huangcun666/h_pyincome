@@ -1,0 +1,93 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">公司曾用名列表
+        </li>
+
+      </ol>
+<form>
+    <table>
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>公司名称</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" class="form-control" name="s_project_id" placeholder="编号" {%if params['s_project_id']%}value={{params['s_project_id']}}{%end%}></td>
+                <td><input type="text" class="form-control" name="s_company" placeholder="公司名" {%if params['s_company']%}value={{params['s_company']}}{%end%}></td>
+                <td>
+                    <input name="tag" value="{{tag}}" hidden>
+                    <input type="submit" value="检索"></td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+   <div class="card mb-3">
+        <div class="card-body">
+                <div class="table-responsive">
+
+
+                        <table class="table table-bordered" id="dataTable" >
+                          <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                              <tr>
+                              <th width="100">编号</th>
+                                  <th width="200">公司名称</th>
+                                  <th >业务内容</th>
+                                <th width="300">公司曾用名</th>
+                                <th></th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {%for item in t_projects%}
+                                <tr>
+                                    <td>{{item.id}}</td>
+                                    <td>{{item.customer_company}}</td>
+                                    <td>{{item.project_name}}</td>
+                                    <td>{{item.history_company}}</td>
+                                    <td><a class="btn btn-info" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}">查看</a></td>
+                                </tr>
+                              {%end%}
+                          </tbody>
+        
+                      </table>
+      
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=projects_company_history{%if params['s_project_id']%}&s_project_id={{params['s_project_id']}}{%end%}{%if params['s_company']%}&s_company={{params['s_company']}}{%end%}&page={{ pagination.page - 1}}" 
+         aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=projects_company_history{%if params['s_project_id']%}&s_project_id={{params['s_project_id']}}{%end%}{%if params['s_company']%}&s_company={{params['s_company']}}{%end%}&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% end %} {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_company_history{%if params['s_project_id']%}&s_project_id={{params['s_project_id']}}{%end%}{%if params['s_company']%}&s_company={{params['s_company']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>         
+      
+               </div>
+              </div>
+              <div class="card-footer small text-muted"></div>
+            </div>
+        
+</div>
+</div>
+{%end%}

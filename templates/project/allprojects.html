@@ -455,7 +455,7 @@
 
           </div>
 
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">所属公司: <small class="text-danger">（必选）</small></label>
 
            {% for idx, item in enumerate(t_company) %}
@@ -464,7 +464,7 @@
       <small id="pcompanyHelpInline" class="text-danger">
           
           </small>
-          </div>
+          </div> -->
           <div class="form-group" id="div_is_expedited">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">加急业务: <small class="text-danger">（必选）</small></label>
             <input type="radio" name="is_expedited" value="1" />&nbsp;是
@@ -742,7 +742,13 @@ language: 'zh-CN',initialDate: new Date()});
         });
     }
     });
-
+    $('#customer_company').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"customer_company"}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
 
      $("#div_building").hide()
     $("#div_recommend_by").hide()
@@ -898,6 +904,7 @@ $('input[name=is_same_company]').on("change",function () {
                       $("#div_addr_type").show()
                       $("#div_promo").hide()
               }else if(bf_value=="4"){
+                $("#msg_inner_re").text("")
                 $('#t_customer_company').hide()
                 $('#same_company').hide()
                   $(".div_talk_type").show()
@@ -910,6 +917,7 @@ $('input[name=is_same_company]').on("change",function () {
                      $("#div_pre_value").show()
                      $("#div_addr_type").show()
                      $("#div_promo").hide()
+                  $("#div_recommend_staff").show()
 
               } else if(bf_value=="81"){
                 $('#t_customer_company').hide()
@@ -954,7 +962,6 @@ $('input[name=is_same_company]').on("change",function () {
                       $("#div_promo").hide()
                   $("input[name='is_finance']:first").attr("checked", true);
                                        $("#lb_customer_company_msg").show()
-
 
               }else if(bf_value == "203"){
                   $('#t_customer_company').hide()
@@ -1038,7 +1045,7 @@ $('input[name=is_same_company]').on("change",function () {
               //  remark = $("#remark")
                 talk_type = $("input[name=talk_type]:checked").val()
                 from_word = $("#from_word")
-                company = $("input[name=company]:checked")
+                // company = $("input[name=company]:checked")
                 is_finance = $("input[name=is_finance]:checked")
                 building_id = $("#building_id")
                 promo_id = $("#promo_id")
@@ -1048,13 +1055,13 @@ $('input[name=is_same_company]').on("change",function () {
                 console.log(bf_value)
                 console.log(recommend_staff.val())
                 console.log(talk_type)
-                if (company.val()=="0" || company.val()==undefined){
-                  $("#pcompanyHelpInline").text("请选择业务所属公司哦。")
-                  $("#company").focus()
-                   console.log("hi1")
-                  return false;
-                }
-                else if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
+                // if (company.val()=="0" || company.val()==undefined){
+                //   $("#pcompanyHelpInline").text("请选择业务所属公司哦。")
+                //   $("#company").focus()
+                //    console.log("hi1")
+                //   return false;
+                // }
+                if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
                   $("#business_channelHelpInline").text("请选择来源渠道哦。")
                   $("input[name=business_channel]:first").focus()
                    console.log("hi2")
@@ -1085,14 +1092,6 @@ $('input[name=is_same_company]').on("change",function () {
                     $("#recommend_staffHelpInline").text("内部推荐人必填哦")
 
                     recommend_staff.focus()
-                    return false
-                } 
-                else if(bf_value=="4" && building_id.val()=="0" || building_id.val()==undefined){
-                   console.log("hi9")
-                    
-                    $("#building_idHelpInline").text("内部推荐人必填哦")
-
-                    building_id.focus()
                     return false
                 } 
                 else if (sign_type_id.val()=="0" || sign_type_id.val()==undefined){
@@ -1196,7 +1195,7 @@ $('input[name=is_same_company]').on("change",function () {
                         "sign_type_id":sign_type_id.val(),
                         "talk_type":talk_type,
                         "from_word":from_word.val(),
-                        "company":company.val(),
+                        // "company":company.val(),
                         "is_finance":is_finance.val(),
                         "building_id":building_id.val(),
                         "new_contract_type_id":new_contract_type_id.val(),

@@ -1,0 +1,342 @@
+{% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+<style>
+.message-item {
+margin-bottom: 5px;
+margin-left: 40px;
+position: relative;
+}
+.message-item .message-inner {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 10px;
+position: relative;
+}
+.message-item .message-inner:before {
+border-right: 10px solid #ddd;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -20px;
+top: 6px;
+width: 0;
+}
+.message-item .message-inner:after {
+border-right: 10px solid #fff;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -18px;
+top: 6px;
+width: 0;
+}
+.message-item:before {
+background: #fff;
+border-radius: 2px;
+bottom: -30px;
+box-shadow: 0 0 3px rgba(0,0,0,0.2);
+content: "";
+height: 100%;
+left: -30px;
+position: absolute;
+width: 3px;
+}
+.message-item:after {
+background: #fff;
+border: 2px solid #ccc;
+border-radius: 50%;
+box-shadow: 0 0 5px rgba(0,0,0,0.1);
+content: "";
+height: 15px;
+left: -36px;
+position: absolute;
+top: 10px;
+width: 15px;
+}
+.clearfix:before, .clearfix:after {
+content: " ";
+display: table;
+}
+.message-item .message-head {
+border-bottom: 1px solid #eee;
+margin-bottom: 8px;
+padding-bottom: 8px;
+}
+.message-item .message-head .avatar {
+margin-right: 20px;
+}
+.message-item .message-head .user-detail {
+overflow: hidden;
+}
+.message-item .message-head .user-detail h5 {
+font-size: 16px;
+font-weight: bold;
+margin: 0;
+}
+.message-item .message-head .post-meta {
+float: left;
+padding: 0 15px 0 0;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item img {
+min-height: 25px;
+max-height: 25px;
+}
+</style>
+<div class="main">
+   <div class="main-inner">
+       <div class="container">
+           <div class="row">
+               <div class="span12">
+                   <div class="widget ">
+                       <div class="widget-header">
+                           <i class="icon-user"></i>
+                           <h3>催款计划
+
+
+                           </h3>
+
+                       </div>
+
+
+                       <!-- /widget-header -->
+                       <div class="widget-content">
+                           <div class="tab-content">
+                               <div class="tab-pane active" id="formcontrols">
+<ul class="nav nav-tabs" id="myTab">
+   <li {%if show_tag=="1" %} class="active" {%end%}>
+       <a href="/payment?tag=reminders_plan&show_tag=1" id="tab_confirm">全部</a>
+   </li>
+   <li {%if show_tag=="2" %} class="active" {%end%}>
+       <a href="/payment?tag=reminders_plan&show_tag=2" id="customer_tab">待催款</a>
+   </li>
+   <li {%if show_tag=="3" %} class="active" {%end%}>
+       <a href="/payment?tag=reminders_plan&show_tag=3" id="tab_confirm">已催款</a>
+   </li>
+</ul>
+
+                                   <fieldset>
+                                           <!-- <form class="form-search" id="query_form">
+                                                   <input type="text" value="" name="company" id="company" class="input-medium search-query" placeholder="公司名称">
+                                                 
+                                                   <button type="submit" class="btn">检 索</button>
+                                                   <input type="hidden" value="{{tag}}" name="tag"/>
+                                                 
+                                                 </form> -->
+
+
+
+                                       <table class="table" style="margin:5px;">
+                                           <thead>
+                                               <tr style="background-color: black; color:#fff;">
+
+                                                   <th style="min-width:180px;">催款内容</th>
+
+                                                   <th style="min-width:60px;">编号</th>
+
+
+                                                   <th style="min-width:50px;">催款时间</th>
+                                                   <th style="min-width:30px;">附件</th>
+                                                   <th style="min-width:60px;">催款人</th>
+                                                    {%if show_tag=='3'%}
+                                                    <th style="min-width:100px;">催款总结</th>
+                                                    {%end%}
+
+                                                   <th style="min-width:60px;">创建时间</th>
+                                                   {%if show_tag!='3'%}
+                                                   <th style="min-width:60px;"></th>
+                                                   {%end%}
+                                                 
+<th width="60"></th>
+
+
+
+                                               </tr>
+                                           </thead>
+                                           <tbody>
+                                                {%if t_customer_exchange%}
+                                               {%for item in t_customer_exchange%}
+                                               <tr>
+                                                    <td>{{item.msg}}</td>
+                                                    <td>{{item.customer_id}}</td>
+                                                    <td>{%if item.msg_time%}{{item.msg_time.strftime('%Y-%m-%d')}}{%end%}</td>
+                                                    <td>{%if item.file_path%}<a href="{{item.file_path}}" target="_blank">查看</a>{%end%}</td>
+                                                    <td>{{item.uid_name}}</td>
+                                                    {%if show_tag=='3'%}
+                                                    <td>{{item.summary}}</td>
+                                                    {%end%}
+                                                    <td>{{item.created_at}}</td>
+                                                    {%if show_tag!='3'%}
+                                                    <td>{%if item.summary==None%}<a class="btn btn-info edit_exchange" id="{{item.id}}">填写总结</a>
+                                                        {%else%}已催款
+                                                        {%end%}</td>
+                                                    {%end%}
+                                               </tr>
+                                               {%end%}
+                                               {%else%} 
+                                               <tr>
+                                                   <td colspan="10">还没有客户哦。</td>
+                                               </tr> {%end%}
+
+
+                                           </tbody>
+                                       </table>
+
+                                     
+                                       <div class="pagination">
+                                           <ul>
+                                               {% if pagination.has_prev %}
+                                               <li>
+                                                   <a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}&show_tag={{show_tag}}">&laquo; 上页</a>
+                                               </li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                               <li>
+                                                   <a href="/payment?tag={{tag}}&page={{ page }}&show_tag={{show_tag}}">{{ page }}</a>
+                                               </li>
+                                               {% else %}
+                                               <li>
+                                                   <span class="active">
+                                                       <a href="#">{{ page }}</a>
+                                                   </span>
+                                               </li>
+                                               {% end %} {% else %}
+                                               <li>
+                                                   <span class="active">
+                                                       <a href="#">....</a>
+                                                   </span>
+                                               </li>
+                                               {% end %} {%end %} {% if pagination.has_next %}
+                                               <li>
+                                                   <a href="/payment?tag={{tag}}&page={{pagination.page+1}}&show_tag={{show_tag}}">下页 &raquo;</a>
+                                               </li>
+                                               {% end %}
+                                           </ul>
+                                       </div>
+                                   </fieldset>
+
+                               </div>
+
+
+
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               <!-- /widget-content -->
+           </div>
+           <!-- /widget -->
+       </div>
+       <!-- /span8 -->
+   </div>
+   <!-- /row -->
+</div>
+<!-- /container -->
+</div>
+
+<div id="summary_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-header">
+       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+       <h3 id="myModalLabel_account">催款总结
+
+
+       </h3>
+   </div>
+   <div class="modal-body">
+       <div class="control-group">
+
+
+       <div class="control-group">
+           <label class="control-label" for="lastname">总结</label>
+           <div class="controls">
+                   <textarea class="span4" id="summary" style="margin: 0px 0px 9px; width: 491px; height: 61px;">
+                       </textarea>
+                       <div class="alert alert-danger" role="alert" id="er_summary"></div>
+
+           </div>
+       </div>
+
+
+</div>
+
+   </div>
+   <div class="modal-footer">
+  
+       <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+       <button class="btn btn-primary" id="btn_save_summary">保存</button>
+   </div>
+</div>
+
+
+{%end%} {%block js%}
+<script>
+
+    $(function () {
+        _xsrf = getCookie("_xsrf")
+
+        
+        laydate.render({
+                   elem: '#txt_time' //指定元素
+          });
+     /*   $("#company").typeahead({
+            source: function (query, process) {
+                return $.post('/api', { query: query, "_xsrf": _xsrf, "tag": "customer_company_acc_uid" }, function (data) {
+                    return process(JSON.parse(data));
+                });
+            }
+        });
+*/
+
+     $(".edit_exchange").on('click',function () {
+         $("#er_summary").hide()
+         $('#summary_modal').modal('show')
+         $('#btn_save_summary').attr('exchange_id',$(this).attr('id')) 
+     
+      })
+      $('#btn_save_summary').on('click',function () { 
+          var summary=$("#summary").val()
+          if(summary==''){
+              $("#er_summary").text('总结不能为空')
+              $("#er_summary").show()
+          }
+          else{
+        $.post('/payment?tag=reminders_plan',
+         {
+             '_xsrf':_xsrf,
+             'id':$(this).attr('exchange_id'),
+             'summary':summary
+         },function (result) { 
+             location.reload()
+          })
+        }
+       })
+               
+           
+   })
+</script> {%end%}

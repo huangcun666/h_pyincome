@@ -87,22 +87,14 @@
                                                 <!-- /controls -->
                                             </div>
 
-                                            
-                                         <div class="control-group">
-                                                <label class="control-label" for="acc_uid">客服会计</label>
+                                    
+                                            <div class="control-group">
+                                                <label class="control-label" for="acc_uid_name">客服会计</label>
                                                 <div class="controls">
-                                                <select name="acc_uid" id="acc_uid">
-                                                   <option value="0">选择客服会计</option>
-                                                 {%for item in t_user%}
-                                                        <option value="{{item.id}}"   {%if t_customer.acc_uid==item.id%}selected{%end%}>{{item.name}}</option>
+                                         
+                                                <input type="text" name="acc_uid_name" id="acc_uid_name" class="form-control" value="{{t_customer.acc_uid_name}}"/>
 
-
-                                                 {%end%}
-                                                                                                        <option value="210" {%if t_customer.acc_uid==210%}selected{%end%}>陈月娇</option>
-
-                                                </select>
-
-                                                    <p id="msg_acc_uid" class="help-block" style="color:red"></p>
+                                                    <p id="msg_is_general" class="help-block" style="color:red"></p>
                                                 </div>
                                                 <!-- /controls -->
                                             </div>
@@ -211,6 +203,48 @@
                                                 </div>
                                                 <!-- /controls -->
                                             </div>
+
+
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="is_general">付款方式
+</label>
+                                                <div class="controls">
+        {%for idx,item in enumerate(t_payment_type)%}
+             <input type="radio" name="pay_type_id" fee="{{item.fee}}" value="{{item.id}}" pay_typeid_name="{{item.name}}"
+             
+             {%if item.id==t_customer.paytype_id %} checked="true" {%end%}/> {{item.name}}
+   {%end%}
+
+                                                    <p id="msg_paytype" class="help-block" style="color:red"></p>
+                                                </div>
+                                                <!-- /controls -->
+                                            </div>
+                                            <div class="control-group">
+                                                <label class="control-label" for="lastname">总服务费</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="service_amount" name="service_amount" value="{{t_customer.service_amount}}" >
+                                                </div>
+                                            </div>
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="lastname">月服务费</label>
+                                                <div class="controls">
+                                                    <input type="text" disabled="true" class="span6" id="service_amount_month" name="service_amount_month"  value="{{t_customer.service_amount_month}}">
+                                                </div>
+                                            </div>
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="lastname">帐册费</label>
+                                                <div class="controls">
+                                                    <input type="text" class="span6" id="book_amount" name="book_amount" value="{{t_customer.book_amount}}">
+                                                </div>
+                                            </div>
+
+
+
+
+
                                             <div class="control-group">
                                                 <label class="control-label" for="lastname">地址类型</label>
                                                 <div class="controls">
@@ -356,6 +390,10 @@
 </div>
 
 {%end%} {%block js%}
+<script src="/static/vendor/jquery/jquery.min.js"></script>
+
+<script src="/static/bootstrap-typeahead.js"></script>
+
 <script>
     $(function () {
 
@@ -372,6 +410,94 @@
            });
            
         _xsrf = getCookie("_xsrf")
+
+
+
+
+    $('input[type="radio"][name="pay_type_id"]').click(function(){
+                   
+                   service_amount = $("#service_amount").val()
+                   if ($(this).is(':checked'))
+                   {
+                      if($(this).attr("fee")>0){
+                            $("#service_amount").removeAttr("readOnly")
+                          
+                       }else{
+                            $("#service_amount").val("0")
+                           all_total = 0
+                       }
+   
+   
+                       all_total =  service_amount / $(this).attr("fee");
+                       console.log(all_total)
+                       if (all_total==Infinity){
+                           all_total = 0
+   
+                       }
+                       $("#service_amount_month").val(intToFloat(all_total))
+                   }
+       });
+   
+          $('#service_amount').keyup(function() {
+                           all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
+                             if (all_total==Infinity){
+                           all_total = 0
+                           
+                       }
+                           $("#service_amount_month").val(intToFloat(all_total))
+   
+   
+           });
+   
+$("#acc_uid_name").typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+
+
+
+    $('input[type="radio"][name="pay_type_id"]').click(function(){
+                   
+                service_amount = $("#service_amount").val()
+                if ($(this).is(':checked'))
+                {
+                   if($(this).attr("fee")>0){
+                         $("#service_amount").removeAttr("readOnly")
+                       
+                    }else{
+                         $("#service_amount").val("0")
+                        all_total = 0
+                    }
+
+
+                    all_total =  service_amount / $(this).attr("fee");
+                    console.log(all_total)
+                    if (all_total==Infinity){
+                        all_total = 0
+
+                    }
+                    $("#service_amount_month").val(intToFloat(all_total))
+                }
+    });
+
+       $('#service_amount').keyup(function() {
+                        all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
+                          if (all_total==Infinity){
+                        all_total = 0
+                        
+                    }
+                        $("#service_amount_month").val(intToFloat(all_total))
+
+
+        });
+
+function intToFloat(val){
+        return new Number(val).toFixed(2);
+}
+
         $("#btn_save_customer").on("click", function () {
             $("#msg_company").text("")
             $("#msg_reg_addr").text("")
@@ -405,14 +531,18 @@
             var customer_type = ""  //$("input[name=customer_type]:checked").val()
             var customer_type_name ="" //$("input[name=customer_type]:checked").attr("title") 
             var promo_id=$("#promo_id").val()
-            var acc_uid = $("#acc_uid").val()
-            var acc_uid_name = $("#acc_uid option:selected").text()
+            var acc_uid_name = $("#acc_uid_name").val()
             var zone = $("#zone").val()
             var city = $("#city").val()
-            if(acc_uid=="0"){
-                acc_uid_name = "待安排"
-            }
-           
+        
+            var  service_amount_month = $("#service_amount_month").val()
+            var  pay_type_id =$("input[name='pay_type_id']:checked").val()
+            var  fee =$("input[name='pay_type_id']:checked").attr("fee")
+            var  pay_typeid_name =$("input[name='pay_type_id']:checked").attr("pay_typeid_name")
+            var  service_amount = $("#service_amount").val()
+            var  book_amount = $("#book_amount").val()
+
+
             $("#msg_company").text("")
             $("#msg_is_general").text("")
             $("#msg_credit_rating").text("")
@@ -434,12 +564,18 @@
 
 
             else{
+        
+
                 $.post("/customer?tag=add",{
-                    "customer_id":{{t_customer.id}},
+                    "service_amount_month":service_amount_month,
+                    "service_amount":service_amount,
+                    "book_amount":book_amount,
+                    "pay_type_id":pay_type_id,
+                    "pay_typeid_name":pay_typeid_name,
+                    "customer_id":"{{t_customer.id}}",
                     "customer_guid":"{{t_customer.guid}}",                    
                     "zone":zone,
                     "city":city,
-                    "acc_uid":acc_uid,
                     "acc_uid_name":acc_uid_name,
                     "company_reguid":company_reguid,
                     "industry_name":industry_name,
@@ -459,13 +595,14 @@
                 "reg_addr":reg_addr,"reg_number": reg_number,
                 "reg_bank": reg_bank,"reg_bank_account": reg_bank_account,
                 "addr_type": addr_type,"addr_expire": addr_expire,
+                "project_id":"{{t_customer.project_id}}",
                 "addr_cp": addr_cp,"remark": remark,"_xsrf": _xsrf},function(result){
                     if(result=="0"){
                                 alert("保存成功！")
                         location.href=result
                     }
-                    else if(result=="-100"){
-                         alert("该客户不存在！")
+                    else if(result['status']=="-100"){
+                         alert("公司名已存在！")
                     }
                     else{
                         location.href=result

@@ -1,126 +1,115 @@
-{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+{% extends "../base.html" %} {%block title%}报价管理{%end%} {% block body %}
 
 
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
          主面板
         </li>
-        <li class="breadcrumb-item active">业务报价
-                {%if is_bj_manage=='1'%}
-            <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add_manage" >新 建 </a>
-            {%end%}
+        <li class="breadcrumb-item active">报价管理
         </li>
 
       </ol>
-
+ 
       <div class="card mb-3">
             <div class="card-body">
-
             <div class="table-responsive">
-            <form>
-                <table>
-                    <thread>
-                        <tr>
-                            <th>区域</th>
-                            <th>业务类型</th>
-                            <th>开票/非开票地址&nbsp;</th>
-                            <th>&nbsp;孵化/非孵化器</th>
-                        </tr>
-                    </thread>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <select name="area_search" class="form-control">
-                                    <option value="">选择区域</option>
-                                    {%for item in area_type%}
-                                    <option value="{{item.income_name}}" {% if params['area_search']==item.income_name %} selected{%end%}>{{item.income_name}}</option>
-                                    {%end%}
-                                </select>
-                            </td>
-                            <td><input type="text" name="project_type_search" placeholder="业务类型" class="form-control"  value="{{params['project_type_search']}}"></td>
-                        <td>&nbsp;<input type="radio" name="is_kp_addr_search"value="1" {% if params['is_kp_addr_search']=='1' %} checked{%end%}>&nbsp;&nbsp;&nbsp;
-                            <input type="radio" name="is_kp_addr_search"value="0" {% if params['is_kp_addr_search']=='0' %} checked{%end%}></td>
-                    
-                        <td>&nbsp;<input type="radio" name="is_fhq_search"   value="1" {% if params['is_fhq_search']=='1' %} checked{%end%}>&nbsp;&nbsp;&nbsp;
-                            <input type="radio" name="is_fhq_search"   value="0" {% if params['is_fhq_search']=='0' %} checked{%end%}></td>
-                        <td><input type="hidden" name="tag" value="{{tag}}"/>
-                            <input type="submit" value="检索" /></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </form>
             
-            <table class="table table-bordered" id="dataTable"  cellspacing="0">
+            <table class="table table-bordered" id="dataTable"  cellspacing="0" style="width:2800px;">
             <thead style="background-color:#000;color:#fff">
                 <tr>
-                    <th width="100">区域 
-                        <a href="javascript:void(0)" style="color: #fff;text-decoration:none;" id="asc_desc" order='1'>&uarr;&darr;</a></th>
-                    <th >业务类型</th>
-                    <th width="100">报价</th>
-                    <th>是否开票地址</th>
-                    <th>是否孵化器</th>
-                    <th width="100">发票限量</th>
-                    <th >注意事项</th>
-              
+             
+                 
+                   
+                    <th width="100">区域</th>
+                    <th width="100">类型</th>
+                    
+                    <th width="100">地址性质</th>
+                
+                    <th width="100">注册价格</th>
+
+                    <th width="100">同区变更价格</th>
+                    <th width="100">跨区变更价格</th>
+                    <th width="100">详细地址</th>
+                    <th width="100">经营范围限制</th>
+                    <th width="100">发票限制</th>
+                    <th width="100">受理材料</th>
+                    <th width="100">是否能解锁</th>
+                    <th width="100">是否可以续费</th>
+                    <th width="100">担保事项</th>
                     <th width="100">创建人</th>
-                    <th width="100">更新时间</th>
-                    <th width="100">历史报价</th>
-                    {%if is_bj_manage=='1'%}
+                    <th width="100">创建时间</th>
                     <th width="100"></th>
-                    {%end%}
+                
                 </tr>
             </thead>
-            <tbody>
-                {%if bj_manage%}
-                    {% for idx,item in enumerate(bj_manage)%}
-                    <tr>
-                        <td>{{item.area}}</td>
-                        <td>{{item.project_type}}</td>
-                        <td>{{item.c}}</td>
-                        <td>{%if item.is_kp_addr==1%}是{%else%}否{%end%}</td>
-                        <td>{%if item.is_fhq==1%}是{%else%}否{%end%}</td>
-                        <td>{{item.invoice_limited}}</td>
-                        <td>{{item.note}}</td>
-                   
-                        <td>{{item.uid_name}}</td>
-                        <td>{% if item.updated_at%}{{item.updated_at.strftime("%Y-%m-%d")}}{%else%}{{item.created_at.strftime("%Y-%m-%d")}}{%end%}</td>
-                        <td><a class="btn btn-info price_history"  href="javascript:void(0);" price_history="{{item.b}}">查看</a></td>
-                        {%if is_bj_manage=='1'%}
-                        <td><a class="btn btn-info change_price" 
-                         href="javascript:void(0);" bj_id="{{item.id}}" area="{{item.area}}"
-                        project_type="{{item.project_type}}" is_kp_addr="{{item.is_kp_addr}}"
-                        is_fhq="{{item.is_fhq}}" price="{{item.c}}" invoice_limited="{{item.invoice_limited}}" 
-                         note="{{item.note}}">修改</a></td>
-                        {%end%}
-                    </tr>
-                    {%end%}
-                {%else%}
-                <tr>
-                     <td colspan="15">
-                        还没有数据哦    
-                       </td>
-                     </tr>
-                     {%end%}
-            </tbody>
+                <tbody>
+                        {% if addr_provider_manage %}
+                       {% for item in addr_provider_manage%} 
+                        <tr>
+                          
+                            <td>{{item.area}}</td>
+                            <td>{{item.type}}</td>
+
+                            <td>{{item.addr_nature}}</td>
+                    
+
+                            <td>{{item.register_price}}</td>
+                            <td>{{item.same_area_change_price}}</td>
+                            <td>{{item.dif_area_change_price}}</td>
+
+                            <td>{{item.address}}</td>
+                            <td>{{item.business_scope_limit}}</td>
+                            <td>{{item.fp_limit}}</td>
+                            <td>{{item.accept_material}}</td>
+
+                            <td>{% if item.is_lock==1%}能{%elif item.is_lock==2%}不能{%end%}</td>
+                            <td>{% if item.is_renew==1%}是{%elif item.is_renew==2%}否{%end%}</td>
+                            <td>{{item.danbao_matter}}</td>
+                            <td>{{item.uid_name}}</td>
+                            <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
+                           
+                            
+                                {%if is_gy_manage=='1'%}
+                                {%end%}
+                            <td><a class="btn btn-info change_addr" href="javascript:void(0);" id="{{item.id}}"
+                                provider="{{item.provider}}" area="{{item.area}}" type="{{item.type}}" addr_nature="{{item.addr_nature}}"
+                                cost_price="{{item.cost_price}}" register_price="{{item.register_price}}"  same_area_change_price="{{item.same_area_change_price}}"
+                                dif_area_change_price="{{item.dif_area_change_price}}"  address="{{item.address}}" business_scope_limit="{{item.business_scope_limit}}"  
+                                fp_limit="{{item.fp_limit}}" accept_material="{{item.accept_material}}" is_lock="{{item.is_lock}}" is_renew="{{item.is_renew}}"danbao_matter="{{item.danbao_matter}}"      
+                                >查看</a></td>
+                               
+                        </tr>
+                        {%end%}   
+                        {%else%}
+                        <tr>
+                            <td colspan="10">
+                                还没有哦~
+                            </td>
+                        </tr>
+                        {%end%}   
+                  
+                </tbody>
             </table>
             <div class="col-sm-12 col-md-7">
-                <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
-                    <ul class="pagination">
-                        {% if pagination.has_prev %}
-                        <li class="paginate_button page-item previous " id="dataTable_previous">
-                        <a href="/project?tag=bj_manage{%if order%}&order={{order}}{%end%}{%if params['area_search']%}&area_search={{params['area_search']}}{%end%}{%if params['project_type_search']%}&project_type_search={{params['project_type_search']}}{%end%}{% if params['is_kp_addr_search']%}&is_kp_addr_search={{params['is_kp_addr_search']}}{%end%}{% if params['is_fhq_search']%}&is_fhq_search={{params['is_fhq_search']}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
-                        <li class="paginate_button page-item ">
-                            <a href="/project?tag=bj_manage{%if order%}&order={{order}}{%end%}{%if params['area_search']%}&area_search={{params['area_search']}}{%end%}{%if params['project_type_search']%}&project_type_search={{params['project_type_search']}}{%end%}{% if params['is_kp_addr_search']%}&is_kp_addr_search={{params['is_kp_addr_search']}}{%end%}{% if params['is_fhq_search']%}&is_fhq_search={{params['is_fhq_search']}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
-                        {% else %}
-                        <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
-                        {% end %} {% else %}
-                        <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
-                        {% end %} {%end %} {% if pagination.has_next %}
-                        <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=bj_manage{%if order%}&order={{order}}{%end%}{%if params['area_search']%}&area_search={{params['area_search']}}{%end%}{%if params['project_type_search']%}&project_type_search={{params['project_type_search']}}{%end%}{% if params['is_kp_addr_search']%}&is_kp_addr_search={{params['is_kp_addr_search']}}{%end%}{% if params['is_fhq_search']%}&is_fhq_search={{params['is_fhq_search']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
-                        {% end %}
-                    </ul>
+                    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                        <ul class="pagination">
+
+                            {% if pagination.has_prev %}
+                            <li class="paginate_button page-item previous " id="dataTable_previous">
+                            <a href="/project?tag=bj_manage&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li class="paginate_button page-item ">
+                                <a href="/project?tag=bj_manage&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                            {% else %}
+                            <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                            {% end %} {% else %}
+                            <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=bj_manage&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                            {% end %}
+                            
+                        </ul>
+                    </div>
                 </div>
-            </div>
 
 
             </div>
@@ -129,81 +118,126 @@
     </div>
 <!-- <modal> -->
       
-
-<div class="modal fade" id="add_bz_manage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+<div class="modal fade" id="add_addr_provider" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                     <div class="modal-dialog" role="document" >
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h5 class="modal-title" id="bj_title">新建
-                
-                      </h5>
+                          <h5 class="modal-title" >地址供应商</h5>
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                           </button>
                         </div>
                 
-                
                         <div class="modal-body" id="site_mod">
+                            
+                      
                             <div class="form-group">
-                            <div class="col-sm-12">
-                                <label for="recode">区域</label>
-                                <select id="area" class="form-control">
-                                    <option value="">选择区域</option>
-                                    {%for item in area_type%}
-                                    <option value="{{item.income_name}}">{{item.income_name}}</option>
-                                    {%end%}
-                                </select>
-                                <div class="alert alert-danger" role="alert" id="save_to_area" style="display:none;"></div>
+                                    <div class="col-sm-10">
+                                    <label for="recode">区域</label>
+                                    <select id="area" class="form-control" readonly="readonly">
+                                            <option value="" readonly="readonly">选择区域</option>
+                                            {%for item in area_type%}
+                                            <option value="{{item.income_name}}" readonly="readonly">{{item.income_name}}</option>
+                                            {%end%}
+                                        </select>
+                                    <div class="alert alert-danger" role="alert" id="save_to_area" style="display:none;"></div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-sm-12">
-                                    <label for="money">业务类型</label>
-                                    <input class="form-control" name="project_type" id="project_type" type="text">
-                                    <div class="alert alert-danger" role="alert" id="save_to_project_type" style="display:none;"></div>
+                                <div class="col-sm-10">
+                                    <label for="dingjin">类型</label>
+                                    <input class="form-control" name="type" id="type" type="text" readonly="readonly">
+                                    <div class="alert alert-danger" role="alert" id="save_to_type" style="display:none;"></div>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="dingjin">地址性质</label>
+                                    <input class="form-control" name="addr_nature" id="addr_nature" type="text" readonly="readonly">
+                                    <div class="alert alert-danger" role="alert" id="save_to_addr_nature" style="display:none;"></div>
+                                </div>
+                            </div>
+                    
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="dingjin">注册价格</label>
+                                    <input class="form-control" name="register_price" id="register_price" type="text" readonly="readonly">
+                                    <div class="alert alert-danger" role="alert" id="save_to_register_price" style="display:none;"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="dingjin">同区变更价格</label>
+                                    <input class="form-control" name="same_area_change_price" id="same_area_change_price" type="text" readonly="readonly">
+                                    <div class="alert alert-danger" role="alert" id="save_to_same_area_change_price" style="display:none;"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="dingjin">跨区变更价格</label>
+                                    <input class="form-control" name="dif_area_change_price" id="dif_area_change_price" type="text" readonly="readonly">
+                                    <div class="alert alert-danger" role="alert" id="save_to_dif_area_change_price" style="display:none;"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="dingjin">详细地址</label>
+                                    <input class="form-control" name="address" id="address" type="text" readonly="readonly">
+                                    <div class="alert alert-danger" role="alert" id="save_to_address" style="display:none;"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="dingjin">经营范围限制</label>
+                                    <input class="form-control" name="business_scope_limit" id="business_scope_limit" type="text" readonly="readonly">
+                                    <div class="alert alert-danger" role="alert" id="save_to_business_scope_limit" style="display:none;"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                    <div class="col-sm-10">
+                                    <label for="recode">发票限制</label>
+                                    <input class="form-control" name="fp_limit" id="fp_limit" type="text" readonly="readonly">
+                                        <div class="alert alert-danger" role="alert" id="save_to_fp_limit" style="display:none;"></div>
+                                        </div>
+                                        </div>
+                            <div class="form-group">
+                            <div class="col-sm-10">
+                                <label for="recode">受理材料</label>
+                                <input class="form-control" name="accept_material" id="accept_material" type="text" readonly="readonly">
+                                <div class="alert alert-danger" role="alert" id="save_to_accept_material" style="display:none;"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="money" class=" control-label">解锁:</label>
+                                    <input  name="lock" id="lock" type="radio" value="1">能
+                                    <input name="lock" id="lock" type="radio" value="2">不能
+                                    <div class="alert alert-danger" role="alert" id="save_to_lock" style="display:none;"></div>
+                                </div>
+                            </div>
+                           
                                 <div class="form-group">
-                                <div class="col-sm-12">
-                                    <label for="dingjin">报价</label>
-                                    <input class="form-control" name="price" id="price" type="text">
-                                    <div class="alert alert-danger" role="alert" id="save_to_price" style="display:none;"></div>
+                                    <div class="col-sm-10">
+                                            <label for="dingjin" class=" control-label" >续费:</label>
+                                            <input name="renew" id="renew" type="radio" value="1" >是
+                                    <input  name="renew" id="renew" type="radio" value="2">否
+                                            <div class="alert alert-danger" role="alert" id="save_to_renew" style="display:none;"></div>
                                 </div>
                             </div>
+                            
                             <div class="form-group">
-                                <div class="col-sm-12">
-                                       
-                                        <input name="kp_addr" id="kp_addr" type="radio" value="1">开票地址
-                                    <input name="kp_addr" id="kp_addr" type="radio" value="0">非开票地址
-                              
+                                    <div class="col-sm-10">
+                                            <label for="dingjin">担保事项</label>
+                                            <textarea class="form-control" name="danbao_matter" id="danbao_matter" type="text" readonly="readonly"></textarea>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                    <div class="col-sm-12">
-                                        <input  name="fhq" id="fhq" type="radio" value="1">孵化器
-                                        <input  name="fhq" id="fhq" type="radio" value="0">非孵化器
-                                </div>
-                            </div>
-                                <div class="form-group">
-                                    <div class="col-sm-12">
-                                            <label for="dingjin">发票限量</label>
-                                            <input class="form-control" name="invoice_limited" id="invoice_limited" type="text">
-                                            <div class="alert alert-danger" role="alert" id="save_to_invoice_limited" style="display:none;"></div>
-                                </div>
-                            </div>
-                                <div class="form-group">
-                                <div class="col-sm-12">
-                                        <label for="dingjin">注意事项</label>
-                                        <textarea class="form-control" name="note" id="note" type="text">
-                                            </textarea>
-                                    </div>
-                                
-                        </div>
-                
+                      
+                     
                 
                         <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                                         <button class="btn btn-primary" target="_blank" id="btn_save_bj">保 存</button>
+                                         
                               </div>
                       </div>
                     </div>
@@ -235,7 +269,7 @@
           </div>
         </div>
 </div>
-</div>        
+</div>      
 {%end%}
 
 {%block js%}
@@ -243,70 +277,197 @@
 <script>
  $(function () {
     _xsrf =  getCookie("_xsrf")
-   $('#btn_add_manage').on('click',function () {
-    $('#bj_id').val('')
-        $('#area').val('')
-        $('#project_type').val('')
-        $('#is_kp_addr').val('')
-        $('#is_fhq').val('')
-        $('#price').val('')
-        $('#invoice_limited').val('')
-        $('#note').val('')
-        $('#bj_title').text('新建')
-        $('#btn_save_bj').attr('bj_id','') 
-       $('#add_bz_manage').modal('show')
-    })
-    $('#btn_save_bj').on('click',function () { 
-        var area=$('#area').val()
-        var project_type=$('#project_type').val()
-        var price=$('#price').val()
-        var is_kp_addr=$('#kp_addr:checked').val()
-        var is_fhq=$('#fhq:checked').val()
-        var invoice_limited=$('#invoice_limited').val()
-        var note=$('#note').val()
-        var bj_id=$(this).attr('bj_id')
-        if( area==''){
-            $('#save_to_area').html('区域不能为空')
-            $('#save_to_area').show()
+    $("#proivde_end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $('#btn_add_addr').on('click',function () { 
+        $('#provider').val('')
+        $('#area').val('') 
+        $('#type').val('')
+        $('#addr_nature').val('')
+        $('#cost_price').val('')
+        $('#register_price').val('')
+        $('#same_area_change_price').val('')
+        $('#dif_area_change_price').val('')
+        $('#address').val('')
+        $('#business_scope_limit').val('')
+        $('#accept_material').val('')
+        $('input[name=lock]').prop('checked',false)
+        $('input[name=renew]').prop('checked',false)
+        $('#danbao_matter').val('')
+        $('#fp_limit').val('')
+        $('#btn_save_addr').removeAttr('addr_id')
+        $('#save_to_provider').hide()
+        $('#save_to_area').hide()
+        $('#save_to_lock').hide()
+        $('#provider_title').text('新建地址供应商')
+        $('#add_addr_provider').modal('show')
+     })
+     $('#btn_add_kz').on('click',function () {
+          $('#kz_project').val('')
+          $('#kz_price').val('')
+          $('#save_to_kz_project').hide()
+          $('#save_to_kz_price').hide()
+          $('#save_to_kz_area').hide()
+          $('#provider_title').text('新建刻章供应商')
+        $('#add_addr_provider').modal('show')
+     })
+    $('#btn_save_kz').on('click',function () { 
+        var kz_id=$(this).attr('kz_id')
+        var kz_project=$('#kz_project').val()
+        var kz_price=$('#kz_price').val()
+        var kz_area=$('#kz_area').val()
+        if(kz_area==''){
+            $('#save_to_kz_area').html('请选择区域')
+            $('#save_to_kz_area').show()
         }
-        else if(project_type==''){
-            $('#save_to_project_type').html('业务类型不能为空')
-            $('#save_to_project_type').show()
+        else if(kz_project==''){
+            $('#save_to_kz_project').html('刻章项目不能为空')
+            $('#save_to_kz_project').show()
         }
-        else if(price==''){
-            $('#save_to_price').html('报价不能为空')
-            $('#save_to_price').show()
+        else if(kz_price==''){
+            $('#save_to_kz_price').html('价格不能为空')
+            $('#save_to_kz_price').show()
         }
-        else if(price!='' & isNaN(price)){
-            $('#save_to_price').html('请填写数字')
-            $('#save_to_price').show()
-        }
-        else if(invoice_limited==''){
-            $('#save_to_invoice_limited').html('发票限量不能为空')
-            $('#save_to_invoice_limited').show()
+        else if(kz_price!='' & isNaN(kz_price)){
+            $('#save_to_kz_price').html('需填写数字')
+            $('#save_to_kz_price').show()
         }
         else{
         $.post(
-            'project?tag=add_bj_manage',
+            '/project?tag=provider_manage',
             {
                 '_xsrf':_xsrf,
-                'area':area,
-                'bj_id':bj_id,
-                'project_type':project_type,
-                'price':price,
-                'is_kp_addr':is_kp_addr,
-                'is_fhq':is_fhq,
-                'invoice_limited':invoice_limited,
-                'note':note
+                'kz_project':kz_project,
+                'kz_price':kz_price,
+                'kz':1,
+                'kz_id':kz_id,
+                'kz_area':kz_area
             },function (result) { 
                 location.reload()
              }
         )
-    }
+        }
+     })
+     
+    $('#btn_save_addr').on('click',function () {
+       
+         var provider=$('#provider').val()
+         var area=$('#area').val()  
+         var type=$('#type').val()
+         var addr_nature=$('#addr_nature').val()
+         var cost_price=$('#cost_price').val()
+         var register_price=$('#register_price').val()
+        var same_area_change_price=$('#same_area_change_price').val()
+        var dif_area_change_price=$('#dif_area_change_price').val()
+        var address=$('#address').val()
+        var business_scope_limit=$('#business_scope_limit').val()
+        var accept_material=$('#accept_material').val()
+        var lock=$('input[name=lock]:checked').val()
+        var renew=$('input[name=renew]:checked').val()
+         var danbao_matter=$('#danbao_matter').val()
+         var addr_id=$(this).attr('addr_id')
+         var fp_limit=$('#fp_limit').val()
+        if(provider==''){
+            $('#save_to_provider').html('供应商不能为空')
+            $('#save_to_provider').show()
+         }
+        else if(area==''){
+            $('#save_to_area').html('区域不能为空')
+            $('#save_to_area').show()
+        }
+        else if(lock==undefined){
+            $('#save_to_lock').html('请选择')
+            $('#save_to_lock').show()
+        }
+        else if(renew==undefined){
+            $('#save_to_renew').html('请选择')
+            $('#save_to_renew').show()
+        }
+         
+         else{
+         $.post(
+             '/project?tag=provider_manage',
+             {
+                '_xsrf':_xsrf,
+                'type':type,
+                'addr_nature':addr_nature,
+                'fp_limit':fp_limit,
+                'provider':provider,
+                'danbao_matter':danbao_matter,
+                'cost_price':cost_price,
+                'register_price':register_price,
+                'same_area_change_price':same_area_change_price,
+                'dif_area_change_price':dif_area_change_price,
+                'address':address,
+                'business_scope_limit':business_scope_limit,
+                'accept_material':accept_material,
+                'lock':lock,
+                'renew':renew,
+                'addr_id':addr_id,
+                'area':area
+             },function (result) { 
+                 location.reload()
+              }
+             )
+            }
+      })
+      $('.change_addr').on('click',function () { 
+          var addr_id=$(this).attr('id')
+          var provider=$(this).attr('provider')
+          var area=$(this).attr('area')
+          var type=$(this).attr('type')
+          var addr_nature=$(this).attr('addr_nature')
+          var cost_price=$(this).attr('cost_price')
+          var register_price=$(this).attr('register_price')
+          var same_area_change_price=$(this).attr('same_area_change_price')
+          var dif_area_change_price=$(this).attr('dif_area_change_price')
+          var address=$(this).attr('address')
+          var business_scope_limit=$(this).attr('business_scope_limit')
+          var accept_material=$(this).attr('accept_material')
+          var is_lock=$(this).attr('is_lock')
+          var is_renew=$(this).attr('is_renew')
+
+          var fp_limit=$(this).attr('fp_limit')
+          var danbao_matter=$(this).attr('danbao_matter')
+
+          $('#addr_id').val(addr_id)
+          $('#provider').val(provider)
+          $('#area').val(area)
+          $('#type').val(type)
+          $('#addr_nature').val(addr_nature)
+
+          $('#cost_price').val(cost_price)
+          $('#btn_save_addr').attr('addr_id',addr_id)
+          $('#fp_limit').val(fp_limit)
+          $('#danbao_matter').val(danbao_matter)
+          $('#register_price').val(register_price)
+
+               $('#same_area_change_price').val(same_area_change_price)
+               $('#dif_area_change_price').val(dif_area_change_price)
+               $('#address').val(address)
+               $('#business_scope_limit').val(business_scope_limit)
+               $('#accept_material').val(accept_material)
+               $('input[name=lock][value='+is_lock+']').prop('checked',true)
+               $('input[name=renew][value='+is_renew+']').prop('checked',true)
+
+          $('#provider_title').text('新建刻章供应商')
+          $('#add_addr_provider').modal('show')
+       })
+    $('.change_kz').on('click',function () { 
+        var kz_id=$(this).attr('id')
+        var kz_project=$(this).attr('kz_project')
+        var kz_price=$(this).attr('price')
+        var kz_area=$(this).attr('area')
+        $('#kz_project').val(kz_project)
+        $('#kz_price').val(kz_price)
+        $('#kz_area').val(kz_area)
+        $('#btn_save_kz').attr('kz_id',kz_id)
+        $('#provider_title').text('修改刻章供应商')
+        $('#add_addr_provider').modal('show')
      })
 
-    $('.price_history').on('click',function () { 
-        var price_history=$(this).attr('price_history')
+    $('.addr_detail_history').on('click',function () { 
+        var price_history=$(this).attr('addr_history')
         price_history=price_history.split(',')
         var text=''
         for(var i=0;i<price_history.length;++i){
@@ -315,40 +476,16 @@
         $('.price_box').html(text)
         $('#price_history_modal').modal('show')
      })
-    $('.change_price').on('click',function () { 
-        var bj_id=$(this).attr('bj_id')
-        var area=$(this).attr('area')
-        var project_type=$(this).attr('project_type')
-        var price=$(this).attr('price')
-        var is_kp_addr=$(this).attr('is_kp_addr')
-        var is_fhq=$(this).attr('is_fhq')
-        var feifuhuaqi=$(this).attr('feifuhuaqi')
-        var invoice_limited=$(this).attr('invoice_limited')
-        var note=$(this).attr('note')
-        $('#bj_id').val(bj_id)
-        $('#area').val(area)
-        $('#project_type').val(project_type)
-        $('#price').val(price)
-        $('input:radio[name=kp_addr]').removeAttr('checked')
-        $('input:radio[name=fhq]').removeAttr('checked')
-        $('input:radio[name=kp_addr][value='+is_kp_addr+']').attr('checked',true);
-        $('input:radio[name=fhq][value='+is_fhq+']').attr('checked',true);
-
-        $('#invoice_limited').val(invoice_limited)
-        $('#note').val(note)
-        $('#bj_title').text('修改')
-        $('#btn_save_bj').attr('bj_id',bj_id)
-        $('#add_bz_manage').modal('show')
+     $('.kz_detail_history').on('click',function () { 
+        var price_history=$(this).attr('kz_history')
+        price_history=price_history.split(',')
+        var text=''
+        for(var i=0;i<price_history.length;++i){
+            text+='<p>'+price_history[i]+'</p>'
+        }
+        $('.price_box').html(text)
+        $('#price_history_modal').modal('show')
      })
-     $('#asc_desc').on('click',function () { 
-         var order=''
-         if('{{order}}'=='0'){
-             order='1'
-         }else{
-             order='0'
-         }
-         location.href='/project?tag=bj_manage&order='+order
-      })
 })
 </script>
 {%end%}

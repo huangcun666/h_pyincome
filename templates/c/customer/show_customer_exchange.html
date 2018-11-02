@@ -1,0 +1,26 @@
+{%if t_customer_exchange%}
+{%for item in t_customer_exchange%}
+<div class="message-item" id="msg_{{item.id}}">
+    <div class="message-inner">
+        <div class="message-head clearfix">
+            <div class="avatar pull-left">
+                <img src="/static/images/avatar.jpeg">
+            </div>
+            <div class="user-detail">
+                <h5 class="handle">{{item.uid_name}}
+                    <span style="font-size:13px;"> {{item.created_at}}{%if item.msg_time%}<span style="color: red;">({{item.msg_time}})</span>{%end%}
+                    </span>
+                    {%if item.file_path%}
+                    <a href="{{item.file_path}}" target="_blank"> 查看附件</a>
+                    {%end%}
+                </h5>
+            </div>
+        </div>
+        {{item.msg}}
+    </div>
+</div>
+{%end%}
+<a style="float:right;" href="/payment?tag=customer&customer_id={{customer_id}}&to_tag=payment_tab">更多>></a>
+{%else%}
+还没有哦~
+{%end%}

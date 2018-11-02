@@ -1,0 +1,316 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+<ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">办结确认
+            {%if t_projects and (params['project_id'] or params['project_name'] 
+            or params['customer_company'] or params['customer_name'] or params['customer_tel'] 
+            or params['gendan'] or params['sale_man'] or (params['start_time'] and params['end_time']))%}
+                <a href="{{output_path}}" class="btn btn-primary btn-sm">点击下载数据（Excel格式）</a>
+            {%end%}
+        </li>
+      </ol>
+
+      <form class="form-search" id="query_form">
+        <table>
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>业务名称</th>
+                    <th>公司名称</th>
+                    <th>客户名称</th>
+                    <th>电话</th>
+                    <th>跟单专员</th>
+                    <th>销售顾问</th>
+                    <th>办结时间</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" name="project_id" class="form-control" placeholder="编号" value="{%if params['project_id']%}{{params['project_id']}}{%end%}"></td>
+                    <td><input type="text" name="project_name" class="form-control" placeholder="业务名称" value="{%if params['project_name']%}{{params['project_name']}}{%end%}"></td>
+                    <td><input type="text" name="customer_company" class="form-control" placeholder="公司名称" value="{%if params['customer_company']%}{{params['customer_company']}}{%end%}"></td>
+                    <td><input type="text" name="customer_name" class="form-control" placeholder="客户名称" value="{%if params['customer_name']%}{{params['customer_name']}}{%end%}"></td>
+                    <td><input type="text" name="customer_tel" class="form-control" placeholder="电话" value="{%if params['customer_tel']%}{{params['customer_tel']}}{%end%}"></td>
+                    <td><input type="text" name="gendan" id="gendan" class="form-control" placeholder="跟单专员" value="{%if params['gendan']%}{{params['gendan']}}{%end%}"></td>
+                    <td><input type="text" name="sale_man" id="sale_man" class="form-control" placeholder="销售顾问" value="{%if params['sale_man']%}{{params['sale_man']}}{%end%}"></td>
+                    <td><input type="text" name="start_time" id="start_time" class="form-control" placeholder="开始时间" value="{%if params['start_time']%}{{params['start_time']}}{%end%}"></td>
+                    <td>至</td>
+                    <td><input type="text" name="end_time" id="end_time" class="form-control" placeholder="结束时间" value="{%if params['end_time']%}{{params['end_time']}}{%end%}"></td>
+                    <td><input value="检 索" type="submit">
+                    <input type="hidden" value="{{tag}}" name="tag"/>
+                    <input type="hidden" value="{{step}}" name="step"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    <br>
+      </form>
+           <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                     <a href="/project?tag=project_confirm_banjie" class="nav-item nav-link {%if not step%}active{%end%}" >全部</a>
+                    <a href="/project?tag=project_confirm_banjie&step=1" class="nav-item nav-link {%if step=='1'%}active{%end%}" >待确认</a>
+                     <a href="/project?tag=project_confirm_banjie&step=2" class="nav-item nav-link {%if step=='2'%}active{%end%}" >已确认</a>
+                     <a href="/project?tag=project_confirm_banjie&step=3" class="nav-item nav-link {%if step=='3'%}active{%end%}" >异常待确定</a>
+    
+        </div>
+        </nav>  
+        <div class="table-responsive">
+                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0"  style="width:2000px" >
+                  <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                        <tr>                       
+                    
+                           <th width="60">
+                            编号
+                            </th>
+                             <th width="300">业务名称</th>  
+
+                                <th  width="200">公司名称</th>  
+                             <th width="100">客户名称</th>  
+                                <th width="100">客户电话</th>
+                             <th width="120">
+                            跟单专员
+                            </th>
+                            <th width="120">销售顾问</th>
+                            
+                              <th width="120">合同金额</th>
+                               <th width='100'>办结时间</th>
+                          
+                             <th width="80">创建人</th>
+                        <th width="160">创建时间</th>
+                            {%if step=='3'%}
+                            <th width="150">备注</th>
+                            {%end%}
+                            <th width="50"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {%if not t_projects%}
+                        <tr>
+                            <td colspan="9">没有相关记录</td>
+                        
+                        </tr>
+
+                    {%else%}
+                        {%for item in t_projects%}
+                        <tr >
+                               <td>
+                                {{item.id}}
+
+                            </td>  
+                            <td title="{{item.project_name}}">
+                            <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" title="{{item.project_name}}"
+                                                             >
+                                                            
+                                                                {%if len(item.project_name) > 40%} {{item.project_name[:40]}}....{%else%} {{item.project_name}} {%end%}
+</a>
+                            </td>  
+                                      <td>
+                                     {%if len(item.customer_company) > 30%} {{item.customer_company[:30]}}....{%else%} {{item.customer_company}} {%end%}
+                            </td>  
+                          <td>
+                                {{item.customer_name}}
+                            </td>  
+                           <td>{{item.customer_tel}}</td>
+                             <td >
+                        {{item.member_name}}
+
+                            </td> 
+                            <td>{%if item.sale_man%}{{item.sale_man}}{%end%}</td> 
+                             <td>
+                                    {{item.all_income}}
+                            </td>
+                            <td>{{item.confirm_at}}</td>
+                          <td>
+                            {{item.uid_name}}
+                            </td>
+                              <td>
+                            {{item.created_at}}
+                            </td>
+                            {%if step=='3'%}
+                            <td>
+                                {{item.banjie_remark}}
+                            </td>
+                            {%end%}
+                            <td>
+                                {%if item.confirm_banjie==0 or item.confirm_banjie==2%}
+                                <a href="javascript:(void);" class="btn  btn-sm btn-secondary confirm_banjie_btn"
+                                 id="{{item.id}}" guid="{{item.m_guid}}" confirm_banjie="{{item.confirm_banjie}}" banjie_remark="{{item.banjie_remark}}">审核</a>
+                                {%elif item.confirm_banjie==1%}
+                                <a href="javascript:(void);" class="btn  btn-sm btn-secondary" id="{{item.id}}" guid="{{item.m_guid}}">已确认</a>
+                                {%end%}
+                            </td>
+                        </tr>
+                        {%end%}{%end%}
+                    </tbody>
+                </table>
+        </div>
+                <div class="modal fade" id="confirm_banjie_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                    <div class="modal-dialog" role="document" >
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="xiezhu_title">办结确认
+            
+                      </h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>        
+            
+                        <div class="modal-body" id="site_mod">
+                            <div class="form-group">
+                            <div class="col-sm-10">
+                                <input type="radio"  name="confirm_banjie" value="1">确认
+                                <input type="radio"  name="confirm_banjie" value="2">异常待确认
+                                <div class="alert alert-danger" role="alert" style="display:none;" id="er_confirm_banjie">
+                                </div>
+                                </div>
+                                
+                            </div>
+                            <div class="form-group">
+                              <div class="col-sm-10">
+                                  <label for="recode">备注</label>
+                                  <textarea class="form-control" id="remark" placeholder="填写备注">
+                                      </textarea>
+                                  <div class="alert alert-danger" role="alert" style="display:none;" id="er_remark">
+                                  </div>
+                                    
+                                  </div>
+                              </div>
+                              
+                        </div>
+            
+            
+                        <div class="modal-footer">
+                            <input type="hidden" value="0" id="is_other" name="is_other" />
+                                   <button class="btn btn-primary" target="_blank" id="btn_confirm_banjie">保存</button>
+            
+                        </div>
+                      </div>
+                    </div>
+                  </div> 
+                  <div class="alert alert-secondary" role="alert">
+
+                    共 {{pagination.total_count}} 条记录
+                   
+                   
+                   </div>
+                <ul class="pagination">
+                        {% if pagination.has_prev %}
+                             <li class="paginate_button page-item previous " id="dataTable_previous">
+                             <a href="?tag=project_confirm_banjie{%if step%}&step={{step}}{%end%}   
+                              {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}
+                             {%if params['project_name']%}&project_name={{params['project_name']}}{%end%}
+                             {%if params['customer_company']%}&customer_company={{params['customer_company']}}{%end%}
+                             {%if params['customer_name']%}&customer_name={{params['customer_name']}}{%end%}
+                             {%if params['customer_tel']%}&customer_tel={{params['customer_tel']}}{%end%}
+                             {%if params['gendan']%}&gendan={{params['gendan']}}{%end%}
+                             {%if params['sale_man']%}&sale_man={{params['sale_man']}}{%end%}
+                             {%if params['start_time']%}&start_time={{params['start_time']}}{%end%}
+                             {%if params['end_time']%}&end_time={{params['end_time']}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+                    
+                    
+                            {% end %}
+                            {%for page in pagination.iter_pages() %}
+                             {% if page %}
+                             {% if page != pagination.page %}
+                             <li class="paginate_button page-item ">
+                            <a href="?tag=project_confirm_banjie{%if step%}&step={{step}}{%end%}
+                            {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}
+                            {%if params['project_name']%}&project_name={{params['project_name']}}{%end%}
+                            {%if params['customer_company']%}&customer_company={{params['customer_company']}}{%end%}
+                            {%if params['customer_name']%}&customer_name={{params['customer_name']}}{%end%}
+                            {%if params['customer_tel']%}&customer_tel={{params['customer_tel']}}{%end%}
+                            {%if params['gendan']%}&gendan={{params['gendan']}}{%end%}
+                            {%if params['sale_man']%}&sale_man={{params['sale_man']}}{%end%}
+                            {%if params['start_time']%}&start_time={{params['start_time']}}{%end%}
+                            {%if params['end_time']%}&end_time={{params['end_time']}}{%end%}
+                            &page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                             {% else %}
+                              <li class="paginate_button page-item active">
+                                <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+                              {% end %}
+                               {% else %}
+                              <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+                              {% end %}
+                              {% end %} 
+                    
+                             {% if pagination.has_next %}
+                             <li class="paginate_button page-item next" id="dataTable_next">
+                                 <a href="/project?tag=project_confirm_banjie{%if step%}&step={{step}}{%end%}
+                                 {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}
+                                 {%if params['project_name']%}&project_name={{params['project_name']}}{%end%}
+                                 {%if params['customer_company']%}&customer_company={{params['customer_company']}}{%end%}
+                                 {%if params['customer_name']%}&customer_name={{params['customer_name']}}{%end%}
+                                 {%if params['customer_tel']%}&customer_tel={{params['customer_tel']}}{%end%}
+                                 {%if params['gendan']%}&gendan={{params['gendan']}}{%end%}
+                                 {%if params['sale_man']%}&sale_man={{params['sale_man']}}{%end%}
+                                 {%if params['start_time']%}&start_time={{params['start_time']}}{%end%}
+                                 {%if params['end_time']%}&end_time={{params['end_time']}}{%end%}
+                                 &page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                         {% end %} </ul>
+{%end%}
+{% block js%}
+<script>
+_xsrf = getCookie("_xsrf");
+$(function(){
+    $('#gendan').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+$('#sale_man').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+$("#start_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+$("#end_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $('.confirm_banjie_btn').on('click',function () {
+    $('#btn_confirm_banjie').attr('banjie_id',$(this).attr('id'))
+    $('#btn_confirm_banjie').attr('guid',$(this).attr('guid'))
+    $('input[name=confirm_banjie][value='+$(this).attr('confirm_banjie')+']').prop('checked',true)
+    $('#remark').val($(this).attr('banjie_remark'))
+    $("#confirm_banjie_modal").modal('show')
+    })
+    $('input[name=confirm_banjie]').on('change',function () {
+        if($(this).val()=='1'){
+            $('#er_remark').hide()
+        }
+     })
+    $('#btn_confirm_banjie').on('click',function () {
+        confirm_banjie=$('input[name=confirm_banjie]:checked').val()
+        banjie_remark=$('#remark').val()
+        if(confirm_banjie==undefined){
+            $('#er_confirm_banjie').text('未选择')
+            $('#er_confirm_banjie').show()
+        }else if(confirm_banjie=='2' && banjie_remark==''){
+            $('#er_remark').text('选择异常需填写备注')
+            $('#er_remark').show()
+        }else{
+        $.post('/project?tag=project_confirm_banjie',{
+            '_xsrf':_xsrf,
+            'confirm_banjie':confirm_banjie,
+            'banjie_remark':banjie_remark,
+            'guid':$(this).attr('guid'),
+            'id':$(this).attr('banjie_id')
+        },function (result) { 
+            location.reload()
+         })
+        }
+     })
+})
+</script>
+{%end%}

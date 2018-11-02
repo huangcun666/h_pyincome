@@ -10,7 +10,7 @@ import re
 import xlrd
 from datetime import datetime
 from decimal import Decimal
-db = torndb.Connection("192.168.2.168", "db_income2","root","deng")
+db = torndb.Connection("192.168.2.168", "","root","deng")
 wb =load_workbook(u"/home/hc/relation/hh.xlsx")
 sheet1 = wb.get_sheet_by_name('工作表1')   
 t_projects_relation=db.query(''' select relation_ids from t_projects_relation ''')

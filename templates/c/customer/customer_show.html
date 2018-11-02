@@ -131,6 +131,71 @@ max-height: 25px;
 width: 1750px;
 margin: auto;
 }
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+.file {
+    position: relative;
+    display: inline-block;
+    background: #D0EEFF;
+    border: 1px solid #99D3F5;
+    border-radius: 4px;
+    padding: 4px 12px;
+    overflow: hidden;
+    color: #1E88C7;
+    text-decoration: none;
+    text-indent: 0;
+    line-height: 20px;
+}
+.file input {
+    position: absolute;
+    font-size: 100px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+}
+.file:hover {
+    background: #AADFFD;
+    border-color: #78C3F3;
+    color: #004974;
+    text-decoration: none;
+}
+
 </style>
 
 <div class="main">
@@ -455,35 +520,37 @@ margin: auto;
       <div class="fayet">注册号</div>
 <div class="fayet1">  {%if customer.reg_number%}{{customer.reg_number}}{%end%} </div>
 </li>
+
+
+
+
 <li>
-<div class="fayet"  style="border-left: none;">创建时间</div>
-<div class="fayet1">
-{{customer.created_at}}
-</div>
+  <div class="fayet" style="border-left: none;">创建时间</div>
+  <div class="fayet1">
+    {{customer.created_at}}
+  </div>
 
-<div class="fayet">最后更新</div>
-<div class="fayet1"> {%if customer.updated_at%} {{customer.updated_at}}{%end%}</div>
+  <div class="fayet">最后更新</div>
+  <div class="fayet1"> {%if customer.updated_at%} {{customer.updated_at}}{%end%}</div>
 
-  <div class="fayet" >客服会计</div>
+  <div class="fayet">客服会计</div>
 
   <div class="fayet1">
-  {%if customer.acc_uid_name%}
-    {{customer.acc_uid_name}}
-    {%end%}
+    {%if customer.acc_uid_name%} {{customer.acc_uid_name}} {%end%}
   </div>
 
 
   <div class="fayet">客户入库员</div>
 
   <div class="fayet1">
-  {%if customer.uid_name%}
-    {{customer.uid_name}}
-    {%else%}
-    系统
-    {%end%}
+    {%if customer.uid_name%} {{customer.uid_name}} {%else%} 系统 {%end%}
   </div>
 
 </li>
+
+
+
+
 <li>
 <div class="fayet">备注</div>
 <div class="fayet6">
@@ -493,14 +560,103 @@ margin: auto;
 </div>
 
 </li>
+
+
+
+
 </ul>
 </div>
 
 
 
 <br/>
-
 <div class="widget widget-table action-table">
+    <div class="widget-header">
+      <i class="icon-th-list"></i>
+      <h3>快递
+          
+          <div class="dropdown">
+              <a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="apply_express">增加</a>
+              <div class="dropdown-content">
+                <a href="javascript:void(0)"  id="btn_add_express" >新建寄件 </a>
+                <a href="javascript:void(0)"  id="btn_add_express_rec" >新建收件 </a>
+              </div>
+            </div>
+      </h3>
+    </div>
+    <!-- /widget-header -->
+    <div class="widget-content">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th width="50">附件</th>
+            <th width="100">申请时间</th>
+            <th width='100'>发件时间</th>
+            <th style="width:100px;">快递单号</th>
+            <th style="width:60px;">客户名称</th>
+            <th style="width:200px;">资料明细</th>
+            <th width="100">其他资料</th>
+            <th width="100">寄件人/收件人</th>
+            <th width='50'>创建人</th>
+            <th width="100">状态</th>
+            <th width='50'>类型</th>
+            <th width="60"></th>
+          </tr>
+        </thead>
+        <tbody>
+  
+          {%if t_express%} {%for item in t_express%}
+          <tr>
+              <td><a href="javascript:void(0);" class="filepath_detail" id="{{item.id}}" 
+                file_path="{{item.file_path}}" uid_name="{{item.uid_name}}" send_at_name="{{item.send_at_name}}">附件</a></td>
+              <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+              <td>{%if item.created_send_at %}{{item.created_send_at.strftime("%Y-%m-%d")}}{%end%}</td>
+              <td>{%if item.express_number%}{{item.express_number}}{%end%}</td>
+              <td>{{item.rec_name}}</td>
+              <td>{{item.rec_file}}</td>
+              <td>{{item.other_rec_file}}</td>
+              <td>{%if item.send_or_rec==0 %}{{item.send_at_name}}/{{item.rec_name}}{%else%}{{item.rec_name}}/{{item.send_at_name}}{%end%}</td>
+              <td>{{item.uid_name}}</td>
+              <td>
+                  {%if item.send_at%}
+                  {{item.send_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}确认发件
+                  {%elif not item.accept_at%}待审核
+                  {%elif item.accept_state==1%}
+                  {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核通过
+                  {%elif item.accept_state==2%}
+                  {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核不通过 备注:{{item.accept_uid_remark}}
+                  {%end%}</td>
+                  <td>{%if item.send_or_rec==1%}收件{%else%}寄件{%end%}</td>
+                  <td>
+                      {%if item.accept_state==1 and express_manage=='1' and not item.send_at %}
+                      <a class="btn btn-info confirm_send_express" id="{{item.id}}" href="javascript:void(0);">确认发件</a>
+                      {%elif not item.accept_at and express_manage=='1'%}
+                      <a class="btn btn-info check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
+                      {%else%}
+                      <a class="btn btn-info edit_express" href="javascript:void(0);"
+                      id="{{item.id}}" rec_name="{{item.rec_name}}" rec_tel="{{item.rec_tel}}" created_send_at="{%if item.created_send_at%}{{item.created_send_at}}{%end%}"
+                      rec_addr="{{item.rec_addr}}"  rec_file="{{item.rec_file}}" rec_company="{{item.rec_company}}"
+                      express_type_id="{{item.express_type_id}}" created_at="{{item.created_at}}" other_rec_file="{{item.other_rec_file}}"
+                      payment_type_id="{{item.payment_type_id}}" send_at_name="{{item.send_at_name}}" remark="{{item.remark}}" accept_at="{{item.accept_at}}"
+                      rec_file_ids="{{item.rec_file_ids}}" express_number="{{item.express_number}}" uid_name="{{item.uid_name}}" send_or_rec="{{item.send_or_rec}}"
+                    >查看</a>
+                      {%end%}
+                    </td>
+          </tr>
+          {%end%} {%else%}
+          <tr>
+            <td colspan="7">还没有曾用名哦。</td>
+  
+          </tr>
+          {%end%}
+  
+        </tbody>
+      </table>
+    </div>
+    <!-- /widget-content -->
+  </div>
+
+  <div class="widget widget-table action-table">
     <div class="widget-header">
       <i class="icon-th-list"></i>
               <h3 class="card-title mb-1">交代事项
@@ -1632,17 +1788,254 @@ margin: auto;
         </div>
       </div>
 
+<div class="modal hide fade" id="add_express_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-header" >
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="projects_note">发起快递申请
+                <a class="btn btn-info btn-sm" id="choose_cutomer_addr_msg" href="javascript:void(0);">选择收件人信息</a>
+            </h3>
+              </div>
+      
+      
+              <div class="modal-body" id="site_mod">
+                <div class="control-group">
+                  <label for="inputEmail3" class="col-sm-5 control-label" id="l_rec_name">收件人</label>
+            <div class="controls">
+                <input class="form-control" name="rec_name" id="rec_name" type="text" placeholder="收件人" value="{%if  customer.reg_person%}
+                      {{customer.reg_person}}{%end%}">
+                      <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_name">
+            </div>
+                   </div>
+            </div>
+            <div class="control-group" >
+            <label for="inputEmail3" class="col-sm-5 control-label" id="l_rec_tel">收件人电话</label>
+            <div class="controls">
+                <input class="form-control" name="rec_tel" id="rec_tel" type="text" placeholder="收件人电话" value="{%if  customer.reg_number%}
+                {{customer.reg_number}}{%else%}无{%end%}">
+                <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_tel">
+                  </div>
+            </div>
+          </div>
+          <div class="control-group" >
+              <label for="inputEmail3" class="col-sm-5 control-label" id="l_rec_addr">收件人地址</label>
+              <div class="controls">
+                  <input class="form-control" style="width:100%;" name="rec_addr" id="rec_addr" type="text" placeholder="收件人地址" value="{%if  customer.reg_addr%}
+                  {{customer.reg_addr}}{%end%}">
+                  <input type="checkbox" name="save_customer_add_msg" value="1" checked style="display:none;">
+                  <span hidden>收件人信息存入系统</span>
+                  <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_addr">
+                    </div>
+              </div>
+            </div>
+            <div class="control-group" >
+                <label for="inputEmail3" class="col-sm-5 control-label">交接明细</label>
+                <input type="checkbox" name="allcheck_express" id="allcheck_express"/>全选
+                <div class="controls">
+                    {% for item in t_projects_type%}
+                    <input type="checkbox" style="margin:0 0 0 10px;" name="rec_file" id="rec_file_{{item.id}}"
+                    income_name="{{item.income_name}}" value="{{item.id}}"
+                     >{{item.income_name}}
+                     {%if item.id==176 or item.id==209 %}
+                     <br><hr>
+                     {%end%}
+                    {%end%}
+                </div>
+              </div>
+              <div class="control-group" >
+                  <label for="inputEmail3" class="col-sm-5 control-label">其他资料</label>
+                 
+                  <div class="controls">
+                      <textarea type="text" style="width:100%;"  class="form-control" id="other_rec_file" name="other_rec_file" value="" style="height: 60px;"></textarea>
+                      <div class="alert alert-danger" role="alert" style="display:none;" id="er_other_rec_file">
+                      </div>
+                    </div>
+                </div>
+                <div class="control-group" >
+                    <label for="inputEmail3" class="col-sm-5 control-label">公司名称</label>
+                   
+                    <div class="controls">
+                        <input class="form-control" name="rec_company" id="rec_company" type="text" placeholder="公司名称" value="{%if customer.company%}
+                        {{customer.company}}{%else%}无{%end%}">
+                        <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_company">
+                          </div>
+                    </div>
+                  </div>
+                  <div class="control-group" >
+                      <label for="inputEmail3" class="col-sm-5 control-label">快递单号</label>
+                     
+                      <div class="controls">
+                          <input class="form-control" id="express_number" placeholder="快递单号">
+                          <div class="alert alert-danger" role="alert" style="display:none;" id="er_express_number">
+                          </div>
+                      </div>
+                    </div>
+                    <div class="control-group" >
+                        <label for="inputEmail3" class="col-sm-5 control-label">快递类型</label>
+                       
+                        <div class="controls">
+                            <select  name="express_type" class="form-control" id="express_type">
+                                {% for item in express_type%}
+                                <option value="{{item.id}}">{{item.income_name}}</option>
+                                {%end%}
+                              </select>
+                        </div>
+                      </div>
+                      <div class="control-group" >
+                          <label for="inputEmail3" class="col-sm-5 control-label">快递付费</label>
+                         
+                          <div class="controls">
+                              <select  name="payment_type" class="form-control" id="payment_type">
+                                  {% for item in payment_type%}
+                                  <option value="{{item.id}}">{{item.income_name}}</option>
+                                  {%end%}
+                                </select>
+                          </div>
+                        </div>
+                        <div class="form-group" id="created_send_div">
+                            <div class="col-sm-10">
+                                <label for="recode" id='l_created_send_at'>发件时间</label>
+                                <input class="form-control" name="created_send_at" id="created_send_at" type="text">
+                                <div class="alert alert-danger" role="alert" style="display:none;" id="er_created_send_at">
+                                  </div>  
+                              </div>
+                            </div>
+                        <div class="control-group" >
+                            <label for="inputEmail3" class="col-sm-5 control-label" id="l_send_name">发件人</label>
+                           
+                            <div class="controls">
+                                <input class="form-control" name="send_name" id="send_name" type="text" placeholder="申请人" value="{{name}}" data-provide="typeahead">
+                                <div class="alert alert-danger" role="alert" style="display:none;" id="er_send_name">
+                                  </div>
+                            </div>
+                          </div>
+                          <div class="control-group" >
+                              <label for="inputEmail3" class="col-sm-5 control-label">备注</label>
+                             
+                              <div class="controls">
+                                  <textarea class="form-control" name="express_remark" id="express_remark" type="text" placeholder="备注"></textarea>
+                              </div>
+                            </div>
+              </div>
+              <div class="modal-footer">
+                  <div class="alert alert-danger" role="alert" style="display:none;" id="er_express">
+                      已审核不能修改
+                    </div>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                         <button class="btn btn-primary modal_note_btn" target="_blank" id="btn_save_express">保 存</button>
+      
+              </div>
+            </div>
+
+                  <div class="modal hide fade" id="choose_customer_addr_msg_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                      <div class="modal-header" >
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="projects_note">选择 寄/收 件人信息
+                        </h3>
+                          </div>
+                  
+                  <div class="modal-body" id="site_mod">
+                    {% for item in t_cutomer_addr_msg%}
+                    <div class="control-group">
+                     
+                        <input type="radio" name="choose_customer_addr" c_name="{{item.name}}" addr="{{item.addr}}" tel="{{item.tel}}">{{item.name}}<br> 
+                        {{item.addr}} {{item.tel}}
+                      
+                  </div>
+                  {%end%}
+                </div>
+                <div class="modal-footer">
+      
+                    <button class="btn btn-primary" target="_blank" id="btn__save_customer_addr_msg">填入</button>
+      
+         </div>
+                  </div>
+           
+
+<div class="modal hide fade" id="check_express_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                <div class="modal-header" >
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                  <h3 id="projects_note">审核快递
+                  </h3>
+                    </div>
+            
+            
+                    <div class="modal-body" id="site_mod">
+                      <div class="control-group">
+                    
+                  <div class="controls">
+                      <input type="radio" id="accept_state" name="accept_state" value="1">通过
+                  <input type="radio" id="accept_state" name="accept_state" value="2">不通过
+                  <div class="alert alert-danger" role="alert" style="display:none;" id="er_accept_state">
+                         </div>
+                  </div>
+                  </div>
+                  <div class="control-group" >
+                  <label for="inputEmail3" class="col-sm-5 control-label">备注</label>
+                  <div class="controls">
+                      <textarea class="form-control" id="accept_uid_remark" placeholder="备注"></textarea>
+                      <div class="alert alert-danger" role="alert" style="display:none;" id="er_accept_uid_remark">
+                  </div>
+                </div>    
+                </div>
+                  </div>  
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                               <button class="btn btn-primary modal_note_btn" target="_blank" id="btn_check_express">保 存</button>
+            
+                    </div>
+                          
   </div>
+  <div class="modal hide fade" id="express_filepath_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+      <div class="modal-header" >
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="projects_note">附件
+        </h3>
+          </div>
+  
+  
+          <div class="modal-body" id="site_mod">
+            <div class="control-group">
+          
+                <label class="control-label file_label" for="lastname" >上传附件</label>
+                <div class="controls">
+                    <a href="javascript:;" class="file">选择文件
+                  <input type="file" accept="image/*" multiple=""  id="uploaderInput">
+                  </a>
+                  <div class="alert alert-danger" id='er_uploaderInput' style="display:none;">请选择上传附件</div>
+                  <ul id="uploaderFiles"></ul>
+                  <hr class="my-0 file_label">
+                  <label class="control-label" for="lastname">已上传附件</label>
+                  <ul id="showFiles"></ul>
+        </div>
+    
+        </div> 
+        </div> 
+          <div class="modal-footer">
+              <input type="hidden" value="0" id="is_other" name="is_other" />
+              <button class="btn btn-primary" target="_blank" id="btn_express_filepath">上传</button>
+  
+          </div>
+                
+</div>
     {%end%}
 
     {% block  js %}
+    
+    <script src="/static/bootstrap-typeahead.js"></script>
     <script>
         $(function(){
 
 
             $('#a_{{to_tag}}').tab('show');
            _xsrf = getCookie("_xsrf")
-           var customer_id = {{ customer.id }}
+$('#send_name').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+           var customer_id = "{{ customer.id }}"
            var customer_guid = "{{customer.guid}}"
            $("#customer_delete").on("click",function(){
 
@@ -1664,8 +2057,10 @@ margin: auto;
 
       laydate.render({
                     elem: '#tran_at' //指定元素
+           }); laydate.render({
+                    elem: '#created_send_at' //指定元素
            });
-
+           
       $(".modify_transition_mobile").on("click",function(){
           transition_id = $(this).attr("transition_id")
           $.get("customer?tag=qrcode",{"id":customer_id,"guid":customer_guid,"trans_id":transition_id,"qtag":"trans"},function(result){
@@ -2356,6 +2751,351 @@ location.reload()
 
 
         })
+$("#allcheck_express").on("change",function(){
+
+$('input[name=rec_file]').not(this).prop('checked', this.checked);
+
+})
+$("#btn_add_express").on("click",function () {
+  $('#l_rec_name').text('收件人') 
+  $('#l_rec_tel').text('收件人电话') 
+  $('#l_rec_addr').text('收件人地址') 
+  $('#l_send_name').text('发件人')
+  $("#express_title").text('发起快递寄件申请')
+  $('#choose_cutomer_addr_msg').text('选择收件人信息')
+  $('#save_customer_add_msg').text('收件人信息存入系统')
+  $("#customer_message_title").text("选择收件人信息")
+  $("#l_created_send_at").text('发件时间')
+    $("#created_send_at").val('')
+  $('#btn_save_express').attr('send_or_rec','0')
+  
+  $("#er_express").hide()
+  $('#btn_save_express').show()
+  $('#btn_save_express').removeAttr('express_id')
+  $('input[name=rec_file]').prop('checked', false)
+  $('#other_rec_file').val('')
+  $('#express_number').val('')
+  $('#express_remark').val('')
+  $("#er_rec_name").hide()
+  $("#er_rec_tel").hide()
+  $("#er_rec_addr").hide()
+  $("#er_rec_company").hide()
+  $('#er_express_number').hide()
+  $("#er_send_name").hide()
+  $("#add_express_modal").modal("show")
+ })
+
+$("#btn_add_express_rec").on('click',function () {
+      $('#l_rec_name').text('寄件人') 
+      $('#l_rec_tel').text('寄件人电话') 
+      $('#l_rec_addr').text('寄件人地址') 
+      $('#l_send_name').text('收件人')
+      $("#express_title").text('发起快递收件申请')
+      $('#choose_cutomer_addr_msg').text('选择寄件人信息')
+      $("#customer_message_title").text("选择寄件人信息")
+      $('#save_customer_add_msg').text('寄件人信息存入系统')
+      $("#l_created_send_at").text('收件时间')
+      $("#created_send_at").val('')
+       $('#btn_save_express').attr('send_or_rec','1')
+       $("#er_express").hide()
+      $('#btn_save_express').show()
+      $('#btn_save_express').removeAttr('express_id') 
+      $('input[name=rec_file]').prop('checked', false)
+      $('#other_rec_file').val('')
+      $('#express_number').val('')
+      $('#express_remark').val('')
+      $("#er_rec_name").hide()
+      $("#er_rec_tel").hide()
+      $("#er_rec_addr").hide()
+      $("#er_rec_company").hide()
+      $('#er_express_number').hide()
+      $("#er_send_name").hide()
+        $("#add_express_modal").modal("show")
+      })
+ $("#btn_save_express").on("click",function(){
+    var this_btn=$(this)
+    var rec_name=$("#rec_name").val()
+    var rec_tel=$("#rec_tel").val()
+    var rec_addr=$("#rec_addr").val()
+    var rec_company=$("#rec_company").val()
+    var express_type_id=$("#express_type").val()
+    var express_type_name=$("#express_type").find("option:selected").text()
+    var send_name=$("#send_name").val()
+    var payment_type_id=$("#payment_type").val()
+    var payment_type_name=$("#payment_type").find("option:selected").text()
+    var express_remark=$("#express_remark").val()
+    var express_id=$(this).attr('express_id')
+    var other_rec_file=$("#other_rec_file").val()
+    var express_number=$("#express_number").val()
+    var save_customer_add_msg=$('input[name=save_customer_add_msg]:checked').val()
+    var send_or_rec=$(this).attr('send_or_rec')
+    var created_send_at=$('#created_send_at').val()
+    var type_names=[]
+    var type_ids=[]
+    $('input[name=rec_file]:checked').each(function () {
+                type_ids.push($(this).val());
+                type_names.push($(this).attr('income_name'))
+           })
+    type_ids=type_ids.join(',')
+    type_names=type_names.join(',')
+    if(rec_name==''){
+      $('#rec_name').focus()
+      $('#er_rec_name').text('收件人不能为空')
+      $("#er_rec_name").show()
+    }else if(rec_tel==''){
+      $('#rec_tel').focus()
+      $('#er_rec_tel').text('收件人电话不能为空')
+      $("#er_rec_tel").show()
+    }
+    else if(rec_addr==''){
+      $('#rec_addr').focus()
+      $('#er_rec_addr').text('收件人地址不能为空')
+      $("#er_rec_addr").show()
+    }
+    else if(type_ids=='' && other_rec_file.replace(/\r\n|\n|\s/g,'')==''){
+      $('#er_other_rec_file').text('交接明细和其他资料需填其一')
+      $("#er_other_rec_file").show()
+    }
+    else if(rec_company==''){
+      $('#er_rec_company').text('公司名不能为空')
+      $("#er_rec_company").show()
+    }
+    else if(express_number==''){
+      $('#er_express_number').text('快递单号不能为空')
+      $('#er_express_number').show()
+    } else if(created_send_at=='' && send_or_rec=='0'){
+      $('#er_created_send_at').text('发件时间不能为空')
+      $('#er_created_send_at').show()
+    }
+    else if(send_name==''){
+      $('#er_send_name').text('申请人不能为空')
+      $("#er_send_name").show()
+    }else{
+      $(this).text('保存中...')
+      $(this).attr('disabled','disabled')
+    $.post("/project?tag=express",{
+      'source':1,
+      'rec_name':rec_name,
+      'rec_tel':rec_tel,
+      'rec_addr':rec_addr,
+      'rec_company':rec_company,
+      'express_type_id':express_type_id,
+      'express_type_name':express_type_name,
+      'send_name':send_name,
+      'project_id':"{{customer.id}}",
+      'company':'{{customer.company}}',
+      'payment_type_id':payment_type_id,
+      'payment_type_name':payment_type_name,
+      'express_remark':express_remark,
+      'express_id':express_id,
+      'other_rec_file':other_rec_file,
+      'express_number':express_number,
+      'rec_file_ids':type_ids,
+      'rec_file':type_names,
+      'guid':customer_guid,
+      'save_customer_add_msg':save_customer_add_msg,
+      '_xsrf':_xsrf,
+      'send_or_rec':send_or_rec,
+      'created_send_at':created_send_at
+      },function (result) { 
+      if(result=='-3'){
+          alert('寄/收 件人不存在系统中')
+          this_btn.text('保存')
+          this_btn.removeAttr('disabled')
+        }else{
+          location.reload()
+        }
+       
+       })
+          }
+ })
+ $(".edit_express").on("click",function () {
+  $('input[name=rec_file]').prop('checked', false)
+  type_ids_arr =$(this).attr('rec_file_ids').split(',')
+
+  for (var i = 0; i < type_ids_arr.length; i++) {
+    $('#rec_file_'+type_ids_arr[i]).prop('checked', true);
+
+    }
+    $('#created_send_at').val($(this).attr('created_send_at'))
+    if($(this).attr('send_or_rec')=='1'){
+      $('#l_rec_name').text('寄件人') 
+      $('#l_rec_tel').text('寄件人电话') 
+      $('#l_rec_addr').text('寄件人地址') 
+      $('#l_send_name').text('收件人')
+      $('#save_customer_add_msg').text('寄件人信息存入系统')
+      $('#choose_cutomer_addr_msg').text('选择寄件人信息')
+      $("#l_created_send_at").text('收件时间')
+    }
+    else if($(this).attr('send_or_rec')=='0'){
+      $('#l_rec_name').text('收件人') 
+      $('#l_rec_tel').text('收件人电话') 
+      $('#l_rec_addr').text('收件人地址') 
+      $('#l_send_name').text('发件人')
+      $('#save_customer_add_msg').text('寄件人信息存入系统')
+      $('#choose_cutomer_addr_msg').text('选择收件人信息')
+      $("#l_created_send_at").text('发件时间')
+      
+    } 
+  $("#other_rec_file").val($(this).attr('other_rec_file'))
+  $("#express_number").val($(this).attr('express_number'))
+  $("#rec_name").val($(this).attr('rec_name'))
+  $("#rec_tel").val($(this).attr('rec_tel'))
+  $("#rec_addr").val($(this).attr('rec_addr'))
+  $("#rec_file").val($(this).attr('rec_file'))
+
+  $("#rec_company").val($(this).attr('rec_company'))
+
+  $("#express_type").val($(this).attr('express_type_id'))
+  $("#payment_type").val($(this).attr('payment_type_id'))
+
+  $("#express_created_at").val($(this).attr('created_at'))
+  $("#send_name").val($(this).attr('send_at_name'))
+  $("#express_remark").val($(this).attr('remark'))
+  $("#btn_save_express").attr('express_id',$(this).attr('id'))
+  $("#btn_save_express").attr('send_or_rec',$(this).attr('send_or_rec'))
+  if($(this).attr('uid_name')!="{{name}}"  || ($(this).attr('uid_name')=="{{name}}" && $(this).attr('accept_at')!='None')){
+    $("#er_express").show()
+    $('#btn_save_express').hide()
+  }else{
+    $("#er_express").hide()
+    $('#btn_save_express').show()
+  }
+  $("#add_express_modal").modal("show")
+ })
+ $(".check_express").on('click',function () {
+        $("#btn_check_express").attr('express_id',$(this).attr('id')) 
+        $("#check_express_modal").modal("show")
+     })
+
+$('#btn_check_express').on('click',function () { 
+   var accept_state=$('#accept_state:checked').val()
+   var accept_uid_remark=$('#accept_uid_remark').val()
+   var express_id=$(this).attr('express_id')
+  if(accept_state==undefined){
+      $("#er_accept_state").text('请先选择')
+      $("#er_accept_state").show()
+  }else if(accept_state=='2' && accept_uid_remark==''){    
+    $("#er_accept_uid_remark").text('不通过需要填写备注')
+      $("#er_accept_uid_remark").show()
+  }else{
+    $.post('/project?tag=check_express',
+    {
+      '_xsrf':_xsrf,
+      'accept_state':accept_state,
+      'accept_uid_remark':accept_uid_remark,
+      'express_id':express_id
+    },function (result) { 
+      location.reload()
+     })
+  }
+
+  })
+  $(".confirm_send_express").on('click',function(){
+  $.post('/project?tag=confirm_send_express',
+    { '_xsrf':_xsrf,
+      'express_id':$(this).attr('id')
+    },function (result) { 
+      location.reload()
+     })
+ })
+ $("#choose_cutomer_addr_msg").on('click',function(){
+   $('#choose_customer_addr_msg_modal').modal('show')
+ })
+ $('#btn__save_customer_addr_msg').on('click',function(){
+   var customer_name=$('input[name=choose_customer_addr]:checked').attr('c_name')
+   var customer_addr=$('input[name=choose_customer_addr]:checked').attr('addr')
+   var customer_tel=$('input[name=choose_customer_addr]:checked').attr('tel')
+   $('#rec_name').val(customer_name)
+   $('#rec_tel').val(customer_tel)
+   $('#rec_addr').val(customer_addr)
+   $('#choose_customer_addr_msg_modal').modal('hide')
+   })
+   $('#choose_customer_addr_msg_modal').on('hidden.bs.modal', function () {
+      document.getElementsByTagName('body')[0].className = 'modal-open';
+});
+var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); background-size:15px 10px;display:block;">#url1#</li>',
+    all_files=[]
+    $gallery = $("#gallery"),
+    $galleryImg = $("#galleryImg"),
+    $uploaderInput = $("#uploaderInput"),
+    $uploaderFiles = $("#uploaderFiles");
+    $uploaderInput.on("change", function(e) {
+                var src, url = window.URL || window.webkitURL || window.mozURL,
+                files = e.target.files;
+                for(var i = 0, len = files.length; i < len; ++i) {
+                    var file = files[i];
+                    if(url) {
+                        // src = url.createObjectURL(file);
+                        src=file.name;
+                    } else {
+                        src = e.target.result;
+                    }
+
+                    $uploaderFiles.append($(tmpl.replace('#url1#', src)));
+                    all_files.push(file)
+                }
+
+            });
+$('.filepath_detail').on('click',function () {
+  uid_name=$(this).attr('uid_name')
+  send_at_name=$(this).attr('send_at_name')
+  if(uid_name=="{{name}}" || send_at_name=="{{name}}"){
+    $('.file_label').show()
+    $('.file').show()
+    $('#btn_express_filepath').show()
+  }else{
+    $('.file_label').hide()
+    $('.file').hide()
+    $('#btn_express_filepath').hide()
+  }
+  $("#er_uploaderInput").hide()
+    file_path=$(this).attr('file_path')
+    file_path=file_path.split('|')
+    showFiles=$('#showFiles')
+    showFiles.children().remove()
+    if(file_path!=''){
+    for(var i=0;i<file_path.length-1;i++){
+      f=file_path[i].split('/')
+
+      showFiles.append('<br><li><a href="'+file_path[i]+'" download="'+f[f.length-1]+'">'+f[f.length-1].split('.')[0]+
+      '</a><a href="'+file_path[i]+'" class="btn" target="_blank">查看</a></li>')
+    }
+    }
+    else(
+      showFiles.append('<p>还没有上传附件哦~</p>')
+    )
+    $("#btn_express_filepath").attr('express_id',$(this).attr('id'))
+    $("#express_filepath_modal").modal("show")
+ })
+ $("#btn_express_filepath").on('click',function () { 
+    var formData = new FormData();
+    for(var i=0,len=all_files.length;i<len;i++){
+      formData.append('file'+i,all_files[i])
+    }
+    formData.append('len',all_files.length)
+    formData.append('express_id',$(this).attr('express_id'))
+    formData.append('_xsrf',_xsrf)
+    if(all_files!=''){
+      $(this).text('保存中')
+      $(this).attr('disabled','disabled')
+      $.ajax({
+                url: '/project?tag=express',
+                type: 'POST',
+                data: formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success: function (data) {
+                  location.reload()
+
+                }
+              });
+    }
+    else{
+      $("#er_uploaderInput").show()
+    }
+
+ })
       });
 
     </script>

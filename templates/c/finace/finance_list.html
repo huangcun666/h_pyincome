@@ -11,8 +11,8 @@
 <i class="icon-user"></i>
 <h3>应收管理 
 
-{%if is_manager%}
-    {%if qtype=="my"%} <a href="/finance?tag=list&qtype=all"><span>所有列表</span> </a> {%end%} 
+{%if is_manager != "0"%}
+    {%if qtype=="my"%} <a href="/finance?tag=list&qtype=all"><span>所有列表1</span> </a> {%end%} 
 {%end%}
 {%if qtype=="all"%} <a href="/finance?tag=list&qtype=my"><span>我的客户</span> </a> {%end%}</h3>
 </div> <!-- /widget-header -->

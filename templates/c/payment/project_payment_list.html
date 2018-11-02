@@ -12,10 +12,15 @@
 <i class="icon-user"></i>
 <h3>记账应收管理
 
-<a href="/payment?tag=list">记账应收管理</a> /
-    <a href="/payment?tag=project_payment_list">记账最新到款列表</a> / <a href="/payment?tag=project_customer_list">最新记账入库客户列表</a></h3>
+{% include "payment_nav.html" %}
 
-</div> <!-- /widget-header -->
+
+
+
+
+</h3>
+
+</div>
 <div class="widget-content">
 <div class="tab-content">
 <div class="tab-pane active" id="formcontrols">
@@ -175,7 +180,7 @@
 
                                                 </label>
                                                 <div class="controls">
-                                                    <input type="text" class="span4 " id="service_month_amount" name="service_month_amount" value="0">
+                                                    <input type="text" class="span4 " id="service_month_amount" name="service_month_amount" value="0" readonly="readonly"/>
                                                     <p id="msg_service_month_amount" class="help-block" style="color:red"></p>
                                                 </div>
                                                 <!-- /controls -->
@@ -337,7 +342,7 @@ function intToFloat(val){
                   laydate.render({
                     elem: '#con_end' //指定元素
            });
-         $("#btn_save").on("click",function(){
+        $("#btn_save").click(function(){
             service_amount = $("#service_amount").val()
             fee = $("input[name='pay_type_id']:checked").attr("fee")
             service_month_amount = $("#service_month_amount").val()

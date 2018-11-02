@@ -1,7 +1,7 @@
 # encoding=utf8
 from handlers.base import BaseHandler
 import logging
-import json
+import json,datetime
 import tornado.web
 import urllib2
 import tornado.httpclient
@@ -20,6 +20,7 @@ class LinkmanHandler(BaseHandler):
         tag = self.get_argument("tag", "list")
         uid = self.get_secure_cookie("uid")
         uid_name = self.get_secure_cookie("name")
+        dt=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         result = -10
         if tag == "add":
 
@@ -34,8 +35,8 @@ class LinkmanHandler(BaseHandler):
                 result = self.db_customer.execute(
                     """insert into t_linkman (name,tel,gender,remark,acc_uid,acc_uid_name,created_at,updated_at,guid,customer_id)
                 
-                values(%s,%s,%s,%s,%s,%s,now(),now(),uuid(),%s)""", name, tel,
-                    gender, remark, uid, uid_name, customer_id)
+                values(%s,%s,%s,%s,%s,%s,%s,%s,uuid(),%s)""", name, tel,
+                    gender, remark, uid, uid_name,dt,dt, customer_id)
 
 
             self.write(str(result))

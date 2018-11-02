@@ -31,21 +31,44 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
-
+        {%if '231' in role_list%}  
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="办结确认">
+              <a class="nav-link" href="/project?tag=project_confirm_banjie">
+                <i class="fa fa-fw fa-dashboard"></i>
+                <span class="nav-link-text">办结确认</span>
+              </a>
+            </li>
+        {%end%}
+          <li class="nav-item" data-toggle="tooltip" data-placement="right" title="快递管理">
+              <a class="nav-link" href="/project?tag=express_list">
+                <i class="fa fa-fw fa-dashboard"></i>
+                <span class="nav-link-text">快递管理</span>
+              </a>
+            </li>
     {%if kf_manage=='1' or sh_manage=='1'%}
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="内部推荐审核">
           <a class="nav-link" href="/project?tag=project_check">
             <i class="fa fa-fw fa-dashboard"></i>
-            <span class="nav-link-text">内部推荐审核</span>
+            <span class="nav-link-text">推荐人审核</span>
           </a>
         </li>
+{%end%}
+{%if role=='3' or role=='8' or role=='2'%}
+<li class="nav-item" data-toggle="tooltip" data-placement="right" title="待审核业务">
+    <a class="nav-link" href="/project?tag=income_history_list">
+      <i class="fa fa-fw fa-dashboard"></i>  
+      <span class="nav-link-text">确认单信息变动</span>
+    </a>
+  </li>
 {%end%}
   {%if role!="12"%}
 
       {%if role=="2"%}<!-- 出纳审核-->
+ 
+
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="待审核业务">
           <a class="nav-link" href="/project?tag=list_confirm&state_id=49">
-            <i class="fa fa-fw fa-dashboard"></i>  <i class="fa fa-fw fa-dashboard"></i>
+            <i class="fa fa-fw fa-dashboard"></i>  
             <span class="nav-link-text">待审核业务</span>
           </a>
         </li>
@@ -165,7 +188,20 @@
     <span class="nav-link-text">数据统计</span>
   </a>
   <ul class="sidenav-second-level collapse" id="collapseMulti1">
-  <li>
+    
+      {%if role=="8" or role=="3"%}
+      <li>
+
+          <a href="/statis?tag=projects_income_title" style="color:#fff">到款结算</a>
+        </li>
+        {%end%}
+        <li>
+
+            <a href="/statis?tag=projects_incomes" style="color:#fff">到款统计</a>
+          </li>
+       
+        <li>
+
 
     <a href="/statis?tag=statis_kf" style="color:#fff">营销日报</a>
   </li>
@@ -182,7 +218,7 @@
     <li>
 
       <a href="/statis?tag=all_building" style="color:#fff">楼盘周期</a>
-
+      <a href="/statis?tag=statis_project_detail&date_type=month" style="color:#fff">收入明细统计</a>
     </li>
 
 
@@ -242,6 +278,12 @@
           <a class="nav-link" href="/project?tag=my" style="color:#fff">
        <i class="fa fa-fw fa-area-chart"></i>
             <span class="nav-link-text">我的业务</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="公司曾用名列表">
+          <a class="nav-link" href="/project?tag=projects_company_history" style="color:#fff">
+       <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">公司曾用名列表</span>
           </a>
         </li>
         {%end%}
@@ -506,12 +548,15 @@
         {%end%}
 
 
+        {%if role=="3" or role=="8"%}
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="记账应收管理">
-            <a class="nav-link" href="/account_receive?tag=account_receive"  style="color:#fff">
+            <a class="nav-link" href="/payment?tag=list" target="_blank"  style="color:#fff">
               <i class="fa fa-fw fa-area-chart"></i>
                   <span class="nav-link-text">记账应收管理</span>
                 </a>
               </li>
+
+              {%end%}
 
 
 
@@ -556,6 +601,7 @@
           </a>
 
         </li>-->
+        {%if role not in ['12','14']%}
         <li class="nav-item">
 
             <div class="input-group">
@@ -567,6 +613,11 @@
               </span>
             </div>
 
+        </li>
+        {%end%}
+        <li class="nav-item">
+          <a class="nav-link" href="/project?tag=upload_file">
+            <i class="fa fa-fw fa-upload"></i>附件</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/changepassword">

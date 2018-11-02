@@ -29,6 +29,20 @@ class BaseHandler(tornado.web.RequestHandler):
         kwargs['is_developer'] = self.get_secure_cookie('is_developer')
         kwargs['kf_manage']=self.get_secure_cookie('kf_manage')
         kwargs['sh_manage']=self.get_secure_cookie('sh_manage')
+        kwargs['express_manage']=self.get_secure_cookie('express_manage')
+        if self.get_secure_cookie('role_list'):
+            kwargs['role_list']=self.get_secure_cookie('role_list').split(',')
+        else:
+            kwargs['role_list']=[]
+
+        today_exchange_ids=[]    
+        today_exchange=self.db_customer.query('''
+            select id from t_customer_exchange where TO_DAYS(msg_time)<=TO_DAYS(now()) and uid=%s and summary is null
+        ''',self.get_secure_cookie("uid"))
+        for item in today_exchange:
+            today_exchange_ids.append(item.id)
+        kwargs['today_exchange_ids']=today_exchange_ids
+        
         x_real_ip = self.request.headers.get("X-Real-IP")
         ip = x_real_ip or self.request.remote_ip
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

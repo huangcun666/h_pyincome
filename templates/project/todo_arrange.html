@@ -463,7 +463,7 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
                         <div class="col-sm--12" style="font-size:18px;">
                           <div id="ctype_fzr">
                           <input type="radio" name="choice_type"  value="0" checked/> 负责人安排
-                            <input type="radio" name="choice_type" value="1"/> 自定义办事人
+                            <input type="radio" name="choice_type" value="1"/><span id="zdy_bs">自定义办事人</span> 
 
                             <select name="leader_id" id="leader_id" class="form-control">
                               {%for item in t_todo_leader%}
@@ -475,7 +475,7 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
                             <span id="zdy_title">
                                 自定义办事人
                                 </span>
-                            <input type="text" class="form-control" id="banshi_per" >
+                            <input type="text" class="form-control" id="banshi_per"/>
                             <div class="alert alert-danger" role="alert" id="save_to_banshi_per" style="display:none;"></div>
 
                         </div>
@@ -604,6 +604,7 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
               
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="btn_delete_todo" data-dismiss="modal" style="display:none;">删除</button>
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
                                <button class="btn btn-primary" target="_blank" id="btn_save_todo1">保 存</button>
                     </div>
@@ -646,11 +647,14 @@ $("#banshi_per").hide()
 $("input[name=choice_type]").on("change",function(){
 
   if($(this).val()=="1"){
-    
+    $('#banshi_per').val( $('input[name=choice_type][value=1]').attr('banshi_per'))
+    $('#zdy_title').show()
     $("#leader_id").hide()
     $("#banshi_per").show()
   }  
   else if($(this).val()=="0"){
+    $('#banshi_per').val('')
+    $('#zdy_title').hide()
     $("#leader_id").show()
     $("#banshi_per").hide()
   }
@@ -844,16 +848,36 @@ $('.the_detail_btn').on('click',function () {
         $('#work_time_end').val($(this).attr('end_time'))
         $('#project_name').val($(this).attr('project_name'))
         $('#remark').val($(this).attr('remark'))
-        $('#banshi_per').val($(this).attr('banshi_per'))
         $('#btn_save_todo').attr('todo_id',$(this).attr('todoid'))
         $('#btn_save_todo').attr('responsible_per',$(this).attr('responsible_per'))
         $('#btn_save_todo').attr('banshi_per',$(this).attr('banshi_per'))
         $('#btn_save_todo').attr('leader_name',$(this).attr('leader_name'))
         $('#btn_save_todo').attr('leader_id',$(this).attr('leader_id'))
         $('#btn_save_todo').attr('todo_type',$(this).attr('todo_type'))
+
         $('#btn_delete_todo1').attr('todoid',$(this).attr('todoid'))
         $('#btn_delete_todo1').show()
-        $("#banshi_per").show()
+        if($(this).attr('banshi_per')!=''){
+          $('input[name=choice_type][value=0]').attr('checked',false)
+          $('input[name=choice_type][value=1]').click()
+          $('input[name=choice_type][value=1]').attr({'checked':true,'banshi_per':$(this).attr('banshi_per')})
+          $('input[name=choice_type][value=1]').show()
+          $('#zdy_bs').show()
+          $('#banshi_per').val($(this).attr('banshi_per'))
+          $('#leader_id').hide()
+
+        }else if($(this).attr('banshi_per')==''){
+          $('input[name=choice_type][value=1]').attr('checked',false)
+          $('input[name=choice_type][value=1]').hide()
+          $('#zdy_bs').hide()
+          $('input[name=choice_type][value=0]').click()
+          
+          $('#banshi_per').val('')
+          $('#zdy_title').hide()
+          $('#banshi_per').hide
+          $('#leader_id').show()
+        }
+        
         $("#modify_milepost_modal").modal('show')
     }else{
           $('#comoany1').val($(this).attr('company'))
@@ -874,6 +898,7 @@ $('.the_detail_btn').on('click',function () {
 
           $('#btn_save_todo1').attr('todo_id',$(this).attr('todoid'))
           $('#btn_save_todo1').attr('bs_created_at',$(this).attr('bs_created_at'))
+          
           if($(this).attr('fz_updated_at')!='None'){
             $('#project_zj').attr('readonly','readonly')
           }else{
@@ -881,9 +906,29 @@ $('.the_detail_btn').on('click',function () {
           }
           $("#modify_milepost_modal1").modal('show')
     }
+   
+    if('{{role_list}}'.indexOf('241')>-1 ){
+      $('#btn_delete_todo').attr('todoid',$(this).attr('todoid'))
+        $('#btn_delete_todo').show()
+    }
+    
   })
 
 $('#btn_delete_todo1').on('click',function () { 
+  var todoid=$(this).attr('todoid')
+  if(confirm('确定要删除？')){
+  $.post(
+    '/project?tag=delete_todo',
+    {
+      '_xsrf':_xsrf,
+      'todoid':todoid
+    },function (res) { 
+      location.reload()
+     }
+  )
+  }
+ })
+ $('#btn_delete_todo').on('click',function () { 
   var todoid=$(this).attr('todoid')
   if(confirm('确定要删除？')){
   $.post(

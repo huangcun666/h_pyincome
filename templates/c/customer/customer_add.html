@@ -89,17 +89,10 @@
 
 
                                          <div class="control-group">
-                                                <label class="control-label" for="acc_uid">客服会计</label>
+                                                <label class="control-label" for="acc_uid_name">客服会计</label>
                                                 <div class="controls">
-                                                <select name="acc_uid" id="acc_uid">
-                                                <option value="0">选择客服会计</option>
-                                                 {%for item in t_user%}
-                                                        <option value="{{item.id}}">{{item.name}}</option>
-
-                                                 {%end%}
-                                                                                                                                                                <option value="210">陈月娇</option>
-
-                                                </select>
+                                         
+                                                <input type="text" name="acc_uid_name" id="acc_uid_name" class="form-control"/>
 
                                                     <p id="msg_is_general" class="help-block" style="color:red"></p>
                                                 </div>
@@ -226,9 +219,14 @@
                                             </div>
 
                                             <div class="control-group">
-                                                <label class="control-label" for="lastname">帐册费</label>
+                                                <label class="control-label" for="lastname">帐册费
+                                                    
+                                                </label>
                                                 <div class="controls">
                                                     <input type="text" class="span6" id="book_amount" name="book_amount" value="0">
+                                                    
+                                                    <span style='color:red'>(为0时免帐册费)</span>
+
                                                 </div>
                                             </div>
 
@@ -336,6 +334,7 @@
                                             <div class="form-actions">
                                             </div>
                                                 <a href="javascript:void(0)" id="btn_save_customer" {%if t_project%}customer_name="{{t_project.customer_name}}" customer_tel="{{t_project.customer_tel}}"{%else%}customer_name='' customer_tel=''{%end%} class="btn btn-primary">保存</a>
+
                                             <!-- /form-actions -->
                                         </fieldset>
                                     </form>
@@ -376,6 +375,12 @@
 </div>
 
 {%end%} {%block js%}
+<script src="/static/vendor/jquery/jquery.min.js"></script>
+
+<script src="/static/bootstrap-typeahead.js"></script>
+
+
+
 <script>
     $(function () {
 
@@ -384,6 +389,9 @@
            });
 
              laydate.render({
+
+
+                 
                     elem: '#end_date' //指定元素
            });
 
@@ -392,21 +400,64 @@
            });
 
         _xsrf = getCookie("_xsrf")
+
+
+
+$("#acc_uid_name").typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+
+
 function intToFloat(val){
         return new Number(val).toFixed(2);
 }
+
+  $('input[type="radio"][name="pay_type_id"]').each(function(){
+  if ($(this).is(':checked'))
+                {
+                    if($(this).attr("fee")==0){
+                           $("#service_amount").attr("readOnly","readonly")
+                    }else{
+                         $("#service_amount").removeAttr("readOnly")
+                    }
+}
+
+  })
+
     $('input[type="radio"][name="pay_type_id"]').click(function(){
+                   
                 service_amount = $("#service_amount").val()
                 if ($(this).is(':checked'))
-                    {
-                      all_total = service_amount / $(this).attr("fee");
-
-                        $("#service_amount_month").val(intToFloat(all_total))
+                {
+                   if($(this).attr("fee")>0){
+                         $("#service_amount").removeAttr("readOnly")
+                       
+                    }else{
+                         $("#service_amount").val("0")
+                        all_total = 0
                     }
+
+
+                    all_total =  service_amount / $(this).attr("fee");
+                    console.log(all_total)
+                    if (all_total==Infinity){
+                        all_total = 0
+
+                    }
+                    $("#service_amount_month").val(intToFloat(all_total))
+                }
     });
 
        $('#service_amount').keyup(function() {
                         all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
+                          if (all_total==Infinity){
+                        all_total = 0
+                        
+                    }
                         $("#service_amount_month").val(intToFloat(all_total))
 
 
@@ -455,7 +506,6 @@ function intToFloat(val){
             var  service_amount = $("#service_amount").val()
             var  book_amount = $("#book_amount").val()
 
-
             $("input[name=customer_type]").each(function(){
                  if (this.checked) {
                             customer_type_name= customer_type_name +$(this).attr("title")+","
@@ -468,13 +518,11 @@ function intToFloat(val){
             customer_type_name = customer_type_name.slice(0, -1);
             customer_type = customer_type.slice(0, -1);
 
-            var acc_uid = $("#acc_uid").val()
-            var acc_uid_name = $("#acc_uid option:selected").text()
+           // var acc_uid = $("#acc_uid").val()
+            var acc_uid_name = $("#acc_uid_name").val()
             var zone = $("#zone").val()
             var city = $("#city").val()
-            if(acc_uid=="0"){
-                acc_uid_name = "待安排"
-            }
+            
             $("#msg_company").text("")
             $("#msg_is_general").text("")
             $("#msg_credit_rating").text("")
@@ -499,6 +547,7 @@ function intToFloat(val){
                  $("input[name=customer_type]:first").focus()
             }*/
             else{
+                
                 $.post("/customer?tag=add",{
                     "service_amount_month":service_amount_month,
                     "service_amount":service_amount,
@@ -507,7 +556,6 @@ function intToFloat(val){
                     "pay_typeid_name":pay_typeid_name,
                     "zone":zone,
                     "city":city,
-                    "acc_uid":acc_uid,
                     "acc_uid_name":acc_uid_name,
                     "company_reguid":company_reguid,
                     "industry_name":industry_name,
@@ -530,6 +578,7 @@ function intToFloat(val){
                 "addr_type": addr_type,"addr_expire": addr_expire,
                 "customer_name":customer_name,
                 "customer_tel":customer_tel,
+                "project_id":"{%if t_project%}{{t_project.id}}{%else%}0{%end%}",
                 "addr_cp": addr_cp,"remark": remark,"_xsrf": _xsrf},function(result){
                     if(result=="0"){
                                 alert("创建失败。稍候再试！")

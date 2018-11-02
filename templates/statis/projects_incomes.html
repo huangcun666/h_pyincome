@@ -1,0 +1,109 @@
+{% extends "../base.html" %} {%block title%}到款统计{%end%} {% block body %}
+
+<style>
+
+    .faye-btn {padding: 0.1rem 0.2rem; background-color: #9ec6ef; margin-left: 20px; border-radius: 2px;}
+
+</style>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        主面板
+    </li>
+    <li class="breadcrumb-item active">到款统计
+            <a  {%if  params['step']=='0'%} style="background-color:beige;"{%end%} 
+            class="faye-btn" href="/statis?tag=projects_incomes">销售顾问</a>
+            <a {%if params['step']=='1'%}style="background-color:beige;"{%end%} 
+            class="faye-btn" href="/statis?tag=projects_incomes&step=1">客服顾问</a>
+            <a {%if params['step']=='2'%}style="background-color:beige;"{%end%} 
+            class="faye-btn" href="/statis?tag=projects_incomes&step=2">客服会计</a>
+    </li>
+</ol>
+<div class="table-responsive">
+
+        <table class="table table-bordered"  style="width:2700px">
+                <thead class="thead-dark">
+                    <tr class="active">
+                        <th width="120">日期</th>
+                        <th>合计</th>
+                        {%for item in t_user%}
+                        <th>{{item.name}}</th>
+                        {%end%}
+                        </tr>
+                </thead>
+                <tbody>
+                    <tr style="background-color:bisque;">
+                        <td style="background-color: #efefef;">合计</td>
+                        <td style="background-color: #efefef;">{{count.sssim}}</td>
+                        {%for t in t_user%}
+                        <td>
+                            {%for item in count.every_sum.split(',')%}
+                            {%if item.split('|')[0]==t.name%}
+                                {{item.split('|')[1]}}
+                            {%end%}
+                            {%end%}
+                        </td>
+                        {%end%}
+                    </tr>
+                    {%for item in projects_incomes%}
+                    <tr>
+                        <td>{{item.ca}}</td>
+                        <td>{{item.ssim}}</td>
+                        {%for t in t_user%}
+                        <td>
+                            {%for row in item.us.split(',')%}
+                                {%if row.split('|')[0]==t.name%}
+                                    {{row.split('|')[1]}}
+                                {%end%}
+                            {%end%}
+                        </td>
+                        {%end%}
+                    </tr>
+                    {%end%}
+                </tbody>
+                       
+            </table>
+
+            <div class="col-sm-12 col-md-7">
+                    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                        <ul class="pagination">
+                            {% if pagination.has_prev %}
+                            <li class="paginate_button page-item previous " id="dataTable_previous">
+                                <a href="/statis?tag=projects_incomes{%if params['step']%}&step={{params['step']}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li class="paginate_button page-item ">
+                                <a href="/statis?tag=projects_incomes{%if params['step']%}&step={{params['step']}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                            {% else %}
+                            <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                            {% end %} {% else %}
+                            <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li class="paginate_button page-item next" id="dataTable_next">
+                            <a href="/statis?tag=projects_incomes{%if params['step']%}&step={{params['step']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                            {% end %}
+                        </ul>
+                    </div>
+                </div>
+
+</div>
+</div>
+
+</div>
+</div>
+{% end %} {%block js%}
+<script>
+    _xsrf = getCookie("_xsrf");
+    $(function () {
+
+            $("#m_statis").click()
+        $("#start").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+        $("#end").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 23:59:59',
+            language: 'zh-CN', initialDate: new Date()
+        });
+
+    })
+
+
+</script> {%end%}

@@ -1,0 +1,93 @@
+
+ {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+ <ol class="breadcrumb">
+   <li class="breadcrumb-item">
+    主面板
+   </li>
+   <li class="breadcrumb-item active">确认单信息变动</li>
+
+ </ol>
+
+ <div class="table-responsive">
+    <form>
+        <table class="table table-bordered" id="dataTable"  style="width:2000px">
+            <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                <tr>
+                    <th width="80">编号</th>
+                    <th width="200">公司名变动</th>
+                    <th width="200">客户联系人变动</th>
+                    <th width="200">联系人电话变动</th>
+                    <th width="200">业务内容变动</th>
+                    <th width="100">最新修改人</th>
+                    <th width="100">最新修改时间</th>
+                </tr>
+                <tbody>
+                    {%if t_project_chuna_history%}
+                    {%for item in t_project_chuna_history %}
+                        <tr>
+                            <td>{{item.project_id}}</td>
+                            <td>{%if item.company.replace('|','➡')[-1]=='➡'%}{{item.company.replace('|','➡')[:-1]}}{%else%}{{item.company.replace('|','➡')}}{%end%}</td>
+                            <td>{%if item.customer_name.replace('|','➡')[-1]=='➡'%}{{item.customer_name.replace('|','➡')[:-1]}}{%else%}{{item.customer_name.replace('|','➡')}}{%end%}</td>
+                            <td>{%if item.customer_tel.replace('|','➡')[-1]=='➡'%}{{item.customer_tel.replace('|','➡')[:-1]}}{%else%}{{item.customer_tel.replace('|','➡')}}{%end%}</td>
+                            <td>{%if item.project_name.replace('|','➡')[-1]=='➡'%}{{item.project_name.replace('|','➡')[:-1]}}{%else%}{{item.project_name.replace('|','➡')}}{%end%}</td>
+                            <td>{{item.uid_name}}</td>
+                            <td>{{item.updated_at.strftime("%Y-%m-%d")}}</td>
+                            </tr>
+                    {%end%}
+                    {%else%}
+                    <tr>
+                        <td colspan="10">还没有哦~</td>
+                    </tr>
+                    {%end%}
+                </tbody>
+    </thead>
+    </table>
+</form>
+<div class="col-sm-12 col-md-7">
+        <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+            <ul class="pagination">
+                {% if pagination.has_prev %}
+                <li class="paginate_button page-item previous " id="dataTable_previous">
+                <a href="/project?tag=income_history_list&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                <li class="paginate_button page-item ">
+                    <a href="/project?tag=income_history_list&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                {% else %}
+                <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                {% end %} {% else %}
+                <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
+                {% end %} {%end %} {% if pagination.has_next %}
+                <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=income_history_list&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                {% end %}
+            </ul>
+        </div>
+    </div>
+</div>
+      
+
+
+
+
+{% end %}
+
+
+{%block js%}
+
+<script>
+$(function () {
+$("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00', 
+language: 'zh-CN',initialDate: new Date()});
+$("#end").datetimepicker({  minView: 2,pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59', 
+language: 'zh-CN',initialDate: new Date()});
+
+_xsrf =  getCookie("_xsrf")
+
+
+
+
+
+   })
+</script>
+
+{%end%}

@@ -1,0 +1,505 @@
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+ <style>
+ .message-item {
+margin-bottom: 5px;
+margin-left: 40px;
+position: relative;
+}
+.message-item .message-inner {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 10px;
+position: relative;
+}
+.message-item .message-inner:before {
+border-right: 10px solid #ddd;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -20px;
+top: 6px;
+width: 0;
+}
+.message-item .message-inner:after {
+border-right: 10px solid #fff;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -18px;
+top: 6px;
+width: 0;
+}
+.message-item:before {
+background: #fff;
+border-radius: 2px;
+bottom: -30px;
+box-shadow: 0 0 3px rgba(0,0,0,0.2);
+content: "";
+height: 100%;
+left: -30px;
+position: absolute;
+width: 3px;
+}
+.message-item:after {
+background: #fff;
+border: 2px solid #ccc;
+border-radius: 50%;
+box-shadow: 0 0 5px rgba(0,0,0,0.1);
+content: "";
+height: 15px;
+left: -36px;
+position: absolute;
+top: 10px;
+width: 15px;
+}
+.clearfix:before, .clearfix:after {
+content: " ";
+display: table;
+}
+.message-item .message-head {
+border-bottom: 1px solid #eee;
+margin-bottom: 8px;
+padding-bottom: 8px;
+}
+.message-item .message-head .avatar {
+margin-right: 20px;
+}
+.message-item .message-head .user-detail {
+overflow: hidden;
+}
+.message-item .message-head .user-detail h5 {
+font-size: 16px;
+font-weight: bold;
+margin: 0;
+}
+.message-item .message-head .post-meta {
+float: left;
+padding: 0 15px 0 0;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item img {
+min-height: 25px;
+max-height: 25px;
+}
+ </style>
+<div class="main">
+    <div class="main-inner">
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <div class="widget ">
+                        <div class="widget-header">
+                            <i class="icon-user"></i>
+                            <h3>记账应收管理 {% include "payment_nav.html" %}
+
+
+                            </h3>
+
+                        </div>
+
+
+                        <!-- /widget-header -->
+                        <div class="widget-content">
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="formcontrols">
+<ul class="nav nav-tabs" id="myTab">
+    <li {%if show_tag=="1" %} class="active" {%end%}>
+        <a href="/payment?tag=acc_customer_payment&show_tag=1" id="tab_confirm">全部</a>
+    </li>
+    <li {%if show_tag=="2" %} class="active" {%end%}>
+        <a href="/payment?tag=acc_customer_payment&show_tag=2" id="customer_tab">待处理</a>
+    </li>
+    <li {%if show_tag=="3" %} class="active" {%end%}>
+        <a href="/payment?tag=acc_customer_payment&show_tag=3" id="tab_confirm">无需处理</a>
+    </li>
+</ul>
+
+                                    <fieldset>
+                                            <form class="form-search" id="query_form">
+                                                    <input type="text" name="company" value="{%if company%}{{company}}{%end%}" id="company" class="input-medium search-query" placeholder="公司名称">
+                                                  
+                                                    <button type="submit" class="btn">检 索</button>
+                                                    <input type="hidden" value="{{tag}}" name="tag"/>
+                                                                                                    <input type="hidden" value="{{show_tag}}" name="show_tag" />
+
+                                                  </form>
+
+
+
+                                        {%if customers%}
+                                        <table class="table" style="margin:5px;">
+                                            <thead>
+                                                <tr style="background-color: black; color:#fff;">
+
+                                                    <th style="min-width:180px;">公司名称</th>
+
+                                                    <th>会计</th>
+
+
+                                                    <th style="min-width:50px;">付款方式</th>
+                                                    <th style="min-width:30px;">总服务费</th>
+                                                    <th style="min-width:60px;">月服务费</th>
+
+
+
+
+                                                    <th>帐册费</th>
+                                                    <th>记账费到期</th>
+                                                    <th>账册费到期</th>
+                                                    <th width="200">最新收款明细</th>
+                                                    <th width="200">待收明细</th>
+<th width="60"></th>
+
+
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                {%for item in customers%}
+                                                <tr>
+
+                                                    <td>
+                                                        
+                                                        <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank">{{item.company}}</a>
+                                                    </td>
+
+                                                                                                        <td>{{item.acc_uid_name}}</td>
+
+                                                    <td>{{item.pay_pay_typeid_name}}</td>
+                                                    <td>{{item.pay_service_amount}}</td>
+                                                    <td>{{item.pay_service_amount_month}}</td>
+
+                                                    <td>{{item.pay_book_amount}}</td>
+
+                                                    <td {%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%} style="background-color:lemonchiffon" {%end%}>
+                                                        {%if item.acc_end%} {{item.acc_end.strftime("%Y-%m")}} {%end%}
+
+                                                  
+                                                    </td>
+                                                    <td  {%if item.acc_book_end and  item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%} style="background-color:lemonchiffon" {%end%}>
+
+                                                        {%if item.acc_book_end %} {{item.acc_book_end.strftime("%Y-%m")}} {%end%}
+                                                    </td>
+                                                    <td>
+
+         {%if item.al_remark%} {{item.al_remark}} {%end%}
+
+
+                                                    </td>
+                                                    <td>
+                                                        
+                                                        {%if item.pb_remark%}
+                                                        {{item.pb_remark}}
+                                                        {%end%}
+                                                    </td>
+<td>
+<a class="btn handler_detail btn-sm control" type='button'
+customer_id="{{item.customer_id}}"
+item_id="{{item.id}}"
+wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})账册费:{{item.pay_book_amount}}元{%end%}"
+
+    href="javascript:void(0)"
+     curr_expire_pay="{%if item.acc_end and item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
+    {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
+    href="javascript:void(0)"
+    company_name="{{item.company}}"
+    
+    >
+     催款记录</a>
+</td>
+                
+
+                                                </tr>
+                                                {%end%}
+
+
+
+                                            </tbody>
+                                        </table>
+
+                                        {%else%} 还没有客户哦。 {%end%}
+                                        <div class="pagination">
+                                            <ul>
+                                                {% if pagination.has_prev %}
+                                                <li>
+                                                    <a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}&show_tag={{show_tag}}">&laquo; 上页</a>
+                                                </li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                                <li>
+                                                    <a href="/payment?tag={{tag}}&page={{ page }}&show_tag={{show_tag}}">{{ page }}</a>
+                                                </li>
+                                                {% else %}
+                                                <li>
+                                                    <span class="active">
+                                                        <a href="#">{{ page }}</a>
+                                                    </span>
+                                                </li>
+                                                {% end %} {% else %}
+                                                <li>
+                                                    <span class="active">
+                                                        <a href="#">....</a>
+                                                    </span>
+                                                </li>
+                                                {% end %} {%end %} {% if pagination.has_next %}
+                                                <li>
+                                                    <a href="/payment?tag={{tag}}&page={{pagination.page+1}}&show_tag={{show_tag}}">下页 &raquo;</a>
+                                                </li>
+                                                {% end %}
+                                            </ul>
+                                        </div>
+                                    </fieldset>
+
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /widget-content -->
+            </div>
+            <!-- /widget -->
+        </div>
+        <!-- /span8 -->
+    </div>
+    <!-- /row -->
+</div>
+<!-- /container -->
+</div>
+
+<div id="a_handler_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel_account">催款记录
+
+
+        </h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group">
+
+
+        <div class="control-group">
+            <label class="control-label" for="lastname">催款记录</label>
+            <!-- <div class="controls">
+                <textarea type="text" class="span4" id="wait_pay_remark" name="wait_pay_remark" value="" style="height: 50px;"></textarea>
+            </div> -->
+            <!-- /controls -->
+            <div class="controls">
+                    <textarea class="span4" id="txt_msg" style="margin: 0px 0px 9px; width: 491px; height: 61px;">
+                        </textarea>
+                        <label class="control-label" for="lastname">下次计划提醒时间</label>
+                    <input type="text" id="txt_time" placeholder="催款时间"/> 
+                        <br>
+                        <button id="btn_save_msg" class="btn">确定添加</button>&nbsp;&nbsp;&nbsp;
+                        <input type="file"  value="上传附件" style=margin-top:10px;" name="record_file" id="record_file" class="form-control "/>
+            </div>
+        </div>
+        <div class="control-group" id="txt_msg_box">
+                <div class="widget widget-table action-table">
+                        <div class="widget-header">
+                            <i class="icon-th-list"></i>
+                            <h3>催款记录 1</h3>
+                        </div>
+                        <div class="widget-content">
+                            <textarea class="form-control" id="txt_msg" style="width:100%">
+                                                                                          </textarea>
+                            <br/>
+                            <button id="btn_save_msg">确定添加</button>&nbsp;&nbsp;&nbsp;
+                            <input type="file" value="上传附件" style=margin-top:10px;" name="record_file" id="record_file" class="form-control "/>
+                                                                                          <hr class="my-0">
+                                                                                         
+                                                                                          <div class="message-item" id="msg_">
+                                                                                              <div class="message-inner">
+                                                                                                  <div class="message-head clearfix">
+                                                                                                      <div class="avatar pull-left">
+                                                                                                          <img src="/static/images/avatar.jpeg">
+                                                                                                      </div>
+                                                                                                      <div class="user-detail">
+                                                                                                          <h5 class="handle">
+                                                                                                              <span style="font-size:13px;"> 
+                                                                                                              </span>
+                                                                                                            
+                                                                                                          </h5>
+                                                                                                      </div>
+                                                                                                  </div>
+                                                                                                  
+                                                                                              </div>
+                                                                                          </div>
+                                                                                         
+                        </div>
+                        <!-- /widget-content -->
+                    </div>
+        </div>
+
+</div>
+
+    </div>
+    <div class="modal-footer">
+   
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <!-- <button class="btn btn-primary" id="btn_save_msg">保存</button> -->
+    </div>
+</div>
+
+
+{%end%} {%block js%}
+<script>
+
+     $(function () {
+         _xsrf = getCookie("_xsrf")
+
+         
+         laydate.render({
+                    elem: '#txt_time' //指定元素
+           });
+      /*   $("#company").typeahead({
+             source: function (query, process) {
+                 return $.post('/api', { query: query, "_xsrf": _xsrf, "tag": "customer_company_acc_uid" }, function (data) {
+                     return process(JSON.parse(data));
+                 });
+             }
+         });
+*/
+
+         
+            $("#btn_save_msg").on("click", function () {
+                customer_id=$(this).attr('customer_id')
+                msg = $("#txt_msg").val()
+                if (msg == "") {
+                    alert("交流记录不能为空哦.")
+                    return false
+                } else {
+                    var formData = new FormData();
+                    formData.append('file', $('#record_file')[0].files[0])
+                    formData.append('_xsrf', _xsrf)
+                    formData.append('msg', msg)
+                    formData.append('customer_id', customer_id)
+                    formData.append('msg_time',$('#txt_time').val())
+                    formData.append('etype', 2)
+
+                    $.ajax({
+                        url: '/customer?tag=customer_exchange',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,  // tell jQuery not to set contentType
+                        success: function (data) {
+                            $('#txt_msg_box').html(data)
+                        }
+                    })
+                }
+
+
+            })
+
+          
+            $("#btn_save_wai_pay").on("click",function(){
+                
+                payment_id = $(this).attr("payment_id")
+                wait_pay_remark = $("#wait_pay_remark").val()
+                if(wait_pay_remark==""){
+                    alert("待收明细不能为空!")
+                }else{
+                    $.post("/payment?tag=save_payment",{"pb_remark": wait_pay_remark,"_xsrf":_xsrf,"payment_id": payment_id},function(result){
+
+                        location.reload()
+
+                    })
+
+                }
+            })
+
+
+            $(".handler_detail").on("click", function () {
+                
+                 wait_pay = $(this).attr("wait_pay")
+                 curr_expire_pay = $(this).attr("curr_expire_pay")
+                customer_id = $(this).attr("customer_id")
+                company_name = $(this).attr("company_name")
+                $('#btn_save_msg').attr('customer_id',customer_id)
+                $("#btn_save_wai_pay").attr("payment_id", "0")
+                $("#curr_expire").text("")
+                $("#last_payment").html("")
+                $("#curr_last_payment").html("")
+                $("#service_price").html("")
+                 $("#account_remark").val("")
+                $("#company_name").text("")
+                $.get("/payment?tag=get_last_payment", { "customer_id": customer_id }, function (result) {
+                    if (result.code == 1) {
+                        
+                        html = "<td>付款方式</td><td>" + result.customer.customer_paytype_id_name + "</td>"
+                        html += "<td>总服务费</td><td>" + result.customer.customer_service_amount + "</td>"
+                        html += "<td>月服务费</td><td>" + result.customer.customer_service_amount_month + "</td>"
+   
+                        html += "<td>账册费</td><td>" + result.customer.customer_book_amount + "</td>"
+                        $("#service_price").html(html)
+                        // $("#msg_service_amount").text("上一次总服务费:" +  result.customer.service_amount)
+
+                        $("#msg_acc_end").text("(上期记账费到期时间:" + result.customer.acc_end + ")")
+                        $("#msg_acc_book_end").text("(上期账册费到期时间:" + result.customer.acc_book_end + ")")
+
+                        if (result.customer.al_remark == undefined || result.customer.al_remark == "") {
+                            $("#last_payment").html("<td colspan='8'>没有上期收款明细哦</td>")
+
+                        } else {
+                            $("#last_payment").html("<td colspan='8'>" + result.customer.al_remark + "</td>")
+                        }
+                        if (result.customer.pb_remark == undefined || result.customer.pb_remark == "") {
+                            $("#curr_last_payment").html("<td colspan='8'>没有待收款明细哦</td>")
+
+                        } else {
+                            $("#curr_last_payment").html("<td colspan='8'>" + result.customer.pb_remark + "</td>")
+                        }
+                        
+                       $("#curr_expire").html("<td colspan='8'>" + curr_expire_pay + "</td>")
+                        $("#company_name").html("<td colspan='8'>" + company_name + "</td>")
+
+                        $("#btn_save_wai_pay").attr("payment_id", result.customer.payment_id)
+
+                        
+                        $("#wait_pay_remark").val(wait_pay)
+                        $("#a_handler_modal").modal("show")
+                    } else {
+
+
+                    }
+                }, "json")
+                
+                $.get('/customer?tag=show_customer_exchange',{"customer_id": customer_id},function (result) { 
+                    $('#txt_msg_box').html(result)
+                 })
+
+            })
+    })
+</script> {%end%}

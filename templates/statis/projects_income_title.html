@@ -1,0 +1,98 @@
+{% extends "../base.html" %} {%block title%}到款结算{%end%} {% block body %}
+
+<style>
+
+    .faye-btn {padding: 0.1rem 0.2rem; background-color: #9ec6ef; margin-left: 20px; border-radius: 2px;}
+
+</style>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        主面板
+    </li>
+    <li class="breadcrumb-item active">到款结算
+      
+
+    </li>
+</ol>
+
+<div class="table-responsive">
+
+<table class="table table-bordered"  style="width:1500px">
+    <thead class="thead-dark">
+        <tr class="active">
+            <th width="50">订单号</th>
+          <th width="150">业务内容</th>
+          <th width="100">到款日期</th>
+          <th width="180">公司名称</th>
+          <th width="100">客户姓名</th>
+          <th width="100">到款内容</th>
+          <th width="100">到款金额</th>
+          <th width="80">销售顾问</th>
+          <th width="80">客服顾问</th>
+        </tr>
+
+
+    </thead>
+    <tbody>
+            {%for item in projects_income_title%}
+            <tr>
+                <td>{{item.id}}</td>
+                <td>{{item.project_name}}</td>
+                <td>{{item.income_at.strftime('%Y-%m-%d')}}</td>
+                <td>{{item.customer_company}}</td>
+                <td>{{item.customer_name}}</td>
+                <td>{{item.income_name}}</td>
+                <td>{{item.income_money}}</td>
+                <td>{{item.sale_name}}</td>
+                <td>{{item.kf_name}}</td>
+            </tr>
+            {%end%}
+    </tbody>
+</table>
+
+<ul class="pagination">
+    {% if pagination.has_prev %}
+    <li class="paginate_button page-item previous " id="dataTable_previous">
+        <a href="/statis?tag=projects_income_title&page={{ pagination.page - 1}}"
+            aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+    {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+    <li class="paginate_button page-item ">
+        <a href="/statis?tag=projects_income_title&page={{page}}" aria-controls="dataTable"
+            data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+    {% else %}
+    <li class="paginate_button page-item active">
+        <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+    {% end %} {% else %}
+    <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0"
+                class="page-link">....</a></span></li>
+    {% end %} {% end %} {% if pagination.has_next %}
+    <li class="paginate_button page-item next" id="dataTable_next"><a href="statis?tag=projects_income_title&page={{pagination.page+1}}"
+            aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+    {% end %}
+</ul>
+
+</div>
+</div>
+
+</div>
+</div>
+{% end %} {%block js%}
+<script>
+    _xsrf = getCookie("_xsrf");
+    $(function () {
+
+            $("#m_statis").click()
+        $("#start").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+        $("#end").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 23:59:59',
+            language: 'zh-CN', initialDate: new Date()
+        });
+
+    })
+
+
+</script> {%end%}

@@ -98,7 +98,6 @@ class StatisHandler(BaseHandler):
                  DATE_FORMAT(created_at,'%%Y-%%m'),uid_name
                  ) b group by ct order by ct desc
 
-
                 ''')
             t_statis_kf_total = self.db.query(
                 '''      select uid_name, sum(project_count) total_income
@@ -149,6 +148,79 @@ class StatisHandler(BaseHandler):
                 t_statis_kf=t_statis_kf,
                 search_key="",
                 )
+        
+        elif tag=="statis_project_detail":
+            step=self.get_argument('step','')
+            type=self.get_argument('type','')
+            date_type=self.get_argument('date_type','')
+            page = int(self.get_argument("page", 1))
+            pre_page=20
+            params={
+                'step':step,
+                'type':type,
+                'date_type':date_type
+            }
+            sql=''
+            if type:
+                sql=' where  service_name="%s" '%type
+            t_projects_type=self.db.query('''
+                select income_name from t_projects_type where income_category='业务类型'
+             ''')
+            t_account_names=self.db.query('''
+                select uid_name,sum(all_money) ta,sum(all_count) ac from t_account_project_detail '''+sql+''' group by uid_name
+            ''')
+
+            if step in ['2','3']:
+                count=self.db.get('''
+                    select count(*) count
+                    from  (select count(*) from t_account_project_detail '''+sql+''' group by created_at )  count
+                ''')
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page-1) * pre_page
+                t_account_project_detail=self.db.query('''
+                    select ct,GROUP_CONCAT( uid_name,"|",all_money,'|',all_count) tapd ,sum(all_money) am,sum(all_count) ac
+                    from (select DATE_FORMAT(created_at,'%%Y-%%m-%%d') ct,all_money, uid_name,all_count,service_name from t_account_project_detail '''+sql+''') b
+                    group by ct order by ct desc limit %s,%s
+                ''',startpage,pre_page)
+            else:
+                if date_type=='month':
+                    dd=" DATE_FORMAT(created_at,'%%Y-%%m') "
+                elif date_type=='day':
+                    dd=" DATE_FORMAT(created_at,'%%Y-%%m-%%d') "
+                count=self.db.get('''
+                    select count(*) count
+                    from  (select count(*) from t_account_project_detail  group by '''+dd+''' )  count
+                ''')
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page-1) * pre_page
+                t_account_project_detail=self.db.query('''
+                    select ct,service_name,GROUP_CONCAT( service_name,"|",all_moneys,'|',all_counts) tapd,
+                     sum(all_moneys) am,sum(all_counts) ac
+                    from(select service_name,sum(all_money) all_moneys,'''+dd+''' ct ,
+                    sum(all_count) all_counts
+                    from t_account_project_detail group by '''+dd+''',service_name) bb
+                    group by ct order by ct desc limit %s,%s
+                ''',startpage,pre_page)
+            t_account_project_detail_type_all=self.db.query('''
+                    select sum(all_money) am,sum(all_count) ac,service_name
+                from t_account_project_detail group by service_name
+                ''')
+            t_account_project_detail_all=self.db.get('''
+                    select sum(all_money) tapda,sum(all_count) ac
+                from t_account_project_detail
+                '''+sql)
+            self.render(
+                'statis/statis_project_detail.html',
+                search_key="",
+                params=params,
+                t_account_project_detail_type_all=t_account_project_detail_type_all,
+                t_projects_type=t_projects_type,
+                t_account_names=t_account_names,
+                t_account_project_detail_all=t_account_project_detail_all,
+                t_account_project_detail=t_account_project_detail,
+                pagination=pagination
+            )
+
         elif tag =="statis_cq_building_month":
             pre_page = 30
             keyword = self.get_argument("key", "")
@@ -1111,3 +1183,84 @@ class StatisHandler(BaseHandler):
                 workdays=self.workdays,
                 todo=todo,
                 tag=tag)
+        
+        elif tag=="projects_income_title":
+            page=int(self.get_argument('page',1))
+            pre_page=20
+            count=self.db.get('''
+                select count(*) count
+                from t_projects_income_title a
+                inner join t_projects b on a.project_id=b.id
+                inner join t_projects_member c on b.id=c.project_id and c.team_id=34 and c.member_name <>''
+                inner join t_projects_member d on b.id=d.project_id and d.team_id=36 and d.member_name <>''
+                inner join t_projects_income e on a.id=e.parent_id and a.project_id=e.project_id
+                where a.fi_confirm_at is not null
+            ''')
+            pagination=Pagination(page,pre_page,count.count,self.request)
+            start_page=(page-1)*pre_page
+            projects_income_title=self.db.query('''
+                select a.income_at,b.id,b.project_name,b.customer_company,b.customer_name,
+                e.income_money,e.income_name,
+                c.member_name  sale_name,d.member_name kf_name
+                from t_projects_income_title a
+                inner join t_projects b on a.project_id=b.id
+                inner join t_projects_member c on b.id=c.project_id and c.team_id=34 and c.member_name <>''
+                inner join t_projects_member d on b.id=d.project_id and d.team_id=36 and d.member_name <>''
+                inner join t_projects_income e on a.id=e.parent_id and a.project_id=e.project_id
+                where a.fi_confirm_at is not null  order by a.created_at desc limit %s,%s
+            ''',start_page,pre_page)
+            self.render('statis/projects_income_title.html',
+                search_key="",
+                tag=tag,
+                pagination=pagination,
+                projects_income_title=projects_income_title
+                )
+        
+        elif  tag=="projects_incomes":
+            page=int(self.get_argument('page',1))
+            step=self.get_argument('step','0')
+            pre_page=20
+            params={
+                
+                'step':step
+            }
+            title_name='销售顾问'
+            if step=='1':
+                title_name='客服顾问'
+            elif step=='2':
+                title_name='客服会计'
+
+                
+            t_user=self.db.query('''
+            select * from t_user where title_name=%s
+            ''',title_name)
+
+            count=self.db.get('''
+            select count(*) count,sum(ssim)  sssim, 
+            (select group_concat(uid_name,'|',sim) es from (select sum(c.income_money) sim,uid_name from t_projects_income c 
+            inner join t_user d on c.uid_name=d.name and d.title_name=%s group by c.uid_name)cc ) every_sum 
+            from (select ca,group_concat(uid_name,'|',sim) us,sum(sim) ssim
+             from (select DATE_FORMAT(created_at,'%%Y-%%m-%%d') ca,uid_name, sum(income_money) sim 
+                from t_projects_income a
+                inner join t_user b on a.uid_name=b.name and b.title_name=%s
+                 group by DATE_FORMAT(created_at,'%%Y-%%m-%%d'),uid_name )aa group by aa.ca )bb
+            ''',title_name,title_name)
+            pagination=Pagination(page,pre_page,count.count,self.request)
+            start_page=(page-1)*pre_page
+            projects_incomes=self.db.query('''
+                select ca,group_concat(uid_name,'|',sim) us,sum(sim) ssim 
+                from (select DATE_FORMAT(created_at,'%%Y-%%m-%%d') ca,uid_name, sum(income_money) sim 
+                from t_projects_income a
+                inner join t_user b on a.uid_name=b.name and b.title_name=%s
+                 group by DATE_FORMAT(created_at,'%%Y-%%m-%%d'),uid_name )aa
+                group by aa.ca  order by aa.ca desc limit %s,%s
+            ''',title_name,start_page,pre_page)
+            self.render('statis/projects_incomes.html',
+                t_user=t_user,
+                count=count,
+                projects_incomes=projects_incomes,
+                pagination=pagination,
+                search_key="",
+                tag=tag,
+                params=params
+                ) 

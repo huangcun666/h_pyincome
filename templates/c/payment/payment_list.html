@@ -11,8 +11,10 @@
 <i class="icon-user"></i>
 <h3>记账应收管理
 
-<a href="/payment?tag=list">记账应收管理</a> /
-    <a href="/payment?tag=project_payment_list">记账最新到款列表</a> / <a href="/payment?tag=project_customer_list">最新记账入库客户列表</a></h3>
+{% include "payment_nav.html" %}
+
+
+</h3>
 
 </div> <!-- /widget-header -->
 <div class="widget-content">
@@ -20,7 +22,13 @@
 <div class="tab-pane active" id="formcontrols">
 
 <fieldset>
-
+    <form class="form-search" id="query_form">
+        <input type="text" value="" id="company" name="company" class="input-medium search-query" placeholder="公司名称">
+      
+        <button type="submit" class="btn">检 索</button>
+        <input type="hidden" value="{{tag}}" name="tag"/>
+      
+      </form>
 
 
                         {%if customers%}
@@ -28,11 +36,11 @@
                      <thead>
                                 <tr style="background-color: black; color:#fff;">
 
-                                <th style="min-width:180px;">公司名称</th>
+                                <th style="min-width:130px;">公司名称</th>
+<th style="min-width:50px;">会计</th>
 
 
-
-                                <th style="min-width:150px;">付款方式</th>
+                                <th style="min-width:60px;">付款方式</th>
                                 <th style="min-width:60px;">总服务费</th>
                                 <th style="min-width:60px;">月服务费</th>
 
@@ -40,10 +48,14 @@
 
 
                                 <th>帐册费</th>
-                                <th>记账费到期时间</th>
-                                  <th>账册费到期时间</th>
-                                  <th>更新时间</th>
-                                  <th>更新人</th>
+                                <th>记账费到期</th>
+                                  <th>账册费到期</th>
+                             <th width="175">最新收款明细</th>
+                                <th width="175">待收明细</th>
+                                <th width="70">待收金额</th>
+
+
+
 
                                 </tr>
                             </thead>
@@ -53,16 +65,33 @@
                     <tr>
 
                         <td><a href="/customer?tag=show&id={{item.customer_id}}&guid={{item.guid}}">{{item.company}}</a></td>
+                        <td>{{item.acc_uid_name}}</td>
                    <td>{{item.pay_pay_typeid_name}}</td>
+
+
+                 
                         <td>{{item.pay_service_amount}}</td>
                         <td>{{item.pay_service_amount_month}}</td>
 
-                        <td>{{item.pay_book_amount}}</td>
-  <td>{{item.acc_end}}</td>
-  <td>{{item.acc_book_end}}</td>
-  <td>{{item.pay_updated_at}}</td>
-    <td>{{item.pay_uid_name}}</td>
+                        <td >{{item.pay_book_amount}}</td>
+  <td>
+    {%if item.acc_end%}
+    {{item.acc_end.strftime("%Y-%m")}}
+    {%end%}
+</td>
+  <td>
 
+    {%if item.acc_book_end %}
+    {{item.acc_book_end.strftime("%Y-%m")}}
+    {%end%}
+</td>
+    <td>{%if item.al_remark%}{{item.al_remark}}{%end%}</td>
+  <td>{%if item.pb_remark%}{{item.pb_remark}}{%end%}</td>
+<td {%if item.wait_pay_amount > 0%} style="background-color:yellow" {%end%}>{%if item.wait_pay_amount%}{{item.wait_pay_amount}}{%end%}</td>
+
+
+
+ 
 
                     </tr>
                     {%end%}
@@ -79,15 +108,15 @@
                               <div class="pagination">
                         <ul>
                             {% if pagination.has_prev %}
-                            <li><a href="/finance?tag={{tag}}&page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li><a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li>
-                                <a href="/finance?tag={{tag}}&page={{ page }}">{{ page }}</a></li>
+                                <a href="/payment?tag={{tag}}&page={{ page }}">{{ page }}</a></li>
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
                             {% end %} {% else %}
                             <li><span class="active"><a href="#">....</a></span></li>
                             {% end %} {%end %} {% if pagination.has_next %}
-                            <li><a href="/finance?tag={{tag}}&page={{pagination.page+1}}">下页 &raquo;</a></li>
+                            <li><a href="/payment?tag={{tag}}&page={{pagination.page+1}}">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>
@@ -97,6 +126,7 @@
 
 
 
+</div>
 </div>
 </div>
 </div> <!-- /widget-content -->
@@ -177,14 +207,21 @@
     {%end%}
 
     {%block js%}
+    <script src="/static/vendor/jquery/jquery.min.js"></script>
+
+<script src="/static/bootstrap-typeahead.js"></script>
 
 <script>
 
 $(function () {
-
-    $("#a_handler").on("click",function(){
-        $("#a_handler_modal").modal("show")
-    })
+    _xsrf = getCookie("_xsrf")
+    $("#company").typeahead({
+        source: function (query, process) {
+            return $.post('/api', { query: query, "_xsrf": _xsrf, "tag": "customer_company"  }, function (data) {
+                return process(JSON.parse(data));
+            });
+        }
+    });
 
 
 });

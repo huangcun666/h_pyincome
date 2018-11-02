@@ -1,0 +1,16 @@
+
+
+ {%if role=="3" or role=="8"%}
+
+
+
+/ <a href="/payment?tag=list">记账应收管理</a> 
+
+
+    / <a href="/payment?tag=list_company_in_customer">已成立公司到款列表</a>
+    / <a href="/payment?tag=list_company&state=reg">未成立公司到款列表</a>
+     /
+    <a href="/payment?tag=expire_customer&show_tag=1">即将到期客户费用列表</a>
+/<a href="/payment?tag=list_company_in_customer_req&pay_project_id=0&state=0">应收确认审核</a>
+
+     {%end%}

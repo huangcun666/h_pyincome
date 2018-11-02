@@ -1,0 +1,537 @@
+
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+<style>
+
+<style>
+.modal-dialog,
+.modal-content {
+    /* 80% of window height */
+    height: 80%;
+    margin-top: 20px;
+}
+
+.modal-body {
+    /* 100% = dialog height, 120px = header + footer */
+    max-height: calc(100vh - 210px); overflow-y: auto; 
+    overflow-y: scroll;
+}
+
+</style>
+
+</style>
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>记账应收管理
+{% include "payment_nav.html" %}
+
+
+</h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+        <form class="form-search" id="query_form">
+                <input type="text" value="{%if company%}{{company}}{%end%}" name="company" id="company" class="input-medium search-query" placeholder="公司名称">
+              
+                <button type="submit" class="btn">检 索</button>
+                <input type="hidden" value="{{tag}}" name="tag"/>
+                            <input type="hidden" value="{{state}}" name="state" />
+
+                            <input type="hidden" value="{{pay_project_id}}" name="pay_project_id" />
+
+                
+              </form>
+<ul class="nav nav-tabs" id="myTab">
+
+    <li {%if pay_project_id==0%} class="active" {%end%}>
+        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=0&state=0" id="customer_tab">待审核</a>
+    </li>
+    <li {%if pay_project_id > 0 and state==2%} class="active" {%end%}>
+        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=1&state=2" id="tab_confirm">已审核</a>
+    </li>
+    <li {%if pay_project_id> 0 and state==1%} class="active" {%end%}>
+        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=1&state=1" id="tab_confirm">驳回订单</a>
+    </li>
+</ul>
+
+<fieldset>
+
+
+
+                        {%if customers%}
+              <table class="table" style="margin:5px;">
+                     <thead>
+                                <tr style="background-color: black; color:#fff;">
+
+                                <th style="width:180px;">公司名称</th>
+                                <th style="width:60px;">会计</th>
+
+
+
+                                <th style="width:200px;">本期到款内容</th>
+
+
+
+            
+                                
+
+                                <th style="width:80px;">到款时间</th>
+
+
+                                {%if state==0%}
+                                <th style="width:60px;"></th>
+
+                                {%elif state==1%}
+                                <th style="width:120px;">处理人</th>
+                                <th style="width:60px;">确认审核</th>
+                                 {%else%}
+
+                                    <th style="width:120px;">处理人</th>
+                                    <th style="width:60px;">确认审核</th>
+                                   {%end%}
+
+
+
+
+                                </tr>
+                            </thead>
+                <tbody>
+
+     {%for item in customers%}
+                    <tr>
+                      
+                        <td><a target="_blank" href="/payment?tag=customer&customer_id={{item.a_customer_id}}&to_tag=payment_tab">{{item.customer_company}}</a></td>
+                                        <td>{{item.acc_uid_name}}</td>
+
+            <td>{{item.payment_id}}--{{item.c_customer_id}}---
+                {{item.project_name}}(编号:{{item.project_id}})
+                <br/>
+                <span style="color: red"> 到款: 第{{item.income_num}}笔 {{item.income_list}}</span>
+                <br/>
+                <span style="color: blue"> 明细: {{item.pay_list}}</span>
+            
+            </td>
+               
+
+
+                 
+  <td>
+    {%if item.title_created_at%}
+    {{item.title_created_at.strftime("%Y-%m-%d")}}
+    {%end%}
+</td>
+
+    {%if pay_project_id==0%}
+            <td>
+         
+            
+                <a class="btn handler_detail btn-sm control" 
+                al_remark = "{%if item.al_remark%}{{item.al_remark}}{%end%}"
+                pb_remark = "{%if item.pb_remark%}{{item.pb_remark}}{%end%}"
+                type='button' income_id="{{item.income_title_id}}" 
+                 customer_id="{{item.a_customer_id}}"
+                    project_id="{{item.project_id}}" 
+                     customer_company = "{{item.customer_company}}"
+                    customer_pay_type_id="{{item.customer_pay_type_id}}" 
+                    customer_paytype_id_name="{{item.customer_paytype_id_name}}"
+                     curr_payment_detail="{{item.project_name}}(编号:{{item.project_id}}) {{item.pay_list}}"
+                    customer_service_amount="{{item.customer_service_amount}}"
+                    customer_service_amount_month="{{item.customer_service_amount_month}}"
+                     customer_book_amount="{{item.customer_book_amount}}"
+                     income_title_id="{{item.income_title_id}}"
+                     acc_end="{%if item.acc_end%}{{item.acc_end.strftime("%Y-%m")}}{%else%}N{%end%}"
+                     acc_book_end="{%if item.acc_book_end%}{{item.acc_book_end.strftime("%Y-%m")}}{%else%}N{%end%}"
+                     payment_confirm_remark ="{%if item.payment_confirm_remark%}{{item.payment_confirm_remark}}{%end%}"
+                     payment_confirm_state= "{%if item.payment_confirm_state%}{{item.payment_confirm_state}}{%end%}"
+                     payment_id = "{{item.payment_id}}"
+                    href="javascript:void(0)">审核</a>
+                 
+            </td>
+            {%else%}
+                <td>
+                    审核人:
+                    {{item.payment_confirm_uid_name}}
+                    <br/>
+                    时间: {{item.title_created_at}}
+                
+                </td>
+                <td>
+                     确认人: {{item.is_handler_uid_name}}
+                    <br/> 时间: {{item.is_handler_at}}
+                </td>
+              
+            {%end%}
+
+             
+
+                    </tr>
+                    {%end%}
+
+
+
+                </tbody>
+              </table>
+
+                    {%else%}
+                        还没有客户哦。
+
+                    {%end%}
+                              <div class="pagination">
+                        <ul>
+                            {% if pagination.has_prev %}
+                            <li><a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if state%}&state={{state}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li>
+                                <a href="/payment?tag={{tag}}&page={{ page }}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if state%}&state={{state}}{%end%}">{{ page }}</a></li>
+                            {% else %}
+                            <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                            {% end %} {% else %}
+                            <li><span class="active"><a href="#">....</a></span></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li><a href="/payment?tag={{tag}}&page={{pagination.page+1}}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if state%}&state={{state}}{%end%}">下页 &raquo;</a></li>
+                            {% end %}
+                        </ul>
+                    </div>
+</fieldset>
+
+</div>
+
+
+
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+
+<div id="a_handler_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel_account">审核应收到款
+
+
+
+        </h3>
+    </div>
+    <div class="modal-body">
+       
+
+<table border="1" style="padding:5x;width:100%">
+
+        <tr style="background:#efefef; font-size:12px;" id="customer_company">
+        
+        </tr>
+
+    <tr style="background:#ccc;">
+        <td colspan="8">当前收款基本信息</td>
+    </tr>
+    <tr id="service_price">
+        
+    </tr>
+
+    <tr  style="background:#ccc;">
+        <td colspan="8">本期收款明细</td>
+    </tr>
+    <tr id="last_payment">
+    
+    </tr>
+    <tr style="background:#ccc;">
+        <td colspan="8">本期待收款明细</td>
+    </tr>
+    <tr id="curr_last_payment">
+    
+    </tr>
+</tr>
+<tr style="background:#ccc;">
+    <td colspan="8">本期到款明细</td>
+</tr>
+<tr id="curr_payment_detail">
+
+</tr>
+
+</table>
+
+
+
+
+<table  style="padding:3x;width:100%">
+
+    <tr>
+        <td><div class="control-group">
+        
+            <label class="control-label" for="acc_end">记账费到期时间
+               
+        
+        
+            </label>
+            <div class="controls">
+                <span id="msg_acc_end" style="color:red"></span>
+            </div>
+            <!-- /controls -->
+        </div></td><td>
+
+<div class="control-group">
+
+    <label class="control-label" for="account">账册费到期时间
+        <span id="is_free" style="color: red"></span>
+
+
+    </label>
+    <div class="controls">
+        <span id="msg_acc_book_end" style="color:red"></span>
+    </div>
+    <!-- /controls -->
+</div>
+
+
+
+        </td>
+    </tr>
+</table>
+
+       
+
+
+        <div class="control-group well">
+            <label class="control-label" for="payment_confirm_remark">应收确认审核</label>
+            <input type="radio" name="state" checked="checked" value="2"/> 同意
+            <input type="radio" name="state" value="1" /> 驳回
+
+            <div class="controls" id="pc_remark_show">
+                <textarea type="text" class="span5" id="payment_confirm_remark" name="payment_confirm_remark" value="" style="height: 40px;"></textarea>
+            </div>
+            <!-- /controls -->
+        </div>
+
+        
+
+
+    </div>
+    <div class="modal-footer">
+
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <button class="btn btn-primary" id="btn_save">保存</button>
+    </div>
+</div>
+
+
+
+
+
+
+    {%end%}
+
+    {%block js%}
+
+<script src="http://momentjs.com/downloads/moment.js"></script>
+<script src="/static/combodate.js"></script>
+
+
+
+<script>
+
+    $(function () {
+        _xsrf = getCookie("_xsrf")
+
+      //  moment().format('YYYY-MM'); // 十月 25日 2018, 12:28:24 中午
+      //  moment.locale();         // zh-cn
+
+        $(function () {
+            _xsrf = getCookie("_xsrf")
+            $("#company").typeahead({
+                source: function (query, process) {
+                    return $.post('/api', { query: query, "_xsrf": _xsrf, "tag": "customer_company" }, function (data) {
+                        return process(JSON.parse(data));
+                    });
+                }
+            });
+
+
+        });
+
+        $('input[type=radio][name=state]').change(function () {
+           // alert($(this).val())
+            if (this.value == '1') {
+               $("#pc_remark_show").show()
+            }
+            else if (this.value == '2') {
+                $("#pc_remark_show").hide()
+            }
+        });
+        $(".handler_detail").on("click", function () {
+            // $("#pc_remark_show")
+            //$('#acc_book_end').combodate("setValue", "2018-02-01");
+
+            $("#pc_remark_show").hide()
+            payment_id = $(this).attr("payment_id")
+            acc_end = $(this).attr("acc_end")
+            acc_book_end = $(this).attr("acc_book_end")
+            pb_remark = $(this).attr('pb_remark')
+            al_remark = $(this).attr("al_remark")
+            payment_confirm_remark = $(this).attr('payment_confirm_remark')
+            $("#payment_confirm_remark").val(payment_confirm_remark)
+
+            payment_confirm_state = $(this).attr('payment_confirm_state')
+        //    if (payment_confirm_state == 1) {
+          //      $("input[name=state][value=1]").prop("checked", true)
+          //  } else {
+              //  $("input[name=state][value=1]").prop("checked", true)
+//
+//}
+
+           // alert(acc_book_end)
+            if(acc_end != "N"){
+               //  $('#acc_end').combodate("setValue", acc_end);
+                 $("#msg_acc_end").text( acc_end)
+
+            }else{
+                 // $('#acc_end').combodate("clearValue" );
+                 $("#msg_acc_end").text("(无系统记录)")
+            }
+            console.log(typeof acc_book_end)
+            if ( acc_book_end != "N") {
+               // alert(acc_book_end)
+               // $('#acc_book_end').combodate("setValue", acc_book_end);
+                $("#msg_acc_book_end").text(acc_book_end)
+
+            }else{
+              //  $('#acc_book_end').combodate("clearValue");
+                $("#msg_acc_book_end").text("(无系统记录)")
+            }
+            income_id = $(this).attr("income_id")
+            customer_id = $(this).attr("customer_id")
+            project_id = $(this).attr("project_id")
+            customer_pay_type_id = $(this).attr("customer_pay_type_id")
+            customer_paytype_id_name = $(this).attr('customer_paytype_id_name')
+            customer_service_amount = $(this).attr("customer_service_amount")
+            customer_service_amount_month = $(this).attr("customer_service_amount_month")
+            customer_book_amount = $(this).attr("customer_book_amount")
+            if (customer_book_amount ==0){
+                $("#is_free").text("(免账册费,无需选择到期时间)")
+            }
+            $("#curr_payment_detail").html("<td colspan='8'>" + $(this).attr("curr_payment_detail") + "</td>")
+
+            //$("#al_remark").val($(this).attr("curr_payment_detail"))
+          //  $("#pb_remark").val("")
+            $("#customer_company").val("")
+            customer_company = $(this).attr("customer_company")
+            customer_fee = $(this).attr('customer_fee')
+            detail_id = $(this).attr('detail_id')
+            $("#btn_save").attr("customer_id", customer_id)
+            $("#btn_save").attr("payment_id", payment_id)
+            $("#btn_save").attr("project_id", project_id)
+            html="<td>付款方式</td><td>"+ customer_paytype_id_name+"</td>"
+            html += "<td>总服务费</td><td>" + customer_service_amount + "</td>"
+            html += "<td>月服务费</td><td>" + customer_service_amount_month + "</td>"
+            html += "<td>账册费</td><td>" + customer_book_amount + "</td>"
+            $("#service_price").html(html)
+          
+             if( al_remark == ""){
+                $("#last_payment").html("<td colspan='8'>没有本期收款明细哦</td>")
+
+                 }else{
+                    $("#last_payment").html("<td colspan='8'>" + al_remark + "</td>")
+                 }
+
+            if (pb_remark == "") {
+                $("#curr_last_payment").html("<td colspan='8'>没有本期待收款明细哦</td>")
+
+            } else {
+                $("#curr_last_payment").html("<td colspan='8'>" + pb_remark + "</td>")
+            }
+            $("#customer_company").html("    <td colspan='8'>" + customer_company + "</td>")
+
+         
+
+            $.get("/payment?tag=get_last_payment",{"customer_id":customer_id,"payment_id": payment_id},function(result){
+                if(result.code==1){
+                  
+                // $("#msg_service_amount").text("上一次总服务费:" +  result.customer.service_amount)
+    
+
+
+                   //$("#msg_acc_end").text("(本期记账费到期时间:" + result.customer.acc_end+")")
+                  // $("#msg_acc_book_end").text("(上期账册费到期时间:" + result.customer.acc_book_end+")")
+                   // if(result.customer.al_remark==undefined || result.customer.al_remark == ""){
+                  //      $("#last_payment").html("<td colspan='8'>没有上期收款明细哦</td>")
+
+                 //   }else{
+                    //    $("#last_payment").html("<td colspan='8'>" + result.customer.al_remark + "</td>")
+                 //   }
+               //     if (result.customer.pb_remark == undefined || result.customer.pb_remark=="") {
+              //          $("#curr_last_payment").html("<td colspan='8'>没有本期待收款明细哦</td>")
+
+              //      } else {
+                  //      $("#curr_last_payment").html("<td colspan='8'>" + result.customer.pb_remark + "</td>")
+                 //   }
+             //   }else{
+                    //$("#msg_acc_book_end").text("(上期账册费到期时间:无系统记录)")
+                  //  $("#msg_acc_end").text("(上期记账费到期时间:无系统记录)")
+                   // $("#last_payment").html("<td colspan='8'>没有上期收款明细哦</td>")
+                   // $("#curr_last_payment").html("<td colspan='8'>没有本期待收款明细哦</td>")
+
+                }
+           },"json")
+            $("#a_handler_modal").modal("show")
+        })
+        function intToFloat(val) {
+            return new Number(val).toFixed(2);
+        }
+        $('input[type="radio"][name="pay_type_id"]').click(function () {
+            service_amount = $("#service_amount").val()
+            if ($(this).is(':checked')) {
+                all_total = service_amount / $(this).attr("fee");
+                $("#service_month_amount").val(intToFloat(all_total))
+            }
+        });
+
+        $('#service_amount').keyup(function () {
+            all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
+            $("#service_month_amount").val(intToFloat(all_total))
+
+
+        });
+
+       
+        $("#btn_save").click(function () {
+            
+            customer_id = $(this).attr("customer_id")
+            project_id = $(this).attr("project_id")
+            payment_id = $(this).attr("payment_id")
+            payment_confirm_remark = $("#payment_confirm_remark").val()
+            payment_confirm_state = $("input[name=state]:checked").val()
+            
+           //alert(payment_confirm_state)
+            $.post("/payment?tag=payment_confirm", {
+                 "customer_id": customer_id,
+                 "project_id": project_id,
+                 "payment_id": payment_id,
+                 "payment_confirm_remark": payment_confirm_remark,
+                 "payment_confirm_state": payment_confirm_state,
+                  "_xsrf": _xsrf
+            }, function (result) {
+                console.log(result)
+                if(result=="0"){
+               location.reload()
+                }else{
+                    alert('保存失败.')
+                }
+            })
+        })
+
+
+    });
+
+</script>
+
+
+    {%end%}

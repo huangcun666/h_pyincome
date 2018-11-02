@@ -34,9 +34,9 @@
 		.ge1-box2 p i {width: 25px; font-size: 16px; border:none; border-bottom: 1px solid #272727; font-style:normal;}
 		.ge1-box3 p {margin-top: 12px; font-size: 16px; line-height: 15px;} 
 		/*第二行*/
-		.ge2-box1{width: 255px;padding-left: 20px;}
-		.ge2-box2 {width: 430px; }
-		.ge2-box3 {width: 295px;}
+		.ge2-box1{width: 235px;padding-left: 20px;}
+		.ge2-box2 {width: 470px; }
+		.ge2-box3 {width: 275px;}
 		/*第三行*/
 		.ge3-box1 {float: left; width: 700px; }
 		.ge3-box2 {float: left; width: 300px; }
@@ -67,13 +67,13 @@
  		
 		/*第六行*/
 		.ge9-box1 {width: 166px; height: 141px; float: left;}
-		.ge9-box1 div {height: 70px;}
+		.ge9-box1 div {height: 75px;}
 		.n-box1 {  height: 70px; padding: 5px 0 0 5px;box-sizing: border-box;}
 		.ge9-box1 div span{display: block; height: 35px; padding-top:4px; padding-left: 4px; box-sizing: border-box;}
 		.ge9-box1 div:nth-child(2) {height: 71px; border-top:1px solid #272727;}
 		.ge9-box2 {width: 166px; height: 141px;float: left; border-left: 1px solid #272727;box-sizing: border-box;}
-		.ge9-box2 span:nth-child(1) {display: block; height: 108px; padding-top:4px; padding-left: 4px; box-sizing: border-box;}
-		.ge9-box2 span:nth-child(2) {display: block; height: 35px; padding-top:4px; padding-left: 4px; box-sizing: border-box; font-size: 14px;}
+		.ge9-box2 span:nth-child(1) {display: block; height: 75px; padding-top:4px; padding-left: 4px; box-sizing: border-box;}
+		.ge9-box2 span:nth-child(2) {display: block; padding-top:4px; padding-left: 4px; box-sizing: border-box; font-size: 14px;border-top: 1px solid #272727;}
 		.ge9-box3 {width: 668px; height: 141px;float: left; border-left: 1px solid #272727;box-sizing: border-box;}
 		.ge9-box3 div {height: 70px;}
 		.ge9-box3 .n-box3 {height: 71px; border-top:1px solid #272727;}
@@ -344,10 +344,21 @@ if(val=='0' & (name=='2' || name=='3')){
 						</div>
 					</div>
 					<div class="ge9-box2">
+					
 						<span style="font-size:13px">工商专员：<br/>
 						{% raw getMemberNameCQ(t_project_members,"工商专员")%}
 
 						</span>
+						
+						<span style="font-size:13px">客服会计：<br/>
+							{% for item in t_project_members%}
+							{%if item.team_id==205%}
+							{{item.member_name}}
+							{%end%}
+							{%end%}
+	
+							</span>
+					
 					</div>
 					<div class="ge9-box3">
 						<div class="aaa">

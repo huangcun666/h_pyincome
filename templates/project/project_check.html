@@ -21,6 +21,32 @@
 
     </div>
     </nav>
+    <form>
+        <table>
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>公司名</th>
+                    <th>电话</th>
+                    <th>业务名称</th>
+                    <th></th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" class="form-control" name='project_id' placeholder="编号" {%if params['project_id']%}value="{{params['project_id']}}"{%end%}></td>
+                    <td><input type="text" class="form-control" name='company' placeholder="公司名" {%if params['company']%}value="{{params['company']}}"{%end%}></td>
+                    <td><input type="text" class="form-control" name='tel' placeholder="电话" {%if params['tel']%}value="{{params['tel']}}"{%end%}></td>
+                    <td><input type="text" class="form-control" name='project_name' placeholder="业务名称" {%if params['project_name']%}value="{{params['project_name']}}"{%end%}></td>
+                    <td>
+                        <input name="tag" value="project_check" hidden>
+                        {%if step%}
+                        <input name="step" value="{{step}}" hidden>
+                        {%end%}
+                        <input type="submit" value="检索"></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
       <div class="card mb-3">
             <div class="card-body">
 
@@ -77,16 +103,31 @@
                         <ul class="pagination">
                             {% if pagination.has_prev %}
                             <li class="paginate_button page-item previous " id="dataTable_previous">
-                                <a href="/project?tag=project_check{%if step%}&step={{step}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                <a href="/project?tag=project_check{%if step%}&step={{step}}{%end%}                                
+                                {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}
+                                {%if params['company']%}&company={{params['company']}}{%end%}
+                                {%if params['tel']%}&tel={{params['tel']}}{%end%}
+                                {%if params['project_name']%}&project_name={{params['project_name']}}{%end%}&page={{ pagination.page - 1}}" 
+                                aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li class="paginate_button page-item ">
-                                <a href="/project?tag=project_check{%if step%}&step={{step}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                <a href="/project?tag=project_check{%if step%}&step={{step}}{%end%}
+                                {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}
+                                {%if params['company']%}&company={{params['company']}}{%end%}
+                                {%if params['tel']%}&tel={{params['tel']}}{%end%}
+                                {%if params['project_name']%}&project_name={{params['project_name']}}{%end%}
+                                &page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                             {% else %}
                             <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                             {% end %} {% else %}
                             <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
                             {% end %} {%end %} {% if pagination.has_next %}
                             <li class="paginate_button page-item next" id="dataTable_next">
-                            <a href="/project?tag=project_check{%if step%}&step={{step}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                            <a href="/project?tag=project_check{%if step%}&step={{step}}{%end%}                                
+                            {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}
+                                {%if params['company']%}&company={{params['company']}}{%end%}
+                                {%if params['tel']%}&tel={{params['tel']}}{%end%}
+                                {%if params['project_name']%}&project_name={{params['project_name']}}{%end%}
+                                &page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>
@@ -168,6 +209,8 @@
             if(kf_check_status==undefined){
                 alert('未选择')
         }else{
+            $(this).text('保存中')
+            $(this).attr('disabled','disabled')
         $.post('/project?tag=project_check',
             {
                 '_xsrf':_xsrf,

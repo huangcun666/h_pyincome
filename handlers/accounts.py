@@ -79,7 +79,8 @@ class LoginHandler(BaseHandler):
                     'is_developer', str(t_user.is_developer), expires_days=30)
                 self.set_secure_cookie('sh_manage', str(t_user.sh_manage), expires_days=30)
                 self.set_secure_cookie('kf_manage', str(t_user.kf_manage), expires_days=30)
-
+                self.set_secure_cookie('express_manage', str(t_user.express_manage), expires_days=30)
+                self.set_secure_cookie('role_list',str(t_user.role_list) or '',expires_days=30)
 
 
                 t_role = self.db.get("select * from t_user_group where id=%s",t_user.role)
