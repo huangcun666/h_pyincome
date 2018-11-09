@@ -29,24 +29,76 @@
                                                     <button type="submit" class="btn">检 索</button>
                                                     <input type="hidden" value="{{tag}}" name="tag"/>
                                                 <input type="hidden" value="{{show_tag}}" name="show_tag" />
+                                                <input type="hidden" value="{{by_tag}}" name="by_tag" />
+
+
+
 
                                                   </form>
 
+                                                 
+
 <ul class="nav nav-tabs" id="myTab">
 
-    <li {%if show_tag=="1"%} class="active" {%end%}>
+    <li {%if show_tag=="1" %} class="active" {%end%}>
         <a href="/payment?tag=expire_customer&show_tag=1" id="customer_tab">待处理</a>
     </li>
+
+
+
     <li {%if show_tag=="2"%} class="active" {%end%}>
         <a href="/payment?tag=expire_customer&show_tag=2" id="tab_confirm">已处理</a>
     </li>
 </ul>
 
+ {%if show_tag=="1"%}
+                <ul class="nav nav-tabs" id="myTab">
+
+
+                    
+<li {%if show_tag=="1"  and not by_tag%} class="active" {%end%}>
+    <a href="/payment?tag=expire_customer&show_tag=1" id="customer_tab">全部</a>
+</li>
+
+                    <li {%if show_tag=="1" and by_tag=="正常" %} class="active" {%end%}>
+                        <a href="/payment?tag=expire_customer&by_tag=正常" id="customer_tab">正常</a>
+                    </li>
+                    <li {%if show_tag=="1" and by_tag=="解约" %} class="active" {%end%}>
+                        <a href="/payment?tag=expire_customer&by_tag=解约" id="customer_tab">解约</a>
+                    </li>
+                
+                
+                    <li {%if show_tag=="1" and by_tag=="停账" %} class="active" {%end%}>
+                        <a href="/payment?tag=expire_customer&by_tag=停账" id="customer_tab">停账</a>
+                    </li>
+                
+                
+                
+                    <li {%if show_tag=="1" and by_tag=="注销" %} class="active" {%end%}>
+                        <a href="/payment?tag=expire_customer&by_tag=注销" id="customer_tab">注销</a>
+                    </li>
+                
+                    <li {%if show_tag=="1" and by_tag=="逾期" %} class="active" {%end%}>
+                        <a href="/payment?tag=expire_customer&by_tag=逾期" id="customer_tab">逾期</a>
+                    </li>
+                </ul>
+
+{%end%}
+
+
+                                        <div class="alert">
+                                        
+                           
+                                                                                         当前数量: {{pagination.total_count}}
+
+                                        </div>
 
                                         {%if customers%}
+
                                         <table class="table" style="margin:5px;">
                                             <thead>
                                                 <tr style="background-color: black; color:#fff;">
+                                                    <th style="width:20px;"></th>
 
                                                     <th style="min-width:150px;">公司名称</th>
 
@@ -64,8 +116,8 @@
                                                     <th>帐册费</th>
                                                     <th>记账费到期</th>
                                                     <th>账册费到期</th>
-                                                    <th width="180">最新收款明细</th>
-                                                    <th width="180">待收明细</th>
+                                                    <th width="160">最新收款明细</th>
+                                                    <th width="160">待收明细</th>
  {%if show_tag=="1"%}<th width="60"></th>{%end%}
 
  {%if show_tag=="2"%}
@@ -78,8 +130,24 @@
                                                 {%for item in customers%}
                                                 <tr>
 
+
+                                              
+        <td>
+        <a class="modify_customer_detail btn-sm control"
+         customer_id="{{item.customer_id}}" 
+         promo_id="{{item.promo_id}}|{{item.promo_id_name}}" is_general="{{item.is_general}}"
+         pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
+         pay_service_amount = "{{item.pay_service_amount}}"
+         pay_service_amount_month  = "{{item.pay_service_amount_month}}"
+         pay_book_amount ="{{item.pay_book_amount}}" guid="{{item.guid}}"
+         customer_type="{{item.customer_type}}"  href="javascript:void(0)"
+        >
+            <img src="/static/images/modify.png" width="20"/></a>
+        
+        </td>
                                                     <td>
                                                         <a href="/customer?tag=show&id={{item.customer_id}}&guid={{item.guid}}">{{item.company}}</a>
+
                                                     </td>
                                                      <td>{{item.acc_uid_name}}</td>
                                                     <td>{{item.pay_pay_typeid_name}}</td>
@@ -118,7 +186,9 @@ wait_pay="{%if item.acc_end and   compare_date(item.acc_end,dt_next)%}{{item.nex
     company_name="{{item.company}}"
     
     >
-     发起待收</a>
+     发起</a>
+
+ 
 </td>
 
 {%if show_tag=="2"%}
@@ -138,10 +208,10 @@ wait_pay="{%if item.acc_end and   compare_date(item.acc_end,dt_next)%}{{item.nex
                                             <ul>
                                                 {% if pagination.has_prev %}
                                                 <li>
-                                                    <a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}{%if show_tag%}&show_tag={{show_tag}}{%end%}">&laquo; 上页</a>
+                                                    <a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}{%if show_tag%}&show_tag={{show_tag}}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}">&laquo; 上页</a>
                                                 </li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                                                 <li>
-                                                    <a href="/payment?tag={{tag}}&page={{ page }}{%if show_tag%}&show_tag={{show_tag}}{%end%}{%if company%}&company={{company}}{%end%}">{{ page }}</a>
+                                                    <a href="/payment?tag={{tag}}&page={{ page }}{%if show_tag%}&show_tag={{show_tag}}{%end%}{%if company%}&company={{company}}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}">{{ page }}</a>
                                                 </li>
                                                 {% else %}
                                                 <li>
@@ -157,7 +227,7 @@ wait_pay="{%if item.acc_end and   compare_date(item.acc_end,dt_next)%}{{item.nex
                                                 </li>
                                                 {% end %} {%end %} {% if pagination.has_next %}
                                                 <li>
-                                                    <a href="/payment?tag={{tag}}&page={{pagination.page+1}}{%if show_tag%}&show_tag={{show_tag}}{%end%}{%if company%}&company={{company}}{%end%}">下页 &raquo;</a>
+                                                    <a href="/payment?tag={{tag}}&page={{pagination.page+1}}{%if show_tag%}&show_tag={{show_tag}}{%end%}{%if company%}&company={{company}}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}">下页 &raquo;</a>
                                                 </li>
                                                 {% end %}
                                             </ul>
@@ -186,10 +256,7 @@ wait_pay="{%if item.acc_end and   compare_date(item.acc_end,dt_next)%}{{item.nex
 <div id="a_handler_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel_account">发起待收
-
-
-        </h3>
+        <h3 id="myModalLabel_account">发起待收</h3>
     </div>
     <div class="modal-body">
         <div class="control-group">
@@ -272,6 +339,100 @@ wait_pay="{%if item.acc_end and   compare_date(item.acc_end,dt_next)%}{{item.nex
 </div>
 
 
+<div id="a_customer_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel_account">修改基础数据
+
+
+        </h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group">
+            <label for="promo_id" class="control-label">优惠活动:
+            </label>
+            <div class="controls">
+                <select name="promo_id" id="promo_id" class="form-control">
+                    <option value="0">==请选择优惠活动==</option>
+                    {% for idx, item in enumerate(t_promo_types) %}
+        
+                    <option value="{{item.id}}|{{item.income_name}}">
+                        {{item.income_name}}
+                    </option>
+                    {% end %}
+                </select>
+            </div>
+        </div>
+        
+        
+        <div class="control-group">
+            <label class="control-label" for="is_general">是否一般纳税人</label>
+            <div class="controls">
+                <input type="radio" name="is_general" value="1" /> 是
+                <input type="radio" name="is_general" value="0" /> 否
+                <p id="msg_is_general" class="help-block" style="color:red"></p>
+            </div>
+            <!-- /controls -->
+        </div>
+
+
+
+                <div class="control-group">
+                    <label class="control-label" for="is_general">客户类型
+                    </label>
+                    <div class="controls">
+                        {%for item in t_customer_type%}
+                        <input type="checkbox" name="customer_type" value="{{item.id}}" title="{{item.name}}"
+                        /> {{item.name}} {%end%}
+                        <p id="msg_t_customer_type" class="help-block" style="color:red"></p>
+                    </div>
+                    <!-- /controls -->
+                </div>
+                
+                
+                
+                <div class="control-group">
+                    <label class="control-label" for="is_general">付款方式
+                    </label>
+                    <div class="controls">
+                        {%for idx,item in enumerate(t_payment_type)%}
+                        <input type="radio" name="pay_type_id" fee="{{item.fee}}" value="{{item.id}}" pay_typeid_name="{{item.name}}"/> {{item.name}} {%end%}
+                
+                        <p id="msg_paytype" class="help-block" style="color:red"></p>
+                    </div>
+                    <!-- /controls -->
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="lastname">总服务费</label>
+                    <div class="controls">
+                        <input type="text" class="span6" id="service_amount" name="service_amount" value="">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label" for="lastname">月服务费</label>
+                    <div class="controls">
+                        <input type="text" disabled="true" class="span6" id="service_amount_month" name="service_amount_month" value="">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label" for="lastname">帐册费</label>
+                    <div class="controls">
+                        <input type="text" class="span6" id="book_amount" name="book_amount" value="">
+                    </div>
+                </div>
+
+
+    </div>
+    <div class="modal-footer">
+
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <button class="btn btn-primary" id="btn_save_customer">保存</button>
+    </div>
+</div>
+
+
 {%end%} {%block js%}
 
 <script>
@@ -322,6 +483,82 @@ wait_pay="{%if item.acc_end and   compare_date(item.acc_end,dt_next)%}{{item.nex
                 }
             })
 
+
+
+            $(".modify_customer_detail").on("click",function(){
+                    customer_id = $(this).attr("customer_id")
+                    promo_id = $(this).attr('promo_id')
+                    is_general = $(this).attr("is_general")
+                    customer_type = $(this).attr('customer_type').split(',')
+                    guid=$(this).attr('guid')
+                    pay_pay_typeid_name = $(this).attr('pay_pay_typeid_name')
+                    pay_service_amount = $(this).attr("pay_service_amount")
+                    pay_service_amount_month =$(this).attr("pay_service_amount_month")
+                    pay_book_amount = $(this).attr("pay_book_amount")
+                    $("#customer_id").val(customer_id)
+                    $("#promo_id").val(promo_id)
+                    $("input[name=is_general]").prop('checked',false)
+                    $("input[name=is_general][value="+is_general+"]").prop('checked',true)
+                    $('input[name=customer_type]').prop('checked',false)
+                    for(var i=0;i<customer_type.length;i++){
+                        $('input[name=customer_type][value='+customer_type[i]+']').prop('checked',true)
+                    }
+                    $("input[name=pay_type_id]").prop('checked',false)
+                    $("input[name=pay_type_id][pay_typeid_name="+pay_pay_typeid_name+"]").prop('checked',true)
+                    $("#service_amount").val(pay_service_amount)
+                    $("#service_amount_month").val(pay_service_amount_month)
+                    $("#book_amount").val(pay_book_amount)
+                    $("#btn_save_customer").attr("customer_id", customer_id)
+                    $("#btn_save_customer").attr("guid", guid)
+
+
+
+                    $("#a_customer_modal").modal("show")
+
+            })
+
+
+
+            $("#btn_save_customer").on("click",function(){
+                customer_id = $(this).attr('customer_id')
+                promo_id = $("#promo_id").val()
+                is_general = $("input[name=is_general]:checked").val()
+                var customer_type = ""
+                var customer_type_name ="" 
+                guid=$(this).attr('guid')
+                $('input[name=customer_type]:checked').each(function () { 
+                    customer_type_name= customer_type_name +$(this).attr("title")+","
+                    customer_type = customer_type+$(this).val()+","
+                 })
+                 pay_type_id = $("input[name=pay_type_id]:checked").val()
+                 pay_typeid_name =$("input[name='pay_type_id']:checked").attr("pay_typeid_name")
+                 fee=$("input[name='pay_type_id']:checked").attr("fee")
+                 service_amount = $("#service_amount").val()
+                 service_amount_month = $("#service_amount_month").val()
+                 book_amount = $("#book_amount").val()
+                 $.post('/payment?tag=edit_basic_data',{
+                     "_xsrf":_xsrf,
+                     'customer_id':customer_id,
+                     'promo_id':promo_id,
+                     'customer_type_name':customer_type_name,
+                     'customer_type':customer_type,
+                     'pay_type_id':pay_type_id,
+                     'pay_typeid_name':pay_typeid_name,
+                     'service_amount':service_amount,
+                     'service_amount_month':service_amount_month,
+                     'book_amount':book_amount,
+                     'is_general':is_general,
+                     'guid':guid,
+                     'fee':fee
+
+                 },function (res) { 
+                     location.reload()
+                  })
+
+
+
+
+            })
 
             $(".handler_detail").on("click", function () {
                 $("#wait_pay_amount").val("")
@@ -395,5 +632,44 @@ wait_pay="{%if item.acc_end and   compare_date(item.acc_end,dt_next)%}{{item.nex
                 
 
             })
+
+    $('input[type="radio"][name="pay_type_id"]').click(function(){
+                   
+                   service_amount = $("#service_amount").val()
+                   if ($(this).is(':checked'))
+                   {
+                      if($(this).attr("fee")>0){
+                            $("#service_amount").removeAttr("readOnly")
+                          
+                       }else{
+                            $("#service_amount").val("0")
+                           all_total = 0
+                       }
+   
+   
+                       all_total =  service_amount / $(this).attr("fee");
+                       console.log(all_total)
+                       if (all_total==Infinity){
+                           all_total = 0
+   
+                       }
+                       $("#service_amount_month").val(intToFloat(all_total))
+                   }
+       });
+   
+          $('#service_amount').keyup(function() {
+                           all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
+                             if (all_total==Infinity){
+                           all_total = 0
+                           
+                       }
+                           $("#service_amount_month").val(intToFloat(all_total))
+   
+   
+           });
+   
+   function intToFloat(val){
+           return new Number(val).toFixed(2);
+   }
     })
 </script> {%end%}

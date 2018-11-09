@@ -14,6 +14,7 @@
         </li>
       </ol>
 
+
       <form class="form-search" id="query_form">
         <table>
             <thead>
@@ -73,17 +74,17 @@
 
                                 <th  width="200">公司名称</th>  
                              <th width="100">客户名称</th>  
-                                <th width="100">客户电话</th>
+                                <!-- <th width="100">客户电话</th> -->
                              <th width="120">
                             跟单专员
                             </th>
-                            <th width="120">销售顾问</th>
+                            <!-- <th width="120">销售顾问</th> -->
                             
-                              <th width="120">合同金额</th>
+                              <!-- <th width="120">合同金额</th> -->
                                <th width='100'>办结时间</th>
                           
-                             <th width="80">创建人</th>
-                        <th width="160">创建时间</th>
+                             <!-- <th width="80">创建人</th> -->
+                        <!-- <th width="160">创建时间</th> -->
                             {%if step=='3'%}
                             <th width="150">备注</th>
                             {%end%}
@@ -117,31 +118,35 @@
                           <td>
                                 {{item.customer_name}}
                             </td>  
-                           <td>{{item.customer_tel}}</td>
+                           <!-- <td>{{item.customer_tel}}</td> -->
                              <td >
                         {{item.member_name}}
 
                             </td> 
-                            <td>{%if item.sale_man%}{{item.sale_man}}{%end%}</td> 
-                             <td>
+                            <!-- <td>{%if item.sale_man%}{{item.sale_man}}{%end%}</td>  -->
+                             <!-- <td>
                                     {{item.all_income}}
-                            </td>
+                            </td> -->
                             <td>{{item.confirm_at}}</td>
-                          <td>
+                          <!-- <td>
                             {{item.uid_name}}
                             </td>
                               <td>
                             {{item.created_at}}
-                            </td>
+                            </td> -->
                             {%if step=='3'%}
                             <td>
                                 {{item.banjie_remark}}
                             </td>
                             {%end%}
                             <td>
-                                {%if item.confirm_banjie==0 or item.confirm_banjie==2%}
+                                {%if  item.confirm_banjie==0 or item.confirm_banjie==2%}
+                                {%if '231' in role_list%}
                                 <a href="javascript:(void);" class="btn  btn-sm btn-secondary confirm_banjie_btn"
                                  id="{{item.id}}" guid="{{item.m_guid}}" confirm_banjie="{{item.confirm_banjie}}" banjie_remark="{{item.banjie_remark}}">审核</a>
+                                {%else%}
+                                <a href="javascript:(void);" class="btn  btn-sm btn-secondary" id="{{item.id}}" guid="{{item.m_guid}}">待审核</a>
+                                {%end%}
                                 {%elif item.confirm_banjie==1%}
                                 <a href="javascript:(void);" class="btn  btn-sm btn-secondary" id="{{item.id}}" guid="{{item.m_guid}}">已确认</a>
                                 {%end%}

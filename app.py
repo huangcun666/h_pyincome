@@ -64,7 +64,12 @@ if __name__ == "__main__":
         options.port = 9999
         options.mysql_database = "db_income_test1"
         options.mysql_database_customer = "db_customer_test"
-
+    elif mode=="dev1":
+        options.mysql_host = "192.168.2.168"
+        # options.mysql_host = "127.0.0.1"
+        options.port = 9999
+        options.mysql_database = "db_income2"
+        options.mysql_database_customer = "db_customer"
 
     else:
         print "please write app.py product/dev to run"

@@ -1844,12 +1844,12 @@ background-color: #007bff;
       {%if item.is_cancel_confirm_at%}
         <span class="badge badge-pill badge-info"> 申请时间: {{item.is_cancel_at}}</span>
 
-        <span class="badge badge-pill badge-success">{{item.is_cancel_confirm_uid_name}} 已同意 {{item.is_cancel_confirm_at}}</span>
+        <span class="badge badge-pill badge-success">{{item.is_cancel_confirm_uid_name}} 已同意取消({{item.btype_id_name}}) {{item.is_cancel_confirm_at}}</span>
 
 
 
  {%if role=="7"%}
-<button class="btn-danger"  mid="{{item.member_id}}"  name="btn_cancel_member" atype="manager_roll">
+<button class="btn-danger"  mid="{{item.mid}}"  name="btn_cancel_member" atype="manager_roll">
 
   恢复订单({{item.btype_id_name}})
 </button>
@@ -1864,7 +1864,7 @@ background-color: #007bff;
         <span class="badge badge-pill badge-info">审批中  {{item.is_cancel_at}}</span>
 
     {%if role=="7"%}
-      <button class="btn-danger"  mid="{{item.member_id}}"  name="btn_cancel_member" atype="manager" >
+      <button class="btn-danger"  mid="{{item.mid}}"   name="btn_cancel_member" atype="manager" >
 
         同意取消({{item.btype_id_name}})
       </button>
@@ -1885,7 +1885,7 @@ background-color: #007bff;
 
 
 
-      <button class="btn-danger"  mid="{{item.member_id}}"  atype="zhuangyuan"
+      <button class="btn-danger"  mid="{{item.mid}}"  atype="zhuangyuan"
 
         name="btn_cancel_member">取消本订单({{item.btype_id_name}})
       </button>
@@ -2021,6 +2021,15 @@ background-color: #007bff;
          mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order_remark">备注
           </button>
      {%end%}
+     {%if confirm_banjie%}
+  {%if '231' in role_list and  (confirm_banjie.confirm_banjie==0 or confirm_banjie.confirm_banjie==2)%}
+  <button class="confirm_banjie_btn"
+  id="{{confirm_banjie.id}}" guid="{{confirm_banjie.m_guid}}" confirm_banjie="{{confirm_banjie.confirm_banjie}}" banjie_remark="{{confirm_banjie.banjie_remark}}"
+  >审核</button>
+  {%elif confirm_banjie.confirm_banjie==1%}
+  <span class="badge badge-dark">罗文波已确认审核</span>
+  {%end%}
+  {%end%}
        </li>
 
  {%elif  row.income_name==u"填写办结信息" %}
@@ -2823,7 +2832,7 @@ background-color: #007bff;
                             {%end%}
                             {%else%}
                             <tr>
-                              <td colspan="7">还没有哦。</td>
+                              <td colspan="15">还没有哦。</td>
     
                             </tr>
                            {%end%}
@@ -2893,7 +2902,7 @@ background-color: #007bff;
                               {%end%}
                               {%else%}
                               <tr>
-                                <td colspan="7">还没有哦。</td>
+                                <td colspan="15">还没有哦。</td>
       
                               </tr>
                              {%end%}
@@ -6477,6 +6486,50 @@ background-color: #007bff;
               </div>
               </div>
             </div>
+            <div class="modal fade" id="confirm_banjie_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+              <div class="modal-dialog" role="document" >
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="xiezhu_title">办结确认
+      
+                </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>        
+      
+                  <div class="modal-body" id="site_mod">
+                      <div class="form-group">
+                      <div class="col-sm-10">
+                          <input type="radio"  name="confirm_banjie" value="1">确认
+                          <input type="radio"  name="confirm_banjie" value="2">异常待确认
+                          <div class="alert alert-danger" role="alert" style="display:none;" id="er_confirm_banjie">
+                          </div>
+                          </div>
+                          
+                      </div>
+                      <div class="form-group">
+                        <div class="col-sm-10">
+                            <label for="recode">备注</label>
+                            <textarea class="form-control" id="remark_confirm_banjie" placeholder="填写备注">
+                                </textarea>
+                            <div class="alert alert-danger" role="alert" style="display:none;" id="er_remark">
+                            </div>
+                              
+                            </div>
+                        </div>
+                        
+                  </div>
+      
+      
+                  <div class="modal-footer">
+                      <input type="hidden" value="0" id="is_other" name="is_other" />
+                             <button class="btn btn-primary" target="_blank" id="btn_confirm_banjie">保存</button>
+      
+                  </div>
+                </div>
+              </div>
+            </div> 
 
 <input type="hidden" value="0" name="parent_id_hide" id="parent_id_hide" />
 
@@ -9598,7 +9651,7 @@ $("#btn_save_fromword").on("click",function(){
         var is_check=$('input[name=check_radio]:checked').val();
         var note_id=$(this).attr('note_id');
         if(note_content!=''){
-          $(this).text('保存中')
+          $(this).text('保存中...')
           $(this).attr('disabled','disabled')
             $.post(
             '/project?tag=project_note',
@@ -11157,6 +11210,34 @@ $('.filepath_detail').on('click',function () {
     }
 
  })
+ $('.confirm_banjie_btn').on('click',function () {
+    $('#btn_confirm_banjie').attr('banjie_id',$(this).attr('id'))
+    $('#btn_confirm_banjie').attr('guid',$(this).attr('guid'))
+    $('input[name=confirm_banjie][value='+$(this).attr('confirm_banjie')+']').prop('checked',true)
+    $('#remark_confirm_banjie').val($(this).attr('banjie_remark'))
+    $("#confirm_banjie_modal").modal('show')
+    })
+    $('#btn_confirm_banjie').on('click',function () {
+        confirm_banjie=$('input[name=confirm_banjie]:checked').val()
+        banjie_remark=$('#remark_confirm_banjie').val()
+        if(confirm_banjie==undefined){
+            $('#er_confirm_banjie').text('未选择')
+            $('#er_confirm_banjie').show()
+        }else if(confirm_banjie=='2' && banjie_remark==''){
+            $('#er_remark').text('选择异常需填写备注')
+            $('#er_remark').show()
+        }else{
+        $.post('/project?tag=project_confirm_banjie',{
+            '_xsrf':_xsrf,
+            'confirm_banjie':confirm_banjie,
+            'banjie_remark':banjie_remark,
+            'guid':$(this).attr('guid'),
+            'id':$(this).attr('banjie_id')
+        },function (result) { 
+            location.reload()
+         })
+        }
+     })
 })
 
 </script>

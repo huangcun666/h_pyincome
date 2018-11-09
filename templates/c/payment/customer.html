@@ -308,7 +308,7 @@ margin: auto;
                                                                                       </h5>
                                                                                   </div>
                                                                               </div>
-                                                                              {{item.msg}}
+                                                                              {{item.msg}}<span style="color:red;">{%if item.summary%}(总结:{{item.summary}}){%end%}</span>
                                                                           </div>
                                                                       </div>
                                                                       {%end%}
@@ -446,7 +446,6 @@ margin: auto;
                 al_remark=$("#al_remark").val()
                 pb_remark=$("#pb_remark").val()
                 pay_id=$(this).attr("pay_id")
-              
                 $.post("payment?tag=add",
                 {
                     "_xsrf":_xsrf,

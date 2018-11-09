@@ -11,10 +11,55 @@
     </li>
     <li class="breadcrumb-item active">到款结算
       
-
+            {%if  projects_income_title and ( params['project_id'] or (params['daokuan_start'] and params['daokuan_end']) 
+            or params['sale'] or params['kf'])%}
+                <a href="javascript:void(0);" id='income_output' params="{{params}}"  class="btn btn-primary btn-sm">点击下载数据（Excel格式）</a>
+            {%end%}
     </li>
 </ol>
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link {%if params['step']=='1'%}active{%end%}" id="nav-home-tab"
+        href="/statis?tag=projects_income_title&step=1" >业务到款
+        <span class="badge badge-danger"></span>
+    </a>
+      <a class="nav-item nav-link {%if params['step']=='2'%}active{%end%}"
+    href="/statis?tag=projects_income_title&step=2" style="font-size:13px;">中转到款
+        <span class="badge badge-danger"></span>
+        </a>
 
+</div>
+</nav>
+<br>
+<form>
+    <table>
+        <thead>
+            <tr>
+                <th>订单号</th>
+                <th>到款日期</th>
+                <th></th>
+                <th></th>
+                <th>销售顾问</th>
+                <th>客服顾问</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input {%if params['project_id']%}value="{{params['project_id']}}"{%end%} type="text" placeholder="订单号" name="project_id" id="project_id" class="form-control"></td>
+                <td><input {%if params['daokuan_start']%}value="{{params['daokuan_start']}}"{%end%} type="text" placeholder="到款开始日期" name="daokuan_start" id="daokuan_start" class="form-control"></td>
+                <td>至</td>
+                <td><input {%if params['daokuan_end']%}value="{{params['daokuan_end']}}"{%end%} type="text" placeholder="到款结束日期" name="daokuan_end" id="daokuan_end" class="form-control"></td>
+                <td><input {%if params['sale']%}value="{{params['sale']}}"{%end%} type="text" placeholder="销售顾问" name="sale" id="sale" class="form-control"></td>
+                <td><input {%if params['kf']%}value="{{params['kf']}}"{%end%} type="text" placeholder="客服顾问" name="kf" id="kf" class="form-control"></td>
+                <td>
+                    <input name="tag" value="{{tag}}" hidden>
+                    <input name="step" value="{{params['step']}}" hidden>
+                    <input type="submit" value="检 索"></td>
+            </tr>
+        </tbody>
+    </table>
+</form>
 <div class="table-responsive">
 
 <table class="table table-bordered"  style="width:1500px">
@@ -53,12 +98,12 @@
 <ul class="pagination">
     {% if pagination.has_prev %}
     <li class="paginate_button page-item previous " id="dataTable_previous">
-        <a href="/statis?tag=projects_income_title&page={{ pagination.page - 1}}"
+        <a href="/statis?tag=projects_income_title{%if params['step']%}&step={{params['step']}}{%end%}{%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['daokuan_start']%}&daokuan_start={{params['daokuan_start']}}{%end%}{%if params['daokuan_end']%}&daokuan_end={{params['daokuan_end']}}{%end%}{%if params['sale']%}&sale={{params['sale']}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}&page={{ pagination.page - 1}}"
             aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
     {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
     <li class="paginate_button page-item ">
-        <a href="/statis?tag=projects_income_title&page={{page}}" aria-controls="dataTable"
+        <a href="/statis?tag=projects_income_title{%if params['step']%}&step={{params['step']}}{%end%}{%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['daokuan_start']%}&daokuan_start={{params['daokuan_start']}}{%end%}{%if params['daokuan_end']%}&daokuan_end={{params['daokuan_end']}}{%end%}{%if params['sale']%}&sale={{params['sale']}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}&page={{page}}" aria-controls="dataTable"
             data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
     {% else %}
     <li class="paginate_button page-item active">
@@ -67,7 +112,7 @@
     <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0"
                 class="page-link">....</a></span></li>
     {% end %} {% end %} {% if pagination.has_next %}
-    <li class="paginate_button page-item next" id="dataTable_next"><a href="statis?tag=projects_income_title&page={{pagination.page+1}}"
+    <li class="paginate_button page-item next" id="dataTable_next"><a href="statis?tag=projects_income_title{%if params['step']%}&step={{params['step']}}{%end%}{%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['daokuan_start']%}&daokuan_start={{params['daokuan_start']}}{%end%}{%if params['daokuan_end']%}&daokuan_end={{params['daokuan_end']}}{%end%}{%if params['sale']%}&sale={{params['sale']}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}&page={{pagination.page+1}}"
             aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
     {% end %}
 </ul>
@@ -83,16 +128,43 @@
     $(function () {
 
             $("#m_statis").click()
-        $("#start").datetimepicker({
+        $("#daokuan_start").datetimepicker({
             minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
             language: 'zh-CN', initialDate: new Date()
         });
-        $("#end").datetimepicker({
+        $("#daokuan_end").datetimepicker({
             minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 23:59:59',
             language: 'zh-CN', initialDate: new Date()
         });
+        
+    $('#sale').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
 
+    $('#kf').typeahead({
+    source: function (query, process) {
+    return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+    return process(JSON.parse(data));
+    });
+    }
+    });
+
+
+$('#income_output').on('click',function () { 
+    var params=$(this).attr('params')
+    $.get('/statis?tag=income_output',
+    {
+        'params':params
+    },function (res) { 
+        location.href=res['output_path']
+     })
+})
     })
+
 
 
 </script> {%end%}

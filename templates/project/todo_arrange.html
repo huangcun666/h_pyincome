@@ -197,7 +197,7 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
                        {%end%}
 <th width="80">办理状态</th>
                        <th width="80">备注</th>
-                       {%if my%}
+                       {%if my or '241' in role_list%}
                        <th width="50"></th>
                        {%end%}
                    </tr>
@@ -299,7 +299,7 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
 
 
                             </td>
-                            {%if my%}  
+                            {%if my %}  
                             <td><a class="btn btn-info the_detail_btn" href="javascript:void(0)"
 
                             bl_date="{{item.bl_date.strftime("%Y-%m-%d")}}"
@@ -311,8 +311,9 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
                                 phone_fz="{%if item.phone_fz%}{{item.phone_fz}}{%end%}"  banshi_per="{%if item.banshi_per%}{{item.banshi_per}}{%end%}" phone_bs="{%if item.phone_bs%}{{item.phone_bs}}{%end%}"
                                 remark="{{item.remark}}" bs_created_at="{{item.bs_created_at}}" fz_updated_at="{{item.fz_updated_at}}" todo_type="{{item.todo_type}}"
                                 leader_id="{{item.leader_id}}" leader_name="{% if item.leader_name%}{{item.leader_name[:-6]}}{%end%}" >查看</a></td>
-                              
-                                {%end%}
+                              {%elif  '241' in role_list%}
+                              <td><a id='{{item.id}}' class="btn btn-danger the_delete_btn" href="javascript:void(0)">删除</a></td>
+                              {%end%}
                         </tr>
                     {%end%}
                    {%else%}
@@ -763,7 +764,9 @@ $('#btn_save_todo').on('click',function () {
       $('#save_to_project_name').html('办理事项不能为空哦.')
       $('#save_to_project_name').show()
     }
-    if(todo_type1==undefined){
+    else if(todo_type1==undefined){
+      $(this).text('保存中...')
+      $(this).attr('disabled','disabled')
       $.post(
         '/project?tag=add_update_todo',
         {   "_xsrf":_xsrf,
@@ -789,6 +792,8 @@ $('#btn_save_todo').on('click',function () {
     & banshi_per1.length<1 & todo_type1=="0" & banshi_per!=banshi_per1){
       alert('你不能修改')
     }else{
+      $(this).text('保存中...')
+      $(this).attr('disabled','disabled')
     $.post(
         '/project?tag=add_update_todo',
         {   "_xsrf":_xsrf,
@@ -999,6 +1004,20 @@ $('#btn_save_todo1').on('click',function () {
     }
 
  })
+ $(".the_delete_btn").on('click',function () { 
+  var todoid=$(this).attr('id')
+  if(confirm('确定要删除？')){
+  $.post(
+    '/project?tag=delete_todo',
+    {
+      '_xsrf':_xsrf,
+      'todoid':todoid
+    },function (res) { 
+      location.reload()
+     }
+  )
+  }
+  })
 // $('.todo_status').on('click',function () {
 //   var bs=$(this).attr('bs_created_at')
 //   var fz=$(this).attr('fz_updated_at')

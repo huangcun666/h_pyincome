@@ -46,7 +46,7 @@
     display: inline-block;
     background: #D0EEFF;
     border: 1px solid #99D3F5;
-    border-radius: 4px;
+    border-radius: 4px;express_list
     padding: 4px 12px;
     overflow: hidden;
     color: #1E88C7;
@@ -289,33 +289,15 @@
                   <ul class="pagination">
                       {% if pagination.has_prev %}
                       <li class="paginate_button page-item previous " id="dataTable_previous">
-                      <a href="/project?tag=express_list{%if todo%}&todo={{todo}}{%end%}{%if step=='1'%}&step={{step}}{%end%}
-                      {%if params['department']%}&department={{params['department']}} {%end%} 
-                      {%if params['start_time']%}&start_time={{params['start_time']}} {%end%} 
-                      {%if params['end_time']%}&end_time={{params['end_time']}} {%end%} 
-                      {%if params['source']%}&source={{params['source']}} {%end%}
-                       {%if params['express_type']%}&express_type={{params['express_type']}} {%end%}
-                       {%if params['payment_type']%}&payment_type={{params['payment_type']}} {%end%}
-                      &page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                      <a href="/project?tag=express_list{%if todo%}&todo={{todo}}{%end%}{%if step=='1'%}&step={{step}}{%end%}{%if params['department']%}&department={{params['department']}}{%end%}{%if params['start_time']%}&start_time={{params['start_time']}}{%end%}{%if params['end_time']%}&end_time={{params['end_time']}}{%end%}{%if params['source']%}&source={{params['source']}}{%end%}{%if params['express_type']%}&express_type={{params['express_type']}}{%end%}{%if params['payment_type']%}&payment_type={{params['payment_type']}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                       <li class="paginate_button page-item ">
-                          <a href="/project?tag=express_list{%if todo%}&todo={{todo}}{%end%}{%if step=='1'%}&step={{step}}{%end%}                      {%if params['department']%}&department={{params['department']}} {%end%} 
-                          {%if params['start_time']%}&start_time={{params['start_time']}} {%end%} 
-                          {%if params['end_time']%}&end_time={{params['end_time']}} {%end%} 
-                          {%if params['source']%}&source={{params['source']}} {%end%}
-                           {%if params['express_type']%}&express_type={{params['express_type']}} {%end%}
-                           {%if params['payment_type']%}&payment_type={{params['payment_type']}} {%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                          <a href="/project?tag=express_list{%if todo%}&todo={{todo}}{%end%}{%if step=='1'%}&step={{step}}{%end%}{%if params['department']%}&department={{params['department']}}{%end%}{%if params['start_time']%}&start_time={{params['start_time']}}{%end%}{%if params['end_time']%}&end_time={{params['end_time']}}{%end%}{%if params['source']%}&source={{params['source']}}{%end%}{%if params['express_type']%}&express_type={{params['express_type']}}{%end%}{%if params['payment_type']%}&payment_type={{params['payment_type']}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                       {% else %}
                       <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                       {% end %} {% else %}
                       <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
                       {% end %} {%end %} {% if pagination.has_next %}
-                      <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=express_list{%if todo%}&todo={{todo}}{%end%}{%if step=='1'%}&step={{step}}{%end%}                      
-                        {%if params['department']%}&department={{params['department']}} {%end%} 
-                        {%if params['start_time']%}&start_time={{params['start_time']}} {%end%} 
-                        {%if params['end_time']%}&end_time={{params['end_time']}} {%end%} 
-                        {%if params['source']%}&source={{params['source']}} {%end%}
-                         {%if params['express_type']%}&express_type={{params['express_type']}} {%end%}
-                         {%if params['payment_type']%}&payment_type={{params['payment_type']}} {%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                      <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=express_list{%if todo%}&todo={{todo}}{%end%}{%if step=='1'%}&step={{step}}{%end%}{%if params['department']%}&department={{params['department']}}{%end%}{%if params['start_time']%}&start_time={{params['start_time']}}{%end%}{%if params['end_time']%}&end_time={{params['end_time']}}{%end%}{%if params['source']%}&source={{params['source']}}{%end%}{%if params['express_type']%}&express_type={{params['express_type']}}{%end%}{%if params['payment_type']%}&payment_type={{params['payment_type']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
                       {% end %}
                   </ul>
               </div>

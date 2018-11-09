@@ -31,7 +31,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
-        {%if '231' in role_list%}  
+        {%if '231' in role_list or role=='9'%}  
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="办结确认">
               <a class="nav-link" href="/project?tag=project_confirm_banjie">
                 <i class="fa fa-fw fa-dashboard"></i>
@@ -176,9 +176,10 @@
           </a>
         </li>
         {%end%}
+
+
+
  {%if role=="8" or role=="7" or role=="3"%}
-
-
 
 
 <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
@@ -558,7 +559,42 @@
 
               {%end%}
 
+   {%if name=='陈太智'%}
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="用户管理">
+          <a class="nav-link" href="/manageuser" target="_blank" style="color:#fff">
+            <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">用户管理</span>
+          </a>
+        </li>
 
+   {%end%}
+
+               
+              {%if name=='刘君'%}
+              <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
+                  <a id="m_statis" class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti1" data-parent="#exampleAccordion"
+                    id="list_company" style="color:#fff">
+                    <i class="fa fa-fw fa-sitemap"></i>
+                    <span class="nav-link-text">数据统计</span>
+                  </a>
+                  <ul class="sidenav-second-level collapse" id="collapseMulti1">
+                    
+                    
+                      <li>
+                
+                          <a href="/statis?tag=projects_income_title" style="color:#fff">到款结算</a>
+                        </li>
+                        
+                        <li>
+                
+                            <a href="/statis?tag=projects_incomes" style="color:#fff">到款统计</a>
+                          </li>
+                       
+                       
+                    </ul>
+          
+          </li>
+        {%end%}
 
       </ul>
 

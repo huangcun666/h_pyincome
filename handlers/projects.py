@@ -3868,8 +3868,21 @@ and  member_id=%s
                 #         '''SELECT a.guid,a.id FROM t_projects a  inner join t_projects_member b on a.id=b.project_id and b.team_id=38
                 #         and member_id=%s where id<%s order by a.created_at desc limit 1
                 #         ''',uid,t_project.id)
+                confirm_banjie = self.db.get(
+                    '''
+                    SELECT  a.id ,b.mid,b.banjie_remark,
+                  b.confirm_banjie,b.guid m_guid,d.confirm_at
+                        FROM t_projects
+                    a inner join t_projects_member b on a.id=b.project_id
+                    inner join t_projects_milepost d on b.project_id=d.project_id and d.confirm_at is not null and d.type_id=151 
+                    and b.member_name=d.uid_name
+                    and b.btype_id=d.btype_id and b.mid=d.member_id and d.member_id=%s
+                    where  b.btype_id <> 0    and b.is_cancel=0  and d.confirm_at>='2018-10-01 00:00:00' 
+                    and a.id=%s''',mid,t_project.id)
+              
                 return self.render(
                     "project/project_show.html",
+                    confirm_banjie=confirm_banjie,
                     t_project_chuna_history=t_project_chuna_history,
                     t_projects_type1=t_projects_type1,
                     t_cutomer_addr_msg=t_cutomer_addr_msg,
@@ -4576,7 +4589,7 @@ and  member_id=%s
              (select GROUP_CONCAT(concat('价格:',price,'&nbsp;&nbsp;','报价人:',uid_name,'&nbsp;&nbsp;','时间:',date(created_at)))
              from t_addr_provider_history  where addr_id=a.id) c
               from t_addr_provider_manage a
-            order by a.created_at desc limit %s,%s
+            order by a.order_at desc,a.order_int desc limit %s,%s
             ''',startpage,pre_page)
 
             self.render('project/bj_manage.html',
@@ -5424,24 +5437,24 @@ and  member_id=%s
             todo=self.get_argument('todo','')
             express_manage=self.get_secure_cookie('express_manage')
             step=self.get_argument('step','0')
-            # params=self.get_argument('params','')
-            # params=eval(params)
+            params=self.get_argument('params','')
+            params=eval(params)
 
             sql=''
             addsql=''
             sheet_name=u'全部'
             send_and_rec=''
             source=''
-            # if params['department']:
-            #     sql+=' and sender_department="%s" '%params['department']
-            # if params['start_time'] and params['end_time']:
-            #     sql+=' and created_send_at between "%s" and "%s" '%(params['start_time'],params['end_time'])
-            # if params['source']:
-            #     sql+=' and source=%s '%params['source']
-            # if params['express_type']:
-            #     sql+='  and express_type_id=%s '%params['express_type']
-            # if params['payment_type']:
-            #     sql+=' and payment_type_id=%s '%params['payment_type']
+            if params['department']:
+                sql+=' and sender_department="%s" '%params['department']
+            if params['start_time'] and params['end_time']:
+                sql+=' and created_send_at between "%s" and "%s" '%(params['start_time'],params['end_time'])
+            if params['source']:
+                sql+=' and source=%s '%params['source']
+            if params['express_type']:
+                sql+='  and express_type_id=%s '%params['express_type']
+            if params['payment_type']:
+                sql+=' and payment_type_id=%s '%params['payment_type']
             if todo=='1':
                 addsql=' and accept_at is null '
                 sheet_name=u'待审核'
@@ -5515,20 +5528,20 @@ and  member_id=%s
 
 
         elif tag=="project_confirm_banjie":
+            step=self.get_argument('step','')
+            page=int(self.get_argument('page',1))
+            pre_page = 20
+            project_id=self.get_argument('project_id','')
+            project_name=self.get_argument('project_name','')
+            customer_company=self.get_argument('customer_company','')
+            customer_name=self.get_argument('customer_name','')
+            customer_tel=self.get_argument('customer_tel','')
+            gendan=self.get_argument('gendan','')
+            sale_man=self.get_argument('sale_man','')
+            start_time=self.get_argument('start_time','')
+            end_time=self.get_argument('end_time','')
+            sql=''
             if '231' in role_list:
-                step=self.get_argument('step','')
-                page=int(self.get_argument('page',1))
-                pre_page = 20
-                project_id=self.get_argument('project_id','')
-                project_name=self.get_argument('project_name','')
-                customer_company=self.get_argument('customer_company','')
-                customer_name=self.get_argument('customer_name','')
-                customer_tel=self.get_argument('customer_tel','')
-                gendan=self.get_argument('gendan','')
-                sale_man=self.get_argument('sale_man','')
-                start_time=self.get_argument('start_time','')
-                end_time=self.get_argument('end_time','')
-                sql=''
                 if step=='1':
                     sql=' and b.confirm_banjie=0 '
                 if step=='2':
@@ -5569,6 +5582,7 @@ and  member_id=%s
                     a inner join t_projects_member b on a.id=b.project_id
                     inner join t_projects_member c on a.id=c.project_id and c.team_name='销售顾问'
                     inner join t_projects_milepost d on b.project_id=d.project_id and d.confirm_at is not null and d.type_id=151  and b.member_name=d.uid_name
+                    and b.btype_id=d.btype_id and b.mid=d.member_id
                     where  b.btype_id <> 0  and b.is_cancel=0 and  d.confirm_at>='2018-10-01 00:00:00'
                 '''+sql)
                 pagination = Pagination(page, pre_page, count.count, self.request)
@@ -5582,6 +5596,7 @@ and  member_id=%s
                     a inner join t_projects_member b on a.id=b.project_id
                     inner join t_projects_member c on a.id=c.project_id and c.team_name='销售顾问'
                     inner join t_projects_milepost d on b.project_id=d.project_id and d.confirm_at is not null and d.type_id=151 and b.member_name=d.uid_name
+                    and b.btype_id=d.btype_id and b.mid=d.member_id
                     where  b.btype_id <> 0    and b.is_cancel=0  and d.confirm_at>='2018-10-01 00:00:00' '''+sql+'''
                                     order by b.created_at desc limit %s,%s
                     ''', startpage, pre_page)
@@ -5593,6 +5608,7 @@ and  member_id=%s
                     a inner join t_projects_member b on a.id=b.project_id
                     inner join t_projects_member c on a.id=c.project_id and c.team_name='销售顾问'
                     inner join t_projects_milepost d on b.project_id=d.project_id and d.confirm_at is not null and d.type_id=151 and b.member_name=d.uid_name
+                    and b.btype_id=d.btype_id and b.mid=d.member_id
                     where  b.btype_id <> 0    and b.is_cancel=0  and d.confirm_at>='2018-10-01 00:00:00' '''+sql+'''
                                     order by b.created_at desc''')
                 if project_id or project_name or customer_company or customer_name or customer_tel or gendan or sale_man or(start_time and end_time):
@@ -5638,7 +5654,67 @@ and  member_id=%s
                             sh.write(idx,11,'异常待确认 备注：'+row.banjie_remark)
                     wb.save('media/output/办结确认数据导出.xls')
 
-                self.render('project/project_confirm_banjie.html',
+
+            else:
+                if step=='1':
+                    sql=' and b.confirm_banjie=0 '
+                if step=='2':
+                    sql=' and b.confirm_banjie=1 '
+                if step=='3':
+                    sql=' and b.confirm_banjie=2 '
+                if project_id:
+                    sql+=' and a.id=%s'%project_id
+                if project_name:
+                    sql+=' and a.project_name  like "%%'+project_name+'%%" '
+                if customer_company:
+                    sql+=' and a.customer_company like "%%'+customer_company+'%%" '
+                if customer_name:
+                    sql+=' and a.customer_name="%s" '%customer_name
+                if customer_tel:
+                    sql+=' and a.customer_tel like "%%'+customer_tel+'%%" '
+                if gendan:
+                    sql+=' and b.member_name="%s" '%gendan
+                if sale_man:
+                    sql+=' and c.member_name="%s" '%sale_man
+                if start_time and end_time:
+                    sql+=' and d.confirm_at between "%s" and "%s" '%(start_time,end_time)
+
+                params={
+                    'project_id':project_id,
+                    'project_name':project_name,
+                    'customer_company':customer_company,
+                    'customer_name':customer_name,
+                    'customer_tel':customer_tel,
+                    'gendan':gendan,
+                    'sale_man':sale_man,
+                    'start_time':start_time,
+                    'end_time':end_time
+                }
+                count = self.db.get('''  SELECT   count(*) count
+                        FROM t_projects
+                    a inner join t_projects_member b on a.id=b.project_id
+                    inner join t_projects_member c on a.id=c.project_id and c.team_name='销售顾问'
+                    inner join t_projects_milepost d on b.project_id=d.project_id and d.confirm_at is not null and d.type_id=151  and b.member_name=d.uid_name
+                    and b.btype_id=d.btype_id and b.mid=d.member_id
+                    where  b.btype_id <> 0  and b.is_cancel=0 and  d.confirm_at>='2018-10-01 00:00:00' and b.member_name=%s
+                '''+sql,uid_name)
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page - 1) * pre_page
+
+                t_projects = self.db.query(
+                    '''
+                    SELECT  a.* ,b.mid,b.member_name,b.btype_id_name,b.banjie_remark,
+                    b.last_milepost_id_name,b.last_milepost_id_at,b.created_at cq_created_at,b.confirm_banjie,b.guid m_guid,c.member_name sale_man,d.confirm_at
+                        FROM t_projects
+                    a inner join t_projects_member b on a.id=b.project_id
+                    inner join t_projects_member c on a.id=c.project_id and c.team_name='销售顾问'
+                    inner join t_projects_milepost d on b.project_id=d.project_id and d.confirm_at is not null and d.type_id=151 and b.member_name=d.uid_name
+                    and b.btype_id=d.btype_id and b.mid=d.member_id
+                    where  b.btype_id <> 0    and b.is_cancel=0  and d.confirm_at>='2018-10-01 00:00:00' and b.member_name=%s '''+sql+'''
+                                    order by b.created_at desc limit %s,%s
+                    ''',uid_name, startpage, pre_page)
+                
+            self.render('project/project_confirm_banjie.html',
                 output_path="static/output/办结确认数据导出.xls",
                 search_key="",
                 step=step,
@@ -5646,9 +5722,6 @@ and  member_id=%s
                 pagination=pagination,
                 t_projects=t_projects,
                 params=params)
-            else:
-
-                self.write('error')
 
         elif tag=="income_history_list":
             page=int(self.get_argument('page',1))
@@ -5803,21 +5876,21 @@ and  member_id=%s
                 event_msg = ""
                 if atype=="zhuangyuan":
                     result = self.db.execute("""
-                        update t_projects_member set is_cancel=1 ,is_cancel_at=%s,is_cancel_uid=%s,is_cancel_uid_name=%s where project_id=%s and member_id=%s
+                        update t_projects_member set is_cancel=1 ,is_cancel_at=%s,is_cancel_uid=%s,is_cancel_uid_name=%s where project_id=%s and mid=%s
                     """, dt,uid, uid_name, project_id, mid)
                     event_msg = "%s请求取消订单"%(uid_name)
                     print "result=====",result
                 elif atype == "manager":
                     event_msg = "%s同意取消订单" % (uid_name)
                     result = self.db.execute("""
-                        update t_projects_member set is_cancel_confirm_at=%s,is_cancel_confirm_uid=%s,is_cancel_confirm_uid_name=%s where project_id=%s and member_id=%s
+                        update t_projects_member set is_cancel_confirm_at=%s,is_cancel_confirm_uid=%s,is_cancel_confirm_uid_name=%s where project_id=%s and mid=%s
                     """,dt, uid, uid_name, project_id, mid)
                 elif atype=="manager_roll":
                     event_msg = "%s恢复订单" % (uid_name)
                     result = self.db.execute("""
                         update t_projects_member set   is_cancel_confirm_at=NULL,
                         is_cancel_confirm_uid=0,is_cancel_confirm_uid_name=NULL,is_cancel=0 ,is_cancel_at=NULL,
-                        is_cancel_uid=0,is_cancel_uid_name=NULL where project_id=%s and member_id=%s
+                        is_cancel_uid=0,is_cancel_uid_name=NULL where project_id=%s and mid=%s
                     """,  project_id, mid)
 
                 events.add_project_event(self, project_id, "流转取消", event_msg,
@@ -8272,25 +8345,85 @@ and  member_id=%s
             invoice_limited=self.get_argument('invoice_limited','')
             note=self.get_argument('note','')
             bj_id=self.get_argument('bj_id','')
-            if bj_id:
+            delete_id=self.get_argument('delete_id','')
+            if delete_id:
                 self.db.execute('''
-                    update t_bj_manage set is_kp_addr=%s,is_fhq=%s,area=%s,project_type=%s,
-                    invoice_limited=%s,note=%s,updated_at=%s where id=%s
-                ''',is_kp_addr,is_fhq,area,project_type,invoice_limited,note,dt,bj_id)
-                self.db.execute('''
-                insert into t_bj_price_history(price,created_at,bj_mange_id,bj_uid,bj_name)
-                values(%s,%s,%s,%s,%s)
-            ''',price,dt,bj_id,uid,uid_name)
-            else:
-                result=self.db.execute('''
-            insert into t_bj_manage(is_kp_addr,is_fhq,area,project_type,invoice_limited,note,uid,uid_name,created_at)
-            values(%s,%s,%s,%s,%s,%s,%s,%s,%s)
-            ''',is_kp_addr,is_fhq,area,project_type,invoice_limited,note,uid,uid_name,dt)
+                delete from t_addr_provider_manage where id=%s
+                ''',delete_id)
+            # if bj_id:
+            #     self.db.execute('''
+            #         update t_bj_manage set is_kp_addr=%s,is_fhq=%s,area=%s,project_type=%s,
+            #         invoice_limited=%s,note=%s,updated_at=%s where id=%s
+            #     ''',is_kp_addr,is_fhq,area,project_type,invoice_limited,note,dt,bj_id)
+            #     self.db.execute('''
+            #     insert into t_bj_price_history(price,created_at,bj_mange_id,bj_uid,bj_name)
+            #     values(%s,%s,%s,%s,%s)
+            # ''',price,dt,bj_id,uid,uid_name)
+            # else:
+            #     result=self.db.execute('''
+            # insert into t_bj_manage(is_kp_addr,is_fhq,area,project_type,invoice_limited,note,uid,uid_name,created_at)
+            # values(%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            # ''',is_kp_addr,is_fhq,area,project_type,invoice_limited,note,uid,uid_name,dt)
 
+            #     self.db.execute('''
+            #     insert into t_bj_price_history(price,created_at,bj_mange_id,bj_uid,bj_name)
+            #     values(%s,%s,%s,%s,%s)
+            # ''',price,dt,result,uid,uid_name)
+
+        elif tag=="provider_manage_order":
+            id=self.get_argument('id')
+            up_id=self.get_argument('up_id','')
+            top_id=self.get_argument('top_id','')
+            down_id=self.get_argument('down_id','')
+            bottom_id=self.get_argument('bottom_id','')
+            id1=0
+
+            if up_id:
+                id1=up_id
+            elif top_id:
+                id1=top_id
+            elif down_id:
+                id1=down_id
+            elif bottom_id:
+                id1=bottom_id
+            if up_id or down_id:
+                ud_provider_manage=self.db.get('''
+                select order_at,order_int from t_addr_provider_manage where id=%s
+                ''',id1)
+                provider_manage=self.db.get('''
+                select order_at,order_int from t_addr_provider_manage where id=%s
+                ''',id)
                 self.db.execute('''
-                insert into t_bj_price_history(price,created_at,bj_mange_id,bj_uid,bj_name)
-                values(%s,%s,%s,%s,%s)
-            ''',price,dt,result,uid,uid_name)
+                    update t_addr_provider_manage set 
+                    order_at=%s,order_int=%s where id=%s;
+                    update t_addr_provider_manage set 
+                    order_at=%s,order_int=%s where id=%s;
+                ''',ud_provider_manage.order_at,ud_provider_manage.order_int,id,
+                provider_manage.order_at,provider_manage.order_int,id1)
+            
+            elif top_id or bottom_id:
+                ud_provider_manage=self.db.get('''
+                select order_at,order_int from t_addr_provider_manage where id=%s
+                ''',id1)
+                provider_manage=self.db.get('''
+                select order_at,order_int from t_addr_provider_manage where id=%s
+                ''',id)
+                if bottom_id:
+                    self.db.execute('''
+                
+                        update t_addr_provider_manage set 
+                        order_at=%s,order_int=%s where id=%s;
+                    ''',ud_provider_manage.order_at,ud_provider_manage.order_int-1,id,
+                    )
+                elif top_id:
+                    self.db.execute('''
+                
+                        update t_addr_provider_manage set 
+                        order_at=%s,order_int=%s where id=%s;
+                    ''',ud_provider_manage.order_at,ud_provider_manage.order_int+1,id,
+                    )
+
+
 
         elif tag=="provider_manage":
             is_gy_manage = self.get_secure_cookie("is_gy_manage")
@@ -8353,11 +8486,11 @@ and  member_id=%s
                 else:
                     result=self.db.execute('''
                         insert into t_addr_provider_manage
-                        (fp_limit,area,provider,created_at,uid,uid_name,danbao_matter,type,
+                        (fp_limit,area,provider,created_at,order_at,uid,uid_name,danbao_matter,type,
                         addr_nature,cost_price,register_price,same_area_change_price,dif_area_change_price,
                         address,business_scope_limit,accept_material,is_lock,is_renew)
-                        values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-                    ''',fp_limit,area,provider,dt,uid,uid_name,danbao_matter,a_type,addr_nature,cost_price,register_price,
+                        values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    ''',fp_limit,area,provider,dt,dt,uid,uid_name,danbao_matter,a_type,addr_nature,cost_price,register_price,
                         same_area_change_price,dif_area_change_price,address,business_scope_limit,accept_material,lock,renew)
                     # self.db.execute('''
                     #  insert into t_addr_provider_history(price,created_at,addr_id,uid,uid_name)

@@ -18,6 +18,25 @@
             class="faye-btn" href="/statis?tag=projects_incomes&step=2">客服会计</a>
     </li>
 </ol>
+
+<nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link {%if params['date_type']=='day'%}active{%end%}" id="nav-home-tab"
+            href="/statis?tag=projects_incomes&date_type=day{%if params['step']%}&step={{params['step']}}{%end%}" >每日统计
+            <span class="badge badge-danger"></span>
+        </a>
+          <a class="nav-item nav-link {%if params['date_type']=='month'%}active{%end%}"
+            href="/statis?tag=projects_incomes&date_type=month{%if params['step']%}&step={{params['step']}}{%end%}" style="font-size:13px;">每月统计
+            <span class="badge badge-danger"></span>
+            </a>
+            
+            <a class="nav-item nav-link {%if params['date_type']=='week'%}active{%end%}"
+            href="/statis?tag=projects_incomes&date_type=week{%if params['step']%}&step={{params['step']}}{%end%}" style="font-size:13px;">每周统计
+            <span class="badge badge-danger"></span>
+            </a>
+
+           </div>
+    </nav>
 <div class="table-responsive">
 
         <table class="table table-bordered"  style="width:2700px">
@@ -25,36 +44,50 @@
                     <tr class="active">
                         <th width="120">日期</th>
                         <th>合计</th>
-                        {%for item in t_user%}
-                        <th>{{item.name}}</th>
+                        
+                        {%if count.every_sum%}
+                        {%for item in count.every_sum.split(',')%}
+                
+                        <th>
+                            {{item.split('|')[0]}}
+                    </th>
                         {%end%}
+                        {%end%}
+                    
                         </tr>
                 </thead>
                 <tbody>
                     <tr style="background-color:bisque;">
                         <td style="background-color: #efefef;">合计</td>
                         <td style="background-color: #efefef;">{{count.sssim}}</td>
-                        {%for t in t_user%}
+
+                        {%if count.every_sum%}
+                        {%for item in count.every_sum.split(',')%}
+                  
                         <td>
-                            {%for item in count.every_sum.split(',')%}
-                            {%if item.split('|')[0]==t.name%}
-                                {{item.split('|')[1]}}
-                            {%end%}
-                            {%end%}
-                        </td>
+                            {{item.split('|')[1]}}
+                    </td>
+                     
+                     
+                        {%end%}
                         {%end%}
                     </tr>
                     {%for item in projects_incomes%}
                     <tr>
                         <td>{{item.ca}}</td>
                         <td>{{item.ssim}}</td>
-                        {%for t in t_user%}
+
+                        {%for t in count.every_sum.split(',')%}
                         <td>
+                            {%set sum=float(0)%}
                             {%for row in item.us.split(',')%}
-                                {%if row.split('|')[0]==t.name%}
-                                    {{row.split('|')[1]}}
+                            {%if row.split('|')[0]==t.split('|')[0] and   row.split('|')[1] %}
+                                    {%set sum+=float(row.split('|')[1])%}
                                 {%end%}
+                        
+                            
                             {%end%}
+                            {%if sum!=0.0%}{{sum}}{%end%}
                         </td>
                         {%end%}
                     </tr>
@@ -68,16 +101,16 @@
                         <ul class="pagination">
                             {% if pagination.has_prev %}
                             <li class="paginate_button page-item previous " id="dataTable_previous">
-                                <a href="/statis?tag=projects_incomes{%if params['step']%}&step={{params['step']}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                <a href="/statis?tag=projects_incomes{%if params['date_type']%}&date_type={{params['date_type']}}{%end%}{%if params['step']%}&step={{params['step']}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li class="paginate_button page-item ">
-                                <a href="/statis?tag=projects_incomes{%if params['step']%}&step={{params['step']}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                <a href="/statis?tag=projects_incomes{%if params['date_type']%}&date_type={{params['date_type']}}{%end%}{%if params['step']%}&step={{params['step']}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                             {% else %}
                             <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                             {% end %} {% else %}
                             <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
                             {% end %} {%end %} {% if pagination.has_next %}
                             <li class="paginate_button page-item next" id="dataTable_next">
-                            <a href="/statis?tag=projects_incomes{%if params['step']%}&step={{params['step']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                            <a href="/statis?tag=projects_incomes{%if params['date_type']%}&date_type={{params['date_type']}}{%end%}{%if params['step']%}&step={{params['step']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>

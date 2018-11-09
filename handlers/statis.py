@@ -7,7 +7,7 @@ import urllib2
 import tornado.httpclient
 import sys, re,os,uuid
 import urllib,datetime
-
+import xlwt
 reload(sys)
 from tornado.options import define, options
 sys.setdefaultencoding('utf8')
@@ -31,6 +31,7 @@ class StatisHandler(BaseHandler):
     def get_datetime_range(self,year, month):
         nb_days = monthrange(year, month)[1]
         return [datetime.date(year, month, day) for day in range(1, nb_days + 1)]
+ 
 
     @tornado.web.authenticated
     def get(self):
@@ -611,7 +612,7 @@ class StatisHandler(BaseHandler):
 
 
             t_kf = self.db.query("""
-                select uid ,uid_name from t_statis_cq   """+add_sql+""" group by uid_name,uid
+                select uid ,uid_name from t_statis_cq  group by uid_name,uid
             """)
             btype = self.db.query ("select * from t_projects_type where income_category='业务来源'")
             project_btype = self.db.query ("select btype_id ,btype_name from t_statis_cq  "+add_sql+" group by btype_id ,btype_name")
@@ -1187,6 +1188,35 @@ class StatisHandler(BaseHandler):
         elif tag=="projects_income_title":
             page=int(self.get_argument('page',1))
             pre_page=20
+            project_id=self.get_argument('project_id','')
+            daokuan_start=self.get_argument('daokuan_start','')
+            daokuan_end=self.get_argument('daokuan_end','')
+            sale=self.get_argument('sale','')
+            kf=self.get_argument('kf','')
+            step=self.get_argument('step','1')
+
+            sql=''
+            if project_id:
+                sql+=' and a.project_id=%s '%project_id
+            if daokuan_start and daokuan_end:
+                sql+=' and a.income_at between "%s" and "%s" '%(daokuan_start,daokuan_end)
+            
+            if sale:
+                sql+=' and  c.member_name="%s" '%sale
+            if kf:
+                sql+='  and d.member_name="%s" '%kf
+            if step=='1':
+                sql+=' and (e.income_name="合同定金" or e.income_name="尾款") '
+            elif step=='2':
+                sql+=' and e.income_name!="合同定金" and e.income_name!="尾款" '
+            params={
+                'daokuan_start':daokuan_start,
+                'daokuan_end':daokuan_end,
+                'sale':sale,
+                'kf':kf,
+                'project_id':project_id,
+                'step':step
+            }
             count=self.db.get('''
                 select count(*) count
                 from t_projects_income_title a
@@ -1195,7 +1225,7 @@ class StatisHandler(BaseHandler):
                 inner join t_projects_member d on b.id=d.project_id and d.team_id=36 and d.member_name <>''
                 inner join t_projects_income e on a.id=e.parent_id and a.project_id=e.project_id
                 where a.fi_confirm_at is not null
-            ''')
+            '''+sql)
             pagination=Pagination(page,pre_page,count.count,self.request)
             start_page=(page-1)*pre_page
             projects_income_title=self.db.query('''
@@ -1207,56 +1237,170 @@ class StatisHandler(BaseHandler):
                 inner join t_projects_member c on b.id=c.project_id and c.team_id=34 and c.member_name <>''
                 inner join t_projects_member d on b.id=d.project_id and d.team_id=36 and d.member_name <>''
                 inner join t_projects_income e on a.id=e.parent_id and a.project_id=e.project_id
-                where a.fi_confirm_at is not null  order by a.created_at desc limit %s,%s
+                where a.fi_confirm_at is not null '''+sql+''' order by a.created_at desc limit %s,%s
             ''',start_page,pre_page)
             self.render('statis/projects_income_title.html',
                 search_key="",
                 tag=tag,
+                params=params,
+                output_path="static/output/到款统计.xls",
                 pagination=pagination,
                 projects_income_title=projects_income_title
                 )
         
+        elif tag=="income_output":
+            params=eval(self.get_argument('params'))
+            sql=''
+
+            if params['project_id']:
+                sql+=' and a.project_id=%s '%params['project_id']
+            if params['daokuan_start'] and params['daokuan_end']:
+                sql+=' and a.income_at between "%s" and "%s" '%(params['daokuan_start'],params['daokuan_end'])
+            
+            if params['sale']:
+                sql+=' and  c.member_name="%s" '%params['sale']
+            if params['kf']:
+                sql+='  and d.member_name="%s" '%params['kf']
+            
+            if params['step']=='1':
+                sql+=' and (e.income_name="合同定金" or e.income_name="尾款") '
+            elif params['step']=='2':
+                sql+=' and e.income_name!="合同定金" and e.income_name!="尾款" '
+            projects_income_title=self.db.query('''
+                select a.income_at,b.id,b.project_name,b.customer_company,b.customer_name,
+                e.income_money,e.income_name,
+                c.member_name  sale_name,d.member_name kf_name
+                from t_projects_income_title a
+                inner join t_projects b on a.project_id=b.id
+                inner join t_projects_member c on b.id=c.project_id and c.team_id=34 and c.member_name <>''
+                inner join t_projects_member d on b.id=d.project_id and d.team_id=36 and d.member_name <>''
+                inner join t_projects_income e on a.id=e.parent_id and a.project_id=e.project_id
+                where a.fi_confirm_at is not null '''+sql+''' order by a.created_at desc
+            ''')
+            wb=xlwt.Workbook()
+            sh=wb.add_sheet(u'到款结算')
+            sh.write(0,0,u'订单号')
+            sh.write(0,1,u'业务内容')
+            sh.write(0,2,u'到款日期')
+            sh.write(0,3,u'公司名称')
+            sh.write(0,4,u'客户姓名')
+            sh.write(0,5,u'到款内容')
+            sh.write(0,6,u'到款金额')
+            sh.write(0,7,u'销售顾问')
+            sh.write(0,8,u'客服顾问')
+            for idx,row in enumerate(projects_income_title):
+                idx=idx+1
+                sh.write(idx,0,row.id)
+                sh.write(idx,1,row.project_name)
+                sh.write(idx,2,row.income_at.strftime("%Y-%m-%d"))
+                sh.write(idx,3,row.customer_company)
+                sh.write(idx,4,row.customer_name)
+                sh.write(idx,5,row.income_name)
+                sh.write(idx,6,row.income_money)
+                sh.write(idx,7,row.sale_name)
+                sh.write(idx,8,row.kf_name)
+            wb.save('media/output/到款结算.xls')
+            self.write({'output_path':'static/output/到款结算.xls'})
         elif  tag=="projects_incomes":
             page=int(self.get_argument('page',1))
             step=self.get_argument('step','0')
+            date_type=self.get_argument('date_type','day')
+            date_sql=''
+            count_sql=''
+            sql=" DATE_FORMAT(ca,'%%Y-%%m-%%d') ca,ssim,us "
             pre_page=20
             params={
-                
+                'date_type':date_type,
                 'step':step
             }
+           
             title_name='销售顾问'
+                
             if step=='1':
                 title_name='客服顾问'
+               
             elif step=='2':
                 title_name='客服会计'
 
-                
-            t_user=self.db.query('''
-            select * from t_user where title_name=%s
-            ''',title_name)
+            if date_type=='day':
+                date_sql=" order by ca "
+                count_sql=" t_projects_income_count where team_name='%s' and  ca is not null "%title_name+date_sql
+
+            elif date_type=='month':
+                date_sql= " group by DATE_FORMAT(ca,'%%Y-%%m') order by DATE_FORMAT(ca,'%%Y-%%m') "
+                sql=" DATE_FORMAT(ca,'%%Y-%%m') ca, sum(ssim) ssim,GROUP_CONCAT(concat(us,'')) us "
+                count_sql=" (select sum(ssim) ssim from  t_projects_income_count where team_name='%s' and  ca is not null "%title_name+date_sql +") aa"             
+            elif date_type=='week':
+                sql=" DATE_FORMAT(ca,'%%Y-%%m-%%u') ca, sum(ssim) ssim,GROUP_CONCAT(concat(us,'')) us "
+                date_sql=" group by DATE_FORMAT(ca,'%%Y-%%m-%%u') order by DATE_FORMAT(ca,'%%Y-%%m-%%u') "
+                count_sql=" (select  sum(ssim) ssim from t_projects_income_count where team_name='%s' and ca is not null "%title_name+date_sql+") aa"
+  
 
             count=self.db.get('''
-            select count(*) count,sum(ssim)  sssim, 
-            (select group_concat(uid_name,'|',sim) es from (select sum(c.income_money) sim,uid_name from t_projects_income c 
-            inner join t_user d on c.uid_name=d.name and d.title_name=%s group by c.uid_name)cc ) every_sum 
-            from (select ca,group_concat(uid_name,'|',sim) us,sum(sim) ssim
-             from (select DATE_FORMAT(created_at,'%%Y-%%m-%%d') ca,uid_name, sum(income_money) sim 
-                from t_projects_income a
-                inner join t_user b on a.uid_name=b.name and b.title_name=%s
-                 group by DATE_FORMAT(created_at,'%%Y-%%m-%%d'),uid_name )aa group by aa.ca )bb
-            ''',title_name,title_name)
+                select count(*) count,sum(ssim) sssim,
+               (select us from t_projects_income_count where team_name=%s and type_name='个人总额' ) every_sum
+                 from '''+count_sql,title_name)
+
             pagination=Pagination(page,pre_page,count.count,self.request)
             start_page=(page-1)*pre_page
+            self.db.execute('''
+                SET GLOBAL group_concat_max_len=102400;
+                SET SESSION group_concat_max_len=102400;
+            ''')
             projects_incomes=self.db.query('''
-                select ca,group_concat(uid_name,'|',sim) us,sum(sim) ssim 
-                from (select DATE_FORMAT(created_at,'%%Y-%%m-%%d') ca,uid_name, sum(income_money) sim 
-                from t_projects_income a
-                inner join t_user b on a.uid_name=b.name and b.title_name=%s
-                 group by DATE_FORMAT(created_at,'%%Y-%%m-%%d'),uid_name )aa
-                group by aa.ca  order by aa.ca desc limit %s,%s
+                
+                select '''+sql+''' from t_projects_income_count where team_name=%s and  ca is not null '''+date_sql+''' desc limit %s,%s
             ''',title_name,start_page,pre_page)
+            # if step=='0':
+
+            #     count=self.db.get('''
+            #     select count(*) count,sum(ssim)  sssim,
+            #     (select group_concat(uid_name,'|',sim) es from (select sum(c.income_money) sim,member_name uid_name from t_projects_income c 
+            #     inner join t_projects_member d on c.project_id=d.project_id and d.team_name='销售顾问' group by d.member_name)cc ) every_sum 
+
+            #     from(
+            #         select ca,group_concat(uid_name,'|',sim) us,sum(sim) ssim 
+            #         from (select DATE_FORMAT(a.created_at,'%%Y-%%m-%%d') ca,b.member_name uid_name, sum(income_money) sim
+            #         from t_projects_income a 
+            #         inner join t_projects_member b on a.project_id=b.project_id and b.team_name='销售顾问'  and b.member_id!=0
+            #         where  a.project_id=b.project_id
+            #         group by DATE_FORMAT(a.created_at,'%%Y-%%m-%%d'),member_name )aa
+            #         group by aa.ca  order by aa.ca)bb
+            #     ''')
+            #     pagination=Pagination(page,pre_page,count.count,self.request)
+            #     start_page=(page-1)*pre_page
+            #     projects_incomes=self.db.query('''
+            #         select ca,group_concat(uid_name,'|',sim) us,sum(sim) ssim 
+            #         from (select DATE_FORMAT(a.created_at,'%%Y-%%m-%%d') ca,b.member_name uid_name, sum(income_money) sim
+            #         from t_projects_income a 
+            #         inner join t_projects_member b on a.project_id=b.project_id and b.team_name='销售顾问' and b.member_id!=0
+            #         where  a.project_id=b.project_id
+            #         group by DATE_FORMAT(a.created_at,'%%Y-%%m-%%d'),member_name )aa
+            #         group by aa.ca  order by aa.ca desc limit %s,%s
+            #     ''',start_page,pre_page)
+            # else:
+            #     count=self.db.get('''
+            #     select count(*) count,sum(ssim)  sssim, 
+            #     (select group_concat(uid_name,'|',sim) es from (select sum(c.income_money) sim,uid_name from t_projects_income c 
+            #     inner join t_user d on c.uid_name=d.name and d.title_name=%s group by c.uid_name)cc ) every_sum 
+            #     from (select ca,group_concat(uid_name,'|',sim) us,sum(sim) ssim
+            #     from (select DATE_FORMAT(created_at,'%%Y-%%m-%%d') ca,uid_name, sum(income_money) sim 
+            #         from t_projects_income a
+            #         inner join t_user b on a.uid_name=b.name and b.title_name=%s
+            #         group by DATE_FORMAT(created_at,'%%Y-%%m-%%d'),uid_name )aa group by aa.ca )bb
+            #     ''',title_name,title_name)
+            #     pagination=Pagination(page,pre_page,count.count,self.request)
+            #     start_page=(page-1)*pre_page
+            #     projects_incomes=self.db.query('''
+            #         select ca,group_concat(uid_name,'|',sim) us,sum(sim) ssim
+            #         from (select DATE_FORMAT(created_at,'%%Y-%%m-%%d') ca,uid_name, sum(income_money) sim
+            #         from t_projects_income a
+            #         inner join t_user b on a.uid_name=b.name and b.title_name=%s
+            #         group by DATE_FORMAT(created_at,'%%Y-%%m-%%d'),uid_name )aa
+            #         group by aa.ca  order by aa.ca desc limit %s,%s
+            #     ''',title_name,start_page,pre_page)
             self.render('statis/projects_incomes.html',
-                t_user=t_user,
+                
                 count=count,
                 projects_incomes=projects_incomes,
                 pagination=pagination,

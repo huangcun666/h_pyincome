@@ -1,5 +1,48 @@
 {% extends "../base.html" %} {%block title%}报价管理{%end%} {% block body %}
+<style>
 
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    
+}
+
+.dropdown-content {
+    display: none;
+    z-index:9999;
+    position: absolute;
+    background-color: #f9f9f9 ;
+    min-width: 50px ;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2) ;
+    
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 5px 5px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+</style>
 
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
@@ -14,12 +57,12 @@
             <div class="card-body">
             <div class="table-responsive">
             
-            <table class="table table-bordered" id="dataTable"  cellspacing="0" style="width:2800px;">
+            <table class="table table-bordered" id="dataTable"  cellspacing="0" style="width:2000px; font-size: 70%;">
             <thead style="background-color:#000;color:#fff">
                 <tr>
              
                  
-                   
+                   <th width="80">排序</th>
                     <th width="100">区域</th>
                     <th width="100">类型</th>
                     
@@ -44,9 +87,31 @@
             </thead>
                 <tbody>
                         {% if addr_provider_manage %}
-                       {% for item in addr_provider_manage%} 
+                       {% for idx,item in enumerate(addr_provider_manage)%} 
                         <tr>
-                          
+                            <td>
+                                    <div class="dropdown">
+                                            <a href="javascript:void(0)"><i class="fa fa-arrow-up" style="font-size:18px;"></i></a>
+                                            
+                                            <div class="dropdown-content">
+                                                    <a href="javascript:void(0)" class="order_up" id="{{item.id}}" up_id="{%if idx!=0%}{{addr_provider_manage[idx-1].id}}{%end%}">上 移</a>
+                                                    <a href="javascript:void(0)" class="order_up1" id="{{item.id}}"  up_id="{%if idx!=0%}{{addr_provider_manage[idx-1].id}}{%end%}">置 顶</a>
+                                                  
+                                            </div>
+                                          </div>&nbsp;
+                                          <div class="dropdown">
+                                                <a href="javascript:void(0)">
+                                                        <i class="fa fa-arrow-down" style="font-size:18px;"></i></a>
+                                                
+                                                <div class="dropdown-content">
+                                                        <a href="javascript:void(0)" class="order_down" id="{{item.id}}" down_id="{%if idx!=addr_provider_manage.index(addr_provider_manage[-1])%}{{addr_provider_manage[idx+1].id}}{%end%}">下 移</a>
+                                                        <a href="javascript:void(0)" class="order_down1" id="{{item.id}}" down_id="{%if idx!=addr_provider_manage.index(addr_provider_manage[-1])%}{{addr_provider_manage[idx+1].id}}{%end%}">
+                                                                置 底</a>
+                                                   
+                                                </div>
+                                              </div>
+                               
+                            </td>
                             <td>{{item.area}}</td>
                             <td>{{item.type}}</td>
 
@@ -236,6 +301,9 @@
                      
                 
                         <div class="modal-footer">
+                            {%if role=='8'%}
+                            <button type="button" class="btn btn-danger delete_bj">删除</button>
+                            {%end%}
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
                                          
                               </div>
@@ -429,7 +497,7 @@
 
           var fp_limit=$(this).attr('fp_limit')
           var danbao_matter=$(this).attr('danbao_matter')
-
+         $('.delete_bj').attr('delete_id',addr_id)
           $('#addr_id').val(addr_id)
           $('#provider').val(provider)
           $('#area').val(area)
@@ -486,6 +554,75 @@
         $('.price_box').html(text)
         $('#price_history_modal').modal('show')
      })
+    
+    $(".delete_bj").on('click',function () { 
+        var delete_id=$(this).attr('delete_id')
+        if(confirm('确认删除？')){
+            $.post('project?tag=add_bj_manage',{
+            '_xsrf':_xsrf,
+            'delete_id':delete_id
+        },function (res) { 
+            location.reload()
+         })
+        }
+       
+     })
+     $(".order_up").on('click',function () { 
+         var up_id=$(this).attr('up_id')
+         var id=$(this).attr('id')
+         if(up_id!=''){
+         $.post('project?tag=provider_manage_order',{
+             '_xsrf':_xsrf,
+             'up_id':up_id,
+             'id':id
+         },function (res) { 
+             location.reload()
+          })
+        }
+      })
+    $(".order_up1").on('click',function () { 
+        var id=$(this).attr('id')
+        var up_id=$(this).attr('up_id')
+        if(up_id!=''){
+            $.post('project?tag=provider_manage_order',{
+             '_xsrf':_xsrf,
+             'top_id':"{{addr_provider_manage[0].id}}",
+             'id':id
+         },function (res) { 
+             location.reload()
+          })
+        }
+        
+     })
+
+        $(".order_down").on('click',function () { 
+        var id=$(this).attr('id')
+        var down_id=$(this).attr('down_id')
+        if(down_id!=''){
+            $.post('project?tag=provider_manage_order',{
+             '_xsrf':_xsrf,
+             'down_id':down_id,
+             'id':id
+         },function (res) { 
+             location.reload()
+          })
+        }
+     })
+
+    $(".order_down1").on('click',function () { 
+        var id=$(this).attr('id')
+        var down_id=$(this).attr('down_id')
+        if(down_id!=''){
+            $.post('project?tag=provider_manage_order',{
+             '_xsrf':_xsrf,
+             'bottom_id':"{{addr_provider_manage[-1].id}}",
+             'id':id
+         },function (res) { 
+             location.reload()
+          })
+        }
+     })
+    
 })
 </script>
 {%end%}
