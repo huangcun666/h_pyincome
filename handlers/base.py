@@ -3,7 +3,7 @@ import json
 import tornado.web
 
 import logging,datetime
-logger = logging.getLogger('boilerplate.' + __name__)
+logger = logging.getLogger(__name__)
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -30,27 +30,40 @@ class BaseHandler(tornado.web.RequestHandler):
         kwargs['kf_manage']=self.get_secure_cookie('kf_manage')
         kwargs['sh_manage']=self.get_secure_cookie('sh_manage')
         kwargs['express_manage']=self.get_secure_cookie('express_manage')
+        kwargs['show_statis_kf']=self.get_secure_cookie('show_statis_kf')
         if self.get_secure_cookie('role_list'):
             kwargs['role_list']=self.get_secure_cookie('role_list').split(',')
         else:
             kwargs['role_list']=[]
 
-        today_exchange_ids=[]    
+        today_exchange_ids=[]
         today_exchange=self.db_customer.query('''
             select id from t_customer_exchange where TO_DAYS(msg_time)<=TO_DAYS(now()) and uid=%s and summary is null
         ''',self.get_secure_cookie("uid"))
         for item in today_exchange:
             today_exchange_ids.append(item.id)
         kwargs['today_exchange_ids']=today_exchange_ids
+        liuzhuan_reject_count=''
+        if self.get_secure_cookie("department_name")=='工商部':
+            liuzhuan_reject=self.db.get('''
+          select count(*) count from t_projects a inner join 
+                t_projects_transfile b on a.id=b.project_id and b.is_ok=1 and mtype=1 and fback_remark is not null
+                inner join t_projects_milepost c on a.id=c.project_id and order_int=4 and confirm_at is null 
+                where c.uid_name=%s
+        ''',self.get_secure_cookie("name"))
+            if liuzhuan_reject:
+                liuzhuan_reject_count=liuzhuan_reject.count
+        kwargs['liuzhuan_reject_count']=liuzhuan_reject_count
+
         
         x_real_ip = self.request.headers.get("X-Real-IP")
         ip = x_real_ip or self.request.remote_ip
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+
         logger.info("%s : %s  - %s://%s%s  IP:%s " %
-                    (dt, self.get_secure_cookie("name"),
-                     self.request.protocol, self.request.host,
-                     self.request.uri,ip))
+                     (dt, self.get_secure_cookie("name"),
+                      self.request.protocol, self.request.host,
+                      self.request.uri, ip))
 
         super(BaseHandler, self).render(template, **kwargs)
 
@@ -96,15 +109,17 @@ class BaseHandler(tornado.web.RequestHandler):
     def db_customer(self):
         return self.application.db_customer
 
-    @property
-    def db_building(self):
-        return self.application.db_building
+    # @property
+    # def db_building(self):
+    #     return self.application.db_building
 
     @property
     def db_company(self):
         return self.application.db_company
 
-
+    @property
+    def db_ext(self):
+        return self.application.db_ext
 
 
 
@@ -113,6 +128,39 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def get_current_role(self):
         return self.get_secure_cookie("role")
+
+    def checkUserIn(self,members,uid):
+        for item in members:
+            if item:
+                if item.member_id==int(uid):
+                    return True
+        return False
+
+    def checkUserArrIn(self, members, uid):
+        for item in members:
+            if item:
+                if int(item) == int(uid):
+                    return True
+        return False
+
+    # def checkUserIn(self,members,uid):
+    #     for item in members:
+    #         if item:
+    #             if item.member_id==int(uid):
+    #                 return True
+    #     return False
+    def checkRoleIn(self, roles, role):
+        for item in roles:
+            if item == role:
+                return True
+        return False
+
+    def checkAccIn(self, t_customer, uid):
+        if t_customer:
+            if t_customer.acc_uid == int(uid):
+                return True
+        return False
+
     # @property
     # def xsrf_token(self):
     #     token = super().xsrf_token

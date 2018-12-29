@@ -1,0 +1,163 @@
+{% extends "../base.html" %} {%block title%}报价管理{%end%} {% block body %}
+<style>
+
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    
+}
+
+.dropdown-content {
+    display: none;
+    z-index:9999;
+    position: absolute;
+    background-color: #f9f9f9 ;
+    min-width: 50px ;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2) ;
+    
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 5px 5px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+</style>
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">报价管理
+          
+
+
+                          {%if role=="8"%}
+                <a href="http://192.168.2.168:8000/admin" class="btn btn-info btn-sm">报价管理后台</a>
+                
+                {%end%}
+        </li>
+
+      </ol>
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <a class="btn btn-light  nav_padding  " href="/project?tag=bj_manage">挂靠地址报价
+               </a>
+          
+                  <a class="btn btn-light  nav_padding  {%if tag=='bj_manage_yw'%}active{%end%}" href="/project?tag=bj_manage_yw">其他业务报价表
+                </a>
+        </div>
+        </nav>
+        
+      <div class="card mb-3">
+            <div class="card-body">
+            <div class="table-responsive">
+        <div style="margin-top:10px; margin-bottom:10px;">
+
+<table style="margin:5px;">
+    <tbody>
+        <tr>
+            <td><select name="category" id="category" class="form-control" > 
+                <option value="">选择类型</option>
+                {%for item in t_category%}
+                <option value="{{item.id}}">{{item.name}}</option>
+                {%end%}
+            </select>
+            </td>
+            <td><input class="form-control" type="text" name="product" id="product" placeholder="业务"></td>
+            <td><input class="form-control" type="text" name="remark" id="remark" placeholder="备注"></td>
+            <td><input type="submit" id="search" value="检 索"></td>
+        </tr>
+    </tbody>
+</table>
+<center>
+<table class="table">
+    <thead>
+        <tr style="background-color:#ccc;">
+            <th colspan="4" style="text-align:center;">业务报价表</th>
+          
+        </tr>
+    </thead>
+
+    <tbody id="product_show" >
+        <tr>
+            <td>类别</td>
+            <td>业务</td>
+            <td style="width:200px;">价格(RMB)</td>
+            <td>备注</td>
+        </tr>
+
+        {%for item in product_bid%}
+        <tr>
+            <td>{{item.category_name}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.price}}</td>
+            <td>{{item.remark}}</td>
+        </tr>
+        {%end%}
+
+
+    </tbody>
+</table>
+</center>
+</div>
+  
+        </div>
+    </div>
+<!-- <modal> -->
+      
+{%end%}
+
+{%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+  $("#search").click(function () { 
+    category=$("#category").val()
+    product=$("#product").val()
+    remark=$('#remark').val()
+    $.post('/project?tag=bj_manage_yw_show',{
+        'category':category,
+        'product':product,
+        'remark':remark,
+        '_xsrf':_xsrf
+    },function (data) { 
+        data=data['product_bid']
+        text=''
+        $("#product_show tr").nextAll().remove()
+        if(data==''){
+                text="<tr><td colspan='4'>还没有哦~</td></tr>"
+        }
+        else{
+        for(var i=0;i<data.length;i++){
+            text+='<tr><td>'+data[i].category_name+'</td><td>'+data[i].name+'</td><td>'+data[i].price+'</td><td>'+data[i].remark+'</td></tr>'
+        }
+       
+    } $("#product_show").append(text)
+     })
+   })
+    
+})
+</script>
+{%end%}

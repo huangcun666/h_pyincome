@@ -21,16 +21,16 @@
 
 <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link {%if params['date_type']=='day'%}active{%end%}" id="nav-home-tab"
+            <a class="btn btn-light  nav_padding {%if params['date_type']=='day'%}active{%end%}" id="nav-home-tab"
             href="/statis?tag=projects_incomes&date_type=day{%if params['step']%}&step={{params['step']}}{%end%}" >每日统计
             <span class="badge badge-danger"></span>
         </a>
-          <a class="nav-item nav-link {%if params['date_type']=='month'%}active{%end%}"
+          <a class="btn btn-light  nav_padding {%if params['date_type']=='month'%}active{%end%}"
             href="/statis?tag=projects_incomes&date_type=month{%if params['step']%}&step={{params['step']}}{%end%}" style="font-size:13px;">每月统计
             <span class="badge badge-danger"></span>
             </a>
             
-            <a class="nav-item nav-link {%if params['date_type']=='week'%}active{%end%}"
+            <a class="btn btn-light  nav_padding {%if params['date_type']=='week'%}active{%end%}"
             href="/statis?tag=projects_incomes&date_type=week{%if params['step']%}&step={{params['step']}}{%end%}" style="font-size:13px;">每周统计
             <span class="badge badge-danger"></span>
             </a>

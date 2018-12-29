@@ -27,7 +27,20 @@
         <button type="submit" class="btn">检 索</button>
         <input value="company" name="tag" type="hidden">
 </form>
-            
+              </form>
+<ul class="nav nav-tabs" id="myTab">
+
+    <li {%if state==1%} class="active" {%end%}>
+        <a href="/customer?tag=company" id="customer_tab">已办结</a>
+    </li>
+    <li {%if state==0%} class="active" {%end%}>
+        <a href="/customer?tag=company&state=0" id="tab_confirm">未办结</a>
+    </li>
+
+
+
+
+</ul>            
               <table class="table" style="margin:5px;">
                      <thead>
                                 <tr style="background-color: black; color:#fff;">
@@ -35,20 +48,20 @@
                                 <th style="min-width:130px;">公司名称</th>
         
                                 <th style="min-width:100px;">创建时间</th>
-                                <th></th>
+                                {%if state==1%}<th></th> {%end%}
                                 </tr>
                             </thead>
                 <tbody>
      {%for customer in customers%}
                     <tr>
-                       <td>{{customer.id}}</td>
-                        <td>{{customer.customer_company}}</td>
+                       <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}"  target="_blank">{{customer.id}}</a></td>
+                        <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}" target="_blank">{{customer.customer_company}}</a></td>
                         
                     
                         <td>{{customer.created_at.strftime("%Y-%m-%d")}}</td>
-                        <td><a class="btn customer_detail btn-sm control"  
+                      {%if state==1%}  <td><a class="btn customer_detail btn-sm control"  
                          href="/customer?tag=add&company_id={{customer.id}}">加入客户管理系统</a></td>
-
+                      {%end%}
                      
                     </tr>
                     {%end%}
@@ -59,12 +72,12 @@
                     <ul>
                         {% if pagination.has_prev %}
 
-                        <li><a href="/customer?tag={{tag}}{%if keyword%}&keyword1={{keyword}}{%end%}{%if qtype%}&qtype={{qtype}}{%end%}&page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %}
+                        <li><a href="/customer?tag={{tag}}&state={{state}}{%if keyword%}&keyword1={{keyword}}{%end%}{%if qtype%}&qtype={{qtype}}{%end%}&page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %}
                        
                         {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
              
                         <li> 
-                            <a href="/customer?tag={{tag}}{%if keyword%}&keyword1={{keyword}}{%end%}{%if qtype%}&qtype={{qtype}}{%end%}&page={{ page }}">{{ page }}</a></li>
+                            <a href="/customer?tag={{tag}}&state={{state}}{%if keyword%}&keyword1={{keyword}}{%end%}{%if qtype%}&qtype={{qtype}}{%end%}&page={{ page }}">{{ page }}</a></li>
                        
                         {% else %}
                         <li><span class="active"><a href="#">{{ page }}</a></span></li>
@@ -72,7 +85,7 @@
                         <li><span class="active"><a href="#">....</a></span></li>
                         {% end %} {%end %} {% if pagination.has_next %}
                     
-                        <li><a href="/customer?tag={{tag}}{%if keyword%}&keyword1={{keyword}}{%end%}{%if qtype%}&qtype={{qtype}}{%end%}&page={{pagination.page+1}}">下页 &raquo;</a></li>
+                        <li><a href="/customer?tag={{tag}}&state={{state}}{%if keyword%}&keyword1={{keyword}}{%end%}{%if qtype%}&qtype={{qtype}}{%end%}&page={{pagination.page+1}}">下页 &raquo;</a></li>
                         {%end%}
                         
                     </ul>

@@ -12,27 +12,18 @@
       </ol>
 <nav>
 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-<a class="nav-item nav-link {%if not launch%}active{%end%}" href="/project?tag=projects_transition">资料交接</a>
-<a class="nav-item nav-link {%if launch%}active{%end%}" id="a_add_trans" href="/project?tag=projects_transition&launch=1" style="font-size:13px;">发起交接</a>
+<a class="btn btn-light  nav_padding {%if not launch%}active{%end%}" href="/project?tag=projects_transition">资料交接</a>
+<a class="btn btn-light  nav_padding {%if launch%}active{%end%}" id="a_add_trans" href="/project?tag=projects_transition&launch=1" >发起交接</a>
 
 </div>
 
 
 </nav>
 
-<br>
 {%if not launch%}
-<form>
+<form class="search-box">
   <table>
-    <thread>
-    <tr>
-      <th>订单编号</th>
-      <th>发起人</th>
-      <th>公司名称</th>
-      <th>确认状态</th>
-      <th></th>
-    </tr>
-  </thread>
+
   <tbody>
     <tr>
       <td><input type="text" name="id" placeholder="订单编号" class="form-control" value="{%if params['id']%}{{params['id']}}{%end%}"></td>
@@ -43,7 +34,7 @@
       </td>
       <td>
         <input type="hidden" name="tag" value="{{tag}}"/>
-        <input type="submit" value="检索">
+        <input type="submit" value="检索" class="btn btn-info">
       </td>
       </tr>
   </tbody>
@@ -100,7 +91,7 @@
                               {%if launch%}
                               <a href="/project?tag=t_company{%if item.project_id%}&project_id={{item.project_id}}{%end%}&company={{item.customer_company}}{%if item.company_code%}&company_code={{item.company_code}}{%end%}" class="btn-primary btn">详细</a>
                               {%else%}
-                              <a href="/project?tag=projects_transition_details&id={{item.pt_id}}&project_id={{item.project_id}}" class="btn-primary btn">详细</a>
+                              <a href="/project?tag=projects_transition_details&id={{item.pt_id}}&project_id={{item.project_id}}" class="btn-info btn">详细</a>
                               {%end%}
                             </td>
 

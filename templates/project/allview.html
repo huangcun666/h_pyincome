@@ -13,14 +13,11 @@
       </ol>
 
 
-   <div class="card mb-3">
-        <div class="card-body">
-       
 
 
 
 
- <form>
+    <form class="search_box">
  <table>
     <tr>
       <td>业务类型</td>
@@ -88,13 +85,19 @@
             {%end%}
         </select>
       </td>
-          <td>
-<input type="text" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
-至
-<input type="text" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
-<input type="hidden" name="tag" value="{{tag}}"/>
-<input type="submit" value="检索" />
 
+      <td>
+
+<input type="text" class="form-control" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
+</td>
+      <td>
+
+<input type="text" class="form-control" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+      </td>
+          <td>
+
+<input type="hidden" name="tag" value="{{tag}}"/>
+<input type="submit" value="检索" class="btn btn-info" />
        </td>
     </tr>
  </table>
@@ -110,17 +113,23 @@
 
 </form>
 
+
 <div class="table-responsive">
+<div class="alert alert-secondary" role="alert" style="margin-top: 5px;">
 
+    共 {{pagination.total_count}} 条记录
+    合计金额:{{count.sum_income}}
+   
+   </div>
 
-                  <table class="table table-bordered" id="dataTable" style="width:2800px">
+                  <table class="table table-bordered"  style="font-size:12px;width:2200px;;">
                     <thead style="background-color:#000;color:#fff ; font-size:13px;"><thead style="background-color:#000;color:#fff ; font-size:13px;">
                         <tr>
-                        <th width="100">日期</th>
+                        <th width="120">日期</th>
                             <!-- <th width="100">客户分组</th> -->
-                         <th width="20">订单编号</th>
+                         <th width="40" style="vertical-align: middle !important;text-align: center;">编号</th>
                
-                                     <th width="80">客户姓名</th>
+                                     <th width="100">客户姓名</th>
                                      <th width="100">联系方式</th>
                           <th width="200">公司名称</th>
                                 <th width="300">业务内容</th>
@@ -141,7 +150,7 @@
                   <th width="100">客服顾问</th>
                     <th width="100">销售顾问</th>
                          <th width="100">工商专员</th>
-                         <th width="80">客户来源</th>
+                         <th width="90">客户来源</th>
                          <th width="100">来源平台</th>
                              <th width="100">在线客服</th>
                                
@@ -155,10 +164,10 @@
     <th width="80" >搜索词</th>
 
 
-      <th width="80">来源方式</th>
+      <th width="90">来源方式</th>
            
 
-  <th width="100">是否有合同</th>
+  <th width="110">是否有合同</th>
 
 
                          
@@ -190,9 +199,16 @@
    <td>
                          {{item.customer_company}}
                             </td>
-      <td>
-                                <a style=" font-size:13px;" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn"  title="{{item.id}}">{{item.project_name}}</a>
-                            </td>
+            <td style="word-break: break-all;" title=" {{item.project_name}}">
+                <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" title="{{item.project_name}}"
+                    style="font-size:13px;">
+            
+                    {%if len(item.project_name) > 40%} {{item.project_name[:39]}}....... {%else%} {{item.project_name}} {%end%}
+            
+                </a>
+            
+            
+            </td>
 
 
 
@@ -342,8 +358,7 @@
                     </tbody>
                 </table>
 
-<div class="col-sm-12 col-md-7">
-   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
@@ -367,13 +382,9 @@
          {% if pagination.has_next %}
          <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=allview&page={{pagination.page+1}}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
-   </div>
-</div>
 
-         </div>
+
         </div>
-        <div class="card-footer small text-muted"></div>
-      </div>
 <!-- Modal -->
 
 

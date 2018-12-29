@@ -233,6 +233,18 @@
 <script>
 $(function () {
     _xsrf =  getCookie("_xsrf")
+    $('.delete_relation_ids').on('click',function () { 
+      var id=$(this).attr('id')
+      var relation_id=$(this).attr('relation_id')
+      $.post('/project?tag=delete_relation',
+      {
+        '_xsrf':_xsrf,
+        'id':id,
+        'relation_id':relation_id
+      },function (res) { 
+        location.reload()
+       })
+     })
  })
 </script>
 {%end%}

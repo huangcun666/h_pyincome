@@ -1,19 +1,27 @@
 # -*- coding: utf-8 -*-
-from Pagination import Pagination
-import tornado
-from handlers.base import BaseHandler
-import uuid,os,datetime
-from tornado.options import define, options
-import msg
-import qrcode
+import datetime
 import json
-import xlwt
+import os
 import sys
+import uuid
+from tornado.web import asynchronous, RequestHandler, Application
+
+import qrcode
+import tornado
+import xlwt, hashlib
+from tornado.options import define, options
+
 import events
+import msg
+from handlers.base import BaseHandler
+from Pagination import Pagination
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+
+
 class ProjectHandler(BaseHandler):
+
 
     def write_income(self,val,id):
         #  print "bs", val, "id", id,type(id)
@@ -309,11 +317,15 @@ class ProjectHandler(BaseHandler):
 
     @tornado.web.authenticated
     def get(self):
+        dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         tag = self.get_argument("tag","my")
         uid = self.get_secure_cookie("uid")
         role = self.get_secure_cookie("role")
         uid_name = self.get_secure_cookie("name")
         is_check=self.get_secure_cookie('is_check')
+        is_manager=self.get_secure_cookie('is_manager')
+        kj_manage=self.get_secure_cookie('kj_manage')
+
         if self.get_secure_cookie('role_list'):
             role_list=self.get_secure_cookie('role_list').split(',')
         else:
@@ -708,9 +720,9 @@ class ProjectHandler(BaseHandler):
                     project_id)
                 income_arr = []
                 for item in incomes:
-                    print "item",item.id
+                    # print "item",item.id
                     income_detail = self.db.query("""select id,title_id, service_id,service_name,service_money 
-                    from t_projects_income_detail where project_income_id=%s""",item.id)
+                    from t_projects_income_detail where title_id=%s""",item.parent_id)
                     income_detail_arr = []
                     for row in income_detail:
                         income_detail_arr.append({
@@ -811,7 +823,7 @@ class ProjectHandler(BaseHandler):
                 sql_cq = " and  id in (select project_id from t_projects_member where  team_id=38 and member_id=%s)  " % (
                     cq)
                 sql_cq_add = " and member_id='"+cq+"'"
-            print "sql_cq",sql_cq
+
             if kefu and kefu != "0":
                 sql_kefu = "and  project_id in (select project_id from t_projects_member  where  team_id=39 and member_id=%s) " % (
                     kefu)
@@ -1151,14 +1163,18 @@ class ProjectHandler(BaseHandler):
                 FROM t_projects a
                     inner join t_projects_member b on team_id=38
                     and  a.id=b.project_id and is_cancel=1 and is_cancel_confirm_at is null
-                    ''')
+                      inner join t_projects_member c
+                    on c.project_id=a.id   where  c.member_id=%s
+                    ''',uid)
 
             cancel_confirm_count1 = self.db.get('''
             SELECT  count(*) count
                 FROM t_projects a
                     inner join t_projects_member b on team_id=38
                     and  a.id=b.project_id and is_cancel=1 and is_cancel_confirm_at is not null
-                    ''')
+                      inner join t_projects_member c
+                    on c.project_id=a.id   where  c.member_id=%s 
+                    ''', uid)
             all_count =  self.db.get('''
                                       SELECT   count(*) count
 
@@ -1234,8 +1250,11 @@ class ProjectHandler(BaseHandler):
                     FROM t_projects a
                     inner join t_projects_member b on b.team_id=38
                     and  a.id=b.project_id and b.is_cancel=1 and b.is_cancel_confirm_at is null
+                         inner join t_projects_member c
+                    on c.project_id=a.id
+                     where team_id=34 and member_id=%s
                         order by a.created_at desc limit %s,%s
-                        ''', startpage, pre_page)
+                        ''', uid, startpage, pre_page)
 
             elif ntag == "is_cancel_confirm":
                 pre_page = 20
@@ -1251,8 +1270,11 @@ class ProjectHandler(BaseHandler):
                     FROM t_projects a
                     inner join t_projects_member b on b.team_id=38
                     and  a.id=b.project_id and b.is_cancel=1 and b.is_cancel_confirm_at is not  null
+                       inner join t_projects_member c
+                    on c.project_id=a.id
+                     where c.team_id=34 and c.member_id=%s
                         order by a.created_at desc limit %s,%s
-                        ''', startpage, pre_page)
+                        ''', uid, startpage, pre_page)
             else:
 
                 count = all_count
@@ -1447,7 +1469,7 @@ class ProjectHandler(BaseHandler):
         elif tag == "projects_qc_milepost":
             category_id = self.get_argument("category_id", "")
             last_milepost_id = self.get_argument("last_milepost_id","")
-            msg = self.get_argument("msg","")
+            msg1 = self.get_argument("msg","")
             p_state = self.get_argument("p_state","")
             keyword = self.get_argument("keyword","")
             sql=""
@@ -1463,7 +1485,6 @@ class ProjectHandler(BaseHandler):
             sales = self.get_argument("sales", "")
             key = self.get_argument("key","")
             qc_key = self.get_argument("qc_key","")
-
             params = {
                 "sales": sales,
                 "income_bussniss": income_bussniss,
@@ -1534,7 +1555,6 @@ class ProjectHandler(BaseHandler):
                     where  b.last_milepost_id <> 0 and  member_id=%s  ''' +
                                         add_sql + '''  and is_cancel=0  and is_cancel_confirm_at is   null
                ''' , uid)
-            print "add_sql", add_sql,count
             cancel_wait_count1 = self.db.get('''
             SELECT  count(*) count
                 FROM t_projects a
@@ -1561,7 +1581,7 @@ and  member_id=%s
                 sql = ""
                 t_projects = self.db.query('''
                           SELECT  a.* ,b.mid,b.member_name,b.btype_id_name,b_category_id,b_category_id_name,
-                    b.last_milepost_id_name,b.last_milepost_id_at,b.created_at cq_created_at
+                    b.last_milepost_id_name,b.last_milepost_id_at,b.created_at cq_created_at,b.last_state_msg,b.last_state_msg_at
     FROM t_projects
                     a inner join t_projects_member b on a.id=b.project_id and last_milepost_id > 0
 
@@ -1571,7 +1591,6 @@ and  member_id=%s
                         ''', uid,startpage, pre_page)
             elif ntag == "is_cancel_confirm":
 
-
                 pre_page = 20
                 count = cancel_confirm_count1
                 pagination = Pagination(page, pre_page, count.count,
@@ -1580,7 +1599,7 @@ and  member_id=%s
                 sql = ""
                 t_projects = self.db.query('''
                          SELECT  a.* ,b.mid,b.member_name,b.btype_id_name,b_category_id,b_category_id_name,
-                    b.last_milepost_id_name,b.last_milepost_id_at,b.created_at cq_created_at
+                    b.last_milepost_id_name,b.last_milepost_id_at,b.created_at cq_created_at,b.last_state_msg,b.last_state_msg_at
     FROM t_projects
                     a inner join t_projects_member b on a.id=b.project_id and last_milepost_id > 0
 
@@ -1592,14 +1611,14 @@ and  member_id=%s
                         ''', uid, startpage, pre_page)
 
             else:
-
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page - 1) * pre_page
-                print "add_sql", add_sql,uid
                 t_projects = self.db.query('''
-                    SELECT  a.* ,b.mid,b.member_name,b.btype_id_name,b_category_id,b_category_id_name,
-                    b.last_milepost_id_name,b.last_milepost_id_at,b.created_at cq_created_at
-    FROM t_projects
+                    SELECT  a.* ,b.mid,b.member_name,b.btype_id_name,b_category_id,b_category_id_name,b.zone_id_name,
+                    b.last_milepost_id_name,b.last_milepost_id_at,b.created_at cq_created_at,
+                    b.last_state_msg,b.last_state_msg_at,timestampdiff(day,b.created_at,now()) msg_created_day
+
+                FROM t_projects
                     a inner join t_projects_member b on a.id=b.project_id and last_milepost_id > 0
 
                     where  b.last_milepost_id <> 0 and  member_id=%s  ''' +
@@ -1607,6 +1626,7 @@ and  member_id=%s
 
                                     order by last_milepost_id_at desc limit %s,%s
                     ''', uid, startpage, pre_page)
+            
 
             project_btypes = self.db.query(
                 """select *,(select count(*)  from t_projects_member a , t_projects b  where a.project_id=b.id and  last_milepost_id=a.id and  btype_id <> 0 and  member_id=%s   and is_cancel=0  and is_cancel_confirm_at is   null)
@@ -1614,8 +1634,9 @@ and  member_id=%s
                 c from t_projects_type a where income_category='办结'  order by order_int """,
                 uid)
             wait_group = self.db.get(
-                """   select count(*) count from t_projects_member aa,t_projects bb where   b_category_id=0 and aa.project_id=bb.id and  last_milepost_id=%s
-                    and member_id=%s""",
+                """   select count(*) count from t_projects_member aa,t_projects bb where 
+                  b_category_id=0 and aa.project_id=bb.id and  last_milepost_id=%s
+                    and member_id=%s and is_cancel=0  and is_cancel_confirm_at is   null""",
                 last_milepost_id,uid)
 
 
@@ -1670,7 +1691,9 @@ and  member_id=%s
             t_user_sales = self.db.query(
                 "SELECT * FROM t_user_teams a , t_user b where b.id=a.uid and team_id=1 "
             )
-
+            t_projects_type=self.db.query("""
+                select id,income_name from t_projects_type where income_category='区域' 
+            """)
             return self.render(
                 'project/projects_qc_milepost.html',
                 cancel_wait_count1=cancel_wait_count1,
@@ -1685,8 +1708,8 @@ and  member_id=%s
                 t_income_type=t_income_type,
                 t_building=t_building,
                 tag=tag,
-                msg=msg,
-
+                msg=msg1,
+                t_projects_type=t_projects_type,
                 ntag=ntag,
                 keyword=keyword,
                 p_state=p_state,
@@ -1701,6 +1724,7 @@ and  member_id=%s
                 form_tag=tag,
                 t_project_bussniss=t_project_bussniss,
                 search_key="")
+
         elif tag == "projects_qc":
             uid = self.get_secure_cookie("uid")
             style = self.get_argument('style', '')
@@ -1754,12 +1778,6 @@ and  member_id=%s
                 sql_date = " and a.created_at between '%s' and '%s'" % (start,
                                                                         end)
             add_sql = sql_income_bussniss + sql_cq + sql_sales + sql_kefu + sql_from_id + sql_building_id + sql_date
-            print "add_sql", add_sql
-
-
-
-
-
             pre_page = 20
             if role=='9':
                 categorys=self.db.query('''
@@ -2175,6 +2193,195 @@ and  member_id=%s
                 style=style,
                 t_user_group=t_user_group)
 
+        elif tag == "my1":
+            uid = self.get_secure_cookie("uid")
+            role = self.get_secure_cookie("role")
+            style = self.get_argument('style', '')
+            page = int(self.get_argument("page", 1))
+            cq = self.get_argument("cq", "")
+            kfgw=self.get_argument("kfgw","")
+            kefu = self.get_argument("kefu", "")
+            building_id = self.get_argument("building_id", "")
+            income_bussniss = self.get_argument("income_bussniss", "")
+            from_id = self.get_argument("from_id", "")
+            start = self.get_argument("start", "")
+            end = self.get_argument("end", "")
+            company_id=self.get_argument('company_id','')
+            company_guid=self.get_argument('company_guid','')
+            if company_id and company_guid:
+                add_t_company = self.db_company.get(
+                    "select * from t_company where id=%s and company_guid=%s",
+                    company_id, company_guid)
+                is_exit_t_company=self.db.get('''
+                    select * from t_projects where rel_company_id=%s and rel_company_id_name=%s
+                ''',company_id,add_t_company.entName)
+                if not is_exit_t_company:
+                    is_exit_t_company='-1'
+                if not add_t_company:
+                    self.write("not company")
+            else:
+                is_exit_t_company=''
+                add_t_company=''
+            params = {
+                "income_bussniss": income_bussniss,
+                "cq": cq,
+                "kfgw":kfgw,
+                "kefu": kefu,
+                "from_id": from_id,
+                "building_id": building_id,
+                "start": start,
+                "end": end
+            }
+            add_sql = ""
+            sql_income_bussniss = ""
+            sql_cq = ""
+            sql_kfgw=""
+            sql_kefu = ""
+            sql_from_id = ""
+            sql_building_id = ""
+            sql_date = ""
+            if income_bussniss and income_bussniss != "0":
+                sql_income_bussniss = " and a.id in (select project_id from t_projects_service_income aaaa where  service_money > 0 and  service_id=%s and aaaa.project_id=a.id)  " % (
+                    income_bussniss)
+            if cq and cq != "0":
+                sql_cq = " and  a.id in (select project_id from t_projects_member aaaa where  team_id=38 and member_id=%s and aaaa.project_id=a.id)  " % (
+                    cq)
+            if kfgw and kfgw !='0':
+                sql_kfgw = "and  a.id in (select project_id from t_projects_member aaaa where  team_id=36 and member_id=%s and aaaa.project_id=a.id) " % (
+                    kfgw)
+            if kefu and kefu != "0":
+                sql_kefu = "and  a.id in (select project_id from t_projects_member aaaa where  team_id=39 and member_id=%s and aaaa.project_id=a.id) " % (
+                    kefu)
+            if from_id and from_id != "0":
+                sql_from_id = " and a.busniess_from_id=%s" % (from_id)
+            if building_id and building_id != "0":
+                sql_building_id = " and a.building_id=%s" % (building_id)
+            if start and end:
+                sql_date = " and a.created_at between '%s' and '%s'" % (start,
+                                                                        end)
+            add_sql = sql_income_bussniss + sql_cq + sql_kfgw + sql_kefu + sql_from_id + sql_building_id + sql_date
+
+            pre_page = 10
+            count = self.db.get('''
+                  SELECT count(*) count
+                FROM t_projects  a
+
+                   where   uid=%s ''' + add_sql, uid)
+            pagination = Pagination(page, pre_page, count.count, self.request)
+            startpage = (page - 1) * pre_page
+            # if role=='1':
+            #     categorys=self.db.query('''
+            #         select * from t_projects_category where role=1''')
+            # else:
+            #     categorys=self.db.query('select * from t_projects_category')
+            if style:
+                t_projects = self.db.query('''
+                      SELECT  a.*,b.member_name sale_name ,c.member_name promo_name,d.bs,f.member_name service_man,
+                 g.bsa qc_name,h.category_name
+                FROM t_projects a
+                 left join (select member_name ,project_id from t_projects_member where team_id=36  ) b
+                 on a.id=b.project_id
+                 left join (select member_name ,project_id from t_projects_member where team_id=39  ) c
+				 on a.id=c.project_id
+                left join (select member_name ,project_id from t_projects_member where team_id=34  )  f
+				 on a.id=f.project_id
+                left join (select project_id,GROUP_CONCAT(concat(member_name,' ')) bsa
+                from t_projects_member where team_id=38 group by project_id )  g
+				 on a.id=g.project_id
+
+                 left join (select project_id,GROUP_CONCAT(concat(a.service_id,'|',a.service_money)) bs from t_projects_service_income a
+
+                    where service_money > 0
+                    group by project_id) d
+                 on  a.id=d.project_id
+                 left join(select category_name,project_id from t_projects_category_list) h
+                 on a.id=h.project_id
+                 left join()
+                   where   h.category_name=%s and a.uid=%s
+                order by created_at desc limit %s,%s
+                ''', style, uid, startpage, pre_page)
+            else:
+                t_projects = self.db.query('''
+                     SELECT  a.*, b.team_list
+                FROM t_projects a
+
+                left join (select project_id,GROUP_CONCAT(concat(member_name,'|',team_id)) team_list
+                from t_projects_member group by project_id )  b
+				 on a.id=b.project_id
+                   where   a.uid=%s  ''' + add_sql + '''
+                order by a.created_at desc limit %s,%s
+                ''', uid, startpage, pre_page)
+            t_project_bussniss = self.db.query(
+                """select * from t_projects_type where income_category='业务类型' order by order_int  """
+            )
+
+            t_income_type = self.db.query("""
+                select * from t_projects_type where income_category='业务来源' order by order_int desc
+                """)
+
+            t_sign_type = self.db.query("""
+                select * from t_projects_type where income_category='签约方式' order by order_int desc
+                """)
+            t_talk_type = self.db.query(
+                "select * from t_projects_type where income_category='沟通方式' order by order_int desc "
+            )
+            t_company = self.db.query("""
+                select * from t_projects_type where income_category='收入公司' order by order_int desc
+                """)
+            t_business_channel = self.db.query("""
+                select * from t_projects_type where income_category='推广来源渠道' order by order_int desc
+                """)
+            t_building = self.db.query(
+                "select * from t_projects_type where income_category='楼盘' order by order_int desc "
+            )
+            t_users_kf = self.db.query("select * from t_user  where role=6")
+            t_rec_contarct_type = self.db.query(
+                "select * from t_projects_type where income_category='合同确认' order by order_int desc "
+            )
+            t_user_group = self.db.query("select * from t_user_group")
+            t_users = self.db.query(
+                "SELECT * FROM t_user_teams a , t_user b where b.id=a.uid ")
+
+            t_user_cq = self.db.query("SELECT * FROM t_user  where role=9 ")
+
+            t_user_teams=self.db.query(
+                   """
+                    select a.*,b.team_id from t_user a inner join t_user_teams b on a.id=b.uid
+                    """
+                    )
+            t_acc_types = self.db.query(
+                """select * from t_projects_type where income_category='会计业务' order by order_int  """
+            )
+            t_promo_types = self.db.query(
+                """select * from t_projects_type where income_category='套餐' order by order_int  """
+            )
+            return self.render(
+                'project/allprojects3.html',
+                t_promo_types=t_promo_types,
+                params=params,
+                t_acc_types=t_acc_types,
+                t_user_teams=t_user_teams,
+                t_user_cq=t_user_cq,
+                t_users=t_users,
+                t_rec_contarct_type=t_rec_contarct_type,
+                t_income_type=t_income_type,
+                t_users_kf=t_users_kf,
+                pagination=pagination,
+                t_projects=t_projects,
+                t_project_bussniss=t_project_bussniss,
+                form_tag="my",
+                tag=tag,
+                add_t_company=add_t_company,
+                is_exit_t_company=is_exit_t_company,
+                search_key="",
+                t_building=t_building,
+                t_business_channel=t_business_channel,
+                t_sign_type=t_sign_type,
+                t_company=t_company,
+                t_talk_type=t_talk_type,
+                # categorys=categorys,
+                style=style,
+                t_user_group=t_user_group)
 
         elif tag =="output":
             start = self.get_argument("start","")
@@ -2187,6 +2394,7 @@ and  member_id=%s
             start = self.get_argument("start", "")
             end = self.get_argument("end", "")
             sales = self.get_argument("sales", "")
+            kfkj=self.get_argument('kfkj','')
             t_projects=''
             params = {
                 "sales": sales,
@@ -2196,7 +2404,8 @@ and  member_id=%s
                 "from_id": from_id,
                 "building_id": building_id,
                 "start": start,
-                "end": end
+                "end": end,
+                "kfkj":kfkj
             }
             add_sql = ""
             sql_income_bussniss = ""
@@ -2206,6 +2415,7 @@ and  member_id=%s
             sql_building_id = ""
             sql_date = ""
             sql_sales = ""
+            sql_kfkj=""
             if income_bussniss and income_bussniss != "0":
                 sql_income_bussniss = " and a.id in (select project_id from t_projects_service_income aaaa where  service_money > 0 and  service_id=%s and aaaa.project_id=a.id)  " % (
                     income_bussniss)
@@ -2222,21 +2432,12 @@ and  member_id=%s
             if sales and sales != "0":
                 sql_sales = "and  a.id in (select project_id from t_projects_member aaaa where  team_id=34 and member_id=%s and aaaa.project_id=a.id) " % (
                     sales)
+            if kfkj and kfkj !='0':
+                sql_kfkj=" and a.id in (select project_id from t_projects_member  where  team_id=205 and member_id=%s and project_id=a.id) "%kfkj
             if start and end:
                 sql_date = " and a.created_at between '%s' and '%s'" % (start,
                                                                         end)
-            add_sql = sql_income_bussniss + sql_cq + sql_sales + sql_kefu + sql_from_id + sql_building_id + sql_date
-
-
-            # try:
-            #     datetime.datetime.strptime(start, '%Y-%m-%d')
-            # except ValueError:
-            #     raise ValueError("Incorrect data format, should be YYYY-MM-DD")
-
-            # try:
-            #     datetime.datetime.strptime(end, '%Y-%m-%d')
-            # except ValueError:
-            #     raise ValueError("Incorrect data format, should be YYYY-MM-DD")
+            add_sql = sql_income_bussniss + sql_cq + sql_sales + sql_kefu + sql_from_id + sql_building_id + sql_date+sql_kfkj
 
             return_str =  False
             if role == "8" or role == "3" or role == "11" or role=='1' :  #无畏亮
@@ -2251,6 +2452,8 @@ and  member_id=%s
                         """select * from t_projects_type where income_category='业务类型' order by order_int  """
                     )
                     if role=='1':
+
+
                         t_projects = self.db.query('''
                             SELECT  a.*,b.member_name sale_name ,c.member_name promo_name,d.bs,f.member_name service_man,
                 g.member_name qc_name,h.member_name kfkj_name,
@@ -2391,6 +2594,8 @@ and  member_id=%s
                     sh.write(0, 26+ af_num, u"搜索词")
                     sh.write(0, 27+ af_num, u"来源方式")
                     sh.write(0, 28+ af_num, u"是否有合同")
+                    sh.write(0, 29+ af_num, u"合同编号")
+                    sh.write(0, 30+ af_num, u"业务状态")
 
                     for idx, item in enumerate(t_projects):
                         idx= idx+1
@@ -2436,7 +2641,42 @@ and  member_id=%s
                         sh.write(idx, 26+ af_num, item.from_word)
                         sh.write(idx, 27+ af_num, item.talk_type_id_name)
                         sh.write(idx, 28+ af_num, item.contract_confirm_id_name)
+                        sh.write(idx, 29+ af_num, item.contract_remark)
+                        project_milepost_type = self.db.query(
+                            """select *,b.order_int border_int from t_projects_type a
+                            inner join t_projects_milepost b on b.type_id=a.id where income_category='办结' and a.is_hide=0
+                            and project_id=%s and income_name='仓管确认交接完成' order by b.order_int""",
+                            item.id)
 
+                        project_btypes = self.db.query(
+                            "select * from  t_projects_member  where project_id=%s  and btype_id <> 0  and not_transition=0 ",
+                            item.id)
+                        is_end = 2
+                        is_cancel = 1
+                        is_cancel_arr =[]
+                        if len(project_milepost_type) ==0:
+                            is_end=1
+                        for row in project_milepost_type:
+                            if row.income_name == "仓管确认交接完成" and not  row.confirm_at:
+                                is_con = 0
+                                for row1 in project_btypes:
+                                    if row.member_id==row1.mid and   row1.is_cancel_confirm_at :
+                                        #   print "dump....", is_end, row1.is_cancel_confirm_at
+                                        is_con = 1
+                                        is_cancel_arr.append(row1.mid)
+
+                                if is_con:
+                                    continue
+                                is_end = 1
+                                break
+                        if len(project_btypes)  and len(project_btypes)==len(is_cancel_arr):
+                            is_cancel = 2
+                        presult=u"办理中"
+                        if is_cancel==2:
+                            presult=u"取消单"
+                        elif is_end==2:
+                            presult=u"已办结"
+                        sh.write(idx, 30 + af_num, presult)
                     # sh.write(0, 18+af_num, u"在线客服")
                     # 保存文件
                     wb.save('media/output/%s.xls'%(uid))
@@ -2476,7 +2716,10 @@ and  member_id=%s
                     "SELECT * FROM t_user  where role=9 "
                 )
                 t_user_sales = self.db.query("SELECT * FROM t_user_teams a , t_user b where b.id=a.uid and team_id=1 ")
-
+                t_user_kfkj=self.db.query('''
+                    select member_id,member_name from t_projects_member where team_name='客服会计' and member_id <> 0
+                    group by member_name
+                ''')
                 return self.render(
                     "project/output.html",
                     output_path="/static/output/%s.xls" % (uid),
@@ -2484,6 +2727,7 @@ and  member_id=%s
                     params=params,
                     t_user_sales=t_user_sales,
                     t_user_cq=t_user_cq,
+                    t_user_kfkj=t_user_kfkj,
                     t_users=t_users,
                     t_rec_contarct_type=t_rec_contarct_type,
                     t_income_type=t_income_type,
@@ -2663,7 +2907,9 @@ and  member_id=%s
             pre_page = 10
             count = self.db.get(
                 '''
-                  SELECT count(*) count
+                  SELECT count(*) count,(
+                      select sum(all_income) from t_projects a where   is_lock=0 '''+ add_sql+'''
+                  ) sum_income 
                 FROM t_projects  a
 
                    where   is_lock=0 '''+ add_sql)
@@ -2749,6 +2995,7 @@ and  member_id=%s
             t_user_sales = self.db.query("SELECT * FROM t_user_teams a , t_user b where b.id=a.uid and team_id=1 ")
             return self.render(
                 'project/allview.html',
+                count=count,
                 params=params,
                 t_user_sales=t_user_sales,
                 t_user_cq=t_user_cq,
@@ -2926,7 +3173,7 @@ and  member_id=%s
             t_cq_service = None
             ntag = self.get_argument("ntag","")
             last_milepost_id = self.get_argument("last_milepost_id", 0)
-
+            btype_id = self.get_argument("btype_id","")
             is_ok = self.get_argument("is_ok","")
             page = int(self.get_argument("page", 1))
             cq = self.get_argument("cq", "")
@@ -2953,7 +3200,8 @@ and  member_id=%s
                 "ntag":ntag,
                 "qc_key":qc_key,
                 "confirm":confirm,
-                "cq_btype_id":cq_btype_id
+                "cq_btype_id":cq_btype_id,
+                "btype_id":btype_id
             }
             add_sql = ""
             sql_cq_btype_id=''
@@ -2965,13 +3213,17 @@ and  member_id=%s
             sql_date = ""
             sql_sales = ""
             sql_qc_key = ""
-
+            sql_btype=""
             sql_cq_add = ""
             if cq_btype_id and cq_btype_id != "0":
-                sql_cq_btype_id ="  and  a.id in (select project_id from t_projects_member aaaa where  btype_id=%s  and aaaa.project_id=a.id) "%cq_btype_id
+                sql_cq_btype_id = "  and  a.id in (select project_id from t_projects_member aaaa where     aaaa.project_id=a.id and btype_id=%s) " % cq_btype_id
             if income_bussniss and income_bussniss != "0":
                 sql_income_bussniss = " and a.id in (select project_id from t_projects_service_income aaaa where  service_money > 0 and  service_id=%s and aaaa.project_id=a.id)  " % (
                     income_bussniss)
+            if btype_id:
+                sql_btype = " and  a.id in (select project_id from t_projects_member aaaa  where  btype_id=%s)  " % (
+                    btype_id)
+
             if cq and cq != "0":
                 sql_cq = " and  a.id in (select project_id from t_projects_member aaaa  where  team_id=38 and member_id=%s and aaaa.project_id=a.id)  " % (
                     cq)
@@ -2991,7 +3243,7 @@ and  member_id=%s
             if qc_key:
                 sql_qc_key += ''' and (id like "%%'''+qc_key+'''%%" or project_name like   "%%''' + qc_key + '''%%"  or customer_name like   "%%''' + qc_key + '''%%"  or customer_tel like   "%%''' + qc_key + '''%%" or customer_company like   "%%''' + qc_key + '''%%")'''
 
-            add_sql = sql_cq_btype_id+sql_income_bussniss + sql_cq + sql_sales + sql_kefu + sql_from_id + sql_building_id + sql_date+sql_qc_key
+            add_sql = sql_cq_btype_id + sql_income_bussniss + sql_cq + sql_sales + sql_kefu + sql_from_id + sql_building_id + sql_date + sql_qc_key + sql_btype
 
 
 
@@ -3031,25 +3283,31 @@ and  member_id=%s
                 # print "last_milepost_id", last_milepost_id
                 add_sql += " and last_milepost_id=" + last_milepost_id
                 pre_page = 20
+                _btype_sql=""
+                if btype_id:
+                    _btype_sql =" and b.btype_id =%s "%(btype_id)
+                else:
+                    _btype_sql =" and b.btype_id <> 0  "
                 count = self.db.get('''    SELECT   count(*) count
                      FROM t_projects
                     a inner join t_projects_member b on a.id=b.project_id
 
 
-                    where  b.btype_id <> 0  and is_cancel=0
-               ''' + add_sql + sql_cq_add)
+                    where  is_cancel=0
+               ''' + add_sql + sql_cq_add + _btype_sql)
+
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page - 1) * pre_page
 
-                t_projects = self.db.query(
-                    '''
+                t_projects = self.db.query('''
                     SELECT  a.* ,b.mid,b.member_name,b.btype_id_name,
                     b.last_milepost_id_name,last_milepost_id_at,b.created_at cq_created_at
                      FROM t_projects
-                    a inner join t_projects_member b on a.id=b.project_id
+                    a inner join t_projects_member b on a.id=b.project_id and not_transition=0
 
 
-                    where  b.btype_id <> 0  '''+add_sql+sql_cq_add+''' and is_cancel=0
+                    where  is_cancel=0 ''' + _btype_sql + add_sql +
+                                           sql_cq_add + ''' 
                                     order by b.created_at desc limit %s,%s
                     ''', startpage, pre_page)
 
@@ -3070,7 +3328,7 @@ and  member_id=%s
                 pagination = Pagination(page, pre_page, count.count,
                                         self.request)
                 startpage = (page - 1) * pre_page
-                print add_sql,"___"
+                # print add_sql,"___"
                 t_projects = self.db.query('''
                             SELECT a.*,
 
@@ -3121,7 +3379,7 @@ and  member_id=%s
                                         self.request)
                 startpage = (page - 1) * pre_page
                 sql = ""
-                print "add_sql",add_sql
+                # print "add_sql",add_sql
                 t_projects = self.db.query('''
                          SELECT a.*,member_name bsa
 
@@ -3153,11 +3411,335 @@ and  member_id=%s
                     on a.id=b.project_id where is_lock=0   '''+add_sql+'''
                         order by a.created_at desc limit %s,%s
                         ''', startpage, pre_page)
+            if not btype_id:
+                project_btypes = self.db.query(
+                    """select *,(select count(*)  from t_projects_member aa,t_projects bb where aa.project_id=bb.id and last_milepost_id=a.id and  not_transition=0 and is_lock=0   and is_cancel=0) c
+                    from t_projects_type a where income_category='办结' order by order_int"""
+                )
+            else:
+                project_btypes = self.db.query(
+                    """select *,(select count(*)  from t_projects_member aa,t_projects bb where aa.project_id=bb.id and last_milepost_id=a.id  and
+                   btype_id=%s and  not_transition=0 and is_lock=0   and is_cancel=0 ) c
+                from t_projects_type a where income_category='办结' order by order_int""",
+                    btype_id)
+            t_project_bussniss = self.db.query(
+                """select * from t_projects_type where income_category='业务类型' order by order_int  """
+            )
+            t_project_type = self.db.query(
+                """select * from t_projects_type where income_category='业务分类' order by order_int  """
+            )
+            t_income_type = self.db.query("""
+                select * from t_projects_type where income_category='业务来源' order by order_int desc
+                """)
+
+            t_sign_type = self.db.query("""
+                select * from t_projects_type where income_category='签约方式' order by order_int desc
+                """)
+            t_talk_type = self.db.query(
+                "select * from t_projects_type where income_category='沟通方式' order by order_int desc "
+            )
+            t_company = self.db.query("""
+                select * from t_projects_type where income_category='收入公司' order by order_int desc
+                """)
+            t_business_channel = self.db.query("""
+                select * from t_projects_type where income_category='推广来源渠道' order by order_int desc
+                """)
+            t_building = self.db.query(
+                "select * from t_projects_type where income_category='楼盘' order by order_int desc "
+            )
+            t_users_kf = self.db.query("select * from t_user  where role=6")
+            t_rec_contarct_type = self.db.query(
+                "select * from t_projects_type where income_category='合同确认' order by order_int desc "
+            )
+            t_user_group = self.db.query("select * from t_user_group")
+            t_users = self.db.query(
+                "SELECT * FROM t_user_teams a , t_user b where b.id=a.uid ")
+
+            t_user_cq = self.db.query("SELECT * FROM t_user  where role=9 ")
+            t_user_sales = self.db.query(
+                "SELECT * FROM t_user_teams a , t_user b where b.id=a.uid and team_id=1 "
+            )
+            t_user_teams_cq=self.db.query(
+                   """
+                    select a.*,b.team_id from t_user a inner join t_user_teams b on a.id=b.uid where b.team_id=5
+                    """
+                    )
+            t_cq_service = self.db.query(
+                    "select * from t_projects_type where income_category='业务分类' order by order_int desc "
+                )
+            return self.render(
+                'project/projects_state.html',
+                t_project_type=t_project_type,
+                cancel_wait_count1=cancel_wait_count1,
+                cancel_confirm_count1=cancel_confirm_count1,
+                params=params,
+                t_user_sales=t_user_sales,
+                t_user_cq=t_user_cq,
+                t_users=t_users,
+                t_rec_contarct_type=t_rec_contarct_type,
+                t_income_type=t_income_type,
+                t_users_kf=t_users_kf,
+                pagination=pagination,
+                t_projects=t_projects,
+                t_project_bussniss=t_project_bussniss,
+                t_building=t_building,
+                t_business_channel=t_business_channel,
+                t_sign_type=t_sign_type,
+                t_company=t_company,
+                t_talk_type=t_talk_type,
+                ntag=ntag,
+                is_ok=is_ok,
+                t_user_teams_cq=t_user_teams_cq,
+                t_cq_service=t_cq_service,
+                wait_count1=wait_count1,
+                wait_count=wait_count,
+                project_btypes=project_btypes,
+                last_milepost_id=last_milepost_id,
+                tag=tag,
+                search_key="")
+
+        elif tag =="projects_state_type":
+            t_user_teams_cq = None
+            t_cq_service = None
+            ntag = self.get_argument("ntag","")
+            last_milepost_id = self.get_argument("last_milepost_id", 0)
+
+            is_ok = self.get_argument("is_ok","")
+            page = int(self.get_argument("page", 1))
+            cq = self.get_argument("cq", "")
+            kefu = self.get_argument("kefu", "")
+            building_id = self.get_argument("building_id", "")
+            income_bussniss = self.get_argument("income_bussniss", "")
+            from_id = self.get_argument("from_id", "")
+            start = self.get_argument("start", "")
+            end = self.get_argument("end", "")
+            sales = self.get_argument("sales", "")
+            qc_key = self.get_argument("qc_key","")
+            confirm = self.get_argument("confirm","")
+            cq_btype_id = self.get_argument("cq_btype_id", "158")
+
+            if cq_btype_id!="158":
+                return "error"
+            params = {
+                "sales": sales,
+                "income_bussniss": income_bussniss,
+                "cq": cq,
+                "kefu": kefu,
+                "from_id": from_id,
+                "building_id": building_id,
+                "start": start,
+                "end": end,
+                "last_milepost_id":last_milepost_id,
+                "ntag":ntag,
+                "qc_key":qc_key,
+                "confirm":confirm,
+                "cq_btype_id":cq_btype_id
+            }
+            add_sql = ""
+            sql_cq_btype_id=''
+            sql_income_bussniss = ""
+            sql_cq = ""
+            sql_kefu = ""
+            sql_from_id = ""
+            sql_building_id = ""
+            sql_date = ""
+            sql_sales = ""
+            sql_qc_key = ""
+            default_sql=""
+            sql_cq_add = ""
+            sql_cq_btype_id_count ="  and  a.id in (select project_id from t_projects_member aaaa where  btype_id=%s  and aaaa.project_id=a.id) "%cq_btype_id
+
+            if ntag=="wait":
+                default_sql = "  inner join t_projects_service_income c    on  service_id=9  and a.id=c.project_id"
+
+
+            if  cq_btype_id and cq_btype_id != "0" and ntag!="wait":
+                sql_cq_btype_id ="  and  a.id in (select project_id from t_projects_member aaaa where  btype_id=%s  and aaaa.project_id=a.id) "%cq_btype_id
+                # sql_cq_btype_id +="  or  a.id in (select project_id from t_projects_service_income bbbb where  bbbb.service_id=9  and service_money > 0 and bbbb.project_id=a.id) "
+            if income_bussniss and income_bussniss != "0":
+                sql_income_bussniss = " and a.id in (select project_id from t_projects_service_income aaaa where  service_money > 0 and  service_id=%s and aaaa.project_id=a.id)  " % (
+                    income_bussniss)
+            if cq and cq != "0":
+                sql_cq = " and  a.id in (select project_id from t_projects_member aaaa  where  team_id=38 and member_id=%s and aaaa.project_id=a.id)  " % (
+                    cq)
+                sql_cq_add = " and member_id='"+cq+"'"
+            if kefu and kefu != "0":
+                sql_kefu = "and  a.id in (select project_id from t_projects_member aaaa where  team_id=39 and member_id=%s and aaaa.project_id=a.id) " % (
+                    kefu)
+            if from_id and from_id != "0":
+                sql_from_id = " and a.busniess_from_id=%s" % (from_id)
+            if building_id and building_id != "0":
+                sql_building_id = " and a.building_id=%s" % (building_id)
+            if sales and sales != "0":
+                sql_sales = "and  a.id in (select project_id from t_projects_member aaaa where  team_id=34 and member_id=%s and aaaa.project_id=a.id) " % (
+                    sales)
+            if start and end:
+                sql_date = " and a.created_at between '%s' and '%s'" % (start, end)
+            if qc_key:
+                sql_qc_key += ''' and (id like "%%'''+qc_key+'''%%" or project_name like   "%%''' + qc_key + '''%%"  or customer_name like   "%%''' + qc_key + '''%%"  or customer_tel like   "%%''' + qc_key + '''%%" or customer_company like   "%%''' + qc_key + '''%%")'''
+
+            add_sql = sql_cq_btype_id+sql_income_bussniss + sql_cq + sql_sales + sql_kefu + sql_from_id + sql_building_id + sql_date+sql_qc_key
+
+
+
+            wait_count = self.db.get(
+                '''                            SELECT count(*) count
+
+                FROM t_projects a
+               inner join t_projects_service_income c    on  service_id=9   and a.id=c.project_id
+                    left  join (select project_id,GROUP_CONCAT(member_name) bsa
+                    from t_projects_member aa , t_projects bb   where aa.project_id=bb.id and  team_id=38  group by project_id ) b
+                    on a.id=b.project_id  where   bsa is null   and is_acc=0
+                    ''')
+
+            wait_count1 = self.db.get('''          SELECT  count(*) count
+
+                FROM t_projects a
+                    inner join t_projects_member b on (team_id=38 or team_id=205)
+                    and  a.id=b.project_id and not_transition=1 and is_cancel=0
+                    '''+sql_cq_btype_id_count)
+
+            cancel_wait_count1 = self.db.get('''
+            SELECT  count(*) count
+                FROM t_projects a
+                    inner join t_projects_member b on team_id=38
+                    and  a.id=b.project_id and is_cancel=1 and is_cancel_confirm_at is null
+                    '''+sql_cq_btype_id_count)
+
+            cancel_confirm_count1 = self.db.get('''
+            SELECT  count(*) count
+                FROM t_projects a
+                    inner join t_projects_member b on team_id=38
+                    and  a.id=b.project_id and is_cancel=1 and is_cancel_confirm_at is not null
+                    '''+sql_cq_btype_id_count)
+
+
+
+            if last_milepost_id:
+                # print "last_milepost_id", last_milepost_id
+                add_sql += " and last_milepost_id=" + last_milepost_id
+                pre_page = 20
+                count = self.db.get('''    SELECT   count(*) count
+                     FROM t_projects
+                    a inner join t_projects_member b on a.id=b.project_id
+
+
+                    where  b.btype_id <> 0  and is_cancel=0
+               ''' + add_sql + sql_cq_add + sql_cq_btype_id_count)
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page - 1) * pre_page
+
+                t_projects = self.db.query(
+                    '''
+                    SELECT  a.* ,b.mid,b.member_name,b.btype_id_name,concat(ifnull(b.zone_id_name,''),'|',mid,'|',member_name,'|',btype_id_name,'|',b.zone_id) gszm,
+                    b.last_milepost_id_name,last_milepost_id_at,b.created_at cq_created_at
+                     FROM t_projects
+                    a inner join t_projects_member b on a.id=b.project_id
+
+
+                    where  b.btype_id <> 0  '''+add_sql+sql_cq_add+''' and is_cancel=0
+                                    order by b.created_at desc limit %s,%s
+                    ''', startpage, pre_page)
+
+            elif ntag == "wait":
+
+                pre_page = 20
+                count = wait_count
+                pagination = Pagination(page, pre_page, count.count,
+                                        self.request)
+                startpage = (page - 1) * pre_page
+                # print add_sql,"___"
+                t_projects = self.db.query('''
+                            SELECT a.*,
+
+                b.bsa
+                FROM t_projects a
+                    '''+default_sql+'''
+                    left  join (select project_id,GROUP_CONCAT(member_name) bsa
+                    from t_projects_member  where team_id=38  group by project_id ) b
+                    on a.id=b.project_id 
+
+                           where   bsa is null   and is_acc=0
+                        ''' + add_sql + '''
+                        order by a.created_at desc limit %s,%s
+                        ''', startpage, pre_page)
+            elif ntag =="is_cancel":
+                pre_page = 20
+                count = cancel_wait_count1
+                pagination = Pagination(page, pre_page, count.count,
+                                        self.request)
+                startpage = (page - 1) * pre_page
+                sql = ""
+                t_projects = self.db.query('''
+                         SELECT a.*,member_name bsa,
+                concat(ifnull(b.zone_id_name,''),'|',mid,'|',member_name,'|',btype_id_name,'|',b.zone_id) gszm
+                FROM t_projects a
+                    inner join t_projects_member b on team_id=38
+                    and  a.id=b.project_id and is_cancel=1 and is_cancel_confirm_at is null
+                    '''+add_sql+'''
+                        order by a.created_at desc limit %s,%s
+                        ''', startpage, pre_page)
+            elif ntag == "is_cancel_confirm":
+                pre_page = 20
+                count = cancel_confirm_count1
+                pagination = Pagination(page, pre_page, count.count,
+                                        self.request)
+                startpage = (page - 1) * pre_page
+                sql = ""
+                t_projects = self.db.query('''
+                         SELECT a.*,member_name bsa,concat(ifnull(b.zone_id_name,''),'|',mid,'|',member_name,'|',btype_id_name,'|',b.zone_id) gszm
+                FROM t_projects a
+                    inner join t_projects_member b on team_id=38
+                    and  a.id=b.project_id and is_cancel=1 and is_cancel_confirm_at is not  null
+                    '''+add_sql+'''
+                        order by a.created_at desc limit %s,%s
+                        ''', startpage, pre_page)
+
+            elif ntag == "not_transition":
+                pre_page = 20
+                count = wait_count1
+                pagination = Pagination(page, pre_page, count.count,
+                                        self.request)
+                startpage = (page - 1) * pre_page
+                sql = ""
+                # print "add_sql",add_sql
+                t_projects = self.db.query('''
+                         SELECT a.*,concat(member_name) bsa,
+                         concat(ifnull(b.zone_id_name,''),'|',mid,'|',member_name,'|',btype_id_name,'|',b.zone_id) gszm
+                FROM t_projects a
+                    inner join t_projects_member b on (team_id=38   or team_id=205)
+                    and  a.id=b.project_id  and not_transition=1
+                    '''+add_sql+'''
+                        order by a.created_at desc limit %s,%s
+                        ''', startpage, pre_page)
+            else:
+                pre_page = 20
+                count = self.db.get('''
+                 SELECT   count(*) count
+                FROM t_projects a
+                    left join (select project_id,GROUP_CONCAT(concat(member_name,'(',btype_id_name,')')) bsa
+                    from t_projects_member aa,t_projects bb where aa.project_id=bb.id and  team_id=38 group by project_id ) b
+                    on a.id=b.project_id where is_lock=0  ''' + add_sql)
+                pagination = Pagination(page, pre_page, count.count,
+                                        self.request)
+                startpage = (page - 1) * pre_page
+
+                t_projects = self.db.query('''
+                            SELECT a.*,
+
+                b.bsa,b.gszm
+                FROM t_projects a
+                    left join (select project_id,GROUP_CONCAT(concat(member_name,'(',btype_id_name,')')) bsa,group_concat(ifnull(aa.zone_id_name,''),'|',mid,'|',member_name,'|',btype_id_name,'|',aa.zone_id) gszm
+                    from t_projects_member aa,t_projects bb where aa.project_id=bb.id and  team_id=38 group by project_id ) b
+                    on a.id=b.project_id where is_lock=0   '''
+                                           + add_sql + '''
+                        order by a.created_at desc limit %s,%s
+                        ''', startpage, pre_page)
 
             project_btypes = self.db.query(
-                """select *,(select count(*)  from t_projects_member aa,t_projects bb where aa.project_id=bb.id and last_milepost_id=a.id) c
-                from t_projects_type a where income_category='办结' order by order_int"""
-            )
+                """select *,(select count(*)  from t_projects_member aa,t_projects bb where aa.project_id=bb.id and last_milepost_id=a.id and btype_id=%s  and is_cancel=0 ) c
+                from t_projects_type a where income_category='办结' order by order_int""",
+                cq_btype_id)
             t_project_bussniss = self.db.query(
                 """select * from t_projects_type where income_category='业务类型' order by order_int  """
             )
@@ -3201,11 +3783,15 @@ and  member_id=%s
             t_cq_service = self.db.query(
                     "select * from t_projects_type where income_category='业务分类' order by order_int desc "
                 )
+            t_projects_type=self.db.query("""
+                select id,income_name from t_projects_type where income_category='区域' 
+            """)
             return self.render(
-                'project/projects_state.html',
+                'project/projects_state_type.html',
                 cancel_wait_count1=cancel_wait_count1,
                 cancel_confirm_count1=cancel_confirm_count1,
                 params=params,
+                t_projects_type=t_projects_type,
                 t_user_sales=t_user_sales,
                 t_user_cq=t_user_cq,
                 t_users=t_users,
@@ -3230,10 +3816,10 @@ and  member_id=%s
                 last_milepost_id=last_milepost_id,
                 tag=tag,
                 search_key="")
-
         elif tag == "list_confirm":
 
             page = int(self.get_argument("page", 1))
+            order_int=self.get_argument("order_int",'0')
             pre_page = 20
             sql_str= ""
             sql_cc=''
@@ -3245,29 +3831,39 @@ and  member_id=%s
                 order_by_str =" cc "
             elif role == "3":
                 order_by_str = " d "
+            if order_int=='1':
+                if role=="3":
+                    order_by_str=' dd '
+                elif role=="2":
+                    order_by_str =" ccc "
             count = self.db.get('''SELECT count(*) count FROM t_projects ''' + sql_str)
             pagination = Pagination(page, pre_page, count.count, self.request)
             startpage = (page - 1) * pre_page
 
             if role=='2' or role=='3':
                 if role=='2':
-                    sql_cc='(select  count(*) c from t_projects_income_title  where project_id=a.id and income_uid =0)cc'
+                    sql_cc='''(select  count(*) c from t_projects_income_title  where project_id=a.id and income_uid =0)cc,
+                    (select  count(*) c from t_projects_income_title  where project_id=a.id and income_uid <>0 and is_print=0)ccc'''
                 else:
-                    sql_d="""(select  count(*) c from t_projects_income_title
-                         where project_id=a.id and fi_confirm_uid =0 and income_uid > 0)d"""
+                    sql_d="""
+                    
+                    (select  count(*) c from t_projects_income_title
+                         where project_id=a.id and fi_confirm_uid =0 and income_uid > 0)d,
+                         (select  count(*) c from t_projects_income_title
+                         where project_id=a.id and fi_confirm_uid <> 0 and income_uid > 0 and  is_print=0)dd
+                         """
                 t_projects = self.db.query(
                 '''
-                SELECT a.id,a.customer_name,a.project_name,a.guid,a.all_income,a.uid_name,
+                SELECT a.id,a.customer_name,a.project_name,a.guid,a.all_income,a.uid_name,a.created_at,
                          '''+sql_cc+sql_d+'''
-                        FROM t_projects a
-
+                        FROM t_projects a 
                         ''' + sql_str +''' order by '''+order_by_str+''' desc limit %s,%s''', startpage,
                 pre_page)
             elif role=='5':
                 t_projects = self.db.query(
                 '''
                 SELECT a.id,a.customer_name,a.project_name,a.guid,a.all_income,a.uid_name,a.contract_uid,a.contract_confirm_id_name,
-                        a.contract_uid_name,a.contract_confirm_at,
+                        a.contract_uid_name,a.contract_confirm_at,a.created_at,
                          (select  count(*) c from t_projects_income_title  where project_id=a.id and income_uid =0
                         )
                         cc,
@@ -3288,7 +3884,8 @@ and  member_id=%s
             elif role=='6':
                 t_projects = self.db.query(
                 '''
-                SELECT a.id,a.customer_name,a.project_name,a.guid,a.all_income,a.uid_name,a.busniess_from_id_name,a.channel_id_name,a.from_word,a.from_word_uid,
+                SELECT a.id,a.customer_name,a.project_name,a.guid,a.all_income,a.uid_name,a.busniess_from_id_name,a.created_at,
+                a.channel_id_name,a.from_word,a.from_word_uid,
                          (select  count(*) c from t_projects_income_title  where project_id=a.id and income_uid =0
                         )
                         cc,
@@ -3309,6 +3906,8 @@ and  member_id=%s
             return self.render(
                 'project/projects_list_confirm.html',
                 pagination=pagination,
+                order_int=order_int,
+                page1=page,
                 t_projects=t_projects,
                 form_tag="list",
                 search_key="")
@@ -3383,7 +3982,17 @@ and  member_id=%s
                         search_key="",
                         setCheckbox=self.setCheckbox)
 
-
+        elif tag=="view_img":
+            img = self.get_argument("img")
+            img_type_list = ['jpg','jpeg','png','gif','bmp']
+            is_img = False
+            for item in img_type_list:
+                if item in img:
+                    is_img = True
+                    break;
+            if not is_img:
+                return self.redirect(img)
+            return self.render("project/view_img.html",img=img)
 
         elif tag=="show":
             guid= self.get_argument("guid")
@@ -3397,14 +4006,8 @@ and  member_id=%s
             #customer_count=''
             t_project_up=''
             t_project_down=''
-            if role=="12":
-                return self.write("error")
-            print "show", id
-            # user_is_first=self.db.get('''
-            #     select * from t_user where id=%s
-            # ''',uid)
-            # if user_is_first.is_first==1:
-            #     self.redirect('/allchangepassword?is_first=1')
+
+
 
             t_project = self.db.get(
                 """select a.*,b.income_name contract_sign_type_name,c.name uid_name
@@ -3415,6 +4018,34 @@ and  member_id=%s
             if not t_project:
                 return self.write(u"该项目不存在！"+id+guid)
             else:
+                t_project_members = self.db.query("""select a.*,b.name from t_projects_member a , t_user b
+                 where a.member_id=b.id and  project_id=%s order by created_at desc""",id)
+                if t_project.company_uid:
+                    t_customer=self.db_customer.get('''
+                    select * from t_customer where company_reguid=%s
+                ''',t_project.company_uid)
+                    if not t_customer:
+                        t_customer=self.db_customer.get('''
+                    select * from t_customer where company=%s
+                ''',t_project.customer_company)
+                else:
+                    t_customer=self.db_customer.get('''
+                    select * from t_customer where company=%s limit 1
+                ''',t_project.customer_company)
+
+                can_role = ['8','2','3','5','7','10','11']
+                can_user = ['210'] #陈月娇
+                if t_project.uid == int(uid) or self.checkUserArrIn(
+                        can_user, uid) or self.checkUserIn(
+                            t_project_members, uid) or self.checkRoleIn(
+                                can_role, role) or self.checkAccIn(
+                                    t_customer, uid):
+                    pass
+                else:
+                    return self.write(u"您非本项目相关人员,无法查看,如有疑问."+role+"/"+uid)
+
+
+
 
                 t_project_bussniss = self.db.query(
                     """select * from t_projects_type where income_category='业务类型' """
@@ -3452,10 +4083,8 @@ and  member_id=%s
                 t_income_other_type = self.db.query("""
                 select * from t_projects_type where income_category='代收类型' order by order_int desc
                 """)
-                print "1"
-                t_project_members = self.db.query("""select a.*,b.name from t_projects_member a , t_user b
-                 where a.member_id=b.id and  project_id=%s order by created_at desc""",id)
-                print "2"
+
+
 
                 rec_income_money = self.db.get("""
                          select ifnull(sum(income_money),0) c from t_projects_income a ,
@@ -3464,14 +4093,14 @@ and  member_id=%s
                              and income_id <= 43
                 """, id)
 
-                print "3"
+
 
                 wait_rec_income_money = self.db.get("""
                               select ifnull(sum(income_money),0) c from t_projects_income a , t_projects_income_title  b
                                   where a.project_id=b.project_id and  a.project_id=%s and income_uid = 0
                                    and income_id <= 43
                 """, id)
-                print "4"
+
 
 
                 rec_income_money_other = self.db.get("""
@@ -3480,7 +4109,6 @@ and  member_id=%s
                              where a.project_id=b.project_id and  a.project_id=%s and income_uid > 0
                              and income_id >= 43
                 """, id)
-                print "5"
                 wait_rec_income_money_other = self.db.get(
                     """
                               select ifnull(sum(income_money),0) c from t_projects_income a , t_projects_income_title  b
@@ -3489,9 +4117,8 @@ and  member_id=%s
                 """, id)
                 t_projects_service_income = self.db.query("select *,b.order_int from t_projects_service_income  a left join t_projects_type b on a.service_id=b.id where project_id=%s  order by b.order_int ",id)
                 t_projects_service_income_list = self.db.query(
-                    "select * from t_projects_service_income where project_id=%s  and (service_money <> 0 or is_free=1)  ",
+                    "select * from t_projects_service_income where project_id=%s  and (service_money <> 0 or is_free=1)",
                     id)
-                print "6"
 
                 # t_projects_file = self.db.query("select * from t_projects_file where project_id=%s order by order_int ",id)
 
@@ -3507,14 +4134,16 @@ and  member_id=%s
                 select * from t_projects_type where income_category='签约方式' order by order_int desc
                 """)
                 t_project_income_title = self.db.query("""
-                        select a.*,b.income_money income_money_total,b.income_title from t_projects_income_title a , (
+                        select a.*,b.income_money income_money_total,b.income_title,c.pay_list from t_projects_income_title a , (
                         select parent_id,sum(income_money) income_money,GROUP_CONCAT(concat(income_name,'|',income_money))  income_title
-                        from t_projects_income group by parent_id) b
-                        where a.id=b.parent_id and project_id=%s
+                        from t_projects_income group by parent_id) b left join
+                          (select title_id, GROUP_CONCAT(concat( service_name,"|",service_money)) pay_list from t_projects_income_detail 
+                    group by title_id) c on c.title_id=b.parent_id
+                        where a.id=b.parent_id and project_id=%s 
                         order by created_at desc
                 """, id)
 
-                print "7"
+                # print "7"
 
 
                 t_project_income_wait = self.db.get("""
@@ -3542,7 +4171,7 @@ and  member_id=%s
 
 
                 """.format(id))
-                print "8"
+                # print "8"
 
                 t_project_income = self.db.query(
                     """select a.*,b.pay_type_name,b.income_at income_at_a  from t_projects_income a
@@ -3553,7 +4182,7 @@ and  member_id=%s
 
 
 
-                print "9"
+                # print "9"
 
                 t_project_state1 = self.db.query("select * from t_projects_state where  is_hide=1 order by order_int ")
                 t_project_state2 = self.db.query("select * from t_projects_state where  is_hide=2 order by order_int ")
@@ -3587,7 +4216,7 @@ and  member_id=%s
                 t_project_state_msg8 = self.db.query(
                     "select * from t_projects_state_msg where  project_id=%s and type_id=8 order by created_at desc",
                     id)
-                print "9aETDHH FCM"
+                # print "9aETDHH FCM"
 
                 t_projects_income_all=self.db.query("""
                 select income_money,income_name from t_projects_income_other where project_id=%s
@@ -3627,7 +4256,7 @@ and  member_id=%s
                     )
                 t_user_teams_cq=self.db.query(
                    """
-                    select a.*,b.team_id from t_user a inner join t_user_teams b on a.id=b.uid where b.team_id=5
+                    select a.*,b.team_id from t_user a inner join t_user_teams b on a.id=b.uid where b.team_id=5 order by not_process
                     """
                     )
                 t_project_kf = self.db.get("select * from t_projects_member where project_id=%s and team_id=39",id)
@@ -3641,13 +4270,35 @@ and  member_id=%s
                      inner join t_projects_milepost b on b.type_id=a.id where income_category='办结' and a.is_hide=0
                       and project_id=%s order by b.order_int""",
                     id)
+
                 project_btypes = self.db.query(
                     "select * from  t_projects_member  where project_id=%s  and btype_id <> 0  and not_transition=0 ",
                     id)
+                is_end = 2
+                is_cancel = 1
+                is_cancel_arr =[]
+                if len(project_milepost_type) ==0:
+                    is_end=1
+                for row in project_milepost_type:
+                    if row.income_name == "仓管确认交接完成" and not  row.confirm_at:
+                        is_con = 0
+                        for row1 in project_btypes:
+                            if row.member_id==row1.mid and   row1.is_cancel_confirm_at :
+                                #   print "dump....", is_end, row1.is_cancel_confirm_at
+                                is_con = 1
+                                is_cancel_arr.append(row1.mid)
+
+                        if is_con:
+                            continue
+                        is_end = 1
+                        break
+                if len(project_btypes)  and len(project_btypes)==len(is_cancel_arr):
+                    is_cancel = 2
+
                 zones = self.db.query("select * from t_projects_type where income_category='区域'")
                 citys = self.db.query(
                     "select * from t_projects_type where income_category='地市'")
-                print "10"
+                # print "10"
 
                 project_note = self.db.query("""
                         select a.*,b.note_id,b.read_name,a.id as aid,c.remark,c.state_id,c.created_name from t_projects_note a
@@ -3717,7 +4368,7 @@ and  member_id=%s
                                 select * from t_projects_transfile where pm_id=%s and mtype=2
                             ''', mid)
                         break
-                print "11"
+
 
 
                 # t_projects_transfile=self.db.query('''
@@ -3727,18 +4378,7 @@ and  member_id=%s
                     '''
                      select * from  t_projects_member  where project_id=%s and team_name!='在线客服' and member_id=%s limit 1
                     ''',t_project.id,uid)
-                if t_project.company_uid:
-                    t_customer=self.db_customer.get('''
-                    select * from t_customer where company_reguid=%s
-                ''',t_project.company_uid)
-                    if not t_customer:
-                        t_customer=self.db_customer.get('''
-                    select * from t_customer where company=%s
-                ''',t_project.customer_company)
-                else:
-                    t_customer=self.db_customer.get('''
-                    select * from t_customer where company=%s limit 1
-                ''',t_project.customer_company)
+
 
                 t_company_id=self.db.get(
                     '''select id from t_company where company_name=%s''',t_project.customer_company
@@ -3759,7 +4399,7 @@ and  member_id=%s
                     select * from t_projects_addr_milepost where project_id=%s""",t_project.id)
                 if projects_addr_provider and not addr_provider:
                     addr_provider=projects_addr_provider[0].id
-                print "12"
+
 
                 xiezhu_applys=self.db.query('''
                 select a.*,b.project_name,b.customer_name,b.customer_company,
@@ -3782,7 +4422,7 @@ and  member_id=%s
                  on a.id=g.xiezhu_id and g.type_name='已确认'
                  where a.project_id=%s order by a.created_at
             ''',t_project.id)
-                print "13"
+
 
                 if xiezhu_applys and not xiezhu_id:
                     xiezhu_id=xiezhu_applys[0].id
@@ -3879,10 +4519,29 @@ and  member_id=%s
                     and b.btype_id=d.btype_id and b.mid=d.member_id and d.member_id=%s
                     where  b.btype_id <> 0    and b.is_cancel=0  and d.confirm_at>='2018-10-01 00:00:00' 
                     and a.id=%s''',mid,t_project.id)
-              
+
+                t_projects_note_chengjiao=self.db.query('''
+                select * from t_projects_note_chengjiao
+                ''')
+
+                data_str = "%s_%s_%sV2FYJT" % (t_project.id,
+                                       t_project.customer_company, dt)
+                hash_md5 = hashlib.md5(data_str)
+                md5_str =  hash_md5.hexdigest()
+                company_history_permission=self.checkUserIn(t_project_members,uid)
+                t_project_logff = None
+                t_logff_type =self.db.query("select * from t_projects_type where income_category='注销'")
                 return self.render(
                     "project/project_show.html",
+                    t_project_logff=t_project_logff,
+                    t_logff_type=t_logff_type,
+                    md5_str=md5_str,
+                    is_end=is_end,
+                    dt=dt,
+                    company_history_permission=company_history_permission,
+                    is_cancel=is_cancel,
                     confirm_banjie=confirm_banjie,
+                    t_projects_note_chengjiao=t_projects_note_chengjiao,
                     t_project_chuna_history=t_project_chuna_history,
                     t_projects_type1=t_projects_type1,
                     t_cutomer_addr_msg=t_cutomer_addr_msg,
@@ -4273,6 +4932,9 @@ and  member_id=%s
             page=int(self.get_argument('page',1))
             waitme = self.get_argument("waitme","")
             banli_time=self.get_argument('banli_time','')
+            order_bl=self.get_argument('order_bl','')
+            order_bl_time=self.get_argument('order_bl_time','')
+
             pre_page=10
             params={
                 'bs_address':bs_address,
@@ -4284,11 +4946,19 @@ and  member_id=%s
                 'start_time':start_time,
                 'end_time':end_time,
                 'project_name':project_name,
-                'banli_time':banli_time
+                'banli_time':banli_time,
+                'order_bl':order_bl,
+                'order_bl_time':order_bl_time
             }
             sql=''
             sql1=''
             sql_nums=''
+            sql_dep=''
+            order_int=' a.created_at desc '
+            if order_bl:
+                order_int=' a.bl_date '+order_bl
+            elif order_bl_time:
+                order_int=' a.start_time '+order_bl_time
             if bs_area:
                 sql+=' and a.bs_area="%s"'%bs_area
             if bs_address:
@@ -4299,6 +4969,7 @@ and  member_id=%s
                 sql+=' and a.banshi_per="%s"'%bs_name
             if department_name:
                 sql+=' and b.department_name="%s"'%department_name
+                sql_dep=' and b.department_name="%s" '%department_name
             if project_name:
                 sql+=' and a.project_name like "%%'+project_name+'%%"'
             if company:
@@ -4313,6 +4984,7 @@ and  member_id=%s
             department_sql = ""
             mycount_sql_str=""
             sql_my_leader=""
+
             if my:
                 mycount_sql_str="  and responsible_per='"+uid_name+"'"
             if waitme:
@@ -4350,7 +5022,12 @@ and  member_id=%s
             if my:
                 wait_my_sql = "  and ( a.leader_id > " + uid+" or   responsible_per='"+uid_name+"' or a.leader_id='"+uid+"') "
             wait_per_count = self.db.get(
-                "select count(*) count from t_todo_arrange a ,t_todo_arrange_status c  ,t_user b  where a.id=c.todo_id and  a.responsible_per=b.name and  banshi_per is null  "
+                """select count(*) count,
+                ( select count(*) count from t_todo_arrange a ,t_todo_arrange_status c  ,t_user b 
+                 where a.id=c.todo_id and  a.responsible_per=b.name and  banshi_per is not null and  todo_type=0 
+                 """+ department_sql + wait_my_sql+"""
+                 ) count1
+                from t_todo_arrange a ,t_todo_arrange_status c  ,t_user b  where a.id=c.todo_id and  a.responsible_per=b.name and  banshi_per is null  """
                 + department_sql + wait_my_sql)
 
 
@@ -4368,7 +5045,7 @@ and  member_id=%s
 
 
 
-            if todo=="-1000":
+            if todo=="-1000" or todo=='-2000':
 
                 if todo == '1':
                     sql1 = 'and d.created_at is NULL and d.updated_at is NULL and (banshi_per  is not null) '
@@ -4377,7 +5054,10 @@ and  member_id=%s
                 elif todo == '3':
                     sql1 = 'and d.created_at is not NULL and d.updated_at is not NULL '
                 elif todo == "-1000":
-                    sql1 += " and banshi_per is null"
+                    sql1 += " and a.banshi_per is null and banshi_per is null"
+                elif todo=="-2000":
+                     sql1 += " and todo_type=0 and banshi_per is not null"
+                     order_int=' a.leader_distribute_at desc, '+order_int 
                 count = self.db.get("""
                select count(*) count
                 from t_todo_arrange a inner join t_user b
@@ -4385,7 +5065,7 @@ and  member_id=%s
                  left join t_user c on a.banshi_per=c.name
                   inner join t_todo_arrange_status d
                    on a.id=d.todo_id
-                   where is_hide=0  and (a.banshi_per is null)""" + wait_my_sql
+                   where is_hide=0 """ + wait_my_sql
                                     + sql1 + sql + department_sql + """
                     """)
                 pagination = Pagination(page, pre_page, count.count,
@@ -4402,12 +5082,11 @@ and  member_id=%s
 
                    where is_hide=0  """ + wait_my_sql + sql1 + sql +
                                               department_sql + """
-                    order by a.created_at desc limit %s,%s """, startpage,
+                    order by """+order_int+""" limit %s,%s """, startpage,
                                               pre_page)
 # t_todo_arrange a ,t_todo_arrange_status c  ,t_user b  where a.id=c.todo_id and  a.responsible_per=b.name and  banshi_per is null
-
+            
             elif my:
-
 
                 if todo=='1':
                     sql1='and d.created_at is NULL and d.updated_at is NULL and (banshi_per  is not null)'
@@ -4417,7 +5096,8 @@ and  member_id=%s
                     sql1='and d.created_at is not NULL and d.updated_at is not NULL '
                 elif todo == "-1000":
                     sql1 += " and todo_type=0 and banshi_per is null"
-
+                elif todo=="-2000":
+                     sql1 += " and todo_type=0 and banshi_per is not null"
 
                 count=self.db.get(
                     """
@@ -4442,10 +5122,11 @@ and  member_id=%s
                   inner join t_todo_arrange_status d
                    on a.id=d.todo_id
                    where (a.responsible_per=%s or a.banshi_per=%s) """+sql1+sql+"""
-                    order by a.created_at desc limit %s,%s """,uid_name,uid_name,startpage,pre_page)
+                    order by """+order_int+""" limit %s,%s """,uid_name,uid_name,startpage,pre_page)
             else:
 
                 if sql:
+
                     if todo=='1':
                         sql+=' and d.created_at is NULL and d.updated_at is NULL and (banshi_per  is not null)'
                     elif todo=='2':
@@ -4475,7 +5156,7 @@ and  member_id=%s
                     left join t_user c on a.banshi_per=c.name
                     inner join t_todo_arrange_status d
                     on a.id=d.todo_id where """+sql[4:]+department_sql+"""
-                    order by a.created_at desc limit %s,%s""",startpage,pre_page)
+                    order by """+order_int+""" limit %s,%s""",startpage,pre_page)
 
                 else:
                     sql=""
@@ -4511,15 +5192,24 @@ and  member_id=%s
                         left join t_user c on a.banshi_per=c.name
                         inner join t_todo_arrange_status d
                         on a.id=d.todo_id """+sql+department_sql+"""
-                         order by a.created_at desc limit %s,%s
+                         order by """+order_int+""" limit %s,%s
                         """,startpage,pre_page)
             t_todo_leader = self.db.query("select * from t_todo_leader where is_hide=0")
-
+            responsible_per=self.db.query('''
+                select responsible_per responsible_per_name from t_todo_arrange a
+                inner join t_user b on a.responsible_per=b.name '''+sql_dep+''' group by responsible_per_name 
+            ''')
+            banshi_per = self.db.query('''
+              select banshi_per banshi_per_name from t_todo_arrange a
+                inner join t_user b on a.banshi_per=b.name group by banshi_per_name 
+            ''')
             self.render(
                 'project/todo_arrange.html',
                 search_key='',
                 t_todo_leader=t_todo_leader,
                 my=my,
+                responsible_per=responsible_per,
+                banshi_per=banshi_per,
                 params=params,
                 area_type=area_type,
                 departments=departments,
@@ -4575,29 +5265,49 @@ and  member_id=%s
             #  from t_bj_price_history  where bj_mange_id=a.id) b,
             #  (select price from t_bj_price_history where bj_mange_id=a.id order by created_at desc limit 1) c
             #  from  t_bj_manage a '''+sql+''' a.created_at desc limit %s,%s''',startpage,pre_page)
+            manage_type=self.get_argument('manage_type','0')
+            params={
+                'manage_type':manage_type
+            }
             area_type=self.db.query(
                 """
                 select income_name from t_projects_type where income_category='区域'
                 """
             )
-            count=self.db.get('''  select count(*) count from t_addr_provider_manage''')
+            count=self.db.get('''  select count(*) count 
+            from t_addr_provider_manage  where manage_type=%s ''',manage_type)
             pagination=Pagination(page,pre_page,count.count,self.request)
             startpage=(page-1) * pre_page
             addr_provider_manage=self.db.query('''
-             select a.*,
-             (select price from t_addr_provider_history where addr_id=a.id order by created_at desc limit 1) b,
-             (select GROUP_CONCAT(concat('价格:',price,'&nbsp;&nbsp;','报价人:',uid_name,'&nbsp;&nbsp;','时间:',date(created_at)))
-             from t_addr_provider_history  where addr_id=a.id) c
-              from t_addr_provider_manage a
-            order by a.order_at desc,a.order_int desc limit %s,%s
-            ''',startpage,pre_page)
+             select *
+              from t_addr_provider_manage
+              where manage_type=%s 
+            order by order_at desc,order_int desc limit %s,%s
+            ''',manage_type,startpage,pre_page)
 
             self.render('project/bj_manage.html',
             search_key='',
             addr_provider_manage=addr_provider_manage,
             pagination=pagination,
-            area_type=area_type
+            manage_type=manage_type,
+            area_type=area_type,
+            params=params,
+             tag=tag,
+            )
+        elif tag=="bj_manage_yw":
+            # order=self.get_argument('order',0)
+            page=int(self.get_argument('page',1))
+            pre_page=20
+            manage_type=self.get_argument('manage_type','0')
 
+            product_bid = self.db_ext.query("select a.*,b.name category_name from t_products a , t_category b where a.category_id=b.id  order by b.order_int")
+            t_category=self.db_ext.query(" select * from t_category ")
+            self.render('project/bj_manage_yw.html',
+            search_key='',
+            product_bid=product_bid,
+            t_category=t_category,
+            manage_type=manage_type,
+            tag=tag,
             )
 
         elif tag=="provider_manage":
@@ -5064,25 +5774,23 @@ and  member_id=%s
             customer_company=self.get_argument('customer_company','')
             company=self.get_argument('company','')
             project_id=self.get_argument('project_id','')
-            is_exit=self.db.get('''
-                select * from t_same_company where project_id=%s and customer_company=%s
-            ''',project_id,customer_company)
-            if is_exit:
-                customer='-1'
-            else:
-                if company!=customer_company:
-                    customer=self.db_customer.get('''
-                        select id,company from t_customer where company=%s limit 1
-                        ''',customer_company)
-                else:
-                    customer='-2'
+            same_project=''
+            same_customer=''
+            if company!=customer_company:
+                customer=self.db_customer.get('''
+                    select id,company from t_customer where company=%s limit 1
+                    ''',customer_company)
+                same_project=self.db.get('''
+            select customer_company from t_projects where customer_company=%s group by customer_company having count(*)>1
+        ''',company)
+                same_customer=self.db_customer.get('''
+                select company from t_customer where company=%s limit 1
+        ''',company)
 
-            same_project=self.db.get('''
-                select customer_company from t_projects where customer_company=%s group by customer_company having count(*)>1
-            ''',company)
-            same_customer=self.db_customer.get('''
-                 select company from t_customer where company=%s limit 1
-            ''',company)
+            else:
+                customer='-2'
+
+
             self.write({'customer':customer,'project':same_project,'same_customer':same_customer})
 
         elif tag=="kf_count":
@@ -5344,15 +6052,21 @@ and  member_id=%s
             source=self.get_argument('source','')
             express_type=self.get_argument('express_type','')
             payment_type=self.get_argument('payment_type','')
+            project_id=self.get_argument('project_id','')
+            express_number_search=self.get_argument('express_number_search','')
             params={
                 "department":department,
                 "start_time":start_time,
                 "end_time":end_time,
                 "source":source,
                 "express_type":express_type,
-                "payment_type":payment_type
+                "payment_type":payment_type,
+                'project_id':project_id,
+                "express_number_search":express_number_search
             }
             sql=''
+            if project_id:
+                sql+=' and project_id=%s '%project_id
             if department:
                 sql+=' and sender_department="%s" '%department
             if start_time and end_time:
@@ -5363,6 +6077,8 @@ and  member_id=%s
                 sql+='  and express_type_id=%s '%express_type
             if payment_type:
                 sql+=' and payment_type_id=%s '%payment_type
+            if express_number_search:
+                sql+=' and express_number like "%%'+express_number_search+'%%" '
             express_type=self.db.query('''
                     select * from t_projects_type where income_category='快递类型' 
                 ''')
@@ -5381,26 +6097,28 @@ and  member_id=%s
             addsql=''
             sums_sql=' and send_or_rec=%s '%step
             sums_sql1=' where send_or_rec=%s '%step
-            if express_manage!='1':
+            if express_manage!='1' and  '245' not in role_list:
                 sums_sql=' and (uid=%s or send_at_uid=%s) '%(uid,uid)+sums_sql
                 sums_sql1=sums_sql1+' and (aa.uid=%s or aa.send_at_uid=%s)  '%(uid,uid)
             sums=self.db.get('''
                     select count(*) a,
                     (select count(*) from t_express where accept_at is null '''+sums_sql+''' ) b,
                     (select count(*) from t_express where accept_state=1 and send_at is null '''+sums_sql+''' ) c,
-                    (select  count(*) from t_express where accept_state=1 and send_at is not null '''+sums_sql+''') d,
-                    (select count(*)  from t_express where accept_state=2 and send_at is null '''+sums_sql+''') e
+                    (select  count(*) from t_express where accept_state=1 and send_at is not null and confirm_at is null '''+sums_sql+''') d,
+                    (select count(*)  from t_express where accept_state=2 and send_at is null '''+sums_sql+''') e,
+                       (select  count(*) from t_express where accept_state=1 and send_at is not null and confirm_at is not null '''+sums_sql+''') f
                     from  t_express aa'''+sums_sql1)
             if todo=='1':
                 addsql=' and accept_at is null '
             elif todo=='2':
                 addsql=' and accept_state=1 and send_at is null '
             elif todo=='3':
-                addsql=' and  accept_state=1 and send_at is not null '
+                addsql=' and  accept_state=1 and send_at is not null and confirm_at is null '
             elif todo=='4':
                 addsql=' and accept_state=2 and send_at is null '
-
-            if express_manage=='1':
+            elif todo=='5':
+                addsql=' and  accept_state=1 and send_at is not null and confirm_at is not null '
+            if express_manage=='1' or '245' in role_list:
                 count=self.db.get('''
                 select count(*) count from t_express where send_or_rec=%s'''+addsql+sql,step)
                 pagination=Pagination(page,pre_page,count.count,self.request)
@@ -5583,7 +6301,7 @@ and  member_id=%s
                     inner join t_projects_member c on a.id=c.project_id and c.team_name='销售顾问'
                     inner join t_projects_milepost d on b.project_id=d.project_id and d.confirm_at is not null and d.type_id=151  and b.member_name=d.uid_name
                     and b.btype_id=d.btype_id and b.mid=d.member_id
-                    where  b.btype_id <> 0  and b.is_cancel=0 and  d.confirm_at>='2018-10-01 00:00:00'
+                    where b.is_cancel=0 and b.btype_id <> 0 and b.btype_id is not null  and  d.confirm_at>='2018-10-01 00:00:00'
                 '''+sql)
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page - 1) * pre_page
@@ -5597,7 +6315,7 @@ and  member_id=%s
                     inner join t_projects_member c on a.id=c.project_id and c.team_name='销售顾问'
                     inner join t_projects_milepost d on b.project_id=d.project_id and d.confirm_at is not null and d.type_id=151 and b.member_name=d.uid_name
                     and b.btype_id=d.btype_id and b.mid=d.member_id
-                    where  b.btype_id <> 0    and b.is_cancel=0  and d.confirm_at>='2018-10-01 00:00:00' '''+sql+'''
+                    where b.is_cancel=0 and b.btype_id <> 0  and b.btype_id is not null   and d.confirm_at>='2018-10-01 00:00:00' '''+sql+'''
                                     order by b.created_at desc limit %s,%s
                     ''', startpage, pre_page)
                 t_projects_export = self.db.query(
@@ -5609,7 +6327,7 @@ and  member_id=%s
                     inner join t_projects_member c on a.id=c.project_id and c.team_name='销售顾问'
                     inner join t_projects_milepost d on b.project_id=d.project_id and d.confirm_at is not null and d.type_id=151 and b.member_name=d.uid_name
                     and b.btype_id=d.btype_id and b.mid=d.member_id
-                    where  b.btype_id <> 0    and b.is_cancel=0  and d.confirm_at>='2018-10-01 00:00:00' '''+sql+'''
+                    where   b.is_cancel=0 and b.btype_id <> 0 and d.confirm_at>='2018-10-01 00:00:00' '''+sql+'''
                                     order by b.created_at desc''')
                 if project_id or project_name or customer_company or customer_name or customer_tel or gendan or sale_man or(start_time and end_time):
                     wb=xlwt.Workbook()
@@ -5713,7 +6431,7 @@ and  member_id=%s
                     where  b.btype_id <> 0    and b.is_cancel=0  and d.confirm_at>='2018-10-01 00:00:00' and b.member_name=%s '''+sql+'''
                                     order by b.created_at desc limit %s,%s
                     ''',uid_name, startpage, pre_page)
-                
+
             self.render('project/project_confirm_banjie.html',
                 output_path="static/output/办结确认数据导出.xls",
                 search_key="",
@@ -5741,6 +6459,283 @@ and  member_id=%s
             t_project_chuna_history=t_project_chuna_history,
             pagination=pagination
             )
+
+        elif tag=="manage_chengjiao":
+            page=int(self.get_argument('page',1))
+            pre_page = 20
+            count=self.db.get('''
+                select count(*) count from t_projects_note_chengjiao
+            ''')
+            pagination = Pagination(page, pre_page, count.count, self.request)
+            startpage = (page - 1) * pre_page
+            projects_note_chengjiao=self.db.query('''
+                select * from t_projects_note_chengjiao order by created_at desc
+            ''')
+
+            self.render('project/manage_chengjiao.html',
+                search_key="",
+                tag=tag,
+                projects_note_chengjiao=projects_note_chengjiao,
+                pagination=pagination
+                )
+
+        elif tag=="cq_jd_list":
+            page=int(self.get_argument('page',1))
+            pre_page = 20
+            show_tag=self.get_argument('show_tag','1')
+            gs_name=self.get_argument('gs_name','')
+            start_time=self.get_argument('start_time','')
+            end_time=self.get_argument('end_time','')
+            start_time_fp=self.get_argument('start_time_fp','')
+            end_time_fp=self.get_argument('end_time_fp','')
+            customer_name=self.get_argument('customer_name','')
+            btype_name=self.get_argument('btype_name','')
+            jd_day=self.get_argument('jd_day','')
+            way=self.get_argument('way','')
+            name=self.get_argument('name','')
+            count_type=self.get_argument('count_type','')
+            btype=self.get_argument('btype','')
+            bj_check=self.get_argument('bj_check','1')
+            work_sql=''
+            work_sel_sql=''
+            params={
+                'gs_name':gs_name,
+                'show_tag':show_tag,
+                'start_time':start_time,
+                'end_time':end_time,
+                'customer_name':customer_name,
+                'btype_name':btype_name,
+                'jd_day':jd_day,
+                'way':way,
+                'name':name,
+                'count_type':count_type,
+                'btype':btype,
+                'bj_check':bj_check,
+                'start_time_fp':start_time_fp,
+                'end_time_fp':end_time_fp
+            }
+            sql=''
+            sql1=''
+            order_int=' d.confirm_at '
+            way_sql=" '%%Y-%%m-%%d' "
+            if count_type=='project_name':
+                gb_sql=' a.member_name '
+                gb_sql1=' b.uid_name '
+            elif count_type=='gs':
+                gb_sql=' a.btype_id '
+                gb_sql1=' b.p_type_id '
+            if way=='month':
+                way_sql=" '%%Y-%%m' "
+            elif way=='week':
+                way_sql=" '%%Y-%%m-%%u' "
+            if show_tag=="2":
+                sql=' and b.confirm_at is not null '
+                if bj_check=='1':
+                    sql+=' and a.confirm_banjie=1 '
+                elif bj_check=='0':
+                    sql+=' and a.confirm_banjie=0 '
+                order_int=' b.confirm_at '
+            elif show_tag=="3":
+                if not way:
+                    sql=' and a.last_state_msg_at is not null '
+                order_int=' a.last_state_msg_at '
+                work_sel_sql=' e.count,'
+                work_sql=''' 
+                left join (select count(*) count,created_at,project_id,p_type_id,uid from t_projects_state_msg group by date_format(created_at,"%%Y-%%m-%%d"),project_id,p_type_id,uid)
+                e on date_format(e.created_at,"%%Y-%%m-%%d")=date_format(a.last_state_msg_at,"%%Y-%%m-%%d") 
+                    and e.uid=a.member_id and e.project_id=a.project_id and e.p_type_id=a.btype_id
+                 '''
+
+            if name:
+                sql+=' and a.member_name="%s" '%name
+            if btype:
+                sql+=' and a.btype_id=%s '%btype
+            if gs_name:
+                sql+=' and  a.member_name="%s" '%gs_name
+                sql1+=' and member_name="%s" '%gs_name
+
+            if start_time and end_time:
+                if show_tag=='2':
+                    sql+=' and b.confirm_at between "%s" and "%s"  '%(start_time,end_time)
+                else:
+                    sql+=' and d.confirm_at between "%s" and "%s"  '%(start_time,end_time)
+                    sql1+=' and jd between "%s" and "%s" '%(start_time,end_time)
+            if start_time_fp and end_time_fp:
+                sql+=' and a.created_at between "%s" and "%s"  '%(start_time_fp,end_time_fp)
+
+            if customer_name:
+                sql+=' and c.customer_name="%s" '%customer_name
+                sql1+=' and customer_name="%s" '%customer_name
+            if btype_name:
+                sql+=' and a.btype_id_name="%s" '%btype_name
+                sql1+=' and btype_id_name="%s" '%btype_name
+            if jd_day:
+                sql+=' and datediff( d.confirm_at,a.created_at)=%s '%jd_day
+                sql1+=' and jd_day=%s '%jd_day
+            if role=='9':
+                sql+=' and a.member_name="%s" '%uid_name
+                sql1+=' and member_name="%s" '%uid_name
+            if way:
+                if show_tag=='4':
+                    count=self.db.get('''
+                    SELECT count(*) count,sum(sc) ssc,
+                    (select group_concat(gb,'|',count)
+                    from (SELECT  '''+gb_sql+'''gb,count(*) count from t_projects_genjin_record a 
+                    where a.mid is not null '''+sql+''' 
+                    group by gb)aaa  )every_count
+                    from (select group_concat(gb,'|',count) gc,df_confirm_at,sum(count) sc from(
+                    SELECT  '''+gb_sql+'''gb,date_format(created_at,'''+way_sql+''') df_confirm_at,count(*) count from t_projects_genjin_record a
+                    where a.mid is not null '''+sql+'''  
+                    group by gb,df_confirm_at)aa group by df_confirm_at)aa
+                    ''')
+                    pagination = Pagination(page, pre_page, count.count, self.request)
+                    startpage = (page - 1) * pre_page
+                    t_projects=self.db.query('''
+                    select group_concat(gb,'|',count) gc,df_confirm_at,sum(count) sc from(
+                    SELECT  '''+gb_sql+'''gb,date_format(created_at,'''+way_sql+''') df_confirm_at,count(*) count from t_projects_genjin_record a
+                    where a.mid is not null '''+sql+'''  
+                    group by gb,df_confirm_at)aa group by df_confirm_at
+                    order by df_confirm_at desc LIMIT %s,%s
+                    ''',startpage,pre_page)
+                elif show_tag=='3':
+                    count=self.db.get('''
+                        select count(*) count,sum(sc) ssc,
+                        (
+                            select  group_concat(gb,'|',count) from(
+                              SELECT 
+                            '''+gb_sql1+''' gb,count(*) count
+                            FROM t_projects_state_msg b
+                            inner join t_projects_member a on a.project_id=b.project_id and b.uid=a.member_id and b.p_type_id=a.btype_id
+                            inner join t_projects c on a.project_id=c.id
+                            inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                            where  a.team_id=38 '''+sql+''' group by gb order by count desc)aa
+                         )every_count
+                        from(
+                        select  group_concat(gb,'|',count),df_confirm_at,sum(count) sc from (
+                        SELECT 
+                        date_format(b.created_at,'''+way_sql+''') df_confirm_at,'''+gb_sql1+''' gb,count(*) count
+                            FROM t_projects_state_msg b
+                            inner join t_projects_member a on a.project_id=b.project_id and b.uid=a.member_id and b.p_type_id=a.btype_id
+                            inner join t_projects c on a.project_id=c.id
+                            inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                            where  a.team_id=38 '''+sql+''' group by gb,df_confirm_at)aa group by df_confirm_at
+                        )aaa
+                    ''')
+                    pagination = Pagination(page, pre_page, count.count, self.request)
+                    startpage = (page - 1) * pre_page
+                    t_projects=self.db.query('''
+                     select  group_concat(gb,'|',count) gc,df_confirm_at,sum(count) sc from (
+                    SELECT 
+                    date_format(b.created_at,'''+way_sql+''') df_confirm_at,'''+gb_sql1+''' gb,count(*) count
+                            FROM t_projects_state_msg b
+                            inner join t_projects_member a on a.project_id=b.project_id and b.uid=a.member_id and b.p_type_id=a.btype_id
+                            inner join t_projects c on a.project_id=c.id
+                            inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                            where  a.team_id=38 '''+sql+''' group by gb,df_confirm_at)aa group by df_confirm_at order by df_confirm_at desc limit %s,%s
+                    ''',startpage,pre_page)
+                else:
+                    count=self.db.get('''
+                        select count(*) count,sum(sc) ssc,
+                        (select group_concat(gb,'|',count)
+                            from (select '''+gb_sql+''' gb,count(*) count from  t_projects_member a
+                inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3 
+                inner join t_projects c on a.project_id=c.id
+                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                where a.team_id=38 '''+sql+''' group by gb order by count desc)bbb
+                        )every_count
+                        from (
+                        select group_concat(gb,'|',count),df_confirm_at,sum(count) sc from (
+                    select '''+gb_sql+''' gb,date_format('''+order_int+''','''+way_sql+''') df_confirm_at,count(*) count from  t_projects_member a
+                inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3 
+                inner join t_projects c on a.project_id=c.id
+                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                where a.team_id=38 '''+sql+''' group by df_confirm_at,gb)aa group by df_confirm_at 
+                        )bb
+                    ''')
+                    pagination = Pagination(page, pre_page, count.count, self.request)
+                    startpage = (page - 1) * pre_page
+                    t_projects=self.db.query('''
+                    select group_concat(gb,'|',count) gc,df_confirm_at,sum(count) sc from (
+                    select '''+gb_sql+''' gb,date_format('''+order_int+''','''+way_sql+''') df_confirm_at,count(*) count from  t_projects_member a
+                inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3 
+                inner join t_projects c on a.project_id=c.id
+                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                where a.team_id=38 '''+sql+''' group by df_confirm_at,gb)aa group by df_confirm_at order by  df_confirm_at desc limit %s,%s
+                    ''',startpage,pre_page)
+            else:
+                if show_tag=='4':
+                    count=self.db.get('''
+                   SELECT count(*) count from t_projects_genjin_record 
+                     where mid is not null '''+sql1+'''
+                    ''')
+                    pagination = Pagination(page, pre_page, count.count, self.request)
+                    startpage = (page - 1) * pre_page
+                    t_projects=self.db.query('''
+                    SELECT * from t_projects_genjin_record 
+                    where mid is not null '''+sql1+'''
+                    order by created_at desc LIMIT %s,%s
+                    ''',startpage,pre_page)
+                else:
+                    count=self.db.get('''
+                        select count(*) count  from  t_projects_member a
+                        inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and order_int=3 
+                        inner join t_projects c on a.project_id=c.id
+                        inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                        where a.team_id=38
+                        '''+sql)
+                    pagination = Pagination(page, pre_page, count.count, self.request)
+                    startpage = (page - 1) * pre_page
+                    t_projects=self.db.query('''
+                    select  '''+work_sel_sql+''' a.last_state_remark,a.state_msg_counts, a.last_state_msg,a.last_state_msg_at,a.member_name,a.project_id,a.created_at fp , d.confirm_at jd,c.customer_company,a.mid,b.confirm_at,
+                    c.customer_name,a.btype_id_name,datediff( d.confirm_at,a.created_at) jd_day,c.guid,datediff(b.confirm_at,b.created_at) 
+                    bj_day from  t_projects_member a
+                    inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3 
+                    inner join t_projects c on a.project_id=c.id
+                    inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                    '''+work_sql+'''
+                    where a.team_id=38 '''+sql+''' order by '''+order_int+''' desc limit %s,%s
+                    ''',startpage,pre_page)
+            member_gs=self.db.query('''
+                select member_name uid_name,member_id from t_projects_member
+                 where team_id=38 and last_milepost_id is not null and last_milepost_id <> 0  group by member_name
+            ''')
+            t_projects_type=self.db.query('''
+                select id,income_name from t_projects_type where income_category='业务分类'
+            ''')
+            self.render('project/cq_jd_list.html',
+                search_key="",
+                tag=tag,
+                count=count,
+                show_tag=show_tag,
+                params=params,
+                t_projects_type=t_projects_type,
+                t_projects=t_projects,
+                member_gs=member_gs,
+                pagination=pagination)
+        
+        elif tag=="project_liuzhuan_reject":
+            page=int(self.get_argument('page',1))
+            pre_page = 20
+            count=self.db.get('''
+                select count(*) count from t_projects a inner join 
+                t_projects_transfile b on a.id=b.project_id and b.is_ok=1 and mtype=1 and fback_remark is not null
+                inner join t_projects_milepost c on a.id=c.project_id and order_int=4 and confirm_at is null 
+                where c.uid_name=%s
+            ''',uid_name)
+            pagination = Pagination(page, pre_page, count.count, self.request)
+            startpage = (page - 1) * pre_page
+            t_projects=self.db.query('''
+            select a.*,c.btype_name,c.uid_name gs_name,b.fback_remark from t_projects a inner join 
+                t_projects_transfile b on a.id=b.project_id and b.is_ok=1 and mtype=1 and fback_remark is not null
+                inner join t_projects_milepost c on a.id=c.project_id and order_int=4 and confirm_at is null 
+                where c.uid_name=%s limit %s,%s
+            ''',uid_name,startpage,pre_page)
+            self.render('project/project_liuzhuan_reject.html',
+                search_key="",
+                tag=tag,
+                t_projects=t_projects,
+                pagination=pagination
+                )
 
     @tornado.web.authenticated
     def post(self):
@@ -5821,7 +6816,7 @@ and  member_id=%s
                         """, income_at, project_id, "", dt, dt, uid, uid_name,
                                                pay_type_name, pay_type_id,
                                                company_id, company_id_name)
-                    print "title_id", title_id
+
                     if title_id > 0:
                         income_row = self.db.get(
                             "select * from t_projects_income where income_id=%s and income_num=%s and parent_id=%s and project_id=%s",
@@ -5848,7 +6843,7 @@ and  member_id=%s
 
                         for item in data:
                             if item:
-                                print item
+
                                 guid = uuid.uuid4()
                                 result = self.db.execute(
                                     """
@@ -5879,7 +6874,7 @@ and  member_id=%s
                         update t_projects_member set is_cancel=1 ,is_cancel_at=%s,is_cancel_uid=%s,is_cancel_uid_name=%s where project_id=%s and mid=%s
                     """, dt,uid, uid_name, project_id, mid)
                     event_msg = "%s请求取消订单"%(uid_name)
-                    print "result=====",result
+
                 elif atype == "manager":
                     event_msg = "%s同意取消订单" % (uid_name)
                     result = self.db.execute("""
@@ -5908,9 +6903,8 @@ and  member_id=%s
             parent_id = self.get_argument("parent_id",0)
             income_at = self.get_argument('income_at')
 
-            print "parent_id", parent_id
             if int(parent_id) > 0:
-                print "hello world ",parent_id
+
                 title_id_result = self.db.execute("""
                        update t_projects_income_title set income_at=%s,
                         updated_at=%s,uid=%s,uid_name=%s,
@@ -5920,8 +6914,10 @@ and  member_id=%s
                                            company_id, company_id_name,
                                            parent_id)
                 if title_id_result==0:
+
                     for item in data:
                         if item:
+
                             project_income_id =0
                             income_row = self.db.get(
                                 "select * from t_projects_income where income_id=%s and income_num=%s and parent_id=%s and project_id=%s",
@@ -5950,37 +6946,45 @@ and  member_id=%s
 
 
                             income_detail = item.get("income_detail")
+                            # print "title----------", parent_id, income_detail
                             if income_detail:
                                 js = json.loads(income_detail)
+                                self.db.execute(
+                                    "delete from t_projects_income_detail where title_id=%s",
+                                    parent_id)
                                 for aaaa in js:
-
-                                    detail_id = aaaa.get("detail_id",None)
-                                    if not detail_id:
-                                        result = self.db.execute(
-                                            """
+                                    result = self.db.execute(
+                                        """
                                                     insert into t_projects_income_detail(income_id,income_name,project_id,service_id,
                                                     service_name,service_money,created_at,updated_at,uid_name,uid,title_id,project_income_id
                                                     )
                                                     values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                                                 """, item["income_id"],
-                                            item["income_name"], project_id,
-                                            aaaa["service_id"],
-                                            aaaa["service_name"],
-                                            aaaa["service_money"], dt, dt,
-                                            uid_name, uid, parent_id,
-                                            return_income_id)
+                                        item["income_name"], project_id,
+                                        aaaa["service_id"],
+                                        aaaa["service_name"],
+                                        aaaa["service_money"], dt, dt,
+                                        uid_name, uid, parent_id,
+                                        return_income_id)
 
 
-                                    else:
-                                        result = self.db.execute(
-                                            """update  t_projects_income_detail set  service_money=%s,updated_at=%s ,uid_name=%s,uid=%s
-                                                    where id=%s and  project_id=%s
-                                                """, aaaa["service_money"], dt,
-                                            uid_name, uid,detail_id
-                                            , project_id)
+                                # else:
+                                #     if str(aaaa["service_money"])== "0.00" or str(aaaa["service_money"])== "0":
+
+                                #         self.db.execute(
+                                #             "delete from t_projects_income_detail  where id=%s and  project_id=%s",detail_id
+                                #             , project_id
+                                #         )
+                                #     else:
+                                #         result = self.db.execute(
+                                #             """update  t_projects_income_detail set  service_money=%s,updated_at=%s ,uid_name=%s,uid=%s
+                                #                     where id=%s and  project_id=%s
+                                #                 """, aaaa["service_money"], dt,
+                                #             uid_name, uid,detail_id
+                                #             , project_id)
 
             else:
-
+                # print "title----------"
                 title_id = self.db.execute("""
                         insert into t_projects_income_title (income_at,project_id,income_title,total,
                         created_at,updated_at,uid,uid_name,guid,pay_type_name,pay_type_id,company_id,company_id_name)
@@ -6005,6 +7009,7 @@ and  member_id=%s
 
                         if income_detail:
                             js = json.loads(income_detail)
+
                             for aaaa in js:
                                 result = self.db.execute(
                                     """
@@ -6148,22 +7153,30 @@ and  member_id=%s
             if not guid:
                 self.write('not guid')
             else:
-                result = self.db.execute("""update t_projects_service_income set
-                        uid=%s,uid_name=%s, updated_at=%s,service_money=0
-                        where guid=%s and project_id=%s""",uid, uid_name,dt,guid, project_id)
-                self.db.execute("""
-                    update t_projects set
-                    all_income=(select ifnull(sum(service_money),0) from t_projects_service_income where project_id=%s),
+                service_income = self.db.get("select * from t_projects_service_income where guid=%s and project_id=%s ",guid,project_id)
 
-                    con_wait_income=ifnull(all_income-(select ifnull(sum(income_money),0) from t_projects_income
-                    a ,t_projects_income_title b where b.id=a.parent_id and a.project_id=%s
-                    and income_uid >0 and a.income_id <= 43),0)
+                t_projects_income_detail = self.db.get("select count(*) count from t_projects_income_detail where project_id=%s and service_id=%s",project_id,service_income.service_id)
+                if service_income and t_projects_income_detail.count >0:
+                    self.write("请删除到款中的(%s)明细"%service_income.service_name)
+                else:
+                    result = self.db.execute("""update t_projects_service_income set
+                            uid=%s,uid_name=%s, updated_at=%s,service_money=0
+                            where guid=%s and project_id=%s""",uid, uid_name,dt,guid, project_id)
+                    self.db.execute("""
+                        update t_projects set
+                        all_income=(select ifnull(sum(service_money),0) from t_projects_service_income where project_id=%s),
 
-                        where id=%s
-                    """, project_id,
-                            project_id,
-                            project_id)
-                self.write(str(result))
+                        con_wait_income=ifnull(all_income-(select ifnull(sum(income_money),0) from t_projects_income
+                        a ,t_projects_income_title b where b.id=a.parent_id and a.project_id=%s
+                        and income_uid >0 and a.income_id <= 43),0)
+
+                            where id=%s
+                        """, project_id,
+                                project_id,
+                                project_id)
+                    self.write(str(result))
+
+
 
         elif tag=="contract_confirm":
             project_id = self.get_argument("project_id")
@@ -6263,15 +7276,15 @@ and  member_id=%s
                 busniess_from_id = busniess_from.split("|")[0]
                 busniess_from_id_name = busniess_from.split("|")[1]
                 is_acc = 0 #会计业务
-                if busniess_from_id_name=="会计" or busniess_from_id_name=="续帐":
+                if busniess_from_id_name=="续帐" or busniess_from_id_name=="会计":
                     is_acc = 1
                     t_customer = self.db_customer.get(
                         "select * from t_customer where company=%s",
                         customer_company)
                     if not  t_customer:
                         return self.write("%s ---不存在客户管理系统哦"%(customer_company))
-                    # elif not t_customer.acc_uid:
-                    #     return self.write("该公司(%s)没有分配会计哦" % (customer_company))
+                    elif not t_customer.acc_uid:
+                        return self.write("该公司(%s)没有分配会计哦" % (customer_company))
 
 
                 promo_id =0,
@@ -6302,6 +7315,7 @@ and  member_id=%s
                 if building_id_str != "0":
                     building_id = building_id_str.split("|")[0]
                     building_id_name = building_id_str.split("|")[1]
+                print "building_id_str",building_id_str
                 if busniess_from_id_name=="客户推荐" or busniess_from_id_name=="传统开发" or busniess_from_id_name=="会计" or busniess_from_id_name=="续帐":
                     talk_type_id=0
                     talk_type_id_name=''
@@ -6347,10 +7361,6 @@ and  member_id=%s
                     contract_confirm_id, contract_confirm_id_name,
                     rel_company_id_name, rel_company_id, is_acc,promo_id,promo_id_name)
                 if id > 0:
-
-
-
-
                     is_add_kf =""
                     if kf_id_str != "0" and kf_id_str:
                         kf_id = kf_id_str.split("|")[0]
@@ -6382,10 +7392,15 @@ and  member_id=%s
                             add_sql_for_customer = " and income_parentid=203"
 
                         is_add_kf += " and id !=205 "
+                        not_transition = 1
+                        if busniess_from_id_name=="会计":
+                            not_transition=0 #会计流转
+
                         self.db.execute("""
-                        insert into t_projects_member (team_name,team_id,project_id,created_at,member_id,guid,updated_at,updated_uid,updated_uid_name,member_name,not_transition)
-                            values("客服会计",205,%s,%s,%s,uuid(),%s,%s,%s,%s,1)
-                        """, id, dt, t_customer.acc_uid, dt, uid, uid_name, t_customer.acc_uid_name)
+                        insert into t_projects_member (team_name,team_id,project_id,created_at,member_id,
+                        guid,updated_at,updated_uid,updated_uid_name,member_name,not_transition)
+                            values("客服会计",205,%s,%s,%s,uuid(),%s,%s,%s,%s,%s)
+                        """, id, dt, t_customer.acc_uid, dt, uid, uid_name, t_customer.acc_uid_name,not_transition)
                         #客服会计
 
                         msg.insert_new(
@@ -6760,7 +7775,8 @@ and  member_id=%s
                     self.write("not milepost")
                 else:
                     not_transition = 0
-                    if user_uid_name == u"周萍" or user_uid_name == u"外资" or user_uid_name == u"取消单(无需流转)" or user_uid_name == u"其他(无需流转)" or user_uid_name == u"调整单(无需流转)":
+                    if t_user.not_process==1:
+                        # if user_uid_name == u"周萍" or user_uid_name == u"外资" or user_uid_name == u"取消单(无需流转)" or user_uid_name == u"其他(无需流转)" or user_uid_name == u"调整单(无需流转)":
                         not_transition = 1
                         milepost.income_name = "无需流转"
                         milepost.id = "0"
@@ -6831,7 +7847,7 @@ and  member_id=%s
                 return self.write("not user")
             else:
                 user_uid_name = t_user.name
-                dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
                 milepost = self.db.get(
                     "select * from t_projects_type where income_category='办结' and order_int=1 ",
                 )
@@ -6839,17 +7855,15 @@ and  member_id=%s
                     self.write("not milepost")
                 else:
                     for row in project_id_str.split(","):
-                        print "row____",row
+
                         if row:
                             project_id=  row
                             not_transition = 0
-                            print "user_uid_name___", user_uid_name
-                            if user_uid_name == u"周萍" or user_uid_name == u"外资" or user_uid_name == u"取消单(无需流转)" or user_uid_name == u"其他(无需流转)" or user_uid_name == u"调整单(无需流转)":
-
+                            #  if user_uid_name == u"周萍" or user_uid_name == u"不流转（外资）" or user_uid_name == u"不流转（其他）" or user_uid_name == u"不流转（跑腿）" or user_uid_name == u"不流转（记账）" or user_uid_name == u"不流转（调整）" or user_uid_name == u"不流转（商标）" or user_uid_name == u"调整单(无需流转)" or user_uid_name == u"不流转（刻章）":
+                            if t_user.not_process==1:
                                 not_transition = 1
                                 milepost.income_name = "无需流转"
                                 milepost.id = "0"
-                            print "___________", milepost.id, milepost.income_name, row, "____", not_transition
                             id = self.db.execute("""
                                             INSERT INTO `t_projects_member`
                                             (`team_id`,
@@ -6922,7 +7936,6 @@ and  member_id=%s
                         if int(member_id
                                 ) == 0 and tpm.member_id > 0 or tpm.member_id != int(member_id
                                 ) :
-                            print('-1-1-1-')
                             msg.insert_new(
                                 self, tpm.member_id,
                                 u"[系统信息] 您好 %s将您从项目[%s]角色移除 %s  <a href='/project?tag=show&guid=%s&id=%s'>查看</a>"
@@ -6932,7 +7945,6 @@ and  member_id=%s
                                 member_id
                         ) > 0 and tpm.member_id == 0 or tpm.member_id != int(
                                 member_id):
-                            print('-2-2-2-')
                             msg.insert_new(
                                 self, member_id,
                                 u"[系统信息] 您好,%s将您设置为[%s]项目角色:%s <a href='/project?tag=show&guid=%s&id=%s'>查看</a>"
@@ -7470,6 +8482,7 @@ and  member_id=%s
                         ,uid=%s,uid_name=%s,updated_at=%s where id=%s and project_id=%s
                     """, state_id, state_id_name, state_remark, uid, uid_name,dt,
                                              curr_state_id, project_id)
+
                 else:
                     dt=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     result = self.db.execute("""
@@ -7478,6 +8491,19 @@ and  member_id=%s
                         values(%s,%s,%s,%s,uuid(),%s,%s,%s,%s,%s,%s)
                     """, state_id, state_id_name, state_remark, project_id,
                                              uid, uid_name, dt,type_id,project_type.id,project_type.income_name)
+                t_project_member=self.db.get('''
+                select mid from t_projects_member where team_name='工商专员'
+                    and project_id=%s and btype_id=%s and member_name=%s
+                ''',project_id,project_type.id,uid_name)
+                if t_project_member:
+                    if result>0:
+                        self.db.execute('''
+                        update t_projects_member set last_state_msg=%s,last_state_msg_at=%s,state_msg_ids=concat(state_msg_ids,%s),last_state_remark=%s where mid=%s
+                    ''',state_id_name,dt,str(result)+',',state_remark,t_project_member.mid)
+                    else:
+                        self.db.execute('''
+                        update t_projects_member set last_state_msg=%s,last_state_msg_at=%s,last_state_remark=%s where mid=%s
+                    ''',state_id_name,dt,state_remark,t_project_member.mid)
                     self.set_statis(project_id,state_id_name,'')
                 self.write(str(result))
 
@@ -7485,16 +8511,57 @@ and  member_id=%s
             curr_state_id = self.get_argument("curr_state_id")
             guid = self.get_argument("guid")
             project_id = self.get_argument("project_id")
+            type_id = self.get_argument("type_id",0)
+
             if not curr_state_id:
                 self.write("not curr_state_id")
             else:
-                result = self.db.execute("""
-                        delete from t_projects_state_msg
-                         where id=%s
-                          and guid=%s
-                          and project_id=%s
-                """,curr_state_id,guid,project_id)
-                self.write(str(result))
+                project_type=self.db.get('''
+                select * from t_projects_type where income_category='业务分类' and ext_type_id <> 0
+                 and ext_type_id=%s''',type_id)
+                t_project_member1=self.db.get('''
+                select mid from t_projects_member a
+                inner join t_projects_state_msg b on a.btype_id=b.p_type_id
+                and b.uid_name=%s and b.id=%s and hour(timediff(now(),b.created_at))>=24
+                 where team_name='工商专员'
+                    and a.project_id=%s and btype_id=%s and member_name=%s  
+                ''',uid_name,curr_state_id,project_id,project_type.id,uid_name)
+                if t_project_member1 and uid_name!='罗文波':
+                    self.write('-100')
+                else:
+                    result = self.db.execute("""
+                            delete from t_projects_state_msg
+                            where id=%s
+                            and guid=%s
+                            and project_id=%s
+                    """,curr_state_id,guid,project_id)
+                    t_project_member=self.db.get('''
+                    select state_msg_ids,mid from t_projects_member where team_name='工商专员'
+                        and project_id=%s and  member_name=%s and 
+                        state_msg_ids like "%%,'''+str(curr_state_id)+''',%%" or state_msg_ids REGEXP  "^'''+str(curr_state_id)+''',"
+                    ''',project_id,uid_name)
+                    if t_project_member:
+                        if len(t_project_member.state_msg_ids.split(',')[:-1])>1:
+                            if t_project_member.state_msg_ids.split(',')[:-1][-1]==str(curr_state_id):
+                                t_projects_state_msg=self.db.get('''
+                                select created_at,state_id_name,state_remark from t_projects_state_msg where id=%s
+                                ''',t_project_member.state_msg_ids.split(',')[:-1][-2])
+                                if t_projects_state_msg:
+                                    self.db.execute('''
+                                update t_projects_member set last_state_remark=%s,last_state_msg=%s,last_state_msg_at=%s,state_msg_ids=REPLACE(state_msg_ids,%s,'') where mid=%s
+                            ''',t_projects_state_msg.state_remark,t_projects_state_msg.state_id_name,t_projects_state_msg.created_at,curr_state_id+',',t_project_member.mid)
+                            else:
+                                self.db.execute('''
+                                update t_projects_member set state_msg_ids=REPLACE(state_msg_ids,%s,'') where mid=%s
+                            ''',curr_state_id+',',t_project_member.mid)
+                        else:
+                            self.db.execute('''
+                            update t_projects_member set state_remark=null,last_state_msg=null,last_state_msg_at=null,state_msg_ids='' where mid=%s
+                        ''',t_project_member.mid)
+
+
+
+                    self.write(str(result))
 
         elif tag=="not_print":
             uid=self.get_argument('uid')
@@ -7649,10 +8716,10 @@ and  member_id=%s
         elif tag=='add_tran1':
             trans_remark=self.get_argument('trans_remark','')
             project_id=self.get_argument('project_id')
-            len=int(self.get_argument('len'))
+            len1=int(self.get_argument('len'))
             is_upload = False
             file_path = None
-            for i in range(len):
+            for i in range(len1):
                 try:
                     file1 = self.request.files['file'+str(i)][0]
                     is_upload = True
@@ -8040,6 +9107,7 @@ and  member_id=%s
             note_id=self.get_argument('note_id','')
             is_cancel=self.get_argument('is_cancel','')
             is_check=self.get_argument('is_check',0)
+            is_chengjiao=self.get_argument('is_chengjiao',0)
             if is_cancel:
                 self.db.execute('''
                     update t_projects_note set is_cancel=%s where id=%s
@@ -8054,9 +9122,9 @@ and  member_id=%s
                 else:
 
                     self.db.execute("""
-                    insert into t_projects_note(msg,creatd_at,uid,uid_name,project_id,is_check)
-                    values(%s,%s,%s,%s,%s,%s)
-                    """, note_content,dt, uid, uid_name, project_id,is_check)
+                    insert into t_projects_note(msg,creatd_at,uid,uid_name,project_id,is_check,is_chengjiao)
+                    values(%s,%s,%s,%s,%s,%s,%s)
+                    """, note_content,dt, uid, uid_name, project_id,is_check,is_chengjiao)
         elif tag == "delete_note":
             id = self.get_argument('id')
             self.db.execute("""
@@ -8280,6 +9348,7 @@ and  member_id=%s
             leader_name = self.get_argument("leader_name","")
             project_zj=self.get_argument('project_zj','')
             todo_type = self.get_argument("todo_type",0)
+            leader_sql=''
             if not banshi_per:
                 banshi_per= None
             if id:
@@ -8294,9 +9363,11 @@ and  member_id=%s
                     '''
                     update t_todo_arrange set project_zj='' where id=%s
                 ''',id1)
+                if banshi_per:
+                    leader_sql=' leader_distribute_at=now(), '
                 self.db.execute(
                 '''
-                    update t_todo_arrange set company=%s,bs_area=%s,bs_address=%s,project_name=%s,
+                    update t_todo_arrange set '''+leader_sql+''' company=%s,bs_area=%s,bs_address=%s,project_name=%s,
                     banshi_per=%s,remark=%s,start_time=%s,end_time=%s,bl_date=%s where id=%s
                 ''',company,bs_area,bs_address,project_name,banshi_per,remark,start_time,end_time,created_at,id1)
 
@@ -8313,7 +9384,7 @@ and  member_id=%s
                 self.db.execute('''
                     insert into t_todo_arrange_status(todo_id) values(%s)
                 ''',result)
-                print(result)
+                # print(result)
 
         elif tag=="delete_todo":
             todoid=self.get_argument('todoid')
@@ -8400,7 +9471,7 @@ and  member_id=%s
                     order_at=%s,order_int=%s where id=%s;
                 ''',ud_provider_manage.order_at,ud_provider_manage.order_int,id,
                 provider_manage.order_at,provider_manage.order_int,id1)
-            
+
             elif top_id or bottom_id:
                 ud_provider_manage=self.db.get('''
                 select order_at,order_int from t_addr_provider_manage where id=%s
@@ -8443,7 +9514,6 @@ and  member_id=%s
             kz_id=self.get_argument('kz_id','')
             area=self.get_argument('area','')
             fp_limit=self.get_argument('fp_limit','')
-
             a_type=self.get_argument('type','')
             addr_nature=self.get_argument('addr_nature','')
             cost_price=self.get_argument('cost_price','')
@@ -8453,9 +9523,10 @@ and  member_id=%s
             address=self.get_argument('address','')
             business_scope_limit=self.get_argument('business_scope_limit','')
             accept_material=self.get_argument('accept_material','')
-            lock=self.get_argument('lock','')
-            renew=self.get_argument('renew','')
-            print(lock,renew)
+            lock=self.get_argument('lock','0')
+            renew=self.get_argument('renew','0')
+            manage_type=self.get_argument('manage_type','0')
+            delete_id=self.get_argument('delete_id','')
             if kz:
                 if kz_id:
                     self.db.execute(''' update t_kz_provider_manage set kz_project=%s,area=%s where id=%s''',kz_project,kz_area,kz_id)
@@ -8483,15 +9554,19 @@ and  member_id=%s
                     # self.db.execute('''
                     #  insert into t_addr_provider_history(price,created_at,addr_id,uid,uid_name)
                     #   values(%s,now(),%s,%s,%s)''',price,addr_id,uid,uid_name)
+                elif delete_id:
+                    self.db.execute('''
+                    delete from t_addr_provider_manage where id=%s
+                    ''',delete_id)
                 else:
                     result=self.db.execute('''
                         insert into t_addr_provider_manage
                         (fp_limit,area,provider,created_at,order_at,uid,uid_name,danbao_matter,type,
                         addr_nature,cost_price,register_price,same_area_change_price,dif_area_change_price,
-                        address,business_scope_limit,accept_material,is_lock,is_renew)
-                        values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                        address,business_scope_limit,accept_material,is_lock,is_renew,manage_type)
+                        values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                     ''',fp_limit,area,provider,dt,dt,uid,uid_name,danbao_matter,a_type,addr_nature,cost_price,register_price,
-                        same_area_change_price,dif_area_change_price,address,business_scope_limit,accept_material,lock,renew)
+                        same_area_change_price,dif_area_change_price,address,business_scope_limit,accept_material,lock,renew,manage_type)
                     # self.db.execute('''
                     #  insert into t_addr_provider_history(price,created_at,addr_id,uid,uid_name)
                     #   values(%s,now(),%s,%s,%s)''',price,result,uid,uid_name)
@@ -8721,66 +9796,114 @@ and  member_id=%s
             self.db.execute('''
                 delete from t_projects where id=%s and guid=%s
             ''',project_id,guid)
+            relation=self.db.get('''
+                select (LENGTH(relation_ids)-LENGTH(REPLACE(relation_ids,',','')))/LENGTH(',') count,id
+                 from t_projects_relation where   
+                 relation_ids like "%%,'''+str(project_id)+''',%%" or relation_ids REGEXP  "^'''+str(project_id)+''',"
+            ''')
+            if relation:
+                if relation.count==2:
+                    self.db.execute('''
+                    delete from t_projects_relation where  id=%s
+                    ''',relation.id)
+                else:
+                    self.db.execute('''
+                update t_projects_relation set relation_ids=REPLACE(relation_ids,%s,'') where id=%s
+                ''',project_id+',',relation.id)
+
             self.db.execute('''
                 delete from t_projects_member where project_id=%s
             ''',project_id)
-            self.db.execute('''
-                delete from t_projects_member_other where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_income where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_income_title where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_service_income where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_state_msg where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_income_other where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_linkman where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_transition where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_transition_upload where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_company_history where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                SET SQL_SAFE_UPDATES = 0;
-                delete a.*,b.* from 
-                t_xiezhu_apply a left join t_xiezhu_apply_milepost b on  a.id=b.xiezhu_id where a.project_id=%s;
-                 SET SQL_SAFE_UPDATES = 1;
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_milepost where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_note where project_id=%s
-            ''',project_id)
-            self.db.execute('''
-                delete from t_projects_note_check where project_id=%s
-            ''',project_id)
-            relation=self.db.get('''
-                select (LENGTH(relation_ids)-LENGTH(REPLACE(relation_ids,',','')))/LENGTH(',') count
-                 from t_projects_relation where  find_in_set(%s,relation_ids)
-            ''',project_id)
-            if relation.count==2:
+            try:
                 self.db.execute('''
-                 delete from t_projects_relation where  find_in_set(%s,relation_ids)
+                    delete from t_projects_member_other where project_id=%s
                 ''',project_id)
-            else:
+            except:
+                pass
+            try:
+
                 self.db.execute('''
-            update t_projects_relation set relation_ids=REPLACE(relation_ids,%s,'') where find_in_set(%s,relation_ids)
-            ''',project_id+',',project_id)
+                    delete from t_projects_income where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    delete from t_projects_income_title where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    delete from t_projects_service_income where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    delete from t_projects_state_msg where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+
+                self.db.execute('''
+                    delete from t_projects_income_other where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    delete from t_projects_linkman where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    delete from t_projects_transition where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    delete from t_projects_transition_upload where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    delete from t_projects_company_history where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    SET SQL_SAFE_UPDATES = 0;
+                    delete a.*,b.* from 
+                    t_xiezhu_apply a left join t_xiezhu_apply_milepost b on  a.id=b.xiezhu_id where a.project_id=%s;
+                    SET SQL_SAFE_UPDATES = 1;
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    delete from t_projects_milepost where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    delete from t_projects_note where project_id=%s
+                ''',project_id)
+            except:
+                pass
+            try:
+                self.db.execute('''
+                    delete from t_projects_note_check where project_id=%s
+                ''',project_id)
+            except:
+                pass
+
 
         elif tag=="project_print":
             id=self.get_argument('id','')
@@ -8840,14 +9963,16 @@ and  member_id=%s
             send_or_rec=self.get_argument('send_or_rec',0)
             save_customer_add_msg=self.get_argument('save_customer_add_msg','')
             company=self.get_argument('company','')
-            len=int(self.get_argument('len',0))
+            len1=int(self.get_argument('len',0))
             created_send_at=self.get_argument('created_send_at','')
             delete_id=self.get_argument('delete_id','')
+            cw_confirm_express_ids=self.get_argument('cw_confirm_express_ids','')
+            cw_confirm_express_id=self.get_argument('cw_confirm_express_id','')
             is_upload = False
             file_path =''
             if not created_send_at:
                 created_send_at=None
-            for i in range(len):
+            for i in range(len1):
                 try:
                     file1 = self.request.files['file'+str(i)][0]
                     is_upload = True
@@ -8922,6 +10047,15 @@ and  member_id=%s
                         self.db.execute(''' delete  from t_express where id=%s ''',delete_id)
                     else:
                         self.write('-1')
+                elif cw_confirm_express_id:
+                    self.db.execute('''
+                        update t_express set confirm_at=%s,confirm_name=%s where id=%s 
+                    ''',dt,uid_name,cw_confirm_express_id)
+                elif cw_confirm_express_ids:
+                    for id in cw_confirm_express_ids.split(','):
+                        self.db.execute('''
+                        update t_express set confirm_at=%s,confirm_name=%s where id=%s 
+                    ''',dt,uid_name,id)
                 elif not t_user:
                     self.write('-3')
 
@@ -8964,3 +10098,76 @@ and  member_id=%s
             update t_projects_member set confirm_banjie=%s,banjie_remark=%s 
             where project_id=%s and guid=%s''',
             confirm_banjie,banjie_remark,id,guid)
+
+        elif tag=="manage_chengjiao":
+            msg_chengjiao=self.get_argument('msg','')
+            id=self.get_argument('id','')
+            delete_id=self.get_argument('delete_id','')
+            if id:
+                self.db.execute('''
+                update t_projects_note_chengjiao set msg=%s,updated_at=%s,updated_name=%s,updated_uid=%s where id=%s
+                ''',msg_chengjiao,dt,uid_name,uid,id)
+            elif delete_id:
+                self.db.execute('''
+                    delete from t_projects_note_chengjiao where id=%s
+                ''',delete_id)
+            else:
+                self.db.execute('''
+                insert into t_projects_note_chengjiao(msg,uid,uid_name,created_at)
+                values(%s,%s,%s,%s)
+                ''', msg_chengjiao, uid, uid_name, dt)
+
+        elif tag=="edit_zone":
+            mid=self.get_argument('mid','')
+            mids=self.get_argument('mids','')
+            mid1=self.get_argument('mid1','')
+            zone_id=self.get_argument('zone_id','')
+            zone_id1=self.get_argument('zone_id1','')
+            income_name=self.get_argument('income_name','')
+            income_name1=self.get_argument('income_name1','')
+            if mids:
+                for item in mids.split(','):
+                    self.db.execute('''
+                    update t_projects_member set zone_id=%s,zone_id_name=%s where mid=%s
+                ''',zone_id,income_name,item)
+            else:
+                if mid and zone_id:
+                    self.db.execute('''
+                        update t_projects_member set zone_id=%s,zone_id_name=%s where mid=%s
+                    ''',zone_id,income_name,mid)
+                if mid1 and zone_id1:
+                    self.db.execute('''
+                        update t_projects_member set zone_id=%s,zone_id_name=%s where mid=%s
+                    ''',zone_id1,income_name1,mid1)
+
+        elif tag=="expire_msg":
+            type_id = self.get_argument("type_id",0)
+            curr_state_id = self.get_argument("curr_state_id")
+            project_id = self.get_argument("project_id")
+            project_type=self.db.get('''
+                select * from t_projects_type where income_category='业务分类' and ext_type_id <> 0
+                 and ext_type_id=%s''',type_id)
+            t_project_member=self.db.get('''
+                select mid from t_projects_member a
+                inner join t_projects_state_msg b on a.btype_id=b.p_type_id
+                and b.uid_name=%s and b.id=%s and hour(timediff(now(),b.created_at))>=24
+                 where team_name='工商专员'
+                    and a.project_id=%s and btype_id=%s and member_name=%s  
+                ''',uid_name,curr_state_id,project_id,project_type.id,uid_name)
+            if t_project_member and uid_name!='罗文波':
+                self.write('-100')
+
+        elif tag=="bj_manage_yw_show":
+            category=self.get_argument('category','')
+            product=self.get_argument('product','')
+            remark=self.get_argument('remark','')
+            sql=''
+
+            if category:
+                sql+=' and a.category_id=%s '%category
+            if product:
+                sql+=' and  a.name like "%%'+product+'%%" '
+            if remark:
+                sql+=' and a.remark like "%%'+remark+'%%" '
+            product_bid = self.db_ext.query("select a.*,b.name category_name from t_products a , t_category b where a.category_id=b.id "+sql+" order by b.order_int")
+            self.write({'product_bid':product_bid})

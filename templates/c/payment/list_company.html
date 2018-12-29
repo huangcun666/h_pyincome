@@ -22,8 +22,9 @@
 <fieldset>
 
         <form class="form-search" id="query_form">
-                <input type="text" value="{{company}}" name="company" id="company" class="input-medium search-query" placeholder="公司名称">
-              
+                <input type="text" value="{%if company%}{{company}}{%end%}" name="company" id="company" class="input-medium search-query " placeholder="公司名称" >
+                    <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计" class="form-control">
+
                 <button type="submit" class="btn">检 索</button>
                 <input type="hidden" value="{{tag}}" name="tag"/>
                 <input type="hidden" value="{{state}}" name="state" />
@@ -92,15 +93,15 @@
                               <div class="pagination">
                         <ul>
                             {% if pagination.has_prev %}
-                            <li><a href="/finance?tag={{tag}}&page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li><a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}{%if kf%}&kf={{kf}}{%end%}{%if state%}&state={{state}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li>
-                                <a href="/finance?tag={{tag}}&page={{ page }}">{{ page }}</a></li>
+                                <a href="/payment?tag={{tag}}&page={{ page }}{%if kf%}{{kf}}{%end%}{%if state%}&state={{state}}{%end%}">{{ page }}</a></li>
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
                             {% end %} {% else %}
                             <li><span class="active"><a href="#">....</a></span></li>
                             {% end %} {%end %} {% if pagination.has_next %}
-                            <li><a href="/finance?tag={{tag}}&page={{pagination.page+1}}">下页 &raquo;</a></li>
+                            <li><a href="/payment?tag={{tag}}&page={{pagination.page+1}}{%if kf%}&kf={{kf}}{%end%}{%if state%}&state={{state}}{%end%}">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>

@@ -110,6 +110,29 @@ line-height: 22px;
 min-height: 25px;
 max-height: 25px;
 }
+
+.table tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color:blanchedalmond;
+}
+.box-dd {
+display: block;
+overflow:hidden;
+white-space:nowrap;
+text-overflow:ellipsis;}
+
+.box-dd2 {
+display: block;
+overflow:hidden;
+ text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;}
+
+.daolud {
+	height: 34px; line-height: 34px; color: #333;
+
+}
+
  </style>
 <div class="main">
     <div class="main-inner">
@@ -119,9 +142,15 @@ max-height: 25px;
                     <div class="widget ">
                         <div class="widget-header">
                             <i class="icon-user"></i>
-                            <h3>记账应收管理 {% include "payment_nav.html" %}
+                            <h3>{%if check_under%}部门{%end%}记账应收管理 {% include "payment_nav.html" %}
+    <a href="/payment?tag=acc_customer_payment{%if check_under%}&check_under=1{%end%}" {%if tag=="acc_customer_payment"%} class="btn btn-danger" {%else%} class="btn btn-info"{%end%}>记账应收</a>
 
-
+    <a href="/payment?tag=reminders_plan{%if check_under%}&check_under=1{%end%}"  {%if tag=="reminders_plan"%} class="btn btn-danger"  {%else%} class="btn btn-info"{%end%}>催款计划</a>
+    <a href="/payment?tag=reminders_plan&state=1{%if check_under%}&check_under=1{%end%}"  {%if tag=="reminders_plan"%} class="btn btn-danger" {%else%} class="btn btn-info" {%end%}>跟进记录</a>
+    {%if check_under and  t_user_relation %}
+    <a href="/payment?tag={{tag}}" class="btn btn-primary btn-sm">返回</a>
+    {%elif t_user_relation%}
+    <a class="btn btn-primary btn-sm"  href="/payment?tag={{tag}}&check_under=1" >查看部门客户</a>{%end%}
                             </h3>
 
                         </div>
@@ -133,56 +162,116 @@ max-height: 25px;
                                 <div class="tab-pane active" id="formcontrols">
 <ul class="nav nav-tabs" id="myTab">
     <li {%if show_tag=="1" %} class="active" {%end%}>
-        <a href="/payment?tag=acc_customer_payment&show_tag=1" id="tab_confirm">全部</a>
+        <a href="/payment?tag=acc_customer_payment&show_tag=1{%if check_under%}&check_under=1{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}" id="tab_confirm">全部</a>
     </li>
     <li {%if show_tag=="2" %} class="active" {%end%}>
-        <a href="/payment?tag=acc_customer_payment&show_tag=2" id="customer_tab">待处理</a>
+        <a href="/payment?tag=acc_customer_payment&show_tag=2{%if check_under%}&check_under=1{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}" id="customer_tab"  style="color: red;">待处理</a>
+    </li>
+    <li {%if show_tag=="-2000" %} class="active" {%end%}>
+            <a href="/payment?tag=acc_customer_payment&show_tag=-2000{%if check_under%}&check_under=1{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}" id="customer_tab"  style="color: red;">已过期</a>
+        </li>
+    <li {%if show_tag=="-1000" %} class="active" {%end%}>
+        <a href="/payment?tag=acc_customer_payment&show_tag=-1000{%if check_under%}&check_under=1{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}" id="customer_tab"  style="color: red;">协助</a>
+
     </li>
     <li {%if show_tag=="3" %} class="active" {%end%}>
-        <a href="/payment?tag=acc_customer_payment&show_tag=3" id="tab_confirm">无需处理</a>
+        <a href="/payment?tag=acc_customer_payment&show_tag=3{%if check_under%}&check_under=1{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}" id="tab_confirm" style="color: #333;">无需处理</a>
     </li>
 </ul>
 
                                     <fieldset>
                                             <form class="form-search" id="query_form">
                                                     <input type="text" name="company" value="{%if company%}{{company}}{%end%}" id="company" class="input-medium search-query" placeholder="公司名称">
-                                                  
+                                                    {%if check_under%}
+                                                    <select name="check_kj" style="width:80px;" >
+                                                        <option value="">选择会计</option>
+                                                        {%for item in t_user_relation %}
+                                                        <option value="{{item.uid_name}}" {%if check_kj==item.uid_name%}selected{%end%}>{{item.uid_name}}</option>
+                                                        {%end%}
+                                                    </select>
+                                                    {%end%}
                                                     <button type="submit" class="btn">检 索</button>
                                                     <input type="hidden" value="{{tag}}" name="tag"/>
-                                                                                                    <input type="hidden" value="{{show_tag}}" name="show_tag" />
-
+                                                <input type="hidden" value="{{show_tag}}" name="show_tag" />
+                                                {%if check_under %}
+                                                <input type="hidden" value="{{check_under}}" name="check_under">
+                                                {%end%}
                                                   </form>
 
 
 
                                         {%if customers%}
-                                        <table class="table" style="margin:5px;">
+                                        <table class="table" style="margin:1px;">
                                             <thead>
                                                 <tr style="background-color: black; color:#fff;">
-
-                                                    <th style="min-width:180px;">公司名称</th>
-
-                                                    <th>会计</th>
-
-
-                                                    <th style="min-width:50px;">付款方式</th>
-                                                    <th style="min-width:30px;">总服务费</th>
-                                                    <th style="min-width:60px;">月服务费</th>
-
-
-
-
-                                                    <th>帐册费</th>
-                                                    <th>记账费到期</th>
-                                                    <th>账册费到期</th>
-                                                    <th width="200">最新收款明细</th>
-                                                    <th width="200">待收明细</th>
-<th width="60"></th>
-
-
-
+                                                <th style="width:180px; ">公司名称</th>
+                                                {%if check_under%}
+                                                <th style="width: 70px;">客服会计</th>
+                                                {%end%}
+                                                <th style="width:80px; " >记账到期</th>
+                                                <th style="width:80px; ">账册到期</th>
+                                                <th style="width:200px;">最新收款明细</th>
+                                                <th style="width:200px;">待收明细</th>
+                                                <th style="width: 70px; ">待收金额</th>
+                                           
+                                                <th style="width: 150px;">最新动态</th>
+                                                {%if not check_under and (show_tag=='2' or show_tag=='-1000' or show_tag=='-2000' )%}
+                                                <th style="width:70px;">{%if show_tag=='-1000'%}协助原因{%end%}</th>
+                                                {%end%}
+                                                <th style="width: 60px; "></th>
                                                 </tr>
-                                            </thead>
+                                                </thead>
+                                                <!-- 11/22 -->
+                                                <thead style="position: fixed; top: 0; left: 50%; margin-left: -569px; display: none; " class="top-mei">
+                                                    {%if check_under%}
+                                                    <tr style="background-color: black; color:#fff;">
+                                                        <th style="width:175px; ">公司名称</th>
+                                                   
+                                                        <th style="width: 60px;">客服会计</th>
+                                                       
+                                                        <th style="width:73px; " >记账到期</th>
+                                                        <th style="width:73px; ">账册到期</th>
+                                                        <th style="width:167px;">最新收款明细</th>
+                                                        <th style="width:165px;">待收明细</th>
+                                                        <th style="width: 70px; ">待收金额</th>
+                                                   
+                                                        <th style="width: 150px;">最新动态</th>
+                                                        <th style="width: 60px; "></th>
+                                                        </tr>
+
+                                                    {%elif show_tag=='2' or show_tag=='-2000'%}
+                                                    <tr style="background-color: black; color:#fff;">
+                                                        <th style="width:175px;">公司名称</th>
+                                                        <th style="width:70px; ">记账到期</th>
+                                                        <th style="width:73px; ">账册到期</th>
+                                                        <th style="width:160px;">最新收款明细</th>
+                                                        <th style="width:150px;">待收明细</th>
+                                                        <th style="width: 67px; ">待收金额</th>
+                                                        
+                                                        <th style="width: 150px;">最新动态</th>
+                                                        
+                                                        <th style="width:60px;"></th>
+                                                    
+                                                        <th style="width: 86px; "></th>
+                                                    </tr>
+                                                    {%else%}
+                                                        <tr style="background-color: black; color:#fff;">
+                                                        <th style="width:177px;">公司名称</th>
+                                                        <th style="width:73px; ">记账到期</th>
+                                                        <th style="width:73px; ">账册到期</th>
+                                                        <th style="width:194px;">最新收款明细</th>
+                                                        <th style="width:191px;">待收明细</th>
+                                                        <th style="width: 67px; ">待收金额</th>
+                                                        
+                                                        <th style="width: 150px;">最新动态</th>
+                                                    
+                                                        <th style="width: 86px; "></th>
+                                                    </tr>
+                                                        {%end%}
+                                            
+                                                </thead>
+
+                                            
                                             <tbody>
 
                                                 {%for item in customers%}
@@ -190,39 +279,96 @@ max-height: 25px;
 
                                                     <td>
                                                         
-                                                        <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank">{{item.company}}</a>
+                                                        <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
                                                     </td>
+                                                    {%if check_under%}
+                                                    <td>{{item.acc_uid_name}}</td>
+                                                    {%end%}
+                              
 
-                                                                                                        <td>{{item.acc_uid_name}}</td>
-
-                                                    <td>{{item.pay_pay_typeid_name}}</td>
-                                                    <td>{{item.pay_service_amount}}</td>
-                                                    <td>{{item.pay_service_amount_month}}</td>
-
-                                                    <td>{{item.pay_book_amount}}</td>
-
-                                                    <td {%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%} style="background-color:lemonchiffon" {%end%}>
+                                                    <td   style="width: 60px; 
+                                                    {%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%} background-color:lemonchiffon {%end%}">
                                                         {%if item.acc_end%} {{item.acc_end.strftime("%Y-%m")}} {%end%}
 
                                                   
                                                     </td>
-                                                    <td  {%if item.acc_book_end and  item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%} style="background-color:lemonchiffon" {%end%}>
+                                                    <td   style="width: 60px;{%if item.acc_book_end and  item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%} background-color:lemonchiffon {%end%}">
 
                                                         {%if item.acc_book_end %} {{item.acc_book_end.strftime("%Y-%m")}} {%end%}
                                                     </td>
-                                                    <td>
+                                                    <td 
+                                                    
+                                                    style="word-break: break-all;font-size:11px;width: 180px;" title="{%if item.al_remark%}{{item.al_remark}}{%end%}">
 
-         {%if item.al_remark%} {{item.al_remark}} {%end%}
+         {%if item.al_remark%} {{item.al_remark[:45]}}{%if len(item.al_remark)>45%}...{%end%}{%end%}
 
 
                                                     </td>
-                                                    <td>
+                                                    <td   style="width: 170px;word-break: break-all;font-size:11px;" title="{%if item.pb_remark%}{{item.pb_remark}}{%end%}">
                                                         
                                                         {%if item.pb_remark%}
-                                                        {{item.pb_remark}}
+                                                        {{item.pb_remark[:20]}}{%if len(item.pb_remark)>20%}...{%end%}
                                                         {%end%}
                                                     </td>
-<td>
+                                                    <td  style="width: 60px;  color: red;">{%if item.wait_pay_amount%}{{item.wait_pay_amount}}{%end%}</td>
+                                                
+                                                    <td id='{{item.customer_id}}'  style="width: 150px; "
+                                                     title="
+                                                     {%if item.sale_cuikuan_id %}
+                                                     {%if item.last_cuikuan_at%}{{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}{%end%}
+                                                     
+                                                     {%else%}
+                                                     {%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+
+                                                     {%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}
+                                                     {{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                                      {%else%}
+                                                      {{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
+                                                     {%end%}
+                                                     {%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}
+                                                     {{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                                     {%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                                     {{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
+                                                      {%end%}
+                                                      {%end%}">
+                                                      
+                                                     {%if item.sale_cuikuan_id %}
+                                                     {%if item.last_cuikuan_at%}{{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}{%end%}
+                                                     
+                                                     {%else%}
+                                                     {%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+
+                                                     {%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}
+                                                     {{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                                      {%else%}
+                                                      {{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
+                                                     {%end%}
+                                                     {%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}
+                                                     {{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                                     {%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                                     {{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
+                                                      {%end%}
+                                                      {%end%}
+
+                                                     </td>
+                                                    {%if not check_under%}
+                                                    {%if show_tag=='2' or show_tag=='-2000'%}
+                                                    
+                                                    <td>
+                                                            {%if not item.assist_id%}
+                                                    <a  style="width: 60px; height: 24px; color: #4aa8cc;" customer_id="{{item.customer_id}}" href="javascript:void(0);" class="btn ask_assist btn-sm control" type='button'>请求协助</a>
+                                                        {%else%}
+                                                        <a  style="width: 60px; height: 24px; color: #4aa8cc;" customer_id="{{item.customer_id}}" href="javascript:void(0);" class="btn btn-sm control" type='button'>已申请</a>
+                                                        {%end%}
+                                                    </td>
+                                                    {%elif show_tag=="-1000"%}
+                                                        <td>
+                                                            {{item.assist_msg}}
+                                                            
+                                                        </td>
+                                                        {%end%}
+                                                    {%end%}
+                                                    <td>
 <a class="btn handler_detail btn-sm control" type='button'
 customer_id="{{item.customer_id}}"
 item_id="{{item.id}}"
@@ -233,13 +379,27 @@ wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftim
     {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
     href="javascript:void(0)"
     company_name="{{item.company}}"
-    
+    style="width: 60px; height: 24px; color: #4aa8cc;"
     >
      催款记录</a>
 </td>
                 
 
                                                 </tr>
+<tr style="font-size:11px;">
+
+
+<td colspan="8" style="text-align:right;border-top:1px solid #fff; ">
+{{item.pay_pay_typeid_name}}
+ &nbsp; 总费{{item.pay_service_amount}}
+ &nbsp; 月费:{{item.pay_service_amount_month}}
+
+ &nbsp; 账册费{{item.pay_book_amount}}
+
+</td>
+</tr>
+
+
                                                 {%end%}
 
 
@@ -252,10 +412,10 @@ wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftim
                                             <ul>
                                                 {% if pagination.has_prev %}
                                                 <li>
-                                                    <a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}&show_tag={{show_tag}}">&laquo; 上页</a>
+                                                    <a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}&show_tag={{show_tag}}{%if check_under%}&check_under=1{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">&laquo; 上页</a>
                                                 </li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                                                 <li>
-                                                    <a href="/payment?tag={{tag}}&page={{ page }}&show_tag={{show_tag}}">{{ page }}</a>
+                                                    <a href="/payment?tag={{tag}}&page={{ page }}&show_tag={{show_tag}}{%if check_under%}&check_under=1{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">{{ page }}</a>
                                                 </li>
                                                 {% else %}
                                                 <li>
@@ -271,7 +431,7 @@ wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftim
                                                 </li>
                                                 {% end %} {%end %} {% if pagination.has_next %}
                                                 <li>
-                                                    <a href="/payment?tag={{tag}}&page={{pagination.page+1}}&show_tag={{show_tag}}">下页 &raquo;</a>
+                                                    <a href="/payment?tag={{tag}}&page={{pagination.page+1}}&show_tag={{show_tag}}{%if check_under%}&check_under=1{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">下页 &raquo;</a>
                                                 </li>
                                                 {% end %}
                                             </ul>
@@ -372,6 +532,36 @@ wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftim
     </div>
 </div>
 
+<div id="ask_assist_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel_account">发起协助
+
+
+        </h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group">
+
+
+        <div class="control-group">
+            <label class="control-label" for="lastname">协助原因</label>
+   
+            <div class="controls">
+                    <textarea class="span4" id="assist_msg" style="margin: 0px 0px 9px; width: 491px; height: 61px;">
+                        </textarea>
+            </div>
+        </div>
+
+</div>
+
+    </div>
+    <div class="modal-footer">
+   
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <button class="btn btn-primary" id="btn_save_assist">发起</button>
+    </div>
+</div>
 
 {%end%} {%block js%}
 <script>
@@ -391,7 +581,11 @@ wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftim
              }
          });
 */
-
+        $(window).scroll(
+	         function() {
+	            var scrollValue = $(window).scrollTop();
+	            scrollValue > 250 ? $('.top-mei').fadeIn() : $('.top-mei').fadeOut();
+	    });
          
             $("#btn_save_msg").on("click", function () {
                 customer_id=$(this).attr('customer_id')
@@ -416,8 +610,24 @@ wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftim
                         contentType: false,  // tell jQuery not to set contentType
                         success: function (data) {
                             $('#txt_msg_box').html(data)
+                            $.post('/customer?tag=show_customer_exchange',
+                            {   '_xsrf':_xsrf,
+                                'customer_id':customer_id
+                            
+                            },function (result) {
+                                str=''
+                                if(result['msg'].length>20){
+                                    str='...'
+                                }
+                                $('td[id='+customer_id+']').html(result['msg'].substring(0,20)+str)
+                                $('td[id='+customer_id+']').attr('title',result['msg']+' '+result['created_at'])
+                               
+                             })
+                      
                         }
                     })
+                
+         
                 }
 
 
@@ -457,6 +667,7 @@ wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftim
                 $("#company_name").text("")
                 $.get("/payment?tag=get_last_payment", { "customer_id": customer_id }, function (result) {
                     if (result.code == 1) {
+                
                         
                         html = "<td>付款方式</td><td>" + result.customer.customer_paytype_id_name + "</td>"
                         html += "<td>总服务费</td><td>" + result.customer.customer_service_amount + "</td>"
@@ -501,5 +712,22 @@ wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftim
                  })
 
             })
+    
+            $('.ask_assist').on("click",function () {
+                $('#btn_save_assist').attr('customer_id',$(this).attr('customer_id')) 
+                $("#ask_assist_modal").modal('show')
+             })
+            $('#btn_save_assist').on('click',function () { 
+                customer_id=$(this).attr('customer_id')
+                assist_msg=$("#assist_msg").val()
+                $.post('/payment?tag=ask_assist',
+                {
+                    "_xsrf":_xsrf,
+                    "customer_id":customer_id,
+                    "assist_msg":assist_msg
+                },function (data) {
+                    location.reload()
+                  })
+             })
     })
 </script> {%end%}

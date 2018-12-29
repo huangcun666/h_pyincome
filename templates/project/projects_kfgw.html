@@ -1,12 +1,12 @@
 
- {% extends "../base.html" %} {%block title%}订单流转动态{%end%} {% block body %}
+ {% extends "../base.html" %} {%block title%}我的订单流转动态{%end%} {% block body %}
 
 
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
           主面板
         </li>
-        <li class="breadcrumb-item active">订单流转动态列表</li>
+        <li class="breadcrumb-item active">我的订单流转动态</li>
       </ol>
 
 
@@ -14,19 +14,19 @@
 
       <nav>
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
-      <a class="nav-item nav-link {%if not last_milepost_id and not ntag=="wait"%}active{%end%}" id="nav-home-tab"
-      href="/project?tag=projects_kfgw" >全 部  <span class="badge badge-info">{{all_count.count}}</span></a>
-      <a class="nav-item nav-link {%if  ntag=="wait"%}active{%end%}" id="nav-home-tab"
+      <a class="btn btn-light  nav_padding {%if not last_milepost_id and not ntag=="wait"%}active{%end%}" id="nav-home-tab"
+      href="/project?tag=projects_kfgw" >全 部  <span class="badge badge-danger">{{all_count.count}}</span></a>
+      <a class="btn btn-light  nav_padding {%if  ntag=="wait"%}active{%end%}" id="nav-home-tab"
       href="/project?tag=projects_kfgw&ntag=wait" >待分配
-      <span class="badge badge-info">{{wait_count.count}}</span>
+      <span class="badge badge-danger">{{wait_count.count}}</span>
       </a>
     {%for idx,item in enumerate(project_btypes)%}
-    <a class="nav-item nav-link " btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"
-      href="/project?tag=projects_kfgw&last_milepost_id={{item.id}}" style="font-size:13px;">{{item.income_name}} <span class="badge badge-info">{{item.c}}</span></a>
+    <a class="btn btn-light  nav_padding " btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"
+      href="/project?tag=projects_kfgw&last_milepost_id={{item.id}}" style="font-size:13px;">{{item.income_name}} <span class="badge badge-danger">{{item.c}}</span></a>
     {%end%}
      </div>
 </nav>
-<br/>
+
 
 <div class="tab-content" id="nav-tabContent">
 
@@ -41,28 +41,28 @@
 </div>
         
     {%else%}
-                  <table class="table table-hover " id="dataTable" width="2000px" style="font-size:13px;">
+                 <table class="table table-bordered" cellspacing="0" style="font-size:12px;">
                     <thead>
-                        <tr  class="table-info">
+                         <thead style="background-color:#000;color:#fff ; font-size:13px;">
 
                            <th width="20">
                             编号
                             </th>
                              <th>业务名称</th>
 
-                                <th width="200">公司名称</th>
-                             <th width="100">客户名称</th>
+                                <th width="220">公司名称</th>
+                             <th width="80">客户名称</th>
 
 
 
-                             <th width="100">
+                             <th width="80">
                             跟单专员
                             </th>
 
-     <th width="100">
-                            业务名称
+     <th width="80">
+                            业务类型
                             </th>
-                             <th width="140">最新流转状态</th>
+                             <th width="120">最新流转状态</th>
 
 <th width="160">流转更新时间</th>
                         </tr>
@@ -71,13 +71,19 @@
                         {%for item in t_projects%}
                         <tr id="{{item.id}}">
                                <td>
-                               <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}" class="btn " title="{{item.id}}" style="font-size:13px;"> {{item.id}}</a>
+                             {{item.id}}
 
                             </td>
-                            <td>
-                               <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}" class="btn " title="{{item.id}}" style="font-size:13px;"> {{item.project_name}}</a>
-
-                            </td>
+                             <td style="word-break: break-all;">
+                                <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}"  title="{{item.project_name}}"
+                                  style="font-size:13px;">
+                              
+                                  {%if len(item.project_name) > 80%} {{item.project_name[:80]}}... {%else%} {{item.project_name}} {%end%}
+                              
+                                </a>
+                              
+                              
+                              </td>
                                       <td>
                                 {{item.customer_company}}
                             </td>
@@ -108,12 +114,14 @@
 
 
                               <td>
+
                         {%if item.last_milepost_id_at%}
                                 {{item.last_milepost_id_at}}
                             {%else%}
+                                    {%if item.cq_created_at%}
                                      {{item.cq_created_at}}
-
-                            {%end%}
+                    {%end%}
+                            {%end%} 
 
 
 

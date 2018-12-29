@@ -15,57 +15,49 @@
       </ol>
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link {%if not todo%}active{%end%}" id="nav-home-tab"
+            <a class="btn btn-light  nav_padding {%if not todo%}active{%end%}" id="nav-home-tab"
             href="/project?tag=xiezhu_apply" >全 部
             <span class="badge badge-danger">{{sum.count}}</span>
         </a>
-          <a class="nav-item nav-link {%if todo=='1'%}active{%end%}"
+          <a class="btn btn-light  nav_padding {%if todo=='1'%}active{%end%}"
             href="/project?tag=xiezhu_apply&todo=1" style="font-size:13px;">协助待审核
             <span class="badge badge-danger">{{sum.a}}</span>
             </a>
-            <a class="nav-item nav-link {%if todo=='2'%}active{%end%}"
+            <a class="btn btn-light  nav_padding {%if todo=='2'%}active{%end%}"
             href="/project?tag=xiezhu_apply&todo=2" style="font-size:13px;">申请被驳回
             <span class="badge badge-danger"></span>
             <span class="badge badge-danger">{{sum.b}}</span>
             </a>
-            <a class="nav-item nav-link {%if todo=='3'%}active{%end%}"
+            <a class="btn btn-light  nav_padding {%if todo=='3'%}active{%end%}"
             href="/project?tag=xiezhu_apply&todo=3" style="font-size:13px;">待接单
             <span class="badge badge-danger">{{sum.c}}</span></a>
-            <a class="nav-item nav-link {%if todo=='4'%}active{%end%}"
+            <a class="btn btn-light  nav_padding {%if todo=='4'%}active{%end%}"
             href="/project?tag=xiezhu_apply&todo=4" style="font-size:13px;"> 处理中
             <span class="badge badge-danger">{{sum.d}}</span></a>
-            <a class="nav-item nav-link {%if todo=='5'%}active{%end%}"
+            <a class="btn btn-light  nav_padding {%if todo=='5'%}active{%end%}"
             href="/project?tag=xiezhu_apply&todo=5" style="font-size:13px;"> 申请办结
             <span class="badge badge-danger">{{sum.e}}</span></a>
-            <a class="nav-item nav-link {%if todo=='6'%}active{%end%}"
+            <a class="btn btn-light  nav_padding {%if todo=='6'%}active{%end%}"
             href="/project?tag=xiezhu_apply&todo=6" style="font-size:13px;">驳回订单
             <span class="badge badge-danger">{{sum.f}}</span></a>
-            <a class="nav-item nav-link {%if todo=='7'%}active{%end%}"
+            <a class="btn btn-light  nav_padding {%if todo=='7'%}active{%end%}"
             href="/project?tag=xiezhu_apply&todo=7" style="font-size:13px;">待确认
             <span class="badge badge-danger">{{sum.g}}</span></a>
-            <a class="nav-item nav-link {%if todo=='8'%}active{%end%}"
+            <a class="btn btn-light  nav_padding {%if todo=='8'%}active{%end%}"
             href="/project?tag=xiezhu_apply&todo=8" style="font-size:13px;">已办结
             <span class="badge badge-danger">{{sum.h}}</span></a>
            </div>
     </nav>
-    <form>
+    <form class="search_box">
         <table>
-            <thread>
-                <tr>
-                    <th>订单/公司/客户/业务</th>
-                    <th>协助内容</th>
-                    <th>工商专员</th>
-                    <th>销售顾问</th>
-                    <th></th>
-                </tr>
-            </thread>
+
             <tbody>
                 <tr>
                     <td><input type="text" name="search_project" class="form-control" placeholder="订单/公司/客户/业务"
                          value="{%if params['search_project']%}{{params['search_project']}}{%end%}"></td>
                     <td><input type="text" name="xiezhu_content" class="form-control" placeholder="协助内容"
                         value="{%if params['xiezhu_content']%}{{params['xiezhu_content']}}{%end%}"></td>
-                    <td><select name="gs_uid">
+                    <td><select name="gs_uid"  class="form-control">
                         <option value="">选择工商专员</option>
                         {%for m  in t_user_teams%}
                         {%if m.role==7 or m.role==9%}
@@ -74,7 +66,7 @@
                         {%end%}
                     </select></td>
                     <td>
-                        <select name="xs_guwen_uid">
+                        <select name="xs_guwen_uid"  class="form-control">
                             <option value="">选择销售顾问</option>
                             {%for m  in t_user_teams%}
                             {%if m.team_id==1%}
@@ -85,13 +77,13 @@
                     </td>
                     <td>
                         <input name="tag" hidden value="{{tag}}">
-                        <input type="submit" value="检索"></td>
+                        <input type="submit" value="检索" class="btn btn-info"></td>
                 </tr>
             </tbody>
         </table>
     </form>
-      <div class="card mb-3">
-            <div class="card-body">
+
+
 
             <div class="table-responsive">
 
@@ -213,8 +205,7 @@
                             &page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
                       {% end %} </ul>
                     </div>
-                 </div>
-            </div>
+              
             {% if not xiezhu_applys%}
             <div class="container">
                 <p class="text-center">还没有哦~</p>

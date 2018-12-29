@@ -18,15 +18,18 @@
 
      
              
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+               <table class="table faye-table table-bordered" id="dataTable" cellspacing="0">
+                     <thead style="background-color:#000;color:#fff ; ">
                         <tr>
                          <th width="60">编号</th>
-                            <th>名称</th>   
-                            <th width="120">客户</th>
-                            {%if int(role)==2%}  <th width="200">待出纳确认  </th>{%end %}
-                            {%if  int(role)==5%} <th width="200">待合同确认  </th>{%end %}
-                            {%if  int(role)==3%}<th width="200">待财务确认  </th> {%end %}
+                            <th>业务名称</th>   
+                            <th width="80">客户</th>
+                            {%if int(role)==2%}  <th width="110">待出纳确认 <a id="order_int" href="/project?tag=list_confirm&order_int=0{%if page1%}&page={{page1}}{%end%}" data-toggle="tooltip" data-placement="right" title="按财务数量排序"><span class="fa fa-sort"></span></a> 
+                             </th><th width="110">已确认未打印 <a id="order_int" href="/project?tag=list_confirm&order_int=1{%if page1%}&page={{page1}}{%end%}" data-toggle="tooltip" data-placement="right" title="按未打印数量排序"><span class="fa fa-sort"></span></a></th>{%end %}
+                            {%if  int(role)==5%} <th width="110">待合同确认  </th>{%end %}
+                            {%if  int(role)==3%}<th width="110">待财务确认 <a id="order_int" href="/project?tag=list_confirm&order_int=0{%if page1%}&page={{page1}}{%end%}" data-toggle="tooltip" data-placement="right" title="按财务数量排序"><span class="fa fa-sort"></span></a>  </th> 
+                            <th width="110">已确认未打印 <a id="order_int" href="/project?tag=list_confirm&order_int=1{%if page1%}&page={{page1}}{%end%}" data-toggle="tooltip" data-placement="right"  title="按未打印数量排序"><span class="fa fa-sort"></span></a></th>
+                            {%end %}
 
 
 
@@ -41,10 +44,10 @@
                              {%end %}
                             
                           
-                              <th width="120">合同金额</th>
+                              <th width="100">合同金额</th>
                                
-                              <th width="120">创建者</th>
-                            
+                              <th width="80">创建者</th>
+                            <th width="100">创建时间</th>
 
                             <th width="100"></th>
                         </tr>
@@ -56,15 +59,21 @@
                             <td>
                                 {{item.id}}
                             </td> 
-                            <td>
-                                {{item.project_name}}
+                            <td  title="{{item.project_name}}">
+                             <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}"  title="{{item.project_name}}">{{item.project_name}}</a>
                             </td>    
                               <td>
                                     {{item.customer_name}}
                             </td>
                              
 
-                           {%if int(role)==2%}<td  {%if item.cc > 0%} style="background-color:pink;" {%end%}><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" title="{{item.id}}"> {{item.cc}} </a> </td>{%end %}
+                           {%if int(role)==2%}
+                           <td  {%if item.cc > 0%} style="background-color:pink;" {%end%}><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}#daokuanjiesuan" title="{{item.id}}"> {{item.cc}} </a> </td>
+                           <td {%if item.ccc > 0%} style="background-color:pink;" {%end%} >
+                            
+                            <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}#daokuanjiesuan">{{item.ccc}}</a>
+                            </td>
+                           {%end %}
                             {%if  int(role)==5%} 
 <td> 
 
@@ -76,7 +85,14 @@
                              {%end %} </td>
                              {%end %}
 
-                             {%if  int(role)==3%} <td {%if item.d > 0%} style="background-color:pink;" {%end%}> <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" title="{{item.id}}">{{item.d}}</a>  </td>  {%end %}
+                             {%if  int(role)==3%} 
+                             <td {%if item.d > 0%} style="background-color:pink;" {%end%}>
+                            <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}#daokuanjiesuan" title="{{item.id}}">{{item.d}}</a>
+                             </td> 
+                             <td {%if item.dd > 0%} style="background-color:pink;" {%end%} >
+                            
+                            <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}#daokuanjiesuan">{{item.dd}}</a>
+                            </td>  {%end %}
 
                              
                           
@@ -123,7 +139,7 @@
                             <td>
                             {{item.uid_name}}
                             </td>
-                          
+                          <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
                             <td>
                                 <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-primary " title="{{item.id}}">查看</a>
 
@@ -137,7 +153,7 @@
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=list_confirm&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="?tag=list_confirm{%if order_int%}&order_int={{order_int}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
 
 
@@ -145,7 +161,7 @@
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=list_confirm&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="?tag=list_confirm{%if order_int%}&order_int={{order_int}}{%end%}&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -155,7 +171,7 @@
           {% end %} {%end %}
 
          {% if pagination.has_next %}
-         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=list_confirm&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=list_confirm{%if order_int%}&order_int={{order_int}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>                
@@ -186,7 +202,8 @@ $(document).ready(function() {
     })
 
      _xsrf = getCookie("_xsrf");
-
+     
+     $('#order_int').tooltip(options)
     $("a[name=btn_choice_temp]").click(function() {
 
         tmp_id = $(this).attr("value")

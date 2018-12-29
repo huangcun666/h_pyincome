@@ -62,8 +62,9 @@
         {%end%}
 
 
-
+        {%if role=='3' or role=='2' or role=='5' or role=='8'%}
         <li {%if tag=="add"%}class="active"{%end%}><a href="/customer?tag=add"><i class="icon-code"></i><span>新增客户</span> </a> </li>
+        {%end%}
          {%if is_manager=="1"%}
     <li {%if tag=="company"%}class="active"{%end%}><a href="/customer?tag=company"><i class="icon-list-alt"></i><span>待创建客户</span> </a></li>
     {%end%}
@@ -92,10 +93,16 @@
                 <i class="icon-list-alt"></i>记账应收</a>
             </li>
             {%end%}
+            {%if role=="8" or role=="3" or role=="5" or role=="2"%}
             <li>
-              <a href="/payment?tag=reminders_plan"><i class="icon-list-alt"></i>催款计划</a>
+              <a href="/payment?tag=reminders_plan"><i class="icon-list-alt"></i>催款记录/计划</a>
             </li>
-        
+            {%end%}
+            {%if '250' in role_list%}
+            <li>
+              <a href="/payment?tag=assist_list"><i class="icon-list-alt"></i>发起协助列表</a>
+            </li>
+          {%end%}
            
           </ul>
         </li>
@@ -162,7 +169,10 @@
       //         $.messager.close()
       //        })
       //   })
-     })
+     
+   
+    })
+
 </script>
 {%block js%}
 

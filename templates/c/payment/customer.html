@@ -255,7 +255,7 @@ margin: auto;
     company_name="{{item.company}}"
     acc_end ="{%if item.acc_end%}{{item.acc_end.strftime("%Y-%m")}}{%end%}"
     acc_book_end = "{%if item.acc_book_end%}{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
-    pb_remark = "{%if item.pb_remark%}}{{item.pb_remark}}{%end%}"
+    pb_remark = "{%if item.pb_remark%}{{item.pb_remark}}{%end%}"
     al_remark="{%if item.al_remark%}{{item.al_remark}}{%end%}"
     >编辑</a>{%end%}</th>
         </tr>
@@ -377,7 +377,7 @@ margin: auto;
 
     </label>
     <div class="controls">
-        <input type="text" class="span4 " id="acc_end" name="acc_end" value="">
+        <input type="text" class="span2 " id="acc_end" name="acc_end" value=""><br/>
         <p id="msg_acc_end" class="help-block" style="color:red"></p>
     </div>
     <!-- /controls -->
@@ -388,7 +388,7 @@ margin: auto;
 
     </label>
     <div class="controls">
-        <input type="text" class="span4 " id="acc_book_end" name="acc_book_end" value="">
+        <input type="text" class="span2" id="acc_book_end" name="acc_book_end" value="">
         <p id="msg_acc_book_end" class="help-block" style="color:red"></p>
     </div>
     <!-- /controls -->
@@ -427,6 +427,8 @@ margin: auto;
     {%end%}
 
     {% block  js %}
+    <script src="http://momentjs.com/downloads/moment.js"></script>
+<script src="/static/combodate.js"></script>
     <script>
         $(function(){
 
@@ -441,8 +443,9 @@ margin: auto;
 
 
         $("#btn_save_wai_pay").on("click",function () { 
-                acc_end=$("#acc_end").val()
-                acc_book_end=$("#acc_book_end").val()
+
+                acc_end=$('#acc_end').combodate("getValue","YYYY-MM");
+                acc_book_end=$('#acc_book_end').combodate("getValue","YYYY-MM");
                 al_remark=$("#al_remark").val()
                 pb_remark=$("#pb_remark").val()
                 pay_id=$(this).attr("pay_id")
@@ -453,20 +456,34 @@ margin: auto;
                     "acc_book_end":acc_book_end,
                     "al_remark":al_remark,
                     "pb_remark":pb_remark,
-                    "pay_id":pay_id,
-                    "customer_id":customer_id
+                    "pay_id1":pay_id
+                
                 },function (result) { 
-                        location.reload()
+                    if(result=="-100"){
+                    $("#acc_end").focus()
+                    alert("要填写记账费到期日期哦")
+                }
+                else{
+                  location.reload()
+                }
                  })
              })
 
-        laydate.render({
-            elem: '#acc_end'  , type: 'month'//指定元素
+    
+        $('#acc_end').combodate({
+             format: "YYYY-MM",
+             template:"YYYY-MM",
+            minYear: 2018,
+            maxYear: 2025,
+        });
+        $('#acc_book_end').combodate({
+            format: "YYYY-MM",
+            template: "YYYY-MM",
+            minYear: 2018,
+            maxYear: 2025,
         });
 
-        laydate.render({
-            elem: '#acc_book_end', type: 'month' //指定元素
-        });
+
         $(".handler_detail").on("click", function () {
 
             wait_pay = $(this).attr("wait_pay")
@@ -493,7 +510,8 @@ margin: auto;
             $("#service_price").html("")
             $("#account_remark").val("")
             $("#company_name").text("")
-           
+            $("#btn_save_wai_pay").attr('acc_end',$(this).attr('acc_end'))
+            $("#btn_save_wai_pay").attr('acc_book_end',$(this).attr('acc_book_end'))
             $.get("/payment?tag=get_last_payment", { "customer_id": customer_id }, function (result) {
                 if (result.code == 1) {
 
@@ -525,7 +543,7 @@ margin: auto;
 
                     $("#btn_save_wai_pay").attr("pay_id", result.customer.payment_id)
 
-
+              
                     $("#wait_pay_remark").val(wait_pay)
                     $("#a_handler_modal").modal("show")
                 } else {

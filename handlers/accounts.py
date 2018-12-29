@@ -63,38 +63,45 @@ class LoginHandler(BaseHandler):
         elif self.authenticate(f_email,f_password):
             t_user = self.get_user_info(f_email)
             if t_user:
-                self.set_secure_cookie("uid",str(t_user.id), expires_days=30)
-                self.set_secure_cookie("name",str(t_user.name.encode("utf8")), expires_days=30)
-                self.set_secure_cookie("role",str(t_user.role),expires_days=30)
-                self.set_secure_cookie('is_check',str(t_user.is_check),expires_days=30)
-                self.set_secure_cookie(
-                    'is_manager', str(t_user.is_manager), expires_days=30)
-                self.set_secure_cookie('is_bj_manage',str(t_user.is_bj_manage),expires_days=30)
-                self.set_secure_cookie('is_gy_manage',str(t_user.is_gy_manage),expires_days=30)
-                self.set_secure_cookie('department_name',str(t_user.department_name),expires_days=30)
-                self.set_secure_cookie('is_xz_manage',str(t_user.is_xz_manage),expires_days=30)
-                self.set_secure_cookie('kj_manage', str(t_user.kj_manage), expires_days=30)
-                self.set_secure_cookie('all_manage', str(t_user.all_manage), expires_days=30)
-                self.set_secure_cookie(
-                    'is_developer', str(t_user.is_developer), expires_days=30)
-                self.set_secure_cookie('sh_manage', str(t_user.sh_manage), expires_days=30)
-                self.set_secure_cookie('kf_manage', str(t_user.kf_manage), expires_days=30)
-                self.set_secure_cookie('express_manage', str(t_user.express_manage), expires_days=30)
-                self.set_secure_cookie('role_list',str(t_user.role_list) or '',expires_days=30)
-
-
-                t_role = self.db.get("select * from t_user_group where id=%s",t_user.role)
-                if t_user.is_first==1:
-                    self.redirect('/allchangepassword?is_first=1')
-
-                if not t_role:
-                    self.write("还没有分配用户组")
+                if t_user.is_lock==1:
+                    self.write("抱歉,该用户被锁定,有疑问请管理员联系!")
                 else:
-                    if mobile=="1":
-                        self.redirect("/mobile?tag=home")
+                    self.set_secure_cookie("uid",str(t_user.id), expires_days=30)
+                    self.set_secure_cookie("name",str(t_user.name.encode("utf8")), expires_days=30)
+                    self.set_secure_cookie("role",str(t_user.role),expires_days=30)
+                    self.set_secure_cookie('is_check',str(t_user.is_check),expires_days=30)
+                    self.set_secure_cookie(
+                        'is_manager', str(t_user.is_manager), expires_days=30)
+                    self.set_secure_cookie('is_bj_manage',str(t_user.is_bj_manage),expires_days=30)
+                    self.set_secure_cookie('is_gy_manage',str(t_user.is_gy_manage),expires_days=30)
+                    self.set_secure_cookie('department_name',str(t_user.department_name),expires_days=30)
+                    self.set_secure_cookie('is_xz_manage',str(t_user.is_xz_manage),expires_days=30)
+                    self.set_secure_cookie('kj_manage', str(t_user.kj_manage), expires_days=30)
+                    self.set_secure_cookie('all_manage', str(t_user.all_manage), expires_days=30)
+                    self.set_secure_cookie(
+                        'is_developer', str(t_user.is_developer), expires_days=30)
+                    self.set_secure_cookie('sh_manage', str(t_user.sh_manage), expires_days=30)
+                    self.set_secure_cookie('kf_manage', str(t_user.kf_manage), expires_days=30)
+                    self.set_secure_cookie('express_manage', str(t_user.express_manage), expires_days=30)
+                    self.set_secure_cookie('role_list',str(t_user.role_list) or '',expires_days=30)
+                    exists= self.db.get("""
+                    select uid_name,role from t_statis_kf where uid_name=%s limit 1
+                    """,t_user.name)
+                    if exists:
+                        self.set_secure_cookie('show_statis_kf','1',expires_days=30)
+
+                    t_role = self.db.get("select * from t_user_group where id=%s",t_user.role)
+                    if t_user.is_first==1:
+                        self.redirect('/allchangepassword?is_first=1')
+
+                    if not t_role:
+                        self.write("还没有分配用户组")
                     else:
-                        self.redirect(
-                            self.get_argument('next', t_role.to_url), permanent=True)
+                        if mobile=="1":
+                            self.redirect("/mobile?tag=home")
+                        else:
+                            self.redirect(
+                                self.get_argument('next', t_role.to_url), permanent=True)
             else:
                 error="登录帐户已经过期,请与我们联系."
         else:

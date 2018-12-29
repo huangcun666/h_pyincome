@@ -10,27 +10,21 @@
       </ol>
       <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                 <a href="/project?tag=project_check" class="nav-item nav-link {%if not step%}active{%end%}" >全部</a>
+                 <a href="/project?tag=project_check" class="btn btn-light  nav_padding  {%if not step%}active{%end%}" >全部</a>
           
                 {%if kf_manage=='1'%}
-                 <a href="/project?tag=project_check&step=1" class="nav-item nav-link {%if step=='1'%}active{%end%}" >待审核</a>
+                 <a href="/project?tag=project_check&step=1" class="btn btn-light  nav_padding  {%if step=='1'%}active{%end%}" >待审核</a>
                 {%elif sh_manage=='1'%}
-                <a href="/project?tag=project_check&step=2" class="nav-item nav-link {%if step=='2'%}active{%end%}" >待审核</a>
+                <a href="/project?tag=project_check&step=2" class="btn btn-light  nav_padding  {%if step=='2'%}active{%end%}" >待审核</a>
                 {%end%}
-                 <a href="/project?tag=project_check&step=3" class="nav-item nav-link {%if step=='3'%}active{%end%}" >已审核</a>
+                 <a href="/project?tag=project_check&step=3" class="btn btn-light  nav_padding  {%if step=='3'%}active{%end%}" >已审核</a>
 
     </div>
     </nav>
-    <form>
+    <form class="search_box">
+
         <table>
-            <thead>
-                <tr>
-                    <th>编号</th>
-                    <th>公司名</th>
-                    <th>电话</th>
-                    <th>业务名称</th>
-                    <th></th>
-            </thead>
+
             <tbody>
                 <tr>
                     <td><input type="text" class="form-control" name='project_id' placeholder="编号" {%if params['project_id']%}value="{{params['project_id']}}"{%end%}></td>
@@ -42,16 +36,14 @@
                         {%if step%}
                         <input name="step" value="{{step}}" hidden>
                         {%end%}
-                        <input type="submit" value="检索"></td>
+                        <input type="submit" value="检索" class="btn btn-info"></td>
                 </tr>
             </tbody>
         </table>
     </form>
-      <div class="card mb-3">
-            <div class="card-body">
 
-            <div class="table-responsive">
-            
+
+            <div class="table-responsive">   
             <table class="table table-bordered" id="dataTable"  cellspacing="0">
             <thead style="background-color:#000;color:#fff">
                 <tr>
@@ -138,8 +130,6 @@
 
             </div>
   
-        </div>
-    </div>
 <!-- <modal> -->
  <div id="a_check_project_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document" >
@@ -184,9 +174,7 @@
                   <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
                   <button class="btn btn-primary" id="btn_check_project">保存</button>
                 </div>
-                </div>
-                </div>
-              </div>      
+                </div>   
       
 {%end%}
 

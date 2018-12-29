@@ -1,0 +1,158 @@
+{%extends "../base.html" %}{%block title%}成交事项管理{%end%}{%block body%}
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        成交事项管理
+        <a href="javascript:void(0);" class="btn btn-info btn-sm" id="create_new">新增</a>
+    </li>
+
+  </ol>
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="table-responsive">
+
+            <table class="table table-bordered" id="dataTable"  cellspacing="0">
+                <thead style="background-color:#000;color:#fff">
+                    <tr>
+                        <th>
+                            成交事项
+                        </th>
+                        <th width='120'>创建人</th>
+                        <th width='120'>创建时间</th>
+                        <th width='80'></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in projects_note_chengjiao %}
+                    <tr>
+                        <td>{{item.msg}}</td>
+                        <td>{%if item.uid_name%}{{item.uid_name}}{%end%}</td>
+                        <td>{%if item.created_at%}{{item.created_at}}{%end%}</td>
+                        <td><a href="javascript:void();" class="btn btn-info detail" id='{{item.id}}'
+                            msg="{{item.msg}}">查看</a></td>
+                    </tr>
+                    {%end%}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-12 col-md-7">
+            <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+               <ul class="pagination">
+             {% if pagination.has_prev %}
+                  <li class="paginate_button page-item previous " id="dataTable_previous">
+                  <a href="?tag=manage_chengjiao&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         
+         
+         
+                 {% end %}
+                 {%for page in pagination.iter_pages() %}
+                  {% if page %}
+                  {% if page != pagination.page %}
+                  <li class="paginate_button page-item ">
+                    <a href="?tag=manage_chengjiao&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                  {% else %}
+                   <li class="paginate_button page-item active">
+                     <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+                   {% end %}
+                   {% else %}
+                   <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+                   {% end %} 
+                   
+                   {%end %}
+         
+                  {% if pagination.has_next %}
+                  <li class="paginate_button  page-item next" id="dataTable_next">
+                    <a href="/project?tag=manage_chengjiao&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+              {% end %} </ul>
+            </div>
+         </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_chengjiao" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="projects_note">成交事项</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+  <div class="modal-body form-horizontal" id="site_mod">
+
+
+        <div class="card-body py-2 " id='projects_note_confirm_content'>
+
+
+      <div class="form-group" id='projects_note_content'>
+      <label for="inputEmail3" class="col-sm-3 control-label" id="projects_lab">成交内容
+        </label>
+   
+      <div class="col-sm-10">
+        <textarea id='chengjiao_content' class="form-control" type="text" name="chengjiao_content"></textarea>
+      </div>
+    
+    
+    </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" id="btn_del_modal_chengjiao">删除</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                   <button class="btn btn-primary modal_note_btn" target="_blank" id="btn_save_modal_chengjiao">保 存</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{%end%}
+{%block js%}
+<script>
+$(function () { 
+    _xsrf =  getCookie("_xsrf")
+    $('.detail').on('click',function () { 
+        var msg=$(this).attr('msg')
+        var id=$(this).attr('id')
+        $('#chengjiao_content').val(msg)
+        $('#btn_save_modal_chengjiao').attr('chengjiao_id',id)
+        $('#btn_del_modal_chengjiao').attr('delete_id',id)
+        $('#btn_del_modal_chengjiao').show() 
+        $('#modal_chengjiao').modal('show')
+     })
+    $('#create_new').on('click',function () {
+        $('#btn_del_modal_chengjiao').hide() 
+        $('#chengjiao_content').val('')
+        $('#btn_save_modal_chengjiao').removeAttr('chengjiao_id')
+        $('#btn_del_modal_chengjiao').removeAttr('delete_id')
+        $('#modal_chengjiao').modal('show')
+     })
+
+    $('#btn_save_modal_chengjiao').on('click',function () { 
+        var msg=$('#chengjiao_content').val()
+        var id=$(this).attr('chengjiao_id')
+        if(msg==''){
+            alert('成交事项不为空')
+        }else{
+        $.post('/project?tag=manage_chengjiao',
+            {
+            '_xsrf':_xsrf,
+            'msg':msg,
+            'id':id 
+            },function (res) { 
+                location.reload()
+             })
+            }
+    })
+    $('#btn_del_modal_chengjiao').on('click',function () { 
+        var delete_id=$(this).attr('delete_id')
+        $.post('/project?tag=manage_chengjiao',
+            {
+            '_xsrf':_xsrf,
+            'delete_id':delete_id 
+            },function (res) { 
+                location.reload()
+             })
+        
+    })
+ })
+</script>
+{%end%}

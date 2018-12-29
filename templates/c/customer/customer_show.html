@@ -412,7 +412,7 @@ margin: auto;
     <div class="fayet6">
      {%if customer.company%}{{customer.company}}{%end%}
 
-         {%if not from_tag or role=='5'%}
+         {%if role=="3" or role=="8" or role=='5' or  not from_tag%}
         
         <a class="btn btn-primary btn-sm modify  " href="customer?tag=edit&id={{customer.id}}&guid={{customer.guid}}"
           id="customer_modify" type="button" title="{{customer.id}}">修改</a>
@@ -425,7 +425,15 @@ margin: auto;
   {%if customer.promo_id_name%}
   <li>
     <div class="fayet" style="border-left: none;">优惠活动 </div>
-    <div style="width:80%; height: 180px; border-left: 1px solid #dedede;"><code>{{customer.promo_id_name}}</code>
+
+    <div style="width:80%; height: 180px; border-left: 1px solid #dedede;">
+      
+      {%if customer.promo_id_name and customer.promo_id_name!="0" %}
+      <code>{{customer.promo_id_name}}</code>
+      {%else%}
+      <code>无相关优惠活动</code>
+      {%end%}
+
      </div>
 </li>
 {%end%}
@@ -1211,10 +1219,12 @@ margin: auto;
           <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
 {%if not from_tag%}
           <td>
+            {%if '249' in role_list %}
             <a href="javascript:;" class="btn btn-danger btn-small delete_file" title="{{item.id}}" guid="{{item.guid}}">
               <i class="btn-icon-only icon-remove"></i>
               </i>
             </a>
+            {%end%}
           </td>
           {%end%}
         </tr>

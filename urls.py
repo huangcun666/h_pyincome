@@ -1,4 +1,4 @@
-from handlers.foo import FooHandler,DemoHandler,IndexHandler,uploadHandler,mDemoHandler
+from handlers.foo import FooHandler1,DemoHandler,IndexHandler,uploadHandler,mDemoHandler
 from handlers.accounts import *
 from handlers.sites import *
 from handlers.guestbook import *
@@ -20,18 +20,18 @@ from handlers.linkman import *
 from handlers.contract import *
 from handlers.finance import *
 from handlers.mobile import *
-from handlers.building import *
 from handlers.statis import *
 from handlers.business_develop import *
 from handlers.company import *
 from handlers.plan import *
 from handlers.account_receive import *
 from handlers.payment import *
+from handlers.addr import *
+from handlers.displaylist import *
 url_patterns = [
     (r"/plan", PlanHandler),
     (r"/company", CompanyHandler),
     (r"/statis", StatisHandler),
-    (r"/building", BuidlingHandler),
     (r"/mtransition", MTransitionHandler),
     (r"/category", CategoryHandler),
     (r"/mobile", MobileHandler),
@@ -40,7 +40,7 @@ url_patterns = [
     (r"/oapi", OApiHandler),
     (r"/capi", cAPiHandler),
     (r"/img", ImageHandler),
-    (r"/foo", FooHandler),
+    (r"/foo", FooHandler1),
     (r"/de", DemoHandler),
     (r"/", mDemoHandler),
     (r"/msg", MsgHandler),
@@ -91,7 +91,9 @@ url_patterns = [
     (r"/outdetail/(\d+)", OutDetailHandler),
     (r"/business", BusinessHandler),
     (r"/account_receive", Account_receiveHandler),
-    (r"/payment",  PaymentHandler)
+    (r"/payment", PaymentHandler),
+    (r"/addr", AddrHandler),
+    (r"/displaylist", DisplayListHandler),
 
     # (r'/checkprojectcategory',CheckProjectCategoryHandler)
 ]

@@ -1,0 +1,1228 @@
+{% extends "../base_1.html" %} {%block title%}收入管理{%end%} {% block body %}
+<style>
+    .faye-table {
+        font-size: 12px;
+    }
+
+    .faye-table thead tr th {
+        text-align: center;
+    }
+
+    .faye-table tbody tr td {
+        text-align: center;
+        padding: 0.3rem;
+        height: 40px;
+        box-sizing: border-box;
+    }
+
+    .faye-ti {
+        padding: 0.5rem;
+    }
+
+    .faye-a a {
+        padding: 5px;
+    }
+
+    .faye-tdti {
+        text-align: center;
+    }
+
+    .faye-selsect td {
+        margin-right: 15px;
+    }
+
+    .faye-selsect td input {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    .faye-selsect td select {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    .faye-btn {
+        padding: 0.1rem 0.2rem;
+        background-color: #9ec6ef;
+        margin-left: 20px;
+        border-radius: 2px;
+    }
+
+    select.form-control:not([size]):not([multiple]) {
+        height: calc(2rem + 0px);
+    }
+</style>
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">我的业务 
+          <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add">新 建 </a>
+
+         {% if role=='12'%}
+          <a href="/project?tag=project_relation" class="btn btn-info btn-sm">关联订单</a>
+          {%end%}
+        </li>
+
+      </ol>
+
+
+
+
+
+
+ <form>
+        <table style="font-size:80%;">
+            <thread>
+                <tr class="faye-tdti">
+
+      <td>业务类型</td>
+      <td>工商专员</td>
+      <td>客服顾问</td>
+      <td>在线客服</td>
+      <td>来源渠道</td>
+      <td>楼盘</td>
+          <td>
+时间段
+       </td>
+    </tr>
+
+        <tr>
+      <td>
+
+<select name="income_bussniss" class="form-control">
+  <option  value="0">请选择业务类型</option>
+    {%for idx,item in enumerate(t_project_bussniss)%}
+    
+        <option value="{{item.id}}"   {%if params["income_bussniss"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+    {%end%}
+</select></td>
+
+      <td>
+<select name="cq" class="form-control" >
+  <option  value="0">工商专员</option>
+    {%for idx,item in enumerate(t_user_cq)%}
+        <option value="{{item.id}}" {%if params["cq"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+    {%end%}
+</select>
+      </td>
+<td>
+    <select  name="kfgw"  class="form-control" >
+        <option value="0">请选择</option>
+        {%for m  in t_user_teams%}
+        {%if m.team_id==2%}
+            <option value="{{m.id}}" {%if params["kfgw"]==str(m.id)%}selected{%end%}>{{m.name}}</option>
+        {%end%}
+        {%end%}
+        </select>
+</td>
+       <td>
+<select name="kefu" class="form-control">
+  <option  value="0">请选择在线客服</option>
+    {%for idx,item in enumerate(t_users)%}
+    {%if item.team_id==4%}
+        <option value="{{item.id}}"  {%if params["kefu"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+ {%end%}
+    {%end%}
+</select>
+       </td>
+       <td>
+<select name="from_id" class="form-control">
+  <option  value="0">请选择来源渠道</option>
+    {%for idx,item in enumerate(t_income_type)%}
+        <option value="{{item.id}}"  {%if params["from_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+    {%end%}
+</select>
+       </td>
+   
+      <td>
+        <select name="building_id" class="form-control" >
+          <option value="0">请选择楼盘</option>
+            {%for idx,item in enumerate(t_building)%}
+                <option value="{{item.id}}"  {%if params["building_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+            {%end%}
+        </select>
+      </td>
+          <td>
+<input type="text" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
+至
+<input type="text" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+<input type="hidden" name="tag" value="{{tag}}"/>
+<input type="submit" value="检索" />
+
+       </td>
+    </tr>
+ </table>
+
+
+
+
+
+
+
+
+
+
+</form>
+
+<div class="table-responsive">
+
+
+                  <table class="table table-bordered" id="dataTable" style="font-size:12px;width:2200px;;">
+                    <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                        <tr>
+                        <th width="120">日期</th>
+                            <!-- <th width="100">客户分组</th> -->
+                         <th width="20">订单编号</th>
+               
+                                     <th width="120">客户姓名</th>
+                                     <th width="100">联系方式</th>
+                          <th width="220">公司名称</th>
+                                <th width="300">业务内容</th>
+                              <th width="60">记账</th>
+
+            <th width="100">合同金额</th>
+ 
+
+
+          <th width="100">合同定金</th>
+                  <!--    <th width="120">实收定金</th>
+
+          <th width="120">尾款</th>
+                    <th width="120">代收款项</th>
+
+                    <th width="120">待收款</th>-->
+
+                  <th width="100">客服顾问</th>
+                    <th width="100">销售顾问</th>
+                         <th width="100">工商专员</th>
+                         <th width="120">客户来源</th>
+                         <th width="120">来源平台</th>
+                             <th width="100">在线客服</th>
+                               
+                     
+                                    <th width="120">签约方式</th>
+                                  
+
+
+
+                                     <th width="120">成交周期</th>
+    <th width="80" >搜索词</th>
+
+
+      <th width="120">来源方式</th>
+           
+
+  <th width="120">是否有合同</th>
+
+
+                         
+                          <th width="220">合同编号</th>
+ <th ></th>
+
+                        </tr>
+                    </thead>
+                    <tbody style=" font-size:13px;">
+                    {%if t_projects%}
+                        {%for item in t_projects%}
+                        
+                        <tr >
+             <td>
+                         {{item.created_at.strftime("%Y-%m-%d")}}
+                            </td>
+                         <td>
+                        <a style=" font-size:13px;" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn" title="{{item.id}}">{{item.id}}</a>
+                            </td>
+
+                                         
+                                 <td>
+                          {{item.customer_name}}
+                            </td>
+
+                                  <td>
+                          {{item.customer_tel}}
+                            </td>
+   <td>
+                         {{item.customer_company}}
+                            </td>
+<td style="word-break: break-all;" title=" {{item.project_name}}">
+    <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" title="{{item.project_name}}" style="font-size:13px;">
+
+        {%if len(item.project_name) > 40%} {{item.project_name[:39]}}....... {%else%} {{item.project_name}} {%end%}
+
+    </a>
+
+
+</td>
+
+
+
+                         <td>
+                         {%if item.is_finance%}
+                         是
+                        {%else%}
+否
+                        {%end%}
+                            </td>
+                             <td>
+                                    {{item.all_income}}
+                            </td>
+
+
+
+        <td>
+                                    {{item.pre_income}}
+                            </td>
+                      <!--  <td>
+                                    {{item.true_income}}
+                            </td>
+
+
+                            <td>
+                                   {{item.all_income-item.con_wait_income}}
+                            </td>
+
+                              <td>
+                                    {{item.all_income_other}}
+                            </td>
+
+                                <td>
+                                    {{item.waitpay_other+(item.all_income-item.con_wait_income)}}
+                            </td>-->
+                             <td>      {%if item.team_list%}
+           {%for s in item.team_list.split(",")%}
+                {%if s%}
+
+                {%if "36" ==s.split("|")[1]%}
+                {{s.split("|")[0]}}
+                {%end%}
+                  {%end%}
+           {%end%}{%end%}
+                            </td>
+                                <td>
+                                      {%if item.team_list%}
+             {%for s in item.team_list.split(",")%}
+                 {%if s%}
+                {%if "34" ==s.split("|")[1]%}
+                {{s.split("|")[0]}}
+                {%end%}  {%end%}
+           {%end%}{%end%}
+                            </td>
+                          <td>
+
+                          {%if item.team_list%}
+             {%for s in item.team_list.split(",")%}
+                 {%if s%}
+                {%if "38" ==s.split("|")[1]%}
+                {{s.split("|")[0]}}
+                {%end%}  {%end%}
+           {%end%}
+   {%end%}
+
+
+                            </td>
+                            
+                                 <td>
+                         {{item.busniess_from_id_name}}
+
+                            </td>
+                            <td>
+                               {%if item.channel_id_name%} {{item.channel_id_name}} {%end%}
+                            </td>
+
+                              <td>
+                  
+ {%if item.team_list%}
+         {%for s in item.team_list.split(",")%}
+         {%if s%}
+                {%if "39" ==s.split("|")[1]%}
+                {{s.split("|")[0]}}
+                {%end%}
+                  {%end%}
+           {%end%}    {%end%}
+
+                            </td>
+
+                    
+
+
+
+                           <td>
+                          {{item.sign_type_id_name}}
+
+                            </td>
+
+
+
+
+         <td>
+                          {{item.deal_day}}
+                            </td>
+                  <td>
+                          {{item.from_word}}
+
+                            </td>
+
+
+                             <td>
+                                {{item.talk_type_id_name}}
+                            </td>
+
+
+                      
+
+                                  <td>
+                          {{item.contract_confirm_id_name}}
+
+                            </td>
+
+                             
+
+      
+                   <td>      {%if item.team_list%}
+                                {%if item.contract_remark%}
+                          {{item.contract_remark}}
+                          {%end%}   {%end%}
+                            </td>
+
+                                          <td>
+                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-info " title="{{item.id}}">详细</a>
+
+                            </td>
+
+
+                        </tr>
+                        {%end%}
+
+                        {%else%}
+                        <tr>
+                                <td colspan="26">没有数据哦。</td>
+                        </tr>
+
+                          {%end%}
+                    </tbody>
+                </table>
+
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=my&page={{ pagination.page - 1}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% else %}
+          <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+          {% end %} 
+          
+          {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>
+
+         </div>
+        </div>
+    
+<!-- Modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="new_project_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+
+  <div class="modal-dialog" role="document" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle_license">新建业务 </h5>
+        <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body form-horizontal" id="site_mod">
+
+       <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">业务来源: <small class="text-danger">（必填）</small></label>
+
+           {% for idx, item in enumerate(t_income_type) %}
+
+                 <input type="radio" name="busniess_from"  value="{{item.id}}|{{item.income_name}}" {%if idx==0%}checked{%end%}/> &nbsp;{{item.income_name}}
+           {% end %}
+
+          </div>
+
+          <!-- <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">所属公司: <small class="text-danger">（必选）</small></label>
+
+           {% for idx, item in enumerate(t_company) %}
+                 <input type="radio" name="company"  id="company" value="{{item.id}}|{{item.income_name}}" /> &nbsp;{{item.income_name}}
+           {% end %}
+      <small id="pcompanyHelpInline" class="text-danger">
+          
+          </small>
+          </div> -->
+          <div class="form-group" id="div_is_expedited">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">加急业务: <small class="text-danger">（必选）</small></label>
+            <input type="radio" name="is_expedited" value="1" />&nbsp;是
+            <input type="radio" name="is_expedited" value="0" checked/>&nbsp;否
+        </div>
+
+
+      <div id="div_building" class="well">
+
+         <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">所属楼盘: <small class="text-danger">（必填）</small></label>
+        <select name="building_id" id="building_id"  class="form-control">
+             <option value="0">==请选择楼盘==</option>
+           {% for idx, item in enumerate(t_building) %}
+
+              <option
+               value="{{item.id}}|{{item.income_name}}">
+              {{item.income_name}}
+                </option>
+           {% end %}
+      </select>
+          <small id="building_idHelpInline" class="text-danger">
+          
+          </small>
+          </div>
+      </div>
+<div id="div_acc">
+
+</div>
+<div id="div_promo" style="  border:1px solid #eee; padding:10px;">
+
+<div class="form-group">
+    <label for="exampleInputEmail1" class="col-sm-4 control-label">优惠活动:
+    </label>
+    <select name="promo_id" id="promo_id" class="form-control">
+        <option value="0">==请选择优惠活动==</option>
+        {% for idx, item in enumerate(t_promo_types) %}
+
+        <option value="{{item.id}}|{{item.income_name}}">
+            {{item.income_name}}
+        </option>
+        {% end %}
+    </select>
+    <small id="building_idHelpInline" class="text-danger">
+
+    </small>
+</div>
+
+
+
+
+    </div>
+
+
+
+   <div id="div_recommend_by"  style="  border:1px solid #eee; padding:10px;">
+          <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-6 control-label">客户推荐人: <small class="text-danger">（必填）</small></label>
+            <input class="form-control"  type="text" name="recommend_by" id="recommend_by" placeholder="谁帮我们介绍的客户" value="">
+        
+        
+            <small id="recommend_byHelpInline" class="text-danger">
+          
+          </small>
+        
+          </div>
+  </div>
+
+
+
+   <div id="div_recommend_staff"  style="  border:1px solid #eee; padding:5px;">
+          <div class="form-group">
+            <label for="exampleInputEmail1" class="col-sm-4 control-label">内部推荐人:<small class="text-danger" id="msg_inner_re">（必选）</small></label>
+
+   <input type="text" name="recommend_staff" id="recommend_staff"   data-items="8" data-provide="typeahead" />
+  <small id="recommend_staffHelpInline" class="text-danger">
+          
+          </small>
+          </div>
+  </div>
+
+
+
+      <div id="div_from_word"  style="  border:1px solid #eee; padding:5px; margin-bottom:4px;">
+
+
+         <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-6 control-label">在线客服:  <small class="text-danger">（必填）</small></label>
+        <select name="kf_id" id="kf_id"  class="form-control">
+             <option value="0">选择在线客服</option>
+           {% for idx, item in enumerate(t_users_kf) %}
+
+              <option
+               value="{{item.id}}|{{item.name}}">
+              {{item.name}}
+                </option>
+           {% end %}
+      </select>
+      <small id="kf_idHelpInline" class="text-danger">
+          
+          </small>
+
+          </div>
+
+
+
+
+ <div class="form-group" >
+    <label for="inputEmail3" class=" control-label">来源关键词 <small class="text-danger">（必填）</small></label>
+
+            <input class="form-control"  type="text" name="from_word" id="from_word" placeholder="没有写无" value=""/>
+
+  <small id="from_wordHelpInline" class="text-danger">
+          
+          </small>
+
+   </div>
+
+
+         <div class="form-group">
+            <label for="exampleInputEmail1"  class=" control-label">来源渠道: <small class="text-danger">（必填）</small></label>
+
+           {% for idx, item in enumerate(t_business_channel) %}
+
+                 <input type="radio" name="business_channel"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
+           {% end %}
+
+
+  <small id="business_channelHelpInline" class="text-danger">
+          
+          </small>
+          </div>
+         </div>
+
+       <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">签约方式: <small class="text-danger">（必填）</small></label>
+
+           {% for idx, item in enumerate(t_sign_type) %}
+                 <input type="radio" name="sign_type_id"  value="{{item.id}}|{{item.income_name}}"
+                  /> &nbsp;{{item.income_name}}
+           {% end %}
+
+          </div>
+       <div class="form-group div_talk_type" id="div_talk_type">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">来源方式: <small class="text-danger">（必填）</small></label>
+
+           {% for idx, item in enumerate(t_talk_type) %}
+                 <input type="radio" name="talk_type"  value="{{item.id}}|{{item.income_name}}"
+                 /> &nbsp;{{item.income_name}}
+           {% end %}
+          <small id="talk_typeHelpInline" class="text-danger"></small>
+          </div>
+                 <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">是否记账: <small class="text-danger">（必填）</small></label>
+
+            <input type="radio" name="is_finance"  value="1"
+                 /> &nbsp;是
+                 <input type="radio" name="is_finance"  value="0"
+                 /> &nbsp;否
+
+
+
+                 <small id="is_financeHelpInline" class="text-danger"></small>
+          </div>
+                         <div class="form-group">
+  <label for="exampleInputEmail1"  class="col-sm-4 control-label">合同情况: <small class="text-danger">（必填）</small></label>
+                {%for idx,item in enumerate(t_rec_contarct_type)%}
+          <input type="radio" name="new_contract_type_id" value="{{item.id}}|{{item.income_name}}"
+           title="{{item.income_name}}"/> {{item.income_name}}
+       {%end%}
+
+        <small id="new_contract_type_idHelpInline" class="text-danger"></small>
+        </div>
+<div class="row" style="margin:10px;" id="div_pre_value">
+
+                 <div class=" form-group  span5   " style="margin:10px;">
+            <label for="exampleInputEmail1"  class="control-label">成交周期(天）:  <small class="text-danger">（必填）</small></label>
+
+            <input class="form-control"  type="text" name="deal_day" id="deal_day" placeholder="花了多少天完成了订单" />
+         
+         
+           <small id="deal_dayHelpInline" class="text-danger"></small>
+          </div>
+                  <div class="form-group span5" style="margin:10px;"    >
+                        <label for="exampleInputEmail1"  class="control-label">预计合同定金:   <small class="text-danger">（必填）</small></label>
+                        <input class="form-control"  type="text" name="pre_income" id="pre_income" placeholder="预计合同定金金额" value="">
+                    
+                    <small id="pre_incomeHelpInline" class="text-danger"></small>
+                    </div>
+  </div>
+              <div class="form-group" id="div_addr_type">
+            <label for="exampleInputEmail1"  class="control-label">地址类型:<small class="text-danger">（必选）</small></label>
+            <input class="form-control"  type="text"  name="addr_type" id="addr_type" placeholder="如果没有写无">
+            <small id="addr_typeHelpInline" class="text-danger"></small>
+          </div>
+                <div class="form-group">
+            <label for="exampleInputEmail1"  class="control-label">业务内容:<small class="text-danger">（必选）</small></label>
+            <input class="form-control"  type="text"  name="project_name" id="project_name" placeholder="业务内容 摘要">
+            <small id="project_nameHelpInline" class="text-danger"></small>
+          </div>
+      <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">客户姓名:<small class="text-danger">（必选）</small></label>
+            <input class="form-control"  type="text" name="customer_name" id="customer_name" placeholder="客户姓名 称呼">
+             <small id="customer_nameHelpInline" class="text-danger"></small>
+          </div>
+
+         <div class="form-group">
+           
+         </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-10 control-label">企业名称:<small class="text-danger" id="lb_customer_company_msg">（必选）</small>
+                 <span id="same_company" style="display:none;"><small class="text-danger">是否跟企业同名:</small>
+                    <input type="radio"  name="is_same_company" value="1" checked>是
+                    <input type="radio"  name="is_same_company" value="0">否
+                 </span></label>
+            <input class="form-control"  type="text" name="t_customer_company" id="t_customer_company"  placeholder="企业名称"
+                 value="{%if add_t_company%}{{add_t_company.entName}}{%end%}" readonly="readonly" style="display:none;">
+                 <br>
+            <input class="form-control"  type="text" name="customer_company" id="customer_company"  placeholder="企业名称">
+            <small id="customer_companyHelpInline" class="text-danger"></small>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">联系方式:</label>
+            <input class="form-control"  type="text" name="customer_tel" id="customer_tel" placeholder="手机号码">
+               <small id="customer_telHelpInline" class="text-danger"></small>
+          </div>
+
+            <input class="form-control"  type="hidden" name="all_income" id="all_income" placeholder="" value="0">
+
+
+           <input class="form-control"  type="hidden" name="true_inew_project_modalncome" placeholder="" value="0">
+
+           <input class="form-control"  type="hidden" name="true_income" id="true_income" placeholder="" value="0">
+       <!--    <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">备注信息</label>
+            <textarea class="form-control"  type="textarea" name="remark" id="remark"  placeholder=""></textarea>
+          </div>
+        -->
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                 <button class="btn btn-primary" id="btn_save_project">保 存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{%end%}
+
+
+
+ {%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+    $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+    $("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59',
+language: 'zh-CN',initialDate: new Date()});
+    $('#recommend_staff').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
+    $('#addr_type').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"addr"}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
+    $('#customer_company').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"customer_company"}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
+
+     $("#div_building").hide()
+    $("#div_recommend_by").hide()
+    $("#div_recommend_staff").hide()
+    $("#div_acc").hide()
+    $("#div_promo").hide()
+        $("#btn_add").on("click",function(){
+            if($("input[name=is_same_company]:checked").val()=='0'){
+                $('#t_customer_company').show()
+                $('#customer_company').removeAttr('readonly')
+                $('#customer_company').val('')
+            }
+            $("#new_project_modal").modal("show")
+
+        })
+    if("{{add_t_company}}"!="" && "{{is_exit_t_company}}"=='-1'){
+        $('input[value="200|传统开发"]').click()
+        if($("input[name=is_same_company]").val()=='1'){
+            $("#customer_company").val('{%if add_t_company%}{{add_t_company.entName}}{%end%}')
+            $("#customer_company").attr('readonly','readonly')
+            }else{
+                $("#customer_company").val('')
+                $("#customer_company").removeAttr('readonly')}
+                  $('#same_company').show()
+                  $("#div_recommend_by").hide()
+                  $(".div_talk_type").hide()
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_acc").hide()
+                  $("#div_recommend_staff").show()
+                  $("#msg_inner_re").text("")
+        $("#btn_add").click()   
+    }
+  
+        $("#btn_add1").on("click",function(){
+            $("#insert_category_modal").modal("show")
+
+        })
+        
+        
+        $(".choose_type").on("click",function(){
+        var uid=$(this).attr('id');
+        $('.btn_save_project_cagetory').attr('id',uid);
+        $('.btn_save_project_cagetory1').attr('id',uid);
+       $("#project_category_modal").modal("show")
+
+   })
+
+
+       $("#btn_save_cagetory").click(function(){
+           var name=$('#category_name').val();
+           var role=$("#all_role option:selected").val();
+           if(name!=''){
+                $.post(
+                    '/insertcategory',
+                    {
+                        category:name,
+                        role:role,
+                        "_xsrf":_xsrf
+                    },
+                    function(data,status){
+                        $("#insert_category_modal").modal("hide")
+                        $('.group1').append('<div style="text-align: left; margin-left: 20%;"><input value="'+data['category_id']+'" '+
+                        'id="category_id" style="margin-left:25%;" name="category_name" type="radio">'+name+'</div>');
+                        $('.category_projects').append('<a href="/project?tag=my&style='+name+'"'+
+                        'class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">'+name+'</a>');
+                    }
+                )
+           }else{
+               $('#category_name').css({border:'2px solid #ff8480','border-radius':'5px'});
+               
+               
+           }
+       })
+       $(".btn_save_project_cagetory").click(function(){
+           var uid=$(this).attr('id');
+           var categoryid=$('input[name="category_name"]:checked').val();
+           $.post(
+               '/insertupdateprojectcategory',
+               {
+                category_id:categoryid,
+                id:uid,
+                "_xsrf":_xsrf
+               },
+               function(data,status){
+                $("#project_category_modal").modal("hide")
+                $('p[id='+uid+']').text(data['category_name']);
+               }
+           )
+
+       })
+       $(".btn_save_project_cagetory1").click(function(){
+           var uid=$(this).attr('id');
+           var categoryid=$('input[name="category_name"]:checked').val();
+           $.post(
+               '/insertupdateprojectcategory',
+               {
+                category_id:categoryid,
+                id:uid,
+                "_xsrf":_xsrf
+               },
+               function(data,status){
+                window.location.reload()
+               }
+           )
+
+       })
+
+
+
+$("#lb_customer_company_msg").hide()
+$('input[name=is_same_company]').on("change",function () { 
+    if($(this).val()=='1'){
+            $("#t_customer_company").hide()
+            $("#customer_company").attr('readonly','readonly')
+            $("#customer_company").val('{%if add_t_company%}{{add_t_company.entName}}{%end%}')
+                  }else{
+                    $("#customer_company").val('')
+                    $("#t_customer_company").show()
+                    $("#customer_company").removeAttr('readonly')
+                  }
+ })
+          $(document).on("change", 'input[name=busniess_from]',function(){
+                $("#lb_customer_company_msg").hide()
+                 $("#div_promo").hide()
+                  bf_value = $(this).val().split('|')[0]
+              $("input[name='is_finance']:first").attr("checked", false);
+              if (bf_value=="2"){
+                $('#t_customer_company').hide()
+                $('#same_company').hide()
+                  $(".div_talk_type").show()
+                  $("#div_from_word").show()
+                  $("#div_pre_value").show()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").hide()
+                  $("#div_acc").hide()
+                  $("#div_recommend_staff").hide()
+                  $("#div_addr_type").show()
+                  $("#div_promo").hide()
+                  $("#customer_company").removeAttr('readonly')
+              }else if(bf_value=="3"){
+                $('#t_customer_company').hide()
+                $('#same_company').hide()
+                  $(".div_talk_type").hide()
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").show()
+                  $("#div_acc").hide()
+                   $("#div_recommend_staff").show()
+                    $("#msg_inner_re").text("")
+                    $("#customer_company").removeAttr('readonly')
+                      $("#div_pre_value").show()
+                      $("#div_addr_type").show()
+                      $("#div_promo").hide()
+              }else if(bf_value=="4"){
+                $("#msg_inner_re").text("")
+                $('#t_customer_company').hide()
+                $('#same_company').hide()
+                  $(".div_talk_type").show()
+                  $("#div_from_word").hide()
+                  $("#div_building").show()
+                  $("#div_recommend_by").hide()
+                   $("#div_recommend_staff").hide()
+                   $("#div_acc").hide()
+                   $("#customer_company").removeAttr('readonly')
+                     $("#div_pre_value").show()
+                     $("#div_addr_type").show()
+                     $("#div_promo").hide()
+                  $("#div_recommend_staff").show()
+
+              } else if(bf_value=="81"){
+                $('#t_customer_company').hide()
+                $('#same_company').hide()
+                  $(".div_talk_type").show()
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").hide()
+                 $("#div_recommend_staff").show()
+                 $("#msg_inner_re").text("（必填）")
+                 $("#div_acc").hide()
+                 $("#customer_company").removeAttr('readonly')
+                   $("#div_pre_value").show()
+                   $("#div_addr_type").show()
+                   $("#div_promo").hide()
+
+              } else if(bf_value=="194"){
+                $('#t_customer_company').hide()
+                $('#same_company').hide()
+                 $(".div_talk_type").show()
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").hide()
+                  $("#div_recommend_staff").hide()
+                  $("#div_acc").hide()
+                  $("#customer_company").removeAttr('readonly')
+                    $("#div_pre_value").show()
+                    $("#div_addr_type").show()
+                    $("#div_promo").hide()
+              }
+              else if(bf_value=="202"){
+                $('#t_customer_company').hide()
+                $('#same_company').hide()
+                $(".div_talk_type").hide()
+                $("#div_from_word").hide()
+                $("#div_building").hide()
+                $("#div_recommend_by").hide()
+                $("#div_recommend_staff").hide()
+                $("#div_acc").hide()
+                      $("#div_pre_value").hide()
+                      $("#div_addr_type").hide()
+                      $("#div_promo").hide()
+                  $("input[name='is_finance']:first").attr("checked", true);
+                                       $("#lb_customer_company_msg").show()
+
+              }else if(bf_value == "203"){
+                  $('#t_customer_company').hide()
+                  $('#same_company').hide()
+                  $(".div_talk_type").hide()
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").hide()
+                  $("#div_recommend_staff").hide()
+                  $("#div_acc").hide()
+                  $("#div_pre_value").hide()
+                  $("#div_addr_type").hide()
+                  $("#div_promo").show()
+                 $("#div_is_expedited").hide()
+                   $("#lb_customer_company_msg").show()
+                 $("input[name='is_finance']:first").attr("checked", true);
+              
+
+              }
+              else if(bf_value=="200"){
+                if($("input[name=is_same_company]:checked").val()=='1'){
+                      $("#customer_company").attr('readonly','readonly')
+                      $("#customer_company").val("{%if add_t_company%}{{add_t_company.entName}}{%end%}")
+                      $('#t_customer_company').hide()
+                      
+                    
+                  }else{
+                    $('#t_customer_company').show()
+                    $("#customer_company").removeAttr('readonly')
+                  }
+                  $('#same_company').show()
+                $("#div_recommend_by").hide()
+                  $(".div_talk_type").hide()
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_acc").hide()
+                   $("#div_recommend_staff").show()
+                    $("#msg_inner_re").text("")
+                      $("#div_pre_value").show()
+                      $("#div_addr_type").show()
+                      $("#div_promo").hide()
+              }
+              else{
+                $('#t_customer_company').hide()
+                $("#customer_company").removeAttr('readonly')
+                $('#same_company').hide()
+                $(".div_talk_type").show()
+                   $("#div_acc").hide()
+                   $("#div_from_word").hide()
+                   $("#div_building").hide()
+                   $("#div_recommend_by").hide()
+                    $("#div_recommend_staff").hide()
+                      $("#div_pre_value").show()
+                      $("#div_addr_type").show()
+              }
+
+
+
+          })
+
+            $("#btn_save_project").on("click",function(){
+                all_income = $("#all_income")
+                pre_income = $("#pre_income")
+                project_name = $("#project_name")
+                customer_name=$("#customer_name")
+                busniess_from = $("input[name=busniess_from]:checked")
+                new_contract_type_id = $("input[name=new_contract_type_id]:checked")
+                recommend_by =$("#recommend_by")
+                deal_day = $("#deal_day")
+                recommend_staff = $("#recommend_staff")
+                b = $.isNumeric(pre_income.val())
+                b_all_income = $.isNumeric(all_income.val())
+                b_deal_day= $.isNumeric(deal_day.val())
+                console.log(busniess_from)
+                bf_value = busniess_from.val().split('|')[0]
+                business_channel= $("input[name=business_channel]:checked")
+                customer_company = $("#customer_company")
+                customer_tel = $("#customer_tel")
+                true_income = $("#true_income")
+                sign_type_id = $("input[name=sign_type_id]:checked")
+              //  remark = $("#remark")
+                talk_type = $("input[name=talk_type]:checked").val()
+                from_word = $("#from_word")
+                // company = $("input[name=company]:checked")
+                is_finance = $("input[name=is_finance]:checked")
+                building_id = $("#building_id")
+                promo_id = $("#promo_id")
+                addr_type = $("#addr_type")
+                kf_id = $("#kf_id")
+                is_expedited=$('input[name=is_expedited]:checked').val()
+                console.log(bf_value)
+                console.log(recommend_staff.val())
+                console.log(talk_type)
+                // if (company.val()=="0" || company.val()==undefined){
+                //   $("#pcompanyHelpInline").text("请选择业务所属公司哦。")
+                //   $("#company").focus()
+                //    console.log("hi1")
+                //   return false;
+                // }
+                if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
+                  $("#business_channelHelpInline").text("请选择来源渠道哦。")
+                  $("input[name=business_channel]:first").focus()
+                   console.log("hi2")
+                  return false;
+                }
+                
+
+                else if(bf_value=="2" && kf_id.val()=="0"){
+                   console.log("hi7")
+                    
+                    $("#kf_idHelpInline").text("在线客服人员必选哦！")
+                    kf_id.focus()
+                   $("input[name=kf_id]:first").focus()
+
+                    return false
+                }
+              else if(bf_value=="3" && recommend_by.val()==""){
+                 console.log("hi8")
+
+                    $("#recommend_byHelpInline").text("客户推荐人必填哦")
+
+                    recommend_by.focus()
+                    return false
+                }
+                else if(bf_value=="81" && recommend_staff.val()==""){
+                   console.log("hi9")
+                    
+                    $("#recommend_staffHelpInline").text("内部推荐人必填哦")
+
+                    recommend_staff.focus()
+                    return false
+                } 
+                else if (sign_type_id.val()=="0" || sign_type_id.val()==undefined){
+                  $("#sign_type_idHelpInline").text("请选择签约方式哦。")
+                
+                  $("input[name=sign_type_id]:first").focus()
+                   console.log("hi3")
+                  return false;
+                }
+              else if ((talk_type=="0" || talk_type==undefined) && (bf_value!="200" &&  bf_value != "202" && bf_value != "203" && bf_value!="3" )){
+                  $("#talk_typeHelpInline").text("请选择来源方式哦。")
+                   $("input[name=talk_type]:first").focus()
+                  
+                  return false;
+                }
+                else if ( is_finance.val()==undefined){
+                  $("#is_financeHelpInline").text("请选择是否记账。")
+                    console.log("hi5")
+                 $("input[name=is_finance]:first").focus()
+                  return false;
+                }
+                else if (new_contract_type_id.val()=="0" && new_contract_type_id.val()==undefined){
+                   console.log("hi6")
+                  $("#new_contract_type_idHelpInline").text("请选择合同情况")
+            
+                  $("input[name=new_contract_type_id]:first").focus()
+                  return false;
+                }
+
+                else if (deal_day.val()==""  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3")){
+                   console.log("hi10")
+                     $("#deal_dayHelpInline").text("成交周期不能为空哦！")
+                     deal_day.focus()
+                    return false
+                }
+                else if(b_deal_day==false  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3")){
+                     console.log("hi11")
+                    $("#deal_dayHelpInline").text("成交周期的天数必须是数值哦！")
+                    deal_day.focus()
+
+                    return false
+                }
+                else if(b==false  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3")){
+                   console.log("b")
+                    //alert("预计合同定金必须是数值哦！")
+                     $("#pre_incomeHelpInline").text("预计合同定金必须是数值哦！")
+                    pre_income.focus()
+                    return false
+                }
+               
+                else if(project_name.val()==""){
+                   console.log("hi")
+                    $("#project_nameHelpInline").text("业务名称不能为空哦")
+                    project_name.focus()
+                  return false
+                }
+                else if(customer_name.val()==""){
+                   console.log("hi")
+                    $("#customer_nameHelpInline").text("客户名称不能为空哦")
+                    customer_name.focus()
+                  return false
+                }
+                else{
+                   // $(this).attr("disabled","disabled")
+                   //$(this).text("保存中...")
+                    if(bf_value=="3" || bf_value=="200"){
+                        talk_type=$("input[name=talk_type]:first").val()
+                    }
+                   pre_income_val =  pre_income.val()
+                    if (pre_income_val==""){
+                        pre_income_val = 0
+                    }
+                     deal_day_val = deal_day.val()
+                    if (deal_day_val == "") {
+                        deal_day_val = 0
+                    }
+                    promo_id_val = promo_id.val()
+                   if(promo_id.val()=="0"){
+                       promo_id_val =""
+                   }
+             
+                    
+
+                    $.post("/project?tag=new",{
+                        "kf_id":kf_id.val(),
+                        "all_income":all_income.val(),
+                        "pre_income": pre_income_val,
+                        "project_name":project_name.val(),
+                        "customer_name":customer_name.val(),
+                        "busniess_from":busniess_from.val(),
+                        "recommend_by":recommend_by.val(),
+                        "deal_day":deal_day_val,
+                        "promo_id": promo_id_val,
+                        "business_channel":business_channel.val(),
+                        "customer_company":customer_company.val(),
+                        "rel_company_id_name":"{%if add_t_company%}{{add_t_company.entName}}{%end%}",
+                        "rel_company_id":"{%if add_t_company%}{{add_t_company.id}}{%end%}",
+                        "true_income":true_income.val(),
+                        "customer_tel":customer_tel.val(),
+                       // "remark":remark.val(),
+                        "sign_type_id":sign_type_id.val(),
+                        "talk_type":talk_type,
+                        "from_word":from_word.val(),
+                        // "company":company.val(),
+                        "is_finance":is_finance.val(),
+                        "building_id":building_id.val(),
+                        "new_contract_type_id":new_contract_type_id.val(),
+                        "addr_type":addr_type.val(),
+                        'is_expedited':is_expedited,
+                        "recommend_staff":recommend_staff.val(),"_xsrf":_xsrf},function(result){
+                            console.log("result"+result+ result.indexOf("?"))
+                            if(result.indexOf("?") >= 0){
+                                location.href = result
+
+                            }else{
+                                alert(result)
+                            }
+                            
+                        })
+
+                }
+            })
+
+
+        })
+ </script>
+
+{%end%}

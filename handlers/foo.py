@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 from handlers.base import BaseHandler
 import urllib
@@ -11,7 +10,12 @@ import tornado.httpclient
 import os
 import random
 import string
+
 logger = logging.getLogger('boilerplate.' + __name__)
+from tornado.web import asynchronous, RequestHandler, Application
+from concurrent.futures import ThreadPoolExecutor
+from tornado.concurrent import run_on_executor
+from tornado import gen
 
 class mDemoHandler(BaseHandler):
     def get(self):
@@ -20,6 +24,17 @@ class mDemoHandler(BaseHandler):
 class DemoHandler(BaseHandler):
     def get(self):
         self.render("demo/demo.html")
+
+
+class FooHandler1(BaseHandler):
+
+    @tornado.web.asynchronous
+    @gen.coroutine
+    def get(self):
+        res = yield self.db.get('select * from t_user limit 1')
+
+        self.write(res.name)
+        self.finish()
 
 
 class uploadHandler(tornado.web.RequestHandler):
@@ -36,11 +51,11 @@ class uploadHandler(tornado.web.RequestHandler):
         msg = "0"
         file_name_full=""
         if extension in type_list:
-                file_name = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(16))
-                file_name_full =  file_name + extension
-                output_file = open("media/public/" + file_name_full, 'wb')
-                output_file.write(file.body)
-                msg = "1"
+            file_name = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(16))
+            file_name_full =  file_name + extension
+            output_file = open("media/public/" + file_name_full, 'wb')
+            output_file.write(file.body)
+            msg = "1"
         # self.write (file.filename + " has been uploaded."+msg)
         # self.write('<script>parent.ckeditorUpload("/static/public/'+file_name_full+'");</script>')
         output = "<script type=\"text/javascript\">parent.ckeditorUpload(\"/static/public/"+file_name_full+"\");"
@@ -49,10 +64,6 @@ class uploadHandler(tornado.web.RequestHandler):
         self.write(output+'</script>')
 
 
-
-class FooHandler(BaseHandler):
-    def get(self):
-        self.render("base.html")
 
 class DemoHandler(BaseHandler):
     def get(self):

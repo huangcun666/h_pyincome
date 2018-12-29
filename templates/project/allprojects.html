@@ -1,64 +1,11 @@
 {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
-<style>
-    .faye-table {
-        font-size: 12px;
-    }
-
-    .faye-table thead tr th {
-        text-align: center;
-    }
-
-    .faye-table tbody tr td {
-        text-align: center;
-        padding: 0.3rem;
-        height: 40px;
-        box-sizing: border-box;
-    }
-
-    .faye-ti {
-        padding: 0.5rem;
-    }
-
-    .faye-a a {
-        padding: 5px;
-    }
-
-    .faye-tdti {
-        text-align: center;
-    }
-
-    .faye-selsect td {
-        margin-right: 15px;
-    }
-
-    .faye-selsect td input {
-        font-size: 12px;
-        padding: 5px;
-    }
-
-    .faye-selsect td select {
-        font-size: 12px;
-        padding: 5px;
-    }
-
-    .faye-btn {
-        padding: 0.1rem 0.2rem;
-        background-color: #9ec6ef;
-        margin-left: 20px;
-        border-radius: 2px;
-    }
-
-    select.form-control:not([size]):not([multiple]) {
-        height: calc(2rem + 0px);
-    }
-</style>
 
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
          主面板
         </li>
         <li class="breadcrumb-item active">我的业务 
-          <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add">新 建 </a>
+          <a href="javascript:void(0)" class=" faye-btn" id="btn_add">新 建 </a>
 
          {% if role=='12'%}
           <a href="/project?tag=project_relation" class="btn btn-info btn-sm">关联订单</a>
@@ -73,7 +20,7 @@
 
 
  <form>
-        <table style="font-size:80%;">
+        <table >
             <thread>
                 <tr class="faye-tdti">
 
@@ -83,7 +30,7 @@
       <td>在线客服</td>
       <td>来源渠道</td>
       <td>楼盘</td>
-          <td>
+          <td colspan="2">
 时间段
        </td>
     </tr>
@@ -91,7 +38,7 @@
         <tr>
       <td>
 
-<select name="income_bussniss" class="form-control">
+<select name="income_bussniss" class="custom-select">
   <option  value="0">请选择业务类型</option>
     {%for idx,item in enumerate(t_project_bussniss)%}
     
@@ -100,7 +47,7 @@
 </select></td>
 
       <td>
-<select name="cq" class="form-control" >
+<select name="cq" class="custom-select" >
   <option  value="0">工商专员</option>
     {%for idx,item in enumerate(t_user_cq)%}
         <option value="{{item.id}}" {%if params["cq"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
@@ -108,7 +55,7 @@
 </select>
       </td>
 <td>
-    <select  name="kfgw"  class="form-control" >
+    <select  name="kfgw" class="custom-select" >
         <option value="0">请选择</option>
         {%for m  in t_user_teams%}
         {%if m.team_id==2%}
@@ -118,7 +65,7 @@
         </select>
 </td>
        <td>
-<select name="kefu" class="form-control">
+<select name="kefu" class="custom-select">
   <option  value="0">请选择在线客服</option>
     {%for idx,item in enumerate(t_users)%}
     {%if item.team_id==4%}
@@ -128,7 +75,7 @@
 </select>
        </td>
        <td>
-<select name="from_id" class="form-control">
+<select name="from_id" class="custom-select">
   <option  value="0">请选择来源渠道</option>
     {%for idx,item in enumerate(t_income_type)%}
         <option value="{{item.id}}"  {%if params["from_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
@@ -137,7 +84,7 @@
        </td>
    
       <td>
-        <select name="building_id" class="form-control" >
+        <select name="building_id" class="custom-select" >
           <option value="0">请选择楼盘</option>
             {%for idx,item in enumerate(t_building)%}
                 <option value="{{item.id}}"  {%if params["building_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
@@ -145,13 +92,19 @@
         </select>
       </td>
           <td>
-<input type="text" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
-至
-<input type="text" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+<input type="text" name="start" id="start" class="form-control"  placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
+
 <input type="hidden" name="tag" value="{{tag}}"/>
-<input type="submit" value="检索" />
+
 
        </td>
+       <td><input type="text" name="end" id="end" class="form-control"  placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+
+       </td>
+       <td>
+       <input type="submit" value="检索" class="btn btn-info" />
+       </td>
+
     </tr>
  </table>
 
@@ -169,16 +122,16 @@
 <div class="table-responsive">
 
 
-                  <table class="table table-bordered" id="dataTable" style="width:2800px">
-                    <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                  <table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:11px;width:2550px;">
+                    <thead style="background-color:#000;color:#fff ; ">
                         <tr>
-                        <th width="100">日期</th>
+                        <th width="120">日期</th>
                             <!-- <th width="100">客户分组</th> -->
-                         <th width="20">订单编号</th>
+                         <th width="80">订单编号</th>
                
-                                     <th width="80">客户姓名</th>
+                                     <th width="120">客户姓名</th>
                                      <th width="100">联系方式</th>
-                          <th width="200">公司名称</th>
+                          <th width="220">公司名称</th>
                                 <th width="300">业务内容</th>
                               <th width="60">记账</th>
 
@@ -197,24 +150,24 @@
                   <th width="100">客服顾问</th>
                     <th width="100">销售顾问</th>
                          <th width="100">工商专员</th>
-                         <th width="80">客户来源</th>
-                         <th width="100">来源平台</th>
+                         <th width="120">客户来源</th>
+                         <th width="120">来源平台</th>
                              <th width="100">在线客服</th>
                                
                      
-                                    <th width="90">签约方式</th>
+                                    <th width="120">签约方式</th>
                                   
 
 
 
-                                     <th width="90">成交周期</th>
+                                     <th width="120">成交周期</th>
     <th width="80" >搜索词</th>
 
 
-      <th width="80">来源方式</th>
+      <th width="120">来源方式</th>
            
 
-  <th width="100">是否有合同</th>
+  <th width="120">是否有合同</th>
 
 
                          
@@ -246,9 +199,15 @@
    <td>
                          {{item.customer_company}}
                             </td>
-      <td>
-                                <a style=" font-size:13px;" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn"  title="{{item.id}}">{{item.project_name}}</a>
-                            </td>
+<td style="word-break: break-all;" title=" {{item.project_name}}">
+    <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" title="{{item.project_name}}" style="font-size:13px;">
+
+        {%if len(item.project_name) > 40%} {{item.project_name[:39]}}....... {%else%} {{item.project_name}} {%end%}
+
+    </a>
+
+
+</td>
 
 
 
@@ -476,7 +435,7 @@
 
          <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">所属楼盘: <small class="text-danger">（必填）</small></label>
-        <select name="building_id" id="building_id"  class="form-control">
+        <select name="building_id" id="building_id"  class="custom-select">
              <option value="0">==请选择楼盘==</option>
            {% for idx, item in enumerate(t_building) %}
 
@@ -499,7 +458,7 @@
 <div class="form-group">
     <label for="exampleInputEmail1" class="col-sm-4 control-label">优惠活动:
     </label>
-    <select name="promo_id" id="promo_id" class="form-control">
+    <select name="promo_id" id="promo_id" class="custom-select">
         <option value="0">==请选择优惠活动==</option>
         {% for idx, item in enumerate(t_promo_types) %}
 
@@ -553,7 +512,7 @@
 
          <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-6 control-label">在线客服:  <small class="text-danger">（必填）</small></label>
-        <select name="kf_id" id="kf_id"  class="form-control">
+        <select name="kf_id" id="kf_id"  class="custom-select">
              <option value="0">选择在线客服</option>
            {% for idx, item in enumerate(t_users_kf) %}
 
@@ -754,8 +713,10 @@ language: 'zh-CN',initialDate: new Date()});
     $("#div_recommend_by").hide()
     $("#div_recommend_staff").hide()
     $("#div_acc").hide()
-    $("#div_promo").hide()
+    $("#div_promo").show()
         $("#btn_add").on("click",function(){
+             $("#btn_save_project").text("保 存");  
+             $("#btn_save_project").prop("disabled", false);  
             if($("input[name=is_same_company]:checked").val()=='0'){
                 $('#t_customer_company').show()
                 $('#customer_company').removeAttr('readonly')
@@ -887,7 +848,7 @@ $('input[name=is_same_company]').on("change",function () {
                   $("#div_acc").hide()
                   $("#div_recommend_staff").hide()
                   $("#div_addr_type").show()
-                  $("#div_promo").hide()
+                  $("#div_promo").show()
                   $("#customer_company").removeAttr('readonly')
               }else if(bf_value=="3"){
                 $('#t_customer_company').hide()
@@ -902,7 +863,7 @@ $('input[name=is_same_company]').on("change",function () {
                     $("#customer_company").removeAttr('readonly')
                       $("#div_pre_value").show()
                       $("#div_addr_type").show()
-                      $("#div_promo").hide()
+                      $("#div_promo").show()
               }else if(bf_value=="4"){
                 $("#msg_inner_re").text("")
                 $('#t_customer_company').hide()
@@ -916,7 +877,7 @@ $('input[name=is_same_company]').on("change",function () {
                    $("#customer_company").removeAttr('readonly')
                      $("#div_pre_value").show()
                      $("#div_addr_type").show()
-                     $("#div_promo").hide()
+                     $("#div_promo").show()
                   $("#div_recommend_staff").show()
 
               } else if(bf_value=="81"){
@@ -932,7 +893,7 @@ $('input[name=is_same_company]').on("change",function () {
                  $("#customer_company").removeAttr('readonly')
                    $("#div_pre_value").show()
                    $("#div_addr_type").show()
-                   $("#div_promo").hide()
+                   $("#div_promo").show()
 
               } else if(bf_value=="194"){
                 $('#t_customer_company').hide()
@@ -946,7 +907,7 @@ $('input[name=is_same_company]').on("change",function () {
                   $("#customer_company").removeAttr('readonly')
                     $("#div_pre_value").show()
                     $("#div_addr_type").show()
-                    $("#div_promo").hide()
+                    $("#div_promo").show()
               }
               else if(bf_value=="202"){
                 $('#t_customer_company').hide()
@@ -1023,12 +984,14 @@ $('input[name=is_same_company]').on("change",function () {
           })
 
             $("#btn_save_project").on("click",function(){
+        
                 all_income = $("#all_income")
                 pre_income = $("#pre_income")
                 project_name = $("#project_name")
                 customer_name=$("#customer_name")
                 busniess_from = $("input[name=busniess_from]:checked")
                 new_contract_type_id = $("input[name=new_contract_type_id]:checked")
+               
                 recommend_by =$("#recommend_by")
                 deal_day = $("#deal_day")
                 recommend_staff = $("#recommend_staff")
@@ -1113,7 +1076,7 @@ $('input[name=is_same_company]').on("change",function () {
                  $("input[name=is_finance]:first").focus()
                   return false;
                 }
-                else if (new_contract_type_id.val()=="0" && new_contract_type_id.val()==undefined){
+                else if (new_contract_type_id.val()=="0" || new_contract_type_id.val()==undefined){
                    console.log("hi6")
                   $("#new_contract_type_idHelpInline").text("请选择合同情况")
             
@@ -1172,9 +1135,10 @@ $('input[name=is_same_company]').on("change",function () {
                    if(promo_id.val()=="0"){
                        promo_id_val =""
                    }
-             
+                // alert(building_id)
                     
-
+                     $("#btn_save_project").text("保存中..")
+                      $("#btn_save_project").prop("disabled", true);  
                     $.post("/project?tag=new",{
                         "kf_id":kf_id.val(),
                         "all_income":all_income.val(),
@@ -1207,6 +1171,8 @@ $('input[name=is_same_company]').on("change",function () {
                                 location.href = result
 
                             }else{
+                                $("#btn_save_project").text("保 存")
+                                 $("#btn_save_project").prop("disabled", false);  
                                 alert(result)
                             }
                             

@@ -31,9 +31,9 @@ class CustomerHandler(BaseHandler):
         role=self.get_secure_cookie('role')
         is_manager=self.get_secure_cookie("is_manager")
         from_tag = self.get_argument("from_tag","")
+        check_under=self.get_argument('check_under','')
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         logger.info("%s : %s  - %s " % (dt, uid_name, self.request.uri))
-
 
         if tag == "list":
             sql=""
@@ -49,18 +49,21 @@ class CustomerHandler(BaseHandler):
                 sql = sql + " and (customer_type_name like '%%" + lp + "%%')"
             page = int(self.get_argument("page", 1))
             pre_page = 20
+
             count = self.db_customer.get(
                 '''SELECT count(*) count FROM t_customer   where acc_uid=%s and is_close=0
-               ''' +sql, uid)
+            ''' +sql, uid)
             pagination = Pagination(page, pre_page, count.count, self.request)
             startpage = (page - 1) * pre_page
             customers = self.db_customer.query('''
-               select * from t_customer where acc_uid=%s and is_close=0 ''' + sql + '''
+            select * from t_customer where acc_uid=%s and is_close=0 ''' + sql + '''
                                     order by created_at desc limit %s,%s
                 ''', uid, startpage, pre_page)
 
             self.render(
                 'c/customer/customer_list.html',
+                t_user_relation='',
+                check_under=check_under,
                 customers=customers,
                 pagination=pagination,
                 tag=tag,
@@ -216,13 +219,12 @@ class CustomerHandler(BaseHandler):
                 curr=curr,
                 qtype=qtype)
             self.finish()
-
-        elif tag == "all":
+        elif tag == "customer_list_uid":
             sql = ""
             keyword = self.get_argument("keyword", "")
             qtype = self.get_argument("qtype","")
-
             jz = self.get_argument("jz", "")
+            tyctype = self.get_argument("tyctype", "0")
             lp = self.get_argument("lp", "")
             kj=self.get_argument('kj','')
             my = self.get_argument("my",None)
@@ -238,6 +240,118 @@ class CustomerHandler(BaseHandler):
                 sql = sql + " and acc_uid = " + uid
             if kj:
                 sql =  sql+" and acc_uid_name='"+kj+"' "
+            query_str = ""
+            query_str_count =""
+            customers = None
+            tyctype_sql= ""
+            if tyctype:
+                tyctype_sql = " and is_get=%s" % (tyctype)
+
+            page= int(self.get_argument("page",1))
+            pre_page = 20
+            count = 0
+            if qtype=="lname":
+                count = self.db_customer.get(
+                    '''SELECT count(*) count FROM t_customer a inner join (select customer_id,(concat(name,' '))
+                        customer_name from t_linkman )  b on a.id=b.customer_id
+
+                        where customer_name like  '%%''' + keyword +
+                    '''%%' ''' + sql)
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page - 1) * pre_page
+                customers = self.db_customer.query('''SELECT a.*,b.customer_name FROM t_customer a inner join (select customer_id,(concat(name,' '))
+                        customer_name from t_linkman )  b on a.id=b.customer_id
+
+                        where customer_name like  '%%''' + keyword + '''%%' ''' + sql+''' limit %s,%s''', startpage, pre_page)
+
+            elif qtype=="tel":
+                count = self.db_customer.get( '''SELECT count(*) count FROM t_customer a inner join (select customer_id,(concat(tel,' '))
+                        ctel from t_linkman )  b on a.id=b.customer_id
+
+                        where ctel like  '%%''' + keyword + '''%%'  ''' + sql+''' ''')
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page - 1) * pre_page
+                customers = self.db_customer.query(
+                    '''SELECT a.*,b.ctel FROM t_customer a inner join (select customer_id,(concat(tel,' '))
+                        ctel from t_linkman )  b on a.id=b.customer_id
+
+                        where ctel like  '%%''' + keyword + '''%%'   ''' +
+                    sql + ''' limit %s,%s''', startpage, pre_page)
+
+
+            else:
+                if my==None and is_manager=='1':
+                    count = self.db_customer.get(
+                        '''SELECT count(*) count FROM t_customer where is_close=0 and is_get <> 0 and company_reguid_new is not  null'''
+                        + sql + tyctype_sql)
+                    pagination = Pagination(page, pre_page, count.count, self.request)
+                    startpage = (page - 1) * pre_page
+
+                    customers = self.db_customer.query(
+                        '''select * from t_customer  where is_close=0 and is_get <> 0 
+                    and company_reguid_new is not  null ''' + sql +
+                        tyctype_sql + '''
+                    order by is_get_at desc limit %s,%s''', startpage,
+                        pre_page)
+
+                elif my:
+                    count = self.db_customer.get(
+                        '''SELECT count(*) count FROM t_customer where is_close=0'''
+                        + sql + tyctype_sql)
+                    pagination = Pagination(page, pre_page, count.count, self.request)
+                    startpage = (page - 1) * pre_page
+
+                    customers = self.db_customer.query(
+                        '''select * from t_customer  where is_close=0  and is_get <> 0 and company_guid_new <> null'''
+                        + sql  + tyctype_sql +
+                        ''' order by created_at desc limit %s,%s''', startpage,
+                        pre_page)
+
+
+
+        #  customers = self.db_customer.query(query_str, startpage, pre_page)
+            self.render(
+                'c/customer/customer_list_uid.html',
+                customers=customers,
+                pagination=pagination,
+                tag=tag,
+                keyword=keyword,
+                lp=lp,
+                jz=jz,
+                my=my,
+                kj=kj,
+                t_user=t_user,
+                tyctype=tyctype,
+                qtype=qtype)
+
+        elif tag == "all":
+            sql = ""
+            keyword = self.get_argument("keyword", "")
+            qtype = self.get_argument("qtype","")
+
+            jz = self.get_argument("jz", "")
+            lp = self.get_argument("lp", "")
+            kj=self.get_argument('kj','')
+            my = self.get_argument("my",None)
+            check_kj=self.get_argument('check_kj','')
+            check_under=self.get_argument('check_under','')
+            acc_uids=[]
+            t_user_relation=''
+            t_user = self.db_customer.query("select * from "+  options.mysql_database + ".t_user where role=10 ")
+            if keyword:
+                sql = " and (company like '%%" + keyword + "%%')"
+            if jz:
+                sql = sql + " and (customer_type_name like '%%" + jz + "%%')"
+            if lp:
+                sql = sql + " and (customer_type_name like '%%" + lp + "%%')"
+
+            if my:
+                sql = sql + " and acc_uid = " + uid
+            if kj and not check_under:
+                sql =  sql+" and acc_uid_name='"+kj+"' "
+            if check_kj and check_under:
+                sql=sql+" and acc_uid_name='"+check_kj+"' "
+
             query_str = ""
             query_str_count =""
             customers = None
@@ -274,6 +388,26 @@ class CustomerHandler(BaseHandler):
 
 
             else:
+                t_user_relation=self.db.query('''
+                    select a.* from t_user_relation a
+                    inner join t_user_relation b on 
+                    find_in_set(a.department_name,b.department_name)
+                    and b.uid=%s and b.is_leader<>0
+                    where a.uid!=b.uid and a.is_leader=0
+                    ''',uid)
+                if t_user_relation and check_under:
+                    for item in t_user_relation:
+                        acc_uids.append(int(item.uid))
+                    acc_uids=tuple(acc_uids)
+                    count = self.db_customer.get(
+                    '''SELECT count(*) count FROM t_customer   where acc_uid in '''+str(acc_uids)+''' and is_close=0
+                ''' +sql)
+                    pagination = Pagination(page, pre_page, count.count, self.request)
+                    startpage = (page - 1) * pre_page
+                    customers = self.db_customer.query('''
+                    select * from t_customer where acc_uid in  '''+str(acc_uids)+'''  and is_close=0 ''' + sql + '''
+                                            order by created_at desc limit %s,%s
+                        ''', startpage, pre_page)
                 if my==None and is_manager=='1':
                     count = self.db_customer.get( '''SELECT count(*) count FROM t_customer where is_close=0''' + sql)
                     pagination = Pagination(page, pre_page, count.count, self.request)
@@ -283,6 +417,7 @@ class CustomerHandler(BaseHandler):
                     order by created_at desc limit %s,%s''', startpage, pre_page)
 
                 elif my:
+
                     count = self.db_customer.get( '''SELECT count(*) count FROM t_customer where is_close=0''' + sql)
                     pagination = Pagination(page, pre_page, count.count, self.request)
                     startpage = (page - 1) * pre_page
@@ -296,13 +431,16 @@ class CustomerHandler(BaseHandler):
             self.render(
                 'c/customer/customer_list.html',
                 customers=customers,
+                t_user_relation=t_user_relation,
                 pagination=pagination,
+                check_under=check_under,
                 tag=tag,
                 keyword=keyword,
                 lp=lp,
                 jz=jz,
                 my=my,
                 kj=kj,
+                check_kj=check_kj,
                 t_user=t_user,
                 qtype=qtype)
 
@@ -330,41 +468,48 @@ class CustomerHandler(BaseHandler):
         #         tag=tag,
         #         keyword=keyword)
         elif tag=="add":
-            company_id = self.get_argument("company_id","")
-            t_credit_type = self.db_customer.query(
-                "select * from t_type where tag='信用评级'")
-            t_customer_rating = self.db_customer.query(
-                "select * from t_type where tag='客户等级'")
+            if role=='3' or role=='2' or role=='5' or role=='8':
 
-            t_customer_type = self.db_customer.query(
-                "select * from t_type where tag='客户类型'")
+                company_id = self.get_argument("company_id","")
+                num=self.get_argument('num','6')
+                t_credit_type = self.db_customer.query(
+                    "select * from t_type where tag='信用评级'")
+                t_customer_rating = self.db_customer.query(
+                    "select * from t_type where tag='客户等级'")
 
-            t_city = self.db_customer.query(
-                "select * from t_type where tag='地市'")
+                t_customer_type = self.db_customer.query(
+                    "select * from t_type where tag='客户类型'")
 
-            t_zone = self.db_customer.query(
-                "select * from t_type where tag='区域'")
-            t_payment_type = self.db_customer.query(
-                "select * from t_type where tag='付费方式'")
-            t_project = None
-            if company_id:
-                t_project = self.db.get("select * from t_projects where id=%s",company_id)
-            t_user = self.db.query("select * from t_user where role=10 ")
-            t_promo_types = self.db.query(
-                """select * from t_projects_type where income_category='套餐' order by order_int  """
-            )
-            self.render(
-                'c/customer/customer_add.html',
-                t_city=t_city,
-                t_payment_type=t_payment_type,
-                company_id=company_id,
-                t_zone = t_zone,
-                t_promo_types=t_promo_types,
-                t_project=t_project,
-                t_credit_type=t_credit_type,
-                t_customer_type=t_customer_type,
-                t_customer_rating=t_customer_rating,
-                t_user=t_user,tag=tag)
+                t_city = self.db_customer.query(
+                    "select * from t_type where tag='地市'")
+
+                t_zone = self.db_customer.query(
+                    "select * from t_type where tag='区域'")
+                t_payment_type = self.db_customer.query(
+                    "select * from t_type where tag='付费方式'")
+                t_project = None
+                t_projects=None
+                if company_id:
+                    t_project = self.db.get("select * from t_projects where id=%s",company_id)
+                    t_projects=self.db.query("""select * from t_projects where customer_company=%s limit %s """,t_project.customer_company,int(num))
+                t_user = self.db.query("select * from t_user where role=10 ")
+                t_promo_types = self.db.query(
+                    """select * from t_projects_type where income_category='套餐' order by order_int  """
+                )
+                self.render(
+                    'c/customer/customer_add.html',
+                    t_city=t_city,
+                    t_payment_type=t_payment_type,
+                    company_id=company_id,
+                    t_zone = t_zone,
+                    t_promo_types=t_promo_types,
+                    t_project=t_project,
+                    t_projects=t_projects,
+                    t_credit_type=t_credit_type,
+                    t_customer_type=t_customer_type,
+                    t_customer_rating=t_customer_rating,
+                    t_user=t_user,tag=tag,num=num)
+          
 
         elif tag=="edit":
 
@@ -495,53 +640,64 @@ class CustomerHandler(BaseHandler):
             qtype=self.get_argument('qtype','')
             keyword=self.get_argument('keyword1','')
             page= int(self.get_argument("page",1))
+            state = int(self.get_argument("state", 1))
+            company = self.get_argument('company', '')
+            if state:
+                sql = """  and id  in (select project_id from """ + options.mysql_database + """.t_projects_member 
+                where (btype_id=155 and last_milepost_id not in ('167','162','151','165') or not_transition=1) and is_cancel=0  and project_id=id group by project_id )"""
+            else:
+                sql = """  and id  in (select project_id from """ + options.mysql_database + """.t_projects_member a ,
+                """+options.mysql_database+""".t_projects_type b 
+                where btype_id=155 and last_milepost_id  in ('167','162','151','165') and is_cancel=0   group by project_id) """
             pre_page = 20
             count = 0
             if keyword:
                 sql = " and (customer_company like '%%" + keyword + "%%') or (customer_company like '%%" + keyword + "%%')"
-            if qtype=='comfirm_id':
-                count=self.db_customer.get(
-                    """select count(*) count from """+options.mysql_database+""".t_projects  where (customer_company <> "")
-                and (customer_company <> "无")  and (customer_company IS NOT NULL)
-                    and customer_company not in (select company from t_customer ) and id=%s order by created_at desc""",int(keyword)
-                )
-                pagination=Pagination(page,pre_page,count.count,self.request)
-                startpage = (page - 1) * pre_page
-                customers = self.db_customer.query(
-                """select * from """+options.mysql_database+""".t_projects  where (customer_company <> "")
-                and (customer_company <> "无")  and (customer_company IS NOT NULL)
-                    and customer_company not in (select company from t_customer ) and id=%s order by created_at desc limit %s,%s""",
-                    int(keyword),startpage,pre_page)
-            elif qtype=='company':
-                count = self.db_customer.get(
-                """select count(*) count from """+options.mysql_database+""".t_projects  where (customer_company <> "")
-                and (customer_company <> "无")  and (customer_company IS NOT NULL)
-                    and customer_company not in (select company from t_customer )
-                    """+sql+"""order by created_at desc""")
-                pagination=Pagination(page,pre_page,count.count,self.request)
-                startpage = (page - 1) * pre_page
-                customers = self.db_customer.query(
-                """select * from """+options.mysql_database+""".t_projects  where (customer_company <> "")
-                and (customer_company <> "无")  and (customer_company IS NOT NULL)
-                    and customer_company not in (select company from t_customer )
-                    """+sql+"""order by created_at desc limit %s,%s""",startpage,pre_page)
-            else:
-                count = self.db_customer.get(
-                """select count(*) count from """+options.mysql_database+""".t_projects  where (customer_company <> "")
-                and (customer_company <> "无")  and (customer_company IS NOT NULL)
-                    and customer_company not in (select company from t_customer ) order by created_at desc""" )
-                pagination=Pagination(page,pre_page,count.count,self.request)
-                startpage = (page - 1) * pre_page
-                customers = self.db_customer.query(
-                """select * from """+options.mysql_database+""".t_projects  where (customer_company <> "")
-                and (customer_company <> "无")  and (customer_company IS NOT NULL)
-                    and customer_company not in (select company from t_customer ) order by created_at desc limit %s,%s""",startpage,pre_page)
+            # if qtype=='comfirm_id':
+            #     count=self.db_customer.get(
+            #         """select count(*) count from """+options.mysql_database+""".t_projects  where (customer_company <> "")
+            #     and (customer_company <> "无")  and (customer_company IS NOT NULL)
+            #         and customer_company not in (select company from t_customer ) and id=%s order by created_at desc""",int(keyword)
+            #     )
+            #     pagination=Pagination(page,pre_page,count.count,self.request)
+            #     startpage = (page - 1) * pre_page
+            #     customers = self.db_customer.query(
+            #     """select * from """+options.mysql_database+""".t_projects  where (customer_company <> "")
+            #     and (customer_company <> "无")  and (customer_company IS NOT NULL)
+            #         and customer_company not in (select company from t_customer ) and id=%s order by created_at desc limit %s,%s""",
+            #         int(keyword),startpage,pre_page)
+            # elif qtype=='company':
+            #     count = self.db_customer.get(
+            #     """select count(*) count from """+options.mysql_database+""".t_projects  where (customer_company <> "")
+            #     and (customer_company <> "无")  and (customer_company IS NOT NULL)
+            #         and customer_company not in (select company from t_customer )
+            #         """+sql+"""order by created_at desc""")
+            #     pagination=Pagination(page,pre_page,count.count,self.request)
+            #     startpage = (page - 1) * pre_page
+            #     customers = self.db_customer.query(
+            #     """select * from """+options.mysql_database+""".t_projects  where (customer_company <> "")
+            #     and (customer_company <> "无")  and (customer_company IS NOT NULL)
+            #         and customer_company not in (select company from t_customer )
+            #         """+sql+"""order by created_at desc limit %s,%s""",startpage,pre_page)
+            # else:
+            count = self.db_customer.get(
+            """select count(*) count from """+options.mysql_database+""".t_projects  where (customer_company <> "")
+            and (customer_company <> "无")  and (customer_company IS NOT NULL)
+                and customer_company not in (select company from t_customer ) """+sql+"""  order by created_at desc""" )
+            pagination=Pagination(page,pre_page,count.count,self.request)
+            startpage = (page - 1) * pre_page
+            customers = self.db_customer.query(
+            """select * from """+options.mysql_database+""".t_projects
+                where (customer_company <> "")
+            and (customer_company <> "无")  and (customer_company IS NOT NULL)
+                and customer_company not in (select company from t_customer ) """+sql+""" order by created_at desc limit %s,%s""",startpage,pre_page)
             self.render(
                 'c/customer/customer_company.html',
                 customers=customers,
                 pagination=pagination,
                 qtype=qtype,
                 keyword=keyword,
+                state=state,
                 tag=tag)
         elif tag =="qrcode":
             id = self.get_argument("id")
@@ -697,8 +853,8 @@ class CustomerHandler(BaseHandler):
                     """
                     select * from t_projects_type where income_category='移交资料' and jiaojie_order>0 order by order_int
                     """
-                )
-                
+                    )
+
                     t_cutomer_addr_msg=self.db.query('''
                     select * from t_customer_addr_msg where company=%s
                 ''',t_customer.company)
@@ -751,15 +907,28 @@ class CustomerHandler(BaseHandler):
                     projects_order=projects_order,
                     key=key,
                     tag=tag)
-        
+
         elif tag=="show_customer_exchange":
             customer_id=self.get_argument('customer_id')
+            department_name=self.get_secure_cookie('department_name')
+            jd_at=self.get_argument('jd_at','')
+            show_more='1'
+            sel_sql=''
+            if department_name=='销售部':
+                if not jd_at or jd_at=='None':
+                    show_more=''
+            elif department_name!='销售部' and role!='8':
+                sel_sql=' ,if(isvisible=2,"*** (未协助完不可见)",msg) as msg '
+            
             t_customer_exchange = self.db_customer.query(
-                """select * from t_customer_exchange where customer_id=%s and etype=2 order by created_at desc limit 5""",
+                """select * """+sel_sql+"""  from t_customer_exchange where customer_id=%s and etype=2 
+                order by created_at desc limit 5""",
                 customer_id)
             self.render('c/customer/show_customer_exchange.html',
-            t_customer_exchange=t_customer_exchange,
-            customer_id=customer_id)
+                t_customer_exchange=t_customer_exchange,
+                customer_id=customer_id,show_more=show_more)
+
+
 
     # "company_reguid":company_reguid,
     # "industry_name":industry_name,
@@ -776,6 +945,7 @@ class CustomerHandler(BaseHandler):
         uid = self.get_secure_cookie("uid")
         uid_name = self.get_secure_cookie("name")
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        role=self.get_secure_cookie('role')
         if tag =="check_company":
             company = self.get_argument("company")
             if company:
@@ -1410,6 +1580,11 @@ class CustomerHandler(BaseHandler):
             etype=self.get_argument("etype",1)
             customer_id=self.get_argument('customer_id')
             msg_time=self.get_argument('msg_time','')
+            sale_end_at=self.get_argument('sale_end_at','')
+            department_name=self.get_secure_cookie("department_name")
+            isvisible=1
+            if department_name=='销售部' and (sale_end_at=='None' or sale_end_at==''):
+                isvisible=2
             if not msg_time:
                 msg_time=None
             is_upload = False
@@ -1440,23 +1615,51 @@ class CustomerHandler(BaseHandler):
                 output_file = open(save_full_path, 'w')
                 output_file.write(file1["body"])
                 file_path = url_fname
-            self.db_customer.execute('''
-                insert into  t_customer_exchange(msg_time,msg,customer_id,created_at,uid,uid_name,file_path,etype)
-                values(%s,%s,%s,%s,%s,%s,%s,%s)''',msg_time, msg, customer_id,dt, uid,
-                                     uid_name, file_path, etype)
+            result=self.db_customer.execute('''
+                insert into  t_customer_exchange(msg_time,msg,customer_id,created_at,uid,uid_name,file_path,etype,isvisible)
+                values(%s,%s,%s,%s,%s,%s,%s,%s,%s)''',msg_time, msg, customer_id,dt, uid,
+                                     uid_name, file_path, etype,isvisible)
+            if result >0 and str(etype)=='2' and department_name!='销售部':
+                self.db_customer.execute('''
+                update t_customer set last_cuikuan_at=%s,last_cuikuan_msg=%s where id=%s
+                ''',dt,msg,customer_id)
+            elif result >0 and str(etype)=='2' and department_name=='销售部':
+                self.db_customer.execute('''
+                update t_customer set sale_last_cuikuan_at=%s,sale_last_cuikuan_msg=%s where id=%s
+                ''',dt,msg,customer_id)
+
+            sel_sql=''
+            if department_name!='销售部' and role!='8':
+                sel_sql=' ,if(isvisible=2,"*** (未协助完不可见)",msg) as msg '
+
             t_customer_exchange = self.db_customer.query(
-                """select * from t_customer_exchange where customer_id=%s and etype=2 order by created_at desc limit 5""",
+                """select * """+sel_sql+""" from t_customer_exchange where customer_id=%s and etype=2 order by created_at desc limit 5""",
                 customer_id)
             return self.render('c/customer/show_customer_exchange.html',
             t_customer_exchange=t_customer_exchange,
+            show_more='1',
             customer_id=customer_id)
-        
+
+
         elif tag=="confirm_msg_time":
             today_exchange_ids=self.get_argument('today_exchange_ids')
             for item in str(today_exchange_ids)[1:-1].split(','):
                 self.db_customer.execute('''
                     update t_customer_exchange set confirm_msg_time=1 where id=%s
                 ''',item[:-1])
+
+        elif tag=='show_customer_exchange':
+            customer_id=self.get_argument('customer_id')
+            t_customer_exchange = self.db_customer.get(
+                """select * from t_customer_exchange where customer_id=%s and etype=2 order by created_at desc limit 1""",
+                customer_id)
+            self.write({'created_at':str(t_customer_exchange.created_at),'msg':t_customer_exchange.msg})
+
+        elif tag=='more_projects':
+            num=self.get_argument('num')
+            customer_company=self.get_argument('customer_company')
+            t_projects=self.db.query('select id,guid,project_name from t_projects where customer_company=%s limit %s',customer_company,int(num))
+            self.write({'t_projects':t_projects,'num':int(num)})
 
     @run_on_executor(executor="_thread_pool")
     def runSql(self):

@@ -12,7 +12,7 @@
   }
 
   .faye-tdti {
-    text-align: center;
+    text-align: left;
   }
 
   .faye-selsect td {
@@ -28,25 +28,32 @@
     font-size: 12px;
     padding: 5px;
   }
+.faye-lba .hh {height:350x;line-height: 35px; text-align: left; font-size: 12px; color: #7e7e7e; padding-left: 15px;border-radius: 0;}
+.faye-lba {background:#fff; margin-top:45px; border-radius: 5px; border:1px solid #d3d3d3;}
+.badges {float: right; width: 25px; height: 20px; background-color: #E60012;margin-top: 7px;line-height: 17px;}
+.faye-lba .faye-lba-top {height:35px; line-height: 35px; background-color:#17a2b8; font-weight: bold; padding-left: 15px;}
+.hh:hover {background-color: #e7f6f8; color: #16a3b9;border-left: 3px solid #16a3c9;border-radius:0;}
+.hh:hover .badges {background-color: #e60012;margin-top: 7px;}
+select.form-control:not([size]):not([multiple]) {height: auto;}
 </style>
 <!-- 发业源码结束 -->
       <ol class="breadcrumb faye-ti">
         <li class="breadcrumb-item">
           主面板
         </li>
-        <li class="breadcrumb-item active">订单流转动态列表</li>
+        <li class="breadcrumb-item active">我的订单流转动</li>
       </ol>
 
 
       <nav>
   <div class="nav nav-tabs faye-a" id="nav-tab" role="tablist">
-      <a class="nav-item nav-link {%if not last_milepost_id%}active{%end%}" id="nav-home-tab"
-      href="/project?tag=projects_qc_milepost"  style="font-size:12px;" >全 部</a>
+      <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link {%if not last_milepost_id%}active{%end%}" id="nav-home-tab"
+      href="/project?tag=projects_qc_milepost"   >全 部</a>
 
     {%for idx,item in enumerate(project_btypes)%}
 
   
-    <a class="nav-item nav-link " btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"  style="font-size:12px;"
+    <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link " btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"  
       href="/project?tag=projects_qc_milepost&last_milepost_id={{item.id}}" style="font-size:13px;"> {%if item.id==165%}已填写办结信息,待仓管接单 {%else%}{{item.income_name}}{%end%}
       <span class="badge badge-danger">{{item.c}}</span></a>
 
@@ -54,20 +61,24 @@
     {%end%}
 
 
-        <a class="nav-item nav-link {%if  ntag=="is_cancel"%}active{%end%}" style="font-size:12px;" href="/project?tag=projects_qc_milepost&ntag=is_cancel">取消待审核
+        <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link {%if  ntag=="is_cancel"%}active{%end%}"  href="/project?tag=projects_qc_milepost&ntag=is_cancel">取消待审核
           <span class="badge badge-danger">{{cancel_wait_count1.count}}</span>
         </a>
-        <a class="nav-item nav-link {%if  ntag=="is_cancel_confirm" %}active{%end%}" style="font-size:12px;" href="/project?tag=projects_qc_milepost&ntag=is_cancel_confirm">取消单
+        <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link {%if  ntag=="is_cancel_confirm" %}active{%end%}"  href="/project?tag=projects_qc_milepost&ntag=is_cancel_confirm">取消单
           <span class="badge badge-danger">{{cancel_confirm_count1.count}}</span>
         </a>
 
      </div>
 </nav>
 
-
+<style>
+  select.form-control:not([size]):not([multiple]) {
+    height: auto;
+  }
+</style>
  <form  style="margin-top: 10px;">
  <table  style="font-size:12px">
-    <tr  class="faye-tdti">
+    <!-- <tr  class="faye-tdti">
       <td>业务类型</td>
             <td>销售顾问</td>
       <td>客服顾问</td>
@@ -88,7 +99,7 @@
        <td>
  
        </td>
-    </tr>
+    </tr> -->
 
         <tr class="faye-selsect">
 
@@ -141,7 +152,7 @@
         </select>
       </td>
                 <td>
-                  <select name="p_state" class="form-control" style="width:120px;"/>
+                  <select name="p_state" class="form-control" style="width:150px;">
                     <option value="0">进度</option>
                     {%for row in t_projects_state%}
                 
@@ -152,7 +163,7 @@
                 
                 </td>
           <td>
-<input type="text" class="form-control" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" style="width:120px;"/>
+<input type="text" class="form-control" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" style="width:195px;"/>
 
 
 
@@ -165,7 +176,7 @@
 
 
           <td>
-<input type="text" class="form-control" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}"  style="width:120px;"/>
+<input type="text" class="form-control" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}"  style="width:195px;"/>
 <input type="hidden" name="tag" value="{{tag}}"/>
 <input type="hidden" name="last_milepost_id" value="{%if params["last_milepost_id"]%}{{params["last_milepost_id"]}}{%end%}"/>
 <input type="hidden" name="ntag" value="{%if ntag%}{{ntag}}{%end%}"/>
@@ -321,6 +332,42 @@
     </div>
   </div>
 
+  <div class="modal fade" id="edit_zone_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongCQ">区域 </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+  <div class="modal-body form-horizontal" id="zone_body">
+  
+  
+      <div class="form-group zone_div">
+      <label for="inputEmail3" id="zone_lab" class="col-sm-5 control-label zone_lab">选择区域</label>
+      <div class="col-sm-10">
+            <select id="cq_member" name="zone_name"  class="form-control" >
+                  <option value="0">请选择</option>
+                          {%for m  in t_projects_type%}
+                              <option value="{{m.id}}" name="{{m.income_name}}" >{{m.income_name}}</option>
+                       
+                          {%end%}
+                  </select>
+      </div>
+    </div>
+
+        </div>
+        <div class="modal-footer">
+  
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                   <button class="btn btn-primary" target="_blank" id="btn_save_zone">保 存</button>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 
 
@@ -355,13 +402,13 @@
 {%end%}
 
             <div class="table-responsive">
-              <table class="table table-bordered" cellspacing="0" style="font-size:12px;width:1300px;;">
+              <table class="table table-bordered" cellspacing="0" style="font-size:12px;">
             
                 <thead style="background-color:#000;color:#fff ; font-size:13px;">
 
     
                         <tr>
-          <th width="20">
+          <th width="15">
                             <input type="checkbox" name="checkall" id="checkall"/>
                             </th>
                            <th width="20">
@@ -370,11 +417,11 @@
                              <th>业务内容</th>
 
                                 <th width="200">公司名称</th>
-                             <th width="100">客户名称</th>
+                             <th width="80">客户</th>
 
 
 
-                             <th width="100">
+                             <th width="80">
                             成员
                             </th>
 
@@ -384,6 +431,7 @@
                              <th width="100">流转状态</th>
 
 <th width="120">流转时间</th>
+<th width="200">最新办理进度</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -403,7 +451,7 @@
                                 <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}"  title="{{item.project_name}}"
                                   style="font-size:13px;">
                               
-                                  {%if len(item.project_name) > 40%} {{item.project_name[:39]}}....... {%else%} {{item.project_name}} {%end%}
+                                  {%if len(item.project_name) > 35%} {{item.project_name[:35]}}... {%else%} {{item.project_name}} {%end%}
                               
                                 </a>
                               
@@ -449,7 +497,7 @@
 
 
                             </td>
-
+                            <td>{%if item.last_state_msg_at%}{{item.last_state_msg}}{{item.last_state_msg_at.strftime("%Y-%m-%d")}}{%end%}</td>
                         </tr>
                         {%end%}
                     </tbody>
@@ -493,33 +541,50 @@
 
     <style>
       .faye-lba a {
-        margin-top: 5px;
-        padding: 3px; text-align: center; font-size: 10px;
+        /* margin-top: 5px; */
+        padding: 3px; text-align: left; font-size: 12px;
       }
 
 
 
     </style>
 <div class="row">
-    <div class="col-1">
+    <div class="col-2" >
+        <div class="nav flex-column nav-pills faye-lba" id="v-pills-tab" role="tablist">
+         
+         
+          <a class="faye-lba-top" style="color: #fff;">菜单管理</a>
+
+          <a class="nav-link hh"  id="v-pills-settings-tab"  
+          href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}"  
+         style="padding-left:15px; height:35px; vertical-align: middle !important; text-align: left;background-color:#fff;color:black;{%if not category_id and ntag!="ungroup"%}background-color: #e7f6f8; color: #16a3b9;border-left:3px solid #16a3c9;border-radius:0;{%end%}"
+           aria-selected="false">全部<span class="badge badge-primary badges"  id="v-pills-settings-tab" ></span></a>
+     <a class="nav-link hh "  href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}&ntag=ungroup" 
+      aria-selected="false" {%if  ntag=="ungroup"%}style="background-color: #e7f6f8; color: #16a3b9;border-left:3px solid #16a3c9;border-radius:0;" {%end%}
+     >未分组<span class="badge badge-primary badges" style="font-size:13px;{%if  ntag=="ungroup"%}background-color: #e60012;{%end%}" id="v-pills-settings-tab" >{{wait_group.count}}</span></a>
 
 
 
-      <div class="nav flex-column nav-pills faye-lba" id="v-pills-tab" role="tablist">
-     <a class="nav-link {%if  ntag=="ungroup"%}active show {%end%}"  href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}&ntag=ungroup" 
-     role="tab" aria-controls="v-pills-home" aria-selected="false">未分组<span class="badge badge-info">{{wait_group.count}}</span></a>
 
-        <a class="nav-link {%if not category_id and ntag!="ungroup"%}active show {%end%}"  href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}" role="tab" aria-controls="v-pills-home" aria-selected="false">全部</a>
         {%for item in t_categories%}
-            <a class="nav-link hh {%if  category_id==str(item.id)%}active show {%end%}" id="v-pills-settings-tab" href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}&category_id={{item.id}}"
-           aria-selected="false" category_id={{item.id}}>{{item.category_name}} {%if item.c > 0%}<span class="badge badge-info">{{item.c}}</span>{%end%}</a>
+            <a class="nav-link hh "
+            {%if  category_id==str(item.id)%}style="background-color: #e7f6f8; color: #16a3b9;border-left:3px solid #16a3c9;border-radius:0;" {%end%}
+            id="v-pills-settings-tab"
+        
+            href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}&category_id={{item.id}}"
+           aria-selected="false" category_id={{item.id}}>{{item.category_name}} {%if item.c > 0%}
+           <span class="badge badge-primary badges" style="font-size:13px;{%if  category_id==str(item.id)%}background-color: #e60012;{%end%}" >{{item.c}}</span>{%end%}</a>
         {%end%}
        <a class="nav-link"  id="manage_group" href="javascript:void(0)"
      >+管理分组</a>
-      </div>
-      
+   
+        </div>
+
+
+
+
     </div>
-    <div class="col-11">
+    <div class="col-10">
       <div class="tab-content" id="v-pills-tabContent">
         <div class="tab-pane fade  active show " id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
 
@@ -535,6 +600,7 @@
     <a class="dropdown-item" href="javascript:void(0)" id="btn_set_group">设置分组</a>
 
       <a class="dropdown-item" href="javascript:void(0)" id="btn_set_group_end" bname="办结">批量办结</a>
+      <a class="dropdown-item" href="javascript:void(0)" id="btn_set_zone_group" bname="办结">设置区域</a>
 
   </div>
 
@@ -546,61 +612,70 @@
 </div><br/>
 <div class="table-responsive">
   
-            <table class="table table-bordered" id="dataTable" cellspacing="0" style="font-size:12px;width:1400px;;">
+            <table class="table table-bordered" id="dataTable" cellspacing="0" style="font-size:12px;">
                   <thead style="background-color:#000;color:#fff ; font-size:13px;">
                         <tr>
 <th style="vertical-align: middle !important;text-align: center;" width="20">
   <input name="checkall" id="checkall" type="checkbox">
 </th>
-                           <th style="vertical-align: middle !important;text-align: center;"  width="20">
+                           <th style="vertical-align: middle !important;text-align: center;padding: 2px;"  width="20">
                             编号 
                             </th>
-                                                            <th style="vertical-align: middle !important;text-align: center;"  width="230">公司名称</th>
-<th style="vertical-align: middle !important;text-align: center;"  width="120">客户姓名</th>
-    <th style="vertical-align: middle !important;text-align: center;"   width="120">
+                                                            <th style="vertical-align: middle !important;text-align: center;"  width="220">公司名称</th>
+<th style="vertical-align: middle !important;text-align: center;"  width="90">客户姓名</th>
+<th style="vertical-align: middle !important;text-align: center;" width="120">办理时长</th>
+<th style="vertical-align: middle !important;text-align: center;" width="150">最新办理进度</th>
+    <th style="vertical-align: middle !important;text-align: center;"   width="90">
       办理项目
     </th>
                            <th style="vertical-align: middle !important;text-align: center;"   width="100">分组</th>
-                             <th style="vertical-align: middle !important;text-align: center;"  >业务内容</th>
-                             <th style="vertical-align: middle !important;text-align: center;"  width="100">流转动态</th>
+                             <th style="vertical-align: middle !important;text-align: center; width:400px;" >业务内容</th>
 
-<th style="vertical-align: middle !important;text-align: center;"  width="120">流转时间</th>
+
                         </tr>
                     </thead>
                     <tbody>
                         {%for item in t_projects%}
                         <tr>
-                             <td style="vertical-align: middle !important;text-align: center;">
+                             <td style="vertical-align: middle !important;vertical-align: center !important;text-align: left;">
                            
                                 <input type="checkbox" name="cbProject" value="{{item.id}}" mid="{{item.mid}}" project_id="{{item.id}}" project_guid="{{item.guid}}"/>
                             </td>
-                               <td>
+                               <td style="vertical-align: middle !important;height:55px;">
                               {{item.id}} 
                            
-                            </td style="vertical-align: middle !important;text-align: center;">
-                                    <td style="word-break: break-all; vertical-align: middle !important;text-align: center;">
+                            </td style="vertical-align: middle !important;text-align: left;">
+                                    <td style="word-break: break-all; vertical-align: middle !important;text-align: left;">
                                       {{item.customer_company}}
                                     </td>
-                                                  <td style="vertical-align: middle !important;text-align: center;">
+                                                  <td style="vertical-align: middle !important;text-align: left;">
                                                     {{item.customer_name}}
                                                   </td>
+<td style="vertical-align: middle !important;text-align: left; color:red;">
+  <!-- {%if item.last_milepost_id_at%} {{item.last_milepost_id_at.strftime("%Y-%m-%d")}} {%else%} {{item.cq_created_at.strftime("%Y-%m-%d")}} {%end%} -->
+{{item.msg_created_day}}天
 
-                                                          <td style="vertical-align: middle !important;text-align: center;">
+
+
+</td>
+<td>{%if item.last_state_msg_at%}{{item.last_state_msg}}{{item.last_state_msg_at.strftime("%Y-%m-%d")}}{%end%}</td>
+                                                          <td style="vertical-align: middle !important;text-align: left;">
                                                             {%if item.btype_id_name%} {{item.btype_id_name}} {%end%}
-                                                          
+                                                            {%if item.zone_id_name%}<span style="color:#007bff;">({{item.zone_id_name}})</span>{%end%} 
                                                           </td>
-                                <td style="vertical-align: middle !important;text-align: center;">
+                                <td style="vertical-align: middle !important;text-align: left;">
                                 {%if item.b_category_id%}
-                              {{item.b_category_id_name}} 
+                              {{item.b_category_id_name}}
+                              
                               {%else%}
                               未分组
                               {%end%}
                            
                             </td>
-                            <td style="word-break: break-all; text ">
+                            <td style="vertical-align: middle !important;word-break: break-all;" title="{{item.project_name}}">
                                <a target="_blank"  href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}"  title="{{item.project_name}}" style="font-size:12px;"> 
                                
-                               {%if len(item.project_name) > 61%}
+                               {%if len(item.project_name) > 60%}
                                 {{item.project_name[:60]}}.......
 
 
@@ -616,29 +691,6 @@
                 
 
                     
-                    
-                            <td style="vertical-align: middle !important;text-align: center;">
-                          {%if item.last_milepost_id_name%}
-                                {{item.last_milepost_id_name}}
-                            {%else%}
-                                    等待工商接单
-
-                            {%end%}
-                            </td>
-
-
-                              <td style="vertical-align: middle !important;text-align: center;">
-                        {%if item.last_milepost_id_at%}
-                                {{item.last_milepost_id_at}}
-                            {%else%}
-                                     {{item.cq_created_at}}
-
-                            {%end%}
-
-
-
-
-                            </td>
 
                         </tr>
                         {%end%}
@@ -695,6 +747,10 @@
       {% end %} {%block js%}
 <script>
 $(function(){
+  $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
   {%if msg%}
                 
                  $.notify({
@@ -791,6 +847,37 @@ $(function(){
             }
         }
     })
+    $("#btn_set_zone_group").on("click",function () { 
+        $('#edit_zone_modal').modal('show');
+     })
+    
+    $("#btn_save_zone").on("click",function () {
+      zone_id=$("select[name=zone_name]").val()
+      zone_name=$("select[name=zone_name]").find('option:selected').text()
+      lnum = $("input[name=cbProject]:checked").length
+        if(lnum==0){
+            alert('至少要选择一个业务哦.')
+        }
+        else if(zone_id=='0'){
+            alert('请选择区域')
+        }
+        else{
+                    var str = "";
+                    $('input[name=cbProject]').each(function() {
+                        if(this.checked){
+                            
+                            str += $(this).attr("mid")+",";
+                        }
+                    });
+                    str = str.substr(0, str.length - 1); 
+           
+                $.post("project?tag=edit_zone",{"mids":str,"zone_id":zone_id,'income_name':zone_name,"_xsrf":_xsrf},function(result){
+                  location.href="/project?tag=projects_qc_milepost{%if category_id%}&category_id={{category_id}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}&msg=您的批量操作成功!"
+                })
+            
+        }
+
+     })
 
     /*
     $(".setgroup").on("click",function(){
@@ -855,7 +942,8 @@ $(function(){
          {
            'id':id,
            '_xsrf':_xsrf
-         },function (result) { 
+         },function (result) {
+           location.reload() 
           $('.hh[category_id='+id+']').remove();
 
           }
@@ -878,26 +966,27 @@ $(function(){
                 'category_name':category_name,
                 "order_int":order_int
             },function (result) {
-              var t='<a class="nav-link hh"   id="v-pills-settings-tab" href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}'+
-                '&category_id='+result['id']+
-                        '" aria-selected="false" category_id='+result['id']+'>'+category_name+' </a>';
-                $('#v-pills-tab').children().eq(0).append(t)
-                $('.showdown').click();
-                $('#my_allgroups tr').remove();
-                item=result['all_categorys']
-                for(var i=0;i<item.length;i++){
-                  var vTr='<tr id="'+item[i].id+'" class="my_allgroup hh" category_id='+item[i].id+'>'+         
-                                 '<td>'+item[i].id+'</td>'+       
-                          '<td><input type="text"  id="'+item[i].id+'" value="'+
+              location.reload()
+            //   var t='<a class="nav-link hh"   id="v-pills-settings-tab" href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}'+
+            //     '&category_id='+result['id']+
+            //             '" aria-selected="false" category_id='+result['id']+'>'+category_name+' </a>';
+            //     $('#v-pills-tab').children().eq(0).append(t)
+            //     $('.showdown').click();
+            //     $('#my_allgroups tr').remove();
+            //     item=result['all_categorys']
+            //     for(var i=0;i<item.length;i++){
+            //       var vTr='<tr id="'+item[i].id+'" class="my_allgroup hh" category_id='+item[i].id+'>'+         
+            //                      '<td>'+item[i].id+'</td>'+       
+            //               '<td><input type="text"  id="'+item[i].id+'" value="'+
 
-                          item[i].category_name+'" class="form-control"></td>'+        
-                                          '<td><input type="text"  value="'+
-                                          item[i].order_int+'" class="form-control"></td>'+    
-                          '<td><a class="btn btn-danger delete_group l" href="javascript:void(0)" id="'+
-                          item[i].id+'">删除</a></td></tr>'
-                  $('#my_allgroups').append(vTr);
-                }
-            $('#manage_group_modal').modal('show')
+            //               item[i].category_name+'" class="form-control"></td>'+        
+            //                               '<td><input type="text"  value="'+
+            //                               item[i].order_int+'" class="form-control"></td>'+    
+            //               '<td><a class="btn btn-danger delete_group l" href="javascript:void(0)" id="'+
+            //               item[i].id+'">删除</a></td></tr>'
+            //       $('#my_allgroups').append(vTr);
+            //     }
+            // $('#manage_group_modal').modal('show')
 
                  }
             )

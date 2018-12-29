@@ -24,8 +24,10 @@
                                             <div class="control-group">
                                                 <label class="control-label" for="username">公司名称</label>
                                                 <div class="controls">
-                                                    <input type="text" class="span6 " id="company" name="company" value="{%if t_customer.company%}{{t_customer.company}}{%end%}">
-                                                    <p id="msg_company" class="help-block" style="color:red"></p>
+                                                    <!--罗佳颖-->
+         <input type="text"  {%if role not in ['3','2','5','8'] or uid==161%}readonly="readonly"{%end%} 
+         class="span6 " id="company" name="company" value="{%if t_customer.company%}{{t_customer.company}}{%end%}">
+                  <p id="msg_company" class="help-block" style="color:red"></p>
                                                 </div>
                                                 <!-- /controls -->
                                             </div>
@@ -82,7 +84,7 @@
                                             <div class="control-group">
                                                 <label class="control-label" for="lastname">供应商</label>
                                                 <div class="controls">
-                                                    <input type="text" class="span6" id="addr_cp" name="addr_cp" value="{%if t_customer.addr_cp%}{{t_customer.addr_cp}}{%end%}">
+                                                    <input type="text" {%if role not in ['2','3','5','8'] or uid==161%}readonly="readonly"{%end%} class="span6" id="addr_cp" name="addr_cp" value="{%if t_customer.addr_cp%}{{t_customer.addr_cp}}{%end%}">
                                                 </div>
                                                 <!-- /controls -->
                                             </div>
@@ -103,7 +105,7 @@
                                                 <label for="promo_id" class="control-label">优惠活动:
                                                 </label>
                                                 <div class="controls">
-                                                <select name="promo_id" id="promo_id" class="form-control">
+                                                <select name="promo_id" id="promo_id" class="form-control" {%if role not in ['2','3','5','8'] or uid==161%}disabled="disabled"{%end%}>
                                                     <option value="0">==请选择优惠活动==</option>
                                                     {% for idx, item in enumerate(t_promo_types) %}
                                             
@@ -188,7 +190,7 @@
 </label>
                                                 <div class="controls">
                                                 {%for item in t_customer_type%}
-                                                    <input type="checkbox" name="customer_type" 
+                                                    <input type="checkbox" name="customer_type" {%if role not in ['2','3','5','8'] or uid==161%}disabled="disabled"{%end%} 
                                                     {%if t_customer.customer_type%}
                                                     {%for s in t_customer.customer_type.split(",")%}
                                                         {%if s==str(item.id)%}
@@ -213,7 +215,7 @@
         {%for idx,item in enumerate(t_payment_type)%}
              <input type="radio" name="pay_type_id" fee="{{item.fee}}" value="{{item.id}}" pay_typeid_name="{{item.name}}"
              
-             {%if item.id==t_customer.paytype_id %} checked="true" {%end%}/> {{item.name}}
+             {%if item.id==t_customer.paytype_id %} checked="true" {%end%} {%if role not in ['2','3','5','8'] or uid==161%}disabled="disabled"{%end%}/> {{item.name}}
    {%end%}
 
                                                     <p id="msg_paytype" class="help-block" style="color:red"></p>
@@ -223,7 +225,7 @@
                                             <div class="control-group">
                                                 <label class="control-label" for="lastname">总服务费</label>
                                                 <div class="controls">
-                                                    <input type="text" class="span6" id="service_amount" name="service_amount" value="{{t_customer.service_amount}}" >
+                                                    <input {%if role not in ['2','3','5','8'] or uid==161%}readonly="readonly"{%end%} type="text" class="span6" id="service_amount" name="service_amount" value="{{t_customer.service_amount}}" >
                                                 </div>
                                             </div>
 
@@ -237,7 +239,7 @@
                                             <div class="control-group">
                                                 <label class="control-label" for="lastname">帐册费</label>
                                                 <div class="controls">
-                                                    <input type="text" class="span6" id="book_amount" name="book_amount" value="{{t_customer.book_amount}}">
+                                                    <input type="text" class="span6" id="book_amount" name="book_amount" value="{{t_customer.book_amount}}"  {%if role not in ['2','3','5','8'] or uid==161%}readonly="readonly"{%end%} >
                                                 </div>
                                             </div>
 
@@ -438,6 +440,8 @@
                    }
        });
    
+
+              
           $('#service_amount').keyup(function() {
                            all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
                              if (all_total==Infinity){
@@ -483,16 +487,7 @@ return process(JSON.parse(data));
                 }
     });
 
-       $('#service_amount').keyup(function() {
-                        all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
-                          if (all_total==Infinity){
-                        all_total = 0
-                        
-                    }
-                        $("#service_amount_month").val(intToFloat(all_total))
 
-
-        });
 
 function intToFloat(val){
         return new Number(val).toFixed(2);

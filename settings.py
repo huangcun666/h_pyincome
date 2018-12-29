@@ -17,11 +17,12 @@ define("debug", default=False, help="debug mode")
 # define("mysql_host", default="127.0.0.18:3306", help="blog database host")
 #define("mysql_host", default="120.77.170.45:3306", help="blog database host")
 define("mysql_host", default="127.0.0.1:3306", help="blog database host")
-define("mysql_host_building", default="building.gzfaye.com:3306", help="blog database host")
+define("mysql_host_building", default="120.77.170.45:3306", help="blog database host")
 
 define("mysql_database", default="db_income2", help="database name")
+define("mysql_database_ext", default="db_income_ext", help="database name")
 define("mysql_database_customer", default="db_customer", help="database name")
-define("mysql_database_building", default="db_building", help="database name")
+# define("mysql_database_building", default="db_building", help="database name")
 define("mysql_database_company", default="db_company", help="database name")
 
 

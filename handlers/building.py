@@ -20,6 +20,7 @@ class BuidlingHandler(BaseHandler):
         if tag == "show":
             customer_id = self.get_argument("customer_id")
             customer_name = self.get_argument("customer_name","")
+            print customer_name, customer_id
             if  customer_id:
                 t_customer = self.db_building.get(
                     "select a.*,b.name uid_name from t_customer a , t_user b where a.uid=b.id and qid=%s ",

@@ -1,0 +1,96 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+         主面板
+        </li>
+        <li class="breadcrumb-item active">流转交接驳回列表 
+     
+        </li>
+
+      </ol>
+
+
+
+
+
+
+
+
+<div class="table-responsive">
+
+
+                  <table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:11px;">
+                    <thead style="background-color:#000;color:#fff ; ">
+                        <tr>
+                            <th width="80">编号</th>
+                            <th  width="150">公司名称</th>
+                            <th  width="80">客户名称</th>
+                            <th  width="80">工商专员</th>
+                            <th width="150">驳回内容</th>
+                            <th  width="80">业务名称</th>
+                            <th  width="40"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%if  t_projects%}
+                        {%for item in t_projects%}
+                            <tr>
+                                <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}">{{item.id}}</a></td>
+                                <td>{{item.customer_company}}</td>
+                                <td>{{item.customer_name}}</td>
+                                <td>{{item.gs_name}}</td>
+                                <td>{{item.fback_remark}}</td>
+                                <td>{{item.btype_name}}</td>
+                                <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-info">查看</a></td>
+                            </tr>
+                        {%end%}
+                        {%else%}
+                            <tr><td colspan="10">还没有哦~</td></tr>
+                        {%end%}
+                    </tbody>
+              
+                </table>
+
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=my&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% else %}
+          <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+          {% end %} 
+          
+          {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>
+
+         </div>
+        </div>
+    
+<!-- Modal -->
+
+
+
+
+{%end%}
+
+
+
+ {%block js%}
+
+{%end%}

@@ -38,28 +38,47 @@
 <div class="tab-pane active" id="formcontrols">
         <form class="form-search" id="query_form">
                 <input type="text" value="{%if company%}{{company}}{%end%}" name="company" id="company" class="input-medium search-query" placeholder="公司名称">
-              
+                    <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
+
                 <button type="submit" class="btn">检 索</button>
                 <input type="hidden" value="{{tag}}" name="tag"/>
                             <input type="hidden" value="{{state}}" name="state" />
-
-                            <input type="hidden" value="{{pay_project_id}}" name="pay_project_id" />
-
-                
+    <input type="hidden" value="{{from_customer}}" name="from_customer" />
+                            <input type="hidden" value="{{pay_project_id}}" name="pay_project_id" />         
               </form>
-<ul class="nav nav-tabs" id="myTab">
-
+              {%if from_customer%}
+                    <ul class="nav nav-tabs" id="myTab">
     <li {%if pay_project_id==0%} class="active" {%end%}>
-        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=0&state=0" id="customer_tab">待审核</a>
+        <a href="/payment?tag=list_company_in_customer&pay_project_id=0" id="customer_tab">待处理</a>
     </li>
-    <li {%if pay_project_id > 0 and state==2%} class="active" {%end%}>
-        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=1&state=2" id="tab_confirm">已审核</a>
+    <li {%if pay_project_id> 0 and state==0%} class="active" {%end%}>
+        <a href="/payment?tag=list_company_in_customer&pay_project_id=1" id="tab_confirm">已处理</a>
     </li>
+    
+    <li {%if pay_project_id> 0 and state==2 %} class="active" {%end%}>
+        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=1&state=2&from_customer=1" id="tab_confirm">已审核</a>
+    </li>
+    
     <li {%if pay_project_id> 0 and state==1%} class="active" {%end%}>
-        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=1&state=1" id="tab_confirm">驳回订单</a>
+        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=1&state=1&from_customer=1" id="tab_confirm">驳回订单</a>
     </li>
+
 </ul>
 
+              {%else%}
+                <ul class="nav nav-tabs" id="myTab">
+
+                    <li {%if pay_project_id==0%} class="active" {%end%}>
+                        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=0&state=0" id="customer_tab">待审核</a>
+                    </li>
+                    <li {%if pay_project_id > 0 and state==2%} class="active" {%end%}>
+                        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=1&state=2" id="tab_confirm">已审核</a>
+                    </li>
+                    <li {%if pay_project_id> 0 and state==1%} class="active" {%end%}>
+                        <a href="/payment?tag=list_company_in_customer_req&pay_project_id=1&state=1" id="tab_confirm">驳回订单</a>
+                    </li>
+                </ul>
+        {%end%}
 <fieldset>
 
 
@@ -77,10 +96,9 @@
 
 
 
-                                <th style="width:200px;">本期到款内容</th>
 
-
-
+              <th width="160">最新收款明细</th>
+                                                    <th width="160">待收明细</th>
             
                                 
 
@@ -88,18 +106,29 @@
 
 
                                 {%if state==0%}
+                                  <th style="width:120px;">到款处理</th>
+                              
                                 <th style="width:60px;"></th>
 
                                 {%elif state==1%}
-                                <th style="width:120px;">处理人</th>
+                                <th style="width:120px;">到款处理</th>
                                 <th style="width:60px;">确认审核</th>
+                                         {%if from_customer%}
+                                <th  style="width:60px;">
+                  
+              
+                        </th>
+                {%end%}
                                  {%else%}
 
-                                    <th style="width:120px;">处理人</th>
+                                    <th style="width:120px;">到款处理</th>
                                     <th style="width:60px;">确认审核</th>
                                    {%end%}
 
 
+
+
+       
 
 
                                 </tr>
@@ -109,19 +138,28 @@
      {%for item in customers%}
                     <tr>
                       
-                        <td><a target="_blank" href="/payment?tag=customer&customer_id={{item.a_customer_id}}&to_tag=payment_tab">{{item.customer_company}}</a></td>
+                        <td><a target="_blank" href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab">{{item.customer_company}}</a>
+                        
+                            <a class="modify_customer_detail btn-sm  control"
+         customer_id="{{item.customer_id}}" 
+         promo_id="{{item.promo_id}}|{{item.promo_id_name}}" is_general="{{item.is_general}}"
+         pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
+         pay_service_amount = "{{item.pay_service_amount}}"
+         pay_service_amount_month  = "{{item.pay_service_amount_month}}"
+         pay_book_amount ="{{item.pay_book_amount}}" guid="{{item.guid}}"
+         customer_type="{{item.customer_type}}"  href="javascript:void(0)"
+              customer_company = "{{item.customer_company}}"
+        >
+            <img src="/static/images/modify.png" width="20"/></a>  
+                        
+                        
+                        </td>
                                         <td>{{item.acc_uid_name}}</td>
 
-            <td>{{item.payment_id}}--{{item.c_customer_id}}---
-                {{item.project_name}}(编号:{{item.project_id}})
-                <br/>
-                <span style="color: red"> 到款: 第{{item.income_num}}笔 {{item.income_list}}</span>
-                <br/>
-                <span style="color: blue"> 明细: {{item.pay_list}}</span>
-            
-            </td>
+      
                
-
+             <td>{%if item.al_remark%}{{item.al_remark}}{%end%}</td>
+  <td>{%if item.pb_remark%}{{item.pb_remark}}{%end%}</td>
 
                  
   <td>
@@ -131,6 +169,13 @@
 </td>
 
     {%if pay_project_id==0%}
+                         <td>
+                
+               
+
+ {{item.is_handler_uid_name}} {{item.is_handler_at}}
+                </td>
+              
             <td>
          
             
@@ -138,7 +183,7 @@
                 al_remark = "{%if item.al_remark%}{{item.al_remark}}{%end%}"
                 pb_remark = "{%if item.pb_remark%}{{item.pb_remark}}{%end%}"
                 type='button' income_id="{{item.income_title_id}}" 
-                 customer_id="{{item.a_customer_id}}"
+                 customer_id="{{item.customer_id}}"
                     project_id="{{item.project_id}}" 
                      customer_company = "{{item.customer_company}}"
                     customer_pay_type_id="{{item.customer_pay_type_id}}" 
@@ -158,16 +203,49 @@
             </td>
             {%else%}
                 <td>
-                    审核人:
-                    {{item.payment_confirm_uid_name}}
-                    <br/>
-                    时间: {{item.title_created_at}}
+                  
+                    {{item.is_handler_uid_name}}
+                 
+                     {{item.is_handler_at}}
                 
                 </td>
                 <td>
-                     确认人: {{item.is_handler_uid_name}}
-                    <br/> 时间: {{item.is_handler_at}}
+                    <span style='color:red;'> {{item.payment_confirm_remark}}</span>
+                     {{item.payment_confirm_uid_name}}
+                    {{item.payment_confirm_at}}
+
+
                 </td>
+  
+
+
+                {%if from_customer%}
+                                <td>
+                              
+                <a class="btn handler_detail_modify btn-sm control" 
+                type='button'
+                 customer_id="{{item.customer_id}}"
+                    project_id="{{item.project_id}}" 
+                     customer_company = "{{item.customer_company}}"
+                    customer_pay_type_id="{{item.customer_pay_type_id}}" 
+                    customer_paytype_id_name="{{item.customer_paytype_id_name}}"
+                     curr_payment_detail="{{item.project_name}}(编号:{{item.project_id}}){{item.income_list}} {{item.pay_list}} "
+                    customer_service_amount="{{item.customer_service_amount}}"
+                    customer_service_amount_month="{{item.customer_service_amount_month}}"
+                     customer_book_amount="{{item.customer_book_amount}}"
+                    
+                    al_remark = "{%if item.al_remark%}{{item.al_remark}}{%end%}" 
+                    pb_remark = "{%if item.pb_remark%}{{item.pb_remark}}{%end%}"
+                    payment_id = "{{item.payment_id}}"
+                     wait_pay_amount = "{{item.e_wait_pay_amount}}"
+                    acc_end="{%if item.e_acc_end%}{{item.e_acc_end.strftime("%Y-%m")}}{%else%}N{%end%}" 
+                    acc_book_end="{%if item.e_acc_book_end%}{{item.e_acc_book_end.strftime("%Y-%m")}}{%else%}N{%end%}"
+                     href="javascript:void(0)">修改</a>
+                
+                </td>
+                
+                
+                {%end%}
               
             {%end%}
 
@@ -188,15 +266,15 @@
                               <div class="pagination">
                         <ul>
                             {% if pagination.has_prev %}
-                            <li><a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if state%}&state={{state}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li><a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}{%if kf%}&kf={{kf}}{%end%}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if state%}&state={{state}}{%end%}{%if from_customer%}&from_customer={{from_customer}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li>
-                                <a href="/payment?tag={{tag}}&page={{ page }}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if state%}&state={{state}}{%end%}">{{ page }}</a></li>
+                                <a href="/payment?tag={{tag}}&page={{ page }}{%if kf%}&kf={{kf}}{%end%}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if state%}&state={{state}}{%end%}{%if from_customer%}&from_customer={{from_customer}}{%end%}">{{ page }}</a></li>
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
                             {% end %} {% else %}
                             <li><span class="active"><a href="#">....</a></span></li>
                             {% end %} {%end %} {% if pagination.has_next %}
-                            <li><a href="/payment?tag={{tag}}&page={{pagination.page+1}}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if state%}&state={{state}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/payment?tag={{tag}}&page={{pagination.page+1}}{%if kf%}&kf={{kf}}{%end%}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if state%}&state={{state}}{%end%}{%if from_customer%}&from_customer={{from_customer}}{%end%}">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>
@@ -214,6 +292,153 @@
 </div> <!-- /row -->
 </div> <!-- /container -->
  </div>
+
+
+
+
+
+
+
+
+
+      {%if pay_project_id > 0 %}
+<div id="a_handler_modal_modify" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel_account">处理到款明细
+            
+            <a href="javascript:void(0)" class="btn btn-danger" id="delete_payment">删除</a>
+
+
+        </h3>
+    </div>
+    <div class="modal-body">
+       
+
+<table border="1" style="padding:5x;width:100%">
+
+        <tr style="background:#efefef; font-size:12px;" id="customer_company">
+        
+        </tr>
+
+    <tr style="background:#ccc;">
+        <td colspan="8">当前收款基本信息</td>
+    </tr>
+    <tr id="service_price">
+        
+    </tr>
+
+    <tr  style="background:#ccc;">
+        <td colspan="8">上期收款明细</td>
+    </tr>
+    <tr id="last_payment">
+    
+    </tr>
+    <tr style="background:#ccc;">
+        <td colspan="4">本期待收款明细</td>
+            <td colspan="4">本期待收款金额</td>
+    </tr>
+    <tr id="curr_last_payment">
+    
+    </tr>
+</tr>
+<tr style="background:#ccc;">
+    <td colspan="8">本期到款明细</td>
+</tr>
+<tr id="curr_payment_detail">
+
+</tr>
+
+</table>
+
+
+
+
+<table  style="padding:3x;width:100%">
+
+    <tr>
+        <td><div class="control-group">
+        
+            <label class="control-label" for="acc_end">记账费到期时间
+               
+        
+        
+            </label>
+            <div class="controls">
+                <input type="text" class="span2 " id="acc_end" name="acc_end" value=""><br/>
+                <span id="msg_acc_end" style="color:red"></span>
+            </div>
+            <!-- /controls -->
+        </div></td><td>
+
+<div class="control-group">
+
+    <label class="control-label" for="account">账册费到期时间
+        <span id="is_free" style="color: red"></span>
+
+
+    </label>
+    <div class="controls">
+        <input type="text" class="span2" id="acc_book_end" name="acc_book_end"  data-format="YYYY-MM" data-template="YYYY-MM"><br/>
+        <span id="msg_acc_book_end" style="color:red"></span>
+    </div>
+    <!-- /controls -->
+</div>
+
+
+
+        </td>
+    </tr>
+</table>
+
+       
+
+
+        <div class="control-group">
+            <label class="control-label" for="al_remark">本期收款明细</label>
+            <div class="controls">
+                <textarea type="text" class="span5" id="al_remark" name="al_remark" value="" style="height: 40px;"></textarea>
+            </div>
+            <!-- /controls -->
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="lastname">待收明细 </label>
+            <div class="controls">
+                <textarea type="text" class="span5" id="pb_remark" name="pb_remark" value="" style="height: 40px;"></textarea>
+            </div>
+            <!-- /controls -->
+        </div>
+    <div class="control-group">
+        <label class="control-label" for="wait_pay_amount">待收金额</label>
+        <div class="controls">
+            <input type="text" class="span4" id="wait_pay_amount" name="wait_pay_amount" />
+            <span style="color:red" id="lb_wait_pay_amount"></span>
+        </div>
+        <!-- /controls -->
+    </div>
+
+
+
+
+    </div>
+    <div class="modal-footer">
+
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <button class="btn btn-primary" id="btn_save">保存(重新提交)</button>
+    </div>
+</div>
+
+
+
+
+
+
+{%else%}
+
+
+
+
+
 
 
 <div id="a_handler_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -326,7 +551,7 @@
     </div>
 </div>
 
-
+{%end%}
 
 
 
@@ -335,9 +560,9 @@
 
     {%block js%}
 
-<script src="http://momentjs.com/downloads/moment.js"></script>
+<script src="/static/moment.js"></script>
 <script src="/static/combodate.js"></script>
-
+ {% include "customer_modify_base.html" %}
 
 
 <script>
@@ -347,7 +572,22 @@
 
       //  moment().format('YYYY-MM'); // 十月 25日 2018, 12:28:24 中午
       //  moment.locale();         // zh-cn
+        $('#acc_book_end').combodate({
+            format: "YYYY-MM",
+            template: "YYYY-MM",
+            minYear: 2017,
+            maxYear: 2025,
+            yearDescending: false
+        });
+        
+        $('#acc_end').combodate({
+             format: "YYYY-MM",
+             template:"YYYY-MM",
+            minYear: 2017,
+            maxYear: 2025,
+            yearDescending: false
 
+        });
         $(function () {
             _xsrf = getCookie("_xsrf")
             $("#company").typeahead({
@@ -370,6 +610,153 @@
                 $("#pc_remark_show").hide()
             }
         });
+      {%if pay_project_id > 0 %}
+        $(".handler_detail_modify").on("click", function () {
+            //$('#acc_book_end').combodate("setValue", "2018-02-01");
+             $("#al_remark").val("")
+            $("#pb_remark").val("")
+            $("#btn_save").removeAttr("disabled")
+          
+            cp_title_id = $(this).attr("cp_title_id")
+            customer_id = $(this).attr("customer_id")
+            project_id = $(this).attr("project_id")
+            customer_pay_type_id = $(this).attr("customer_pay_type_id")
+            customer_paytype_id_name = $(this).attr('customer_paytype_id_name')
+            customer_service_amount = $(this).attr("customer_service_amount")
+            customer_service_amount_month = $(this).attr("customer_service_amount_month")
+            customer_book_amount = $(this).attr("customer_book_amount")
+
+            if (customer_book_amount ==0){
+                $("#is_free").text("(免账册费,无需选择到期时间)")
+            }
+            $("#curr_payment_detail").html("<td colspan='8'>" + $(this).attr("curr_payment_detail") + "</td>")
+         
+                payment_id = $(this).attr("payment_id")
+                $("#delete_payment").attr("payment_id","") 
+                $("#btn_save").attr("payment_id", payment_id)
+                $("#delete_payment").show()
+                $("#delete_payment").attr("payment_id",payment_id)
+                acc_end = $(this).attr("acc_end")
+                acc_book_end = $(this).attr("acc_book_end")
+                al_remark = $(this).attr("al_remark")
+                pb_remark = $(this).attr("pb_remark")
+                wait_pay_amount = $(this).attr("wait_pay_amount")
+                $('#acc_end').combodate("setValue", acc_end);
+                $('#acc_book_end').combodate("setValue", acc_book_end);
+                $("#al_remark").val(al_remark)
+                $("#pb_remark").val(pb_remark)
+                $("#wait_pay_amount").val(wait_pay_amount)
+
+
+            $("#customer_company").val("")
+
+            customer_company = $(this).attr("customer_company")
+            customer_fee = $(this).attr('customer_fee')
+            cp_title_id = $(this).attr('cp_title_id')
+            $("#btn_save").attr("customer_id", customer_id)
+          //  $("#btn_save").attr("income_id", income_id)
+            $("#btn_save").attr("project_id", project_id)
+            $("#btn_save").attr("cp_title_id", cp_title_id)
+            html="<td>付款方式</td><td>"+ customer_paytype_id_name+"</td>"
+            html += "<td>总服务费</td><td>" + customer_service_amount + "</td>"
+            html += "<td>月服务费</td><td>" + customer_service_amount_month + "</td>"
+            html += "<td>账册费</td><td>" + customer_book_amount + "</td>"
+            $("#service_price").html(html)
+            $("#msg_acc_end").text("")
+            $("#msg_acc_book_end").text("")
+            $("#last_payment").html("<td colspan='8'>没有上期收款明细哦</td>")
+            $("#curr_last_payment").html("<td colspan='4'>没有本期待收款明细哦</td><td colspan='4'>0</td>")
+            $("#customer_company").html("    <td colspan='8'>" + customer_company + "</td>")
+            $.get("/payment?tag=get_last_payment",{"customer_id":customer_id},function(result){
+                if(result.code==1){
+
+                   $("#msg_acc_end").text("(上期记账费到期时间:" + result.customer.acc_end+")")
+                   $("#msg_acc_book_end").text("(上期账册费到期时间:" + result.customer.acc_book_end+")")
+                    if(result.customer.al_remark==undefined || result.customer.al_remark == ""){
+                         $("#last_payment").html("<td colspan='8'>没有上期收款明细哦</td>")
+
+                    }else{
+                        $("#last_payment").html("<td colspan='8'>" + result.customer.al_remark + "</td>")
+                    }
+                    if (result.customer.pb_remark == undefined || result.customer.pb_remark=="") {
+                        $("#curr_last_payment").html("<td colspan='4'>没有本期待收款明细哦</td><td colspan='4'>0</td>")
+
+                    } else {
+                        $("#curr_last_payment").html("<td colspan='4'>" + result.customer.pb_remark + "</td><td colspan='4'>" + result.customer.wait_pay_amount + "</td>")
+                    }
+
+                }else{
+                    $("#msg_acc_book_end").text("(上期账册费到期时间:无系统记录)")
+                    $("#msg_acc_end").text("(上期记账费到期时间:无系统记录)")
+                    $("#last_payment").html("<td colspan='8'>没有上期收款明细哦</td>")
+                    $("#curr_last_payment").html("<td colspan='4'>没有本期待收款明细哦</td><td colspan='4'>0</td>")
+
+                }
+            },"json")
+            $("#a_handler_modal_modify").modal("show")
+        })
+       
+
+        $("#btn_save").click(function () {
+             $("#lb_wait_pay_amount").val("")
+            payment_id = $(this).attr("payment_id")
+            service_amount = $("#service_amount").val()
+            fee = $("input[name='pay_type_id']:checked").attr("fee")
+            service_amount_month = $("#service_amount_month").val()
+            book_amount = $("#book_amount").val()
+            pay_typeid = $("input[name='pay_type_id']:checked").val()
+            pay_typeid_name = $("input[name='pay_type_id']:checked").attr("pay_typeid_name")
+            acc_end =  $('#acc_end').combodate("getValue","YYYY-MM");
+            acc_book_end =  $('#acc_book_end').combodate("getValue","YYYY-MM");
+            pb_remark = $("#pb_remark").val()
+            al_remark = $("#al_remark").val()
+            customer_id = $(this).attr("customer_id")
+            project_id = $(this).attr("project_id")
+            cp_title_id = $(this).attr("cp_title_id")
+            wait_pay_amount = $("#wait_pay_amount").val()
+
+            if(wait_pay_amount==""){
+                    $("#lb_wait_pay_amount").text("待收金额不能为空哦")
+                    $("#wait_pay_amount").focus()
+                    return false;
+            }
+             $(this).attr("disabled","disabled")
+         
+            $.post("/payment?tag=edit", {
+             
+                "payment_id": payment_id,
+                    "pfi_confirm_state": 0,
+          
+                "service_amount": service_amount,
+                    "fee": fee, "service_amount_month": service_amount_month, "pay_typeid": pay_typeid, "pay_typeid_name": pay_typeid_name,
+                 "book_amount": book_amount, "acc_end": acc_end, "acc_book_end": acc_book_end,
+
+                  "remark": "",
+                     "customer_id": customer_id,
+                 "cp_title_id": cp_title_id,
+                   "project_id": project_id,
+                                            "pb_remark": pb_remark, "al_remark": al_remark, "_xsrf": _xsrf,
+                                                "wait_pay_amount": wait_pay_amount
+            }, function (result) {
+                    console.log(result)
+                    if (result == "-1") {
+                        $("#pb_remark").focus()
+                        alert("还没有收齐全款,要写待收明细哦!")
+                    }
+                    else if (result == "-100") {
+                        $("#acc_end").focus()
+                        alert("要填写记账费到期日期哦")
+                    }
+                    else {
+                        location.reload()
+                    }
+                })
+          
+        })
+
+{%else%}
+
+
         $(".handler_detail").on("click", function () {
             // $("#pc_remark_show")
             //$('#acc_book_end').combodate("setValue", "2018-02-01");
@@ -382,6 +769,9 @@
             al_remark = $(this).attr("al_remark")
             payment_confirm_remark = $(this).attr('payment_confirm_remark')
             $("#payment_confirm_remark").val(payment_confirm_remark)
+            wait_pay_amount = $(this).attr('wait_pay_amount')
+            $("#e_wait_pay_amount").val(wait_pay_amount)
+
 
             payment_confirm_state = $(this).attr('payment_confirm_state')
         //    if (payment_confirm_state == 1) {
@@ -530,7 +920,7 @@
                 }
             })
         })
-
+{%end%}
 
     });
 

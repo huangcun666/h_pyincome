@@ -11,43 +11,10 @@
         <li class="breadcrumb-item active">我的业务</li>
       </ol>
 
-    <div class="category_projects">
-        {%if style==''%}
-        <a href="/project?tag=projects_qc" 
-        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
-        所有分组</a>
-        {%else%}
-        <a href="/project?tag=projects_qc" 
-        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
-        所有分组</a>
-        {%end%}
-      {%for category in categorys%}
-      {%if category.category_name==style%}
-
-      <a href="/project?tag=projects_qc&style={{category.category_name}}" 
-      class="btn btn-info btn-sm" id="btn_check" 
-      style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
-      {{category.category_name}}</a>
-      {%else%}
-      <a href="/project?tag=projects_qc&style={{category.category_name}}" 
-      class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
-      {{category.category_name}}</a>
-      {%end%}
-      {%end%}
-    </div>
      
- <form>
- <table>
-    <tr>
-      <td>业务类型</td>
-      <td>销售顾问</td>
-      <td>客服顾问</td>
-      <td>来源渠道</td>
-      <td>楼盘</td>
-          <td>
-时间段
-       </td>
-    </tr>
+ <form class="search_box">
+ <table style="padding:3px;">
+
 
         <tr>
       <td>
@@ -96,14 +63,18 @@
             {%end%}
         </select>
       </td>
+
           <td>
-<input type="text" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}"  />
-至
-<input type="text" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+<input type="text" name="start" id="start" class="form-control" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}"  />
+
 <input type="hidden" name="tag" value="{{tag}}"/>
-<input type="submit" value="检索" />
 
        </td>
+
+       <td><input type="text" name="end" id="end" class="form-control" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+</td>
+       <td><input type="submit" value="检索" class="btn btn-info"/>
+</td>
     </tr>
  </table>
 
@@ -116,35 +87,60 @@
 
 
 
-</form><br/>
-             <div class="alert alert-info">
+</form>
+  
+
+ <div class="table-responsive">        
+ 
+ 
+    <div class="category_projects">
+        {%if style==''%}
+        <a href="/project?tag=projects_qc" 
+        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
+        所有分组</a>
+        {%else%}
+        <a href="/project?tag=projects_qc" 
+        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
+        所有分组</a>
+        {%end%}
+      {%for category in categorys%}
+      {%if category.category_name==style%}
+
+      <a href="/project?tag=projects_qc&style={{category.category_name}}" 
+      class="btn btn-info btn-sm" id="btn_check" 
+      style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
+      {{category.category_name}}</a>
+      {%else%}
+      <a href="/project?tag=projects_qc&style={{category.category_name}}" 
+      class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
+      {{category.category_name}}</a>
+      {%end%}
+      {%end%}
+    </div>   <div class="alert alert-info">
 
                 共 {{pagination.total_count}} 条记录
 
              </div>
-
-             <div class="table-responsive">
-    <table class="table table-bordered" cellspacing="0" style="font-size:12px;width:1200px;;">
+    <table class="table table-bordered" cellspacing="0" style="font-size:12px;width:100%;;">
     
-        <thead style="background-color:#000;color:#fff ; font-size:13px;">
-                    <thead>
+              <thead style="background-color:#000;color:#fff ; font-size:13px;">
                         <tr>
                             <!-- <th width="100">客户分组</th> -->
                             <th width="50">编号</th> 
                             <th>业务名称</th> 
-                            <th  width="150">公司名称</th>  
+                            <th  width="200">公司名称</th>  
                              <th  width="100">客户名称</th>  
-                            <th  width="100">联系方式</th> 
+                            <th  width="150">联系方式</th> 
                             
                             {%if role=="9"%}
-                             <th width="100">
+                             <th width="80">
                             工商专员
                             </th>
                             {%end%}
-                              <th width="120">合同金额</th>
+                              <th width="90">合同金额</th>
                                
                              <th width="80">创建者</th>
-                        <th width="120">创建时间</th>
+                        <th width="100">创建时间</th>
                          
                         </tr>
                     </thead>
@@ -156,10 +152,11 @@
                                 {{item.id}}
 
                             </td>  
-                              <td title="{{item.project_name}}">
+                              <td style="word-break: break-all;" title=" {{item.project_name}}">
                               
                     <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" title="{{item.project_name}}"> {%if len(item.project_name) > 58%} {{item.project_name[:58]}}....... {%else%} {{item.project_name}} {%end%}
-                        </a>    </td>  
+                        </a>   
+                         </td>  
                             <td>
                                 {{item.customer_company}}
                             </td>  
@@ -208,7 +205,7 @@
                         {%end%}
                     </tbody>
                 </table>
-            </div>
+            
 <div class="col-sm-12 col-md-7">
    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
       <ul class="pagination">
@@ -249,7 +246,7 @@
      {% end %} </ul>
    </div>
 </div>
-       
+       </div>
 
          {%if style%}
 <div class="modal fade" id="project_category_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">

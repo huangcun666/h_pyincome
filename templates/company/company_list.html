@@ -91,16 +91,16 @@
 </form>
 
 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-    <a class="nav-item nav-link {%if  params["my"] != "1" and params["my"] != "2"%}active{%end%}"  href="/company?tag=list_company">全部商机</a>
-    <a class="nav-item nav-link {%if  params["my"]=="1"%}active{%end%}"  href="/company?tag=list_company&my=1">我的商机</a>
-    <a class="nav-item nav-link {%if  params["my"]=="2"%}active{%end%}" href="/company?tag=list_company&my=2">已成交商机 </a>
+    <a class="btn btn-light  nav_padding {%if  params["my"] != "1" and params["my"] != "2"%}active{%end%}"  href="/company?tag=list_company">全部商机</a>
+    <a class="btn btn-light  nav_padding {%if  params["my"]=="1"%}active{%end%}"  href="/company?tag=list_company&my=1">我的商机</a>
+    <a class="btn btn-light  nav_padding {%if  params["my"]=="2"%}active{%end%}" href="/company?tag=list_company&my=2">已成交商机 </a>
 </div>
 {%if params["my"]=='1'%}
 <a class="btn btn-primary btn-sm change_batch" href="javascript:void(0);">批量放回公有池</a>
 {%end%}
 </nav>
 
-    <div class="card mb-3">
+  <div class="table-responsive">
     <table class="table table-bordered" style="width: 100%;" >
         <thead style="background-color:#000;color:#fff ; font-size:12px;">
             <tr>

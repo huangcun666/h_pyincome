@@ -90,7 +90,7 @@ class MTransitionHandler(BaseHandler):
                 page1=page,
                 nums=nums,
                 todo=todo)
-        
+
         elif tag=="search_todo":
             result=self.get_argument('result','')
             company=self.get_argument('company','')
@@ -174,7 +174,7 @@ class MTransitionHandler(BaseHandler):
                     inner join t_todo_arrange_status d
                     on a.id=d.todo_id where """+sql[4:]+"""
                     order by a.created_at desc limit %s,%s""",startpage,pre_page)
-                
+
             else:
                 departments=self.db.query(
                 """
@@ -198,6 +198,7 @@ class MTransitionHandler(BaseHandler):
                 departments=departments,
                 todo_arranges=todo_arranges)
 
+    @tornado.web.authenticated
     def post(self):
         tag = self.get_argument("tag")
         uid = self.get_secure_cookie("uid")
@@ -232,10 +233,12 @@ class MTransitionHandler(BaseHandler):
 
 
 class UploadPic(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
         error=self.get_argument('error','')
         self.render('mobile/uploadpic.html',error=error)
 
+    @tornado.web.authenticated
     def post(self):
         tag = self.get_argument("tag", "")
         if tag=='add_pic':
@@ -280,6 +283,7 @@ class UploadPic(BaseHandler):
 
 
 class TransitionUploadHandler(BaseHandler):
+    @tornado.web.authenticated
     def post(self):
         tag = self.get_argument("tag", "list")
         uid = self.get_secure_cookie("uid")
@@ -424,10 +428,12 @@ class CustomerTransitionHandler(BaseHandler):
 
 
 class CustomerUploadPic(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
         error = self.get_argument('error', '')
         self.render('mobile/uploadpic.html', error=error)
 
+    @tornado.web.authenticated
     def post(self):
         tag = self.get_argument("tag", "")
         if tag == 'add_pic':

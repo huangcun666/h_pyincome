@@ -180,6 +180,23 @@
                                                 </div>
                                                 <!-- /controls -->
                                             </div>
+                                            {%if t_projects%}
+                                            <div class="control-group">
+                                                <label class="control-label">同名公司</label>
+                                                <div class="controls" id='show_projects'>
+                                                    {%if len(t_projects)>5%}
+                                                    {%for item in t_projects[:-1]%}
+                                                    <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}">{{item.project_name}}</a><br>
+                                                    {%end%}
+                                                    <a href="javascript:void(0)" id='more_projects' num="{{int(num)+5}}">更多>></a>
+                                                    {%else%}
+                                                    {%for item in t_projects%}
+                                                    <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}">{{item.project_name}}</a><br>
+                                                    {%end%}
+                                                    {%end%}
+                                                </div>
+                                            </div>
+                                            {%end%}
                                             <div class="control-group">
                                                 <label class="control-label" for="is_general">客户类型
 </label>
@@ -597,7 +614,32 @@ function intToFloat(val){
 
             }
         })
-
+$('body').on('click','#more_projects',function () {
+    num=$(this).attr('num') 
+    $.post('/customer?tag=more_projects',{
+        '_xsrf':_xsrf,
+        'customer_company':'{%if t_project%}{{t_project.customer_company}}{%end%}',
+        'num':num
+    },function (result) { 
+        $("#show_projects").empty()
+        item=result['t_projects']
+        var text=''
+        var more_text=''
+        var l=item.length
+        if(item.length==result['num']){
+            l=item.length-1
+            more_text='<a href="javascript:void(0)" id="more_projects" num="'+(result['num']+5)+'">更多>></a>'
+        }
+        else{
+            more_text='<a href="javascript:void(0)" id="more_projects" num="6"><<收起</a>'
+        }
+        for(var i=0;i<l;i++){
+            text+=' <a href="/project?tag=show&guid='+item[i].guid+'&id='+item[i].id+'">'+item[i].project_name+'</a><br> '
+        }
+        $("#show_projects").html(text+more_text)
+        
+     })
+ })
 
     })
 

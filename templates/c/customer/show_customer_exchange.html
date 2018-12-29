@@ -20,7 +20,9 @@
     </div>
 </div>
 {%end%}
-<a style="float:right;" href="/payment?tag=customer&customer_id={{customer_id}}&to_tag=payment_tab">更多>></a>
+
+{% if show_more%}<a style="float:right;" href="/payment?tag=customer&customer_id={{customer_id}}&to_tag=payment_tab">更多>></a>{%end%}
+
 {%else%}
 还没有哦~
 {%end%}

@@ -1,5 +1,5 @@
 
- {% extends "../base.html" %} {%block title%}关联业务{%end%} {% block body %}
+ {% extends "../base.html" %} {%block title%}我的业务(关联){%end%} {% block body %}
 <style>
     .faye-table {
         font-size: 12px;
@@ -44,32 +44,11 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
    <li class="breadcrumb-item">
      主面板
    </li>
-   <li class="breadcrumb-item active">关联业务</li>
- </ol>
- <form>
-        <table style="font-size:80%;">
-            <thread>
-                <tr class="faye-tdti">
-             <th>业务类型</th>
-             <th>工商专员</th>
-             <th>销售顾问</th>
-             <th>在线客服</th>
-             <th>来源渠道</th>
-             <th>楼盘</th>
-                 <th>
-       开始时间
-              </th>
-                <th>
-                    结束时间
-                </th>
-                <th>
-                    关键词
-                </th>
-                    <th>
-                        
-                    </th>
-           </tr>
-        </thread>
+   <li class="breadcrumb-item active">我的业务(关联)</li>
+ </ol><div class="table-responsive">     
+ <form class="search_box">
+        <table style="font-size:90%;">
+
         <tbody>
                 <tr class="faye-selsect">
              <td>
@@ -145,7 +124,7 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
 
 </td>
 <td>
-    <input type="submit" value="检索" />
+    <input type="submit" value="检索" class="btn btn-info" />
 
 </td>
            </tr>
@@ -162,22 +141,23 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
        
        
        </form>
-<table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:12px;width:1250px; margin-top:10px;">
+
+   
+<table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:12px;width:100%; margin-top:10px;">
             <thead style="background-color:#000;color:#fff ; ">
                    <tr>
                        <th width="50">编号</th> 
                        <th>业务名称</th> 
-                       <th  width="150">公司名称</th>  
-                        <th  width="80">客户名称</th>  
-                       <th  width="80">联系方式</th> 
-                        <th width="80">客服顾问</th>
-                        <th width="80">销售顾问</th>
-                        <th width="80">工商专员</th>
-                        <th width="80">在线客服</th>
+                       <th  width="200">公司名称</th>  
+                        <th  width="60">客户</th>  
+                       <th  width="100">联系方式</th> 
+                        <th width="75">客服顾问</th>
+                        <th width="75">销售顾问</th>
+                        <th width="75">工商专员</th>
+                        <th width="75">在线客服</th>
                          <th width="80">合同金额</th>
-                        <th width="80">创建者</th>
-                   <th width="100">创建时间</th>
-                       <th width="100"></th>
+                        <th width="80">创建人</th>
+                   <th width="80">创建时间</th>
                    </tr>
                </thead>
                <tbody>
@@ -189,10 +169,12 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
 
                             </td>  
                               <td title="{{item.project_name}}">
-                             {%if len(item.project_name) > 18%} {{item.project_name[:18]}}....... {%else%} {{item.project_name}} {%end%}
+                              <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}"  title="{{item.project_name}}" >
+                             {%if len(item.project_name) > 40%} {{item.project_name[:40]}}... {%else%} {{item.project_name}} {%end%}</a>
 
                             </td>  
-                            <td>
+                            <td title="{{item.customer_company}}">
+
                                 {{item.customer_company}}
                             </td>  
                                     <td>
@@ -240,10 +222,6 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
                                 <td>
                             {{item.created_at.strftime("%Y-%m-%d")}}
                             </td>
-                            <td>
-                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-primary " title="{{item.id}}">查看</a>
-
-                            </td>
                         </tr>
                         {%end%}
 
@@ -275,7 +253,7 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
                     </ul>
                 </div>
             </div>
-
+         </div>
 
 <div class="modal fade" id="project_category_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
 
@@ -302,6 +280,7 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
        return r ? r[1] : undefined;
    }
    $(function () { 
+     
     $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
 language: 'zh-CN',initialDate: new Date()});
     $("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59',

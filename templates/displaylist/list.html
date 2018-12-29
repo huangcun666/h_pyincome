@@ -1,0 +1,123 @@
+{% extends "../base.html" %} {%block title%}帮助中心{%end%} {% block body %}
+
+<!-- Breadcrumbs-->
+<!-- Icon Cards-->
+<style>
+	.xkua {border:1px solid #ccc;width: 350px; float: right;padding: 0.5rem; border-radius: 5px;}
+	.bxk li {margin-left: 1rem;}
+</style>
+<ol class="breadcrumb" style="background-color: #fff;">
+	<i class="fa fa-home"></i>
+	<li class="breadcrumb-item">主面板</li>
+	<li class="breadcrumb-item active">帮助中心</li>
+</ol>
+<div style="margin-bottom: 20px; overflow: hidden;">
+	<a href="javascript:void(0);" id="ask_question" style="float: left; margin-right:10px;background-color: #007bff; padding: 0.5rem;display: inline-block; color: #fff; border-radius: 5px;">&nbsp;&nbsp;发布&nbsp;&nbsp;</a>
+&nbsp;
+	<a href="javascript:void(0);" id="ask_question" style="float: left; background-color: #007bff; padding: 0.5rem;display: inline-block; color: #fff; border-radius: 5px;">&nbsp;&nbsp;我要提问&nbsp;&nbsp;</a>
+	<span class="small" style="float: left; color: #7b7b7b; margin-top: 6px; margin-left: 15px;">如果没有你需要的答案，可以自己创建一个提问！</span>
+	<input type="text" class="xkua">
+</div>
+<div style="background-color: #fff;">
+<ul class="nav nav-pills mb-3 bxk" id="pills-tab" role="tablist" style="background-color: #fff; padding-top: 1rem;">
+	<li class="nav-item">
+	<a class="nav-link active" id="pills-home-tab" href="/displaylist?tag=list" >首页</a>
+	</li>
+{%for item in displaylist_node%}
+	<li class="nav-item">
+	<a class="nav-link " href="/displaylist?tag=list&node={{item.id}}" >{{item.name}}</a>
+	</li>
+  {%end%}
+
+</ul>
+
+<style>
+	ul,li {list-style: none;}
+	.xuanze li .tle:hover{cursor: pointer; color: red;}
+	.aa {display: none;}
+	.cut {width: 90%; height: auto; border:1px solid #ccc;padding: 1rem; box-sizing: border-box; margin-top: 30px;margin-bottom: 30px;margin-left: 60px; display: block; border-radius: 3px;}
+	.fj a {display: inline-block; width: 115px; height: 36px; margin-left: 20px; background-color: #007bff;  color: #fff; border-radius: 4px; text-align: center; line-height: 36px;}
+  .xxk {overflow: hidden;}
+	.xxk a {float: left; margin-left: 20px; padding: 0.5rem 1rem; text-decoration: none;}
+	.xxk a:hover {background-color: #007bff; color: #fff; border-radius: 5px;}
+</style>
+<div class="tab-content" id="pills-tabContent">
+	<div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" style="border-top: 3px solid #007bff;padding-top: 20px;">
+		<div class="row">
+			<ul class="xuanze">
+      			<div class="xxk" style="margin-bottom:20px;">
+					<a href="#" style="margin-left: 0;">全部</a>
+					<a href="#">变更注册事项</a>
+					<a href="#">报销流程</a>
+				</div>
+      {%for item in displaylist_articles%}
+				<li>
+					<p class="tle"><span class="small" style="color: #007bff">
+						【会计部】
+					</span>
+				{{item.title}}。</p>
+        
+					<div class="aa " style="position: relative;">
+						<div>
+							<b style="position: absolute; top: -22px; left: 10px"><img src="img/cut.png" alt=""></b>
+							<p style="text-indent: 2em;">{{item.body}}</p>
+							<div class="fj">
+								<a href="#">附件1</a>
+								<a href="#">附件1</a>
+							</div>
+						</div>
+					</div>
+				</li>
+        {%end%}
+			
+			</ul>
+		</div>
+	</div>
+</div>
+</div>
+
+
+
+{%end%}
+
+
+
+ {%block js%}
+<script>
+function getCookie(name) {
+var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+return r ? r[1] : undefined;
+}
+$(function(){
+$("#btn_search").on("click",function(){
+txt_search_word = $("#txt_search_word").val()
+if(txt_search_word==""){
+alert("请输入要查找的关键词哦。")
+}else{
+location.href="/project?tag=search&key="+txt_search_word
+}
+})
+var time = setInterval(function(){
+$.get("/msg?tag=getnotify",{"_xsrf": getCookie("_xsrf")},function(result){
+if (result==0){
+$("#msg_notify_badge1").addClass("d-lg-none")
+$("#msg_notify_badge2").addClass("d-none")
+}else{
+$("#msg_notify_badge1").removeClass("d-lg-none")
+$("#msg_notify_badge2").removeClass("d-none")
+}
+})
+},60000)
+
+$("#ask_question").click(function () { 
+	$("#ask_question_modal").modal('show')
+ })
+})
+
+	$('.xuanze li').click(function(){
+		$(this).children('.aa').addClass('cut').parents().siblings().children('.aa').removeClass('cut')
+	});
+
+</script>
+
+{%end%}

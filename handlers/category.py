@@ -18,6 +18,7 @@ class CategoryHandler(BaseHandler):
     def post(self):
         tag = self.get_argument("tag")
         uid = self.get_secure_cookie('uid')
+
         if tag =="add":
             category_name = self.get_argument('category_name')
             order_int = self.get_argument('order_int',0)
@@ -46,6 +47,10 @@ class CategoryHandler(BaseHandler):
             self.db.execute('''
                 delete from t_projects_category where id=%s
             ''',id)
+            self.db.execute(
+                        "update t_projects_member set b_category_id=0 , b_category_id_name=null where member_id=%s and  b_category_id=%s",
+                        uid,id)
+
 
 
 

@@ -21,6 +21,7 @@
  <table>
     <tr>
       <td>业务类型</td>
+      <td>客服会计</td>
             {%if role!='1'%}<td>销售顾问</td>{%end%}
       <td>工商专员</td>
       <td>在线客服</td>
@@ -41,6 +42,14 @@
         <option value="{{item.id}}"   {%if params["income_bussniss"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
     {%end%}
 </select></td>
+<td>
+        <select name="kfkj" class="form-control">
+            <option value="0">客服会计</option>
+            {%for item in t_user_kfkj%}
+            <option value="{{item.member_id}}" {%if params["kfkj"]==str(item.member_id)%}selected{%end%}>{{item.member_name}}</option> 
+            {%end%}
+        </select>
+    </td>
 {%if role!='1'%}
       <td>
 <select name="sales" class="form-control" >

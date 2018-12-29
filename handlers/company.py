@@ -311,12 +311,15 @@ class CompanyHandler(BaseHandler):
         elif tag == "company_msg":
             msg = self.get_argument('msg', '')
             company_guid = self.get_argument("company_guid")
-            company_id=self.get_argument('company_id','')
+            company_id=self.get_argument('company_id',0)
+            rel_id = self.get_argument("rel_id",0)
+            ext_id = self.get_argument("ext_id",0)
+            btype_id = self.get_argument("btype_id",0)
 
             if company_id:
                 self.db_company.execute("""
-                insert into t_company_msg(uid,uid_name,message,created_at,company_id,tag_type)
-                values(%s,%s,%s,%s,%s,%s)
-                """, uid, uid_name, msg, dt, company_id, "跟进记录")
+                insert into t_company_msg(uid,uid_name,message,created_at,company_id,tag_type,rel_id,ext_id,btype_id)
+                values(%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """, uid, uid_name, msg, dt, company_id, "跟进记录",rel_id,ext_id,btype_id)
 
                 self.db_company.execute("update t_company set last_updated=%s,last_updated_msg=%s where id=%s",dt,msg,company_id)

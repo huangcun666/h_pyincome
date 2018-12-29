@@ -1,0 +1,98 @@
+{% extends "../base.html" %} {%block title%}应收日增{%end%} {% block body %}
+
+<style>
+
+    .faye-btn {padding: 0.1rem 0.2rem; background-color: #9ec6ef; margin-left: 20px; border-radius: 2px;}
+
+</style>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        主面板
+    </li>
+    <li class="breadcrumb-item active">应收日增
+     
+    </li>
+</ol>
+<div class="table-responsive">
+
+        <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr class="active">
+                        <th width="120">公司名称</th>
+                        <th width="100">应收明细</th>    
+                        <th  width="100">应收金额</th>
+                        <th width="100">客服会计</th>
+                        <th width="100">创建时间</th>
+                     
+                       
+                    
+                        </tr>
+                </thead>
+                <tbody>
+                    {%if customers%}
+                    {%for item in customers%}
+                    <tr>
+                        <td>{{item.company}}</td>
+                        <td>{%if item.pb_remark%}{{item.pb_remark}}{%end%}</td>
+                        <td {%if item.wait_pay_amount > 0%} style="background-color:yellow" {%end%}>{%if item.wait_pay_amount%}{{item.wait_pay_amount}}{%end%}</td>
+                        <td>{{item.acc_uid_name}}</td>
+                        <td>{%if item.req_at%}{{item.req_at.strftime("%Y-%m-%d")}}{%end%}</td>
+                    </tr>
+                    {%end%}
+
+                    {%else%}
+                    <tr>
+<td colspan="5">当前没有数据</td>
+
+                    </tr>
+                           
+
+                    {%end%}
+                </tbody>
+                       
+            </table>
+
+            <div class="col-sm-12 col-md-7">
+                    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                        <ul class="pagination">
+                            {% if pagination.has_prev %}
+                            <li class="paginate_button page-item previous " id="dataTable_previous">
+                                <a href="/statis?tag=payment_count&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li class="paginate_button page-item ">
+                                <a href="/statis?tag=payment_count&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                            {% else %}
+                            <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                            {% end %} {% else %}
+                            <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li class="paginate_button page-item next" id="dataTable_next">
+                            <a href="/statis?tag=payment_count&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                            {% end %}
+                        </ul>
+                    </div>
+                </div>
+
+</div>
+</div>
+
+</div>
+</div>
+{% end %} {%block js%}
+<script>
+    _xsrf = getCookie("_xsrf");
+    $(function () {
+
+            $("#m_statis").click()
+        $("#start").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+        $("#end").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 23:59:59',
+            language: 'zh-CN', initialDate: new Date()
+        });
+
+    })
+
+
+</script> {%end%}

@@ -2,6 +2,7 @@
 
  {% block body %}
 
+
 <style>
 .faye-table {width: 100%; height: auto; /*background-color: purple;*/ margin: 0% auto; font-weight: bold;}
 .faye-table ul {overflow: hidden; margin: 0; padding: 0;}
@@ -271,6 +272,18 @@ background-color: #007bff;
 <div class="row" >
     
 <div class="col-lg-12">
+{%if is_cancel==2%}
+	<div style="width: 153px; height: 149px; position: absolute; top: 24px; left: 132px; z-index: 9;">
+		<img src="/static/images/chapter2.png" alt="">
+	</div>
+
+{%elif is_end==2%}
+	<div style="width: 153px; height: 149px; position: absolute; top: 24px; left: 132px; z-index: 9;">
+		<img src="/static/images/chapter1.png" alt="">
+	</div>
+  {%end%}
+
+<!-- .. -->
 <div class="card mb-3">
 <div class="faye-table" style="font-size:12px;">
 	<ul>
@@ -349,7 +362,7 @@ background-color: #007bff;
           {%else%}
           无
           {%end%}
-          {%if (role=='8' or  t_project.uid==uid) and company_history %}
+          {%if (role=='8' or  t_project.uid==uid or company_history_permission) and company_history %}
             <a href="javascript:void(0);" id="delete_company_history">删除</a>
           {%end%}
         </div>
@@ -616,7 +629,7 @@ background-color: #007bff;
 	</ul>
 </div>
 
-<div class="card-footer text-muted"> 最后更新时间 2018-04-10 03:21:29</div>
+
 
 </div>
 
@@ -645,7 +658,7 @@ background-color: #007bff;
                  <a href="javascript:void(0)" id="a_add_service"
                    class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>设置</a>
 
-                 {%elif  role=="2" or  role=="3" or  role=="5"  %}
+                 {%elif  role=="2" or  role=="3" or  role=="5"  or role=="8" %}
 
 
                      <a href="javascript:void(0)" id="a_add_service"
@@ -679,13 +692,15 @@ background-color: #007bff;
                 还没有业务收入明细哦
 </div>
                 {%end%}
-
+                <p id='daokuanjiesuan'></p>
               </div>
+              
               <div class="card-footer  text-muted"> 合计总服务费  {{t_project.all_income}} 元 </div>
+              
             </div>
 
             <div class="card-columns">
-                <div class="card mb-12" id='daokuanjiesuan'>
+                <div class="card mb-12" >
             
                           <div class="card-body">
                         <h6 class="card-title mb-1"><a href="#">到款结算信息</a>
@@ -719,12 +734,19 @@ background-color: #007bff;
             
             
              <!-- {%if ( role=="3") or (role=="2"  and not item.income_uid) or (t_project.uid==int(uid) or not item.income_uid) %}{%end%} -->
-            {%if  (role=='2' or role=='3' or role=='5') or (not item.income_uid) %}
+            {%if  (role=='2' or role=='3' or role=='5') or (not item.income_uid) or (name=="陈太智")%}
             
                         <a href="javascript:void(0)" income_at="{{item.income_at}}" pay_type_id="{{item.pay_type_id}}" pay_type_name="{{item.pay_type_name}}" parent_id="{{item.id}}" company_id="{{item.company_id}}" company_id_name="{{item.company_id_name}}"  class="show_income_modify" >
                         <img width="20" src="/static/images/modify.png"> 修改</a>{%end%}
-                            {{item.income_at}}  {{item.uid_name}} 入账-{{item.income_title}}-
+                            {{item.income_at}}  {{item.uid_name}} 入账-
+                            {{item.income_title}}
+                    
+                             - 
+                            {%if item.pay_list%}
+                            <font color='blue'><b>[{{item.pay_list}}]</b></font>-
+                            {%end%}
                             {{item.company_id_name}}-{{item.pay_type_name}} <b>合计:{{item.income_money_total}} 元</b>
+                           
             
             
             
@@ -795,11 +817,11 @@ background-color: #007bff;
 
                     <div class="card-body">
                       <h6 class="card-title mb-1"><a href="#">业务相关人员</a>
-       {%if   t_project.uid==int(uid) or role=="7" or role=="8"  or int(getMemberId(t_project_members,"客服顾问")) == int(uid) %} /
+       {%if   t_project.uid==int(uid) or role=="7" or role=="8" or role=="3" or int(getMemberId(t_project_members,"客服顾问")) == int(uid) %} /
                        <a href="javascript:void(0)" id="a_add_team" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>设置</a>
       
        {%end%}
-         {%if (role=="7") or (role=="8") %}
+         {%if (role=="7") or (role=="8") or (name=="陈月娇")%}
                              <a href="javascript:void(0)" id="a_add_team_cq" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i><b>新增工商专员</b></a>
                           {%end%}
        </h6> </div>
@@ -812,15 +834,15 @@ background-color: #007bff;
                         <img class="d-flex mr-3" src="/static/images/avatar.jpeg" width="65" alt="{{item.team_name}}">
                         <div class="media-body">
                           <h6 class="mt-0 mb-1">
-                          <a href="#">{{item.name}}</a></h6>{{item.team_name}}
+                          <a href="#">{{item.name}}</a></h6>{{item.team_name}} 
                           {%if item.btype_id%}
       ({{item.btype_id_name}})
                           {%end%}
+
       
       
-      
-                       {%if role=="7" and item.team_id==38%}
-                       {%if item.name=="周萍" or item.name=="外资"%}(无需流转){%end%}
+                       {%if role=="7" and item.team_id==38 or  (item.btype_id==158 and name=="陈月娇")%}
+                
                         <a href="javascript:void(0)"
                           team_id="{{item.team_id}}"
                           project_id="{{item.project_id}}"
@@ -954,6 +976,9 @@ background-color: #007bff;
             {%else%}
             <a href="javascript:void(0);" class="button btn-secondary btn-sm delete_from_print" id="{{item.id}}">从打印移除</a>
             {%end%}
+            {%end%}
+            {%if item.is_chengjiao==1%}
+            <b style="font-size:20px;">(成交事项)</b>
             {%end%}
                          </div>  <hr class="my-0">
                         {%end%}
@@ -1501,8 +1526,7 @@ background-color: #007bff;
             
             
             
-                          <div class="card-footer  text-muted small">
-                          </div>
+                         
                         </div>
             
             
@@ -1532,7 +1556,7 @@ background-color: #007bff;
             {%for idx,item in enumerate(projects_addr_provider)%}
 
              <li class="nav-item">
-            <a class="nav-link {%if  item.id==int(addr_provider)%}active{%end%}" id="home-tab{{item.id}}" href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&addr_provider={{item.id}}#addr_list"
+            <a class="btn btn-light  nav_padding {%if  item.id==int(addr_provider)%}active{%end%}" id="home-tab{{item.id}}" href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&addr_provider={{item.id}}#addr_list"
 
              >{%if item.fz_name%}({{item.fz_name}}){%else%}待接单{%end%}</a>
          </li>
@@ -1648,7 +1672,7 @@ background-color: #007bff;
 {%for idx,item in enumerate(xiezhu_applys)%}
 
  <li class="nav-item">
-<a class="nav-link {%if  item.id==int(xiezhu_id)%}active{%end%}" id="home-tab{{item.id}}"
+<a class="btn btn-light  nav_padding {%if  item.id==int(xiezhu_id)%}active{%end%}" id="home-tab{{item.id}}"
  href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&xiezhu_id={{item.id}}#xiezhu_list">
  {%if item.queren_confirm_at%}
                         {{item.queren_uid_name}}已办完
@@ -1822,19 +1846,17 @@ background-color: #007bff;
     {%for idx,item in enumerate(project_btypes)%}
 
      <li class="nav-item">
-    <a class="nav-link {%if  item.mid==int(mid)%}active{%end%}" id="home-tab{{item.mid}}" href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&mid={{item.mid}}#trans_list"
+    <a class="btn btn-light  nav_padding {%if  item.mid==int(mid)%}active{%end%}" id="home-tab{{item.mid}}" href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&mid={{item.mid}}#trans_list"
 
      >{{item.btype_id_name}}({{item.member_name}})</a>
  </li>
     {%end%}
      </ul>
-<div class="tab-content">
+ 
+<div class="tab-content" >
+
     {%for idx,item in enumerate(project_btypes)%}
   <div class="tab-pane {%if item.mid==int(mid)%}active{%end%}" id="home{{item.mid}}" role="tabpanel" aria-labelledby="home-tab{{item.mid}}">
-
-
-
-
 
 
 {%if item.is_cancel%}
@@ -2030,6 +2052,11 @@ background-color: #007bff;
   <span class="badge badge-dark">罗文波已确认审核</span>
   {%end%}
   {%end%}
+
+
+
+
+
        </li>
 
  {%elif  row.income_name==u"填写办结信息" %}
@@ -2438,7 +2465,16 @@ background-color: #007bff;
 
 
 
-</div> </div>  </div>
+</div> 
+
+
+</div> 
+
+
+
+
+
+ </div>
 
           <div class="card mb-3" id='xiangguanlianxiren'>
 
@@ -2537,7 +2573,7 @@ background-color: #007bff;
             </div>
             <hr class="my-0">
 
-                <table class="table table-striped" style="padding:10px;">
+          <table class="table table-striped" style="padding:3px; margin:5px;width:99%;">
                   <thead>
                     <tr>
                       <th width="100">交接时间
@@ -2622,7 +2658,9 @@ background-color: #007bff;
 
 
                   <td>         {%if item.file_name%}
-                            <a href="{{item.file_name}}" class="btn" target="_blank">查看</a>
+
+                   <a href="project?tag=view_img&img={{item.file_name}}" style="font-size:13px;" target="_blank"><img src="/static/ico/web_icon_051.png" height="20"/>
+                          查看</a>
                       {%end%}</td>
 
                       <td>{{item.uid_name}}</td>
@@ -2688,12 +2726,12 @@ background-color: #007bff;
                 </div>    
                 <hr class="my-0">
 
-                    <table class="table table-striped" style="padding:10px;">
+                    <table class="table table-striped" style="padding:3px; margin:5px;width:99%;">
                       <thead>
                         <tr>
-                       <th>附件</th>
-                       <th width='200'>上传时间</th>
-                       <th width='200'>创建人</th>
+                       <th>附件名称</th>
+                       <th width='120'>上传时间</th>
+                       <th width='100'>创建人</th>
                        <th width='100'></th>
                         </tr>
                       </thead>
@@ -2701,8 +2739,12 @@ background-color: #007bff;
                         {%if t_projects_transitions_file%}
                         {%for item in t_projects_transitions_file%}
                         <tr>
-                      <td><a href="{{item.file_name}}" download="{{item.file_name.split('/')[-1]}}">{{item.file_name.split('/')[-1].split('.')[0]}}</a>
-                        <a href="{{item.file_name}}" class="btn" target="_blank">查看</a>
+                      <td><a href="{{item.file_name}}" download="{{item.file_name.split('/')[-1]}}" style="font-size:13px;">{{item.file_name.split('/')[-1].split('.')[0]}}</a>
+                       
+                       
+                        <a href="project?tag=view_img&img={{item.file_name}}" target="_blank" style="font-size:13px;"><img src="/static/ico/web_icon_051.png" height="20"/>查看</a>
+
+
                       </td>
                       <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
                       <td>
@@ -2711,7 +2753,7 @@ background-color: #007bff;
 
                           <td>
                               {%if (item.uid==int(uid) or role=='11') and cg_confirm_at!=len(project_btypes) %}
-                              <a href="javascript:void(0)"  class="btn btn-info btn-sm modify_transition1" transition_id="{{item.id}}"
+                              <a href="javascript:void(0)"  class="btn-sm modify_transition1" transition_id="{{item.id}}"
                         >删除
                       {%end%}</a>
 
@@ -2755,13 +2797,13 @@ background-color: #007bff;
 
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                           <li class="nav-item">
-                            <a class="nav-link {%if int(express_list_type)==0%}active{%end%}"
+                            <a class="btn btn-light  nav_padding {%if int(express_list_type)==0%}active{%end%}"
                             href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&express_list_type=0#kuaidi">
                           寄件  
                           </a>
                           </li>
                           <li>
-                          <a class="nav-link {%if int(express_list_type)==1%}active{%end%}"
+                          <a class="btn btn-light  nav_padding {%if int(express_list_type)==1%}active{%end%}"
                           href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&express_list_type=1#kuaidi">
                         收件  
                         </a>
@@ -2769,7 +2811,7 @@ background-color: #007bff;
                           </ul>
                           
                         {%if express_list_type=='0'%}
-                        <table class="table table-striped" style="padding:10px;">
+                         <table class="table table-striped" style="padding:3px; margin:5px;width:99%;">
                           <thead>
                             <tr>
                            <th width="80">附件</th>
@@ -3420,12 +3462,12 @@ background-color: #007bff;
                                   <div class="user-detail">
                                     <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                      {{item.state_id_name}}</span>
-                                     {%if item.uid==int(uid)%}
+                                     {%if item.uid==int(uid) or name=='罗文波'%}
                                      <div style="float: right;margin:5px;">
-                                     <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                     <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                 state_guid="{{item.guid}}"  class="btn  btn-outline-danger btn-sm delete_state" href="javascript:void(0)" >删除</a>
 
-                               <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                               <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                 state_guid="{{item.guid}}" class=" btn btn-outline-primary btn-sm  modify_state" href="javascript:void(0)" >修改</a>
                                 </div>
                             {%end%}
@@ -3485,12 +3527,12 @@ background-color: #007bff;
                                     <div class="user-detail">
                                       <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                        {{item.state_id_name}}</span>
-                                       {%if item.uid==int(uid)%}
+                                       {%if item.uid==int(uid) or name=='罗文波'%}
                                        <div style="float: right;margin:5px;">
-                                       <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                       <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                   state_guid="{{item.guid}}"  class="btn  btn-outline-danger btn-sm delete_state" href="javascript:void(0)" >删除</a>
 
-                                 <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                 <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                   state_guid="{{item.guid}}" class=" btn btn-outline-primary btn-sm  modify_state1" href="javascript:void(0)" >修改</a>
                                   </div>
                               {%end%}
@@ -3551,12 +3593,12 @@ background-color: #007bff;
                                       <div class="user-detail">
                                         <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                          {{item.state_id_name}}</span>
-                                         {%if item.uid==int(uid)%}
+                                         {%if item.uid==int(uid) or name=='罗文波'%}
                                          <div style="float: right;margin:5px;">
-                                         <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                         <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                     state_guid="{{item.guid}}"  class="btn  btn-outline-danger btn-sm delete_state" href="javascript:void(0)" >删除</a>
 
-                                   <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                   <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                     state_guid="{{item.guid}}" class=" btn btn-outline-primary btn-sm  modify_state2" href="javascript:void(0)" >修改</a>
                                     </div>
                                 {%end%}
@@ -3616,12 +3658,12 @@ background-color: #007bff;
                                         <div class="user-detail">
                                           <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                            {{item.state_id_name}}</span>
-                                           {%if item.uid==int(uid)%}
+                                           {%if item.uid==int(uid) or name=='罗文波'%}
                                            <div style="float: right;margin:5px;">
-                                           <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                           <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                       state_guid="{{item.guid}}"  class="btn  btn-outline-danger btn-sm delete_state" href="javascript:void(0)" >删除</a>
 
-                                     <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                     <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                       state_guid="{{item.guid}}" class=" btn btn-outline-primary btn-sm  modify_state3" href="javascript:void(0)" >修改</a>
                                       </div>
                                   {%end%}
@@ -3681,12 +3723,12 @@ background-color: #007bff;
                                           <div class="user-detail">
                                             <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                              {{item.state_id_name}}</span>
-                                             {%if item.uid==int(uid)%}
+                                             {%if item.uid==int(uid) or name=='罗文波'%}
                                              <div style="float: right;margin:5px;">
-                                             <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                             <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                         state_guid="{{item.guid}}"  class="btn  btn-outline-danger btn-sm delete_state" href="javascript:void(0)" >删除</a>
 
-                                       <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                       <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                         state_guid="{{item.guid}}" class=" btn btn-outline-primary btn-sm  modify_state4" href="javascript:void(0)" >修改</a>
                                         </div>
                                     {%end%}
@@ -3746,12 +3788,12 @@ background-color: #007bff;
                                             <div class="user-detail">
                                               <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                                {{item.state_id_name}}</span>
-                                               {%if item.uid==int(uid)%}
+                                               {%if item.uid==int(uid) or name=='罗文波' %}
                                                <div style="float: right;margin:5px;">
-                                               <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                               <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                           state_guid="{{item.guid}}"  class="btn  btn-outline-danger btn-sm delete_state" href="javascript:void(0)" >删除</a>
 
-                                         <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                         <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                           state_guid="{{item.guid}}" class=" btn btn-outline-primary btn-sm  modify_state5" href="javascript:void(0)" >修改</a>
                                           </div>
                                       {%end%}
@@ -3811,12 +3853,12 @@ background-color: #007bff;
                                               <div class="user-detail">
                                                 <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                                  {{item.state_id_name}}</span>
-                                                 {%if item.uid==int(uid)%}
+                                                 {%if item.uid==int(uid) or name=='罗文波'%}
                                                  <div style="float: right;margin:5px;">
-                                                 <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                                 <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                             state_guid="{{item.guid}}"  class="btn  btn-outline-danger btn-sm delete_state" href="javascript:void(0)" >删除</a>
 
-                                           <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                           <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                             state_guid="{{item.guid}}" class=" btn btn-outline-primary btn-sm  modify_state6" href="javascript:void(0)" >修改</a>
                                                 </div>
                                         {%end%}
@@ -3877,12 +3919,12 @@ background-color: #007bff;
                                                   <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                                    {{item.state_id_name}}</span>
                                                    </h5>
-                                                   {%if item.uid==int(uid)%}
+                                                   {%if item.uid==int(uid) or name=='罗文波'%}
                                                    <div style="float: right;margin:5px;">
-                                                   <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                                   <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                               state_guid="{{item.guid}}"  class="btn  btn-outline-danger btn-sm delete_state" href="javascript:void(0)" >删除</a>
 
-                                             <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}"
+                                             <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
                                               state_guid="{{item.guid}}" class=" btn btn-outline-primary btn-sm  modify_state7" href="javascript:void(0)" >修改</a>
                                             </div>
                                           {%end%}
@@ -4021,12 +4063,19 @@ background-color: #007bff;
       <label class="control-label" for="rec_by">签收方</label>
       <div class="col-md-10">
         <input type="text" id="rec_by" name="rec_by" value=""  class="form-control">
-        <span id="is_inner_span">
-        <input type="checkbox" name="is_inner" id="is_inner" value="1" checked/>内部交接
-        <p id="msg_rec_by" class="help-block" style="color:red"></p>
-        </span>
+  
       </div>
       <!-- /controls -->
+    </div>
+    <div  class="form-group">
+      <label for="is_inner">类型</label>
+      <div class="col-sm-10">
+     
+        <input type="radio" name="is_inner" id="is_inner" value="0"/>外部交接
+        <input type="radio" name="is_inner" id="is_inner" value="1"/>内部交接
+        <p id="msg_rec_by" class="help-block" style="color:red"></p>
+       
+      </div>
     </div>
     <!-- /control-group -->
         <div class="form-group">
@@ -4324,7 +4373,7 @@ background-color: #007bff;
           <select id="cq_member" name="cq_member"  class="form-control" >
                 <option value="0">请选择</option>
                         {%for m  in t_user_teams_cq%}
-                            <option value="{{m.id}}" >{%if m.name=="周萍" or m.name=="外资"%}{{m.name}}(无需流转){%else%}{{m.name}}{%end%}</option>
+                            <option value="{{m.id}}" >{{m.name}}</option>
 
                         {%end%}
                 </select>
@@ -4387,10 +4436,22 @@ background-color: #007bff;
               <hr class="my-0">
 
       <div class="form-group" id='projects_note_content'>
-      <label for="inputEmail3" class="col-sm-5 control-label">交代内容</label>
-      <div class="col-sm-10">
-        <textarea id='note_content' class="form-control" type="text" name="note_content"></textarea>
+      <label for="inputEmail3" class="col-sm-3 control-label" id="projects_lab">交代内容
+        </label>
+          <select name='note_chengjiao' style="width:120px;">
+              <option value="">选择成交事项</option>
+              {%for item in t_projects_note_chengjiao%}
+              <option value="{{item.msg}}">{{item.msg}}</option>
+              {%end%}
+            </select>
+            {%if name=="陈太智"%}
+            <a href="/project?tag=manage_chengjiao"><span class="fa fa-cog">管理</span></a>
+      
+   {%end%}
+      <div class="col-sm-12">
+        <textarea id='note_content' class="form-control" type="text" name="note_content" style="height:110px;"></textarea>
       </div>
+      <br>
       <div class="col-sm-10 checkdiv">
         <input type="checkbox" value="1" id="check_radio" name="check_radio">需要上级审核
         </div>
@@ -6576,9 +6637,12 @@ _xsrf =  getCookie("_xsrf")
   })
 
 
- $.get('/building?tag=show&customer_id={{t_project.id}}&customer_name={{t_project.customer_company}}', function(data) {
+$.ajax({
+  type: "GET",
+  url: "http://building.gzfaye.com/api",
+  data: "tag=show_to_income&qid={{t_project.id}}&customer_name={{t_project.customer_company}}&code={{md5_str}}&dt={{dt}}",
+  success: function(data){
     if(data=="0"){
-
         $("#show_building_link_span").hide()
 
         {%for item in t_project_members%}
@@ -6594,8 +6658,16 @@ _xsrf =  getCookie("_xsrf")
            $("#show_building_link_span").show()
     }
 
+  },
+  error: function(xhr, textStatus, error) {
+      console.log(xhr.statusText);
+      console.log(textStatus);
+      console.log(error);
+ $("#show_building_status").html('<div class="card-body py-2 "><div class="alert alert-secondary" role="alert">数据读取失败'+error+"/"+textStatus+'</div></div>')
 
-  });
+
+  }
+});
 
 
 
@@ -7074,9 +7146,9 @@ $("#btn_save_trans").on("click",function(){
            type_names=type_names.join(',')
 
         if (is_inner==undefined){
-          is_inner = 0
+            $("#msg_rec_by").text("未选择类型")
         }
-        if(rec_by==""){
+        else if(rec_by==""){
             $("#rec_by").focus()
              $("#show_msg_by_transition").text("签收方不能为空")
         }
@@ -7225,7 +7297,7 @@ $('#t_customer_company').hide()
   $("#div_acc").hide()
   $("#div_recommend_staff").hide()
   $("#div_addr_type").show()
-  $("#div_promo").hide()
+  
 {%end%}
 
 {%if t_project.busniess_from_id==3%}
@@ -7241,7 +7313,7 @@ $('#t_customer_company').hide()
     $("#customer_company").removeAttr('readonly')
       $("#div_pre_value").show()
       $("#div_addr_type").show()
-      $("#div_promo").hide()
+     
 {%end%}
 
 
@@ -7257,7 +7329,7 @@ $('#t_customer_company').hide()
   $("#customer_company").removeAttr('readonly')
     $("#div_pre_value").show()
     $("#div_addr_type").show()
-    $("#div_promo").hide()
+
 {%end%}
 
 {%if t_project.busniess_from_id==81%}
@@ -7273,7 +7345,7 @@ $('#t_customer_company').hide()
   $("#customer_company").removeAttr('readonly')
   $("#div_pre_value").show()
   $("#div_addr_type").show()
-  $("#div_promo").hide()
+  
 {%end%}
 {%if t_project.busniess_from_id==200%}
 $('#same_company').show()
@@ -7287,6 +7359,7 @@ $('#same_company').show()
       $("#div_pre_value").show()
       $("#div_addr_type").show()
       $("#div_promo").hide()
+     
 {%end%}
 {%if t_project.busniess_from_id==202%}
 $('#t_customer_company').hide()
@@ -7315,17 +7388,27 @@ $('#t_customer_company').hide()
   $("#div_promo").show()
 {%end%}
 $(".delete_state").on("click",function(){
-    if(confirm("确认删除该状态吗？")){
+
+          
+  if(confirm("确认删除该状态吗？")){
         curr_state_id = $(this).attr("curr_state_id")
+        name=$(this).attr('uid_name')
         guid = $(this).attr('state_guid')
+        type_id=$(this).attr('type_id')
         $.post("project?tag=delete",{
               "_xsrf":_xsrf,
               "curr_state_id":curr_state_id,
               "project_id":{{t_project.id}},
+              "name":name,
+              "type_id":type_id,
               "guid":guid},
               function(result){
+                if(result=='-100'){
+                  alert('已过删除期,如需删除,请联系罗文波')
+                }else{
                 alert('删除成功！')
                 location.reload()
+              }
 
               }
           )
@@ -7362,8 +7445,18 @@ $(".modify_state").on('click',function(){
       state_remark = $(this).attr("state_remark")
       curr_state_id = $(this).attr("curr_state_id")
       state_id = $(this).attr("state_id")
-
-      $(":radio[name='state_id'][value='"+state_id+"']").prop("checked","checked")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) { 
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id'][value='"+state_id+"']").prop("checked","checked")
       $("#state_remark").val(state_remark)
       $("#btn_save_project_state").attr({"curr_state_id":curr_state_id,'type_id':1})
 
@@ -7371,104 +7464,199 @@ $(".modify_state").on('click',function(){
    //   $("#project_state_modal").css('margin', '100px auto 100px auto');
       $("#project_state_modal").modal("show")
       $("#project_state_show_all1").modal("hide")
+        }
+       })
+    
 })
 $(".modify_state1").on('click',function(){
     //  $("#project_state_modal").attr("width","756px;")
       state_remark = $(this).attr("state_remark")
       curr_state_id = $(this).attr("curr_state_id")
       state_id = $(this).attr("state_id")
-
-      $(":radio[name='state_id1'][value='"+state_id+"']").prop("checked","checked")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) { 
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id1'][value='"+state_id+"']").prop("checked","checked")
       $("#state_remark1").val(state_remark)
       $("#btn_save_project_state1").attr({"curr_state_id":curr_state_id,'type_id':2})
 //      $('#project_state_modal').css('width', '850px');
    //   $("#project_state_modal").css('margin', '100px auto 100px auto');
       $("#project_state_modal1").modal("show")
       $("#project_state_show_all2").modal("hide")
+        }
+       })
+    
+
 })
 $(".modify_state2").on('click',function(){
     //  $("#project_state_modal").attr("width","756px;")
       state_remark = $(this).attr("state_remark")
       curr_state_id = $(this).attr("curr_state_id")
       state_id = $(this).attr("state_id")
-
-      $(":radio[name='state_id2'][value='"+state_id+"']").prop("checked","checked")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) { 
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id2'][value='"+state_id+"']").prop("checked","checked")
       $("#state_remark2").val(state_remark)
       $("#btn_save_project_state2").attr({"curr_state_id":curr_state_id,'type_id':3})
 //      $('#project_state_modal').css('width', '850px');
    //   $("#project_state_modal").css('margin', '100px auto 100px auto');
       $("#project_state_modal2").modal("show")
       $("#project_state_show_all3").modal("hide")
+        }
+       })
+
 })
 $(".modify_state3").on('click',function(){
     //  $("#project_state_modal").attr("width","756px;")
       state_remark = $(this).attr("state_remark")
       curr_state_id = $(this).attr("curr_state_id")
       state_id = $(this).attr("state_id")
-
-      $(":radio[name='state_id3'][value='"+state_id+"']").prop("checked","checked")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) { 
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id3'][value='"+state_id+"']").prop("checked","checked")
       $("#state_remark3").val(state_remark)
       $("#btn_save_project_state3").attr({"curr_state_id":curr_state_id,'type_id':4})
 //      $('#project_state_modal').css('width', '850px');
    //   $("#project_state_modal").css('margin', '100px auto 100px auto');
       $("#project_state_modal3").modal("show")
       $("#project_state_show_all4").modal("hide")
+        }
+       })
+
 })
 $(".modify_state4").on('click',function(){
     //  $("#project_state_modal").attr("width","756px;")
       state_remark = $(this).attr("state_remark")
       curr_state_id = $(this).attr("curr_state_id")
       state_id = $(this).attr("state_id")
-
-      $(":radio[name='state_id4'][value='"+state_id+"']").prop("checked","checked")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) { 
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id4'][value='"+state_id+"']").prop("checked","checked")
       $("#state_remark4").val(state_remark)
       $("#btn_save_project_state4").attr({"curr_state_id":curr_state_id,'type_id':5})
 //      $('#project_state_modal').css('width', '850px');
    //   $("#project_state_modal").css('margin', '100px auto 100px auto');
       $("#project_state_modal4").modal("show")
       $("#project_state_show_all5").modal("hide")
+        }
+       })
+
 })
 $(".modify_state5").on('click',function(){
     //  $("#project_state_modal").attr("width","756px;")
       state_remark = $(this).attr("state_remark")
       curr_state_id = $(this).attr("curr_state_id")
       state_id = $(this).attr("state_id")
-
-      $(":radio[name='state_id5'][value='"+state_id+"']").prop("checked","checked")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) { 
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id5'][value='"+state_id+"']").prop("checked","checked")
       $("#state_remark5").val(state_remark)
       $("#btn_save_project_state5").attr({"curr_state_id":curr_state_id,'type_id':6})
 //      $('#project_state_modal').css('width', '850px');
    //   $("#project_state_modal").css('margin', '100px auto 100px auto');
       $("#project_state_modal5").modal("show")
       $("#project_state_show_all6").modal("hide")
+        }
+       })
+
 })
 $(".modify_state6").on('click',function(){
     //  $("#project_state_modal").attr("width","756px;")
       state_remark = $(this).attr("state_remark")
       curr_state_id = $(this).attr("curr_state_id")
       state_id = $(this).attr("state_id")
-
-      $(":radio[name='state_id6'][value='"+state_id+"']").prop("checked","checked")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) { 
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id6'][value='"+state_id+"']").prop("checked","checked")
       $("#state_remark6").val(state_remark)
       $("#btn_save_project_state6").attr({"curr_state_id":curr_state_id,'type_id':7})
 //      $('#project_state_modal').css('width', '850px');
    //   $("#project_state_modal").css('margin', '100px auto 100px auto');
       $("#project_state_modal6").modal("show")
       $("#project_state_show_all7").modal("hide")
+        }
+       })
+
 })
 $(".modify_state7").on('click',function(){
     //  $("#project_state_modal").attr("width","756px;")
       state_remark = $(this).attr("state_remark")
       curr_state_id = $(this).attr("curr_state_id")
       state_id = $(this).attr("state_id")
-
-      $(":radio[name='state_id7'][value='"+state_id+"']").prop("checked","checked")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) { 
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id7'][value='"+state_id+"']").prop("checked","checked")
       $("#state_remark7").val(state_remark)
       $("#btn_save_project_state7").attr({"curr_state_id":curr_state_id,'type_id':8})
 //      $('#project_state_modal').css('width', '850px');
    //   $("#project_state_modal").css('margin', '100px auto 100px auto');
       $("#project_state_modal7").modal("show")
       $("#project_state_show_all8").modal("hide")
+        }
+       })
+
 })
 
  $(".a_project_state_modal").on("click",function(){
@@ -8109,6 +8297,7 @@ $('#btn_save_project_kehu').on('click',function () {
                         })
   }
  })
+
 $("#btn_save_project").on("click",function(){
                 pre_income = $("#pre_income")
                 project_name = $("#project_name")
@@ -8287,12 +8476,12 @@ $("#btn_save_project").on("click",function(){
                         if(confirm('是否将原公司添加到公司曾用名？')){
                           is_company_history=1
                         }
-                        if(res['same_customer']!=undefined){
+                        if(res['same_customer']!=undefined && res['same_customer']!='' && "{{getMemberName(t_project_members,'销售顾问')}}"!="{{name}}"){
                         if(confirm('是否修改客户系统中相同公司的公司名？')){
                           is_update_company_customer=1
                         }
                         }
-                        if(res['project']!=undefined){
+                        if(res['project']!=undefined && res['project']!='' && "{{getMemberName(t_project_members,'销售顾问')}}"!="{{name}}" ){
                         if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
                           is_update_company_project=1
                         }
@@ -8337,12 +8526,13 @@ $("#btn_save_project").on("click",function(){
                           is_company_history=1
                         }
                       }
-                      if(res['same_customer']!=undefined){
+                      if(res['same_customer']!=undefined && res['same_customer']!=''  && "{{getMemberName(t_project_members,'销售顾问')}}"!="{{name}}"){
                         if(confirm('是否修改客户系统中相同公司的公司名？')){
                           is_update_company_customer=1
                         }
+                      
                         }
-                      if(res['project']!=undefined){
+                        if(res['project']!=undefined && res['project']!=''  && "{{getMemberName(t_project_members,'销售顾问')}}"!="{{name}}" ){
                         if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
                           is_update_company_project=1
                         }
@@ -8697,8 +8887,14 @@ $("#btn_save_file_license").on("click",function(){
       guid =  $(this).attr('guid')
       if(confirm("确认删除吗？")){
         $.post("/project?tag=delete_service_money",{"project_id":"{{t_project.id}}","_xsrf":_xsrf,"guid":guid},function(result){
-          alert("删除成功")
-          location.reload()
+          if(result==0){
+            alert("删除成功")
+            location.reload()
+
+          }else{
+            alert(result)
+          }
+
         })
       }
 
@@ -8789,9 +8985,11 @@ $("#a_add_service").on("click",function(){
 })
 $("#a_add_note").on("click",function(){
   $("#projects_note").text('交代事项')
+  $('#projects_lab').text('交代内容')
   $('.modal_note_btn').text('保存')
   $('.modal_note_btn').attr('id','btn_save_modal_note')
   $('.modal_note_btn').removeAttr('note_id')
+  $('#btn_save_modal_note').removeAttr('is_chengjiao')
   $('#note_content').val('');
   $('#projects_note_confirm_content').hide();
   $('#projects_note_content').show();
@@ -8943,7 +9141,7 @@ $("#btn_save_fromword").on("click",function(){
 
 
     $("#btn_save_income").on("click",function(){
-
+       
          var   pay_type_id = $("#pay_type_id").val()//
          var   pay_type_name =$("#pay_type_id option:selected").text()
 
@@ -9059,6 +9257,8 @@ $("#btn_save_fromword").on("click",function(){
            formData.append("income_at",income_at)
            //$(this).text('保存中')
           // $(this).attr('disabled','disabled')
+          
+           $(this).attr("disabled","disabled")
            $.ajax({
                     url : '/project?tag=add_income',
                     type : 'POST',
@@ -9261,7 +9461,7 @@ $("#btn_save_fromword").on("click",function(){
      // $("#income_a_type").val("edit")
 
      //  $("#parent_id_hide").val(parent_id)
-
+      $("#btn_save_income").removeAttr("disabled")
       var  parent_id = $(this).attr("parent_id")
       var  company_id = $(this).attr("company_id")
       var   company_id_name= $(this).attr("company_id_name")
@@ -9523,6 +9723,7 @@ $("#btn_save_fromword").on("click",function(){
         $(".a_income_pay_detail").show()
         $("#btn_save_income").attr("income_a_type","add")
         $("#btn_save_income").attr("parent_id_hide","0")
+         $("#btn_save_income").removeAttr("disabled")
         $("#income_a_type").val("add")
         $("input[name=txt_income_detail]").val("")
         var json_income_arr
@@ -9645,11 +9846,25 @@ $("#btn_save_fromword").on("click",function(){
         })
 
     })
-
+    $('select[name=note_chengjiao]').change(function () {
+      if($(this).val()==''){
+        $('#projects_lab').text('交代内容')
+      $('#projects_note').text('交代事项')
+      $('#btn_save_modal_note').removeAttr('is_chengjiao')
+      $('#note_content').val($(this).val())
+      }
+      else{
+      $('#projects_lab').text('成交内容')
+      $('#projects_note').text('成交事项')
+      $('#btn_save_modal_note').attr('is_chengjiao','1')
+      $('#note_content').val($(this).val())
+      }
+     })
     $('#btn_save_modal_note').on("click",function(){
         var note_content=$('#note_content').val();
         var is_check=$('input[name=check_radio]:checked').val();
         var note_id=$(this).attr('note_id');
+        var is_chengjiao=$(this).attr('is_chengjiao')
         if(note_content!=''){
           $(this).text('保存中...')
           $(this).attr('disabled','disabled')
@@ -9659,6 +9874,7 @@ $("#btn_save_fromword").on("click",function(){
               'note_id':note_id,
               'note_content':note_content,
               'project_id':"{{t_project.id}}",
+              'is_chengjiao':is_chengjiao,
               'is_check':is_check,
               "_xsrf":_xsrf
             },function (result) {
@@ -11033,7 +11249,8 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
             location.reload()
            }
         )
-        location.reload()
+       
+
         }
         }
 

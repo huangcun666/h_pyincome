@@ -26,12 +26,12 @@
 {%if  params['step']  in ['2','3']%}
 <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link {%if not params['type']%}active {%end%}" id="nav-home-tab" 
+            <a class="btn btn-light  nav_padding  {%if not params['type']%}active {%end%}" id="nav-home-tab" 
             href="/statis?tag=statis_project_detail{%if params['step']%}&step={{params['step']}}{%end%}">
                 全部
             </a>
             {%for item in t_projects_type%}
-            <a class="nav-item nav-link {%if params['type']==item.income_name%}active{%end%}"
+            <a class="btn btn-light  nav_padding  {%if params['type']==item.income_name%}active{%end%}"
              href="/statis?tag=statis_project_detail{%if params['step']%}&step={{params['step']}}{%end%}&type={{item.income_name}}"
                 style="font-size:13px;">{{item.income_name}}</a>
             {%end%}
@@ -41,19 +41,19 @@
 {%else%}
 <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link {%if params['date_type']=='month'%}active {%end%}" id="nav-home-tab" 
+            <a class="btn btn-light  nav_padding  {%if params['date_type']=='month'%}active {%end%}" id="nav-home-tab" 
             href="/statis?tag=statis_project_detail
             {%if params['step']%}&step={{params['step']}}{%end%}&date_type=month">
                 按月统计
             </a>
-            <a class="nav-item nav-link {%if params['date_type']=='day'%}active {%end%}" id="nav-home-tab" 
+            <a class="btn btn-light  nav_padding  {%if params['date_type']=='day'%}active {%end%}" id="nav-home-tab" 
             href="/statis?tag=statis_project_detail
             {%if params['step']%}&step={{params['step']}}{%end%}&date_type=day">
                 按日统计
             </a>
         </div>
     </nav>
-<br>
+
 {%end%}
 <div class="table-responsive">
 

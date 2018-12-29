@@ -13,21 +13,31 @@
         {{params["datatype_name"]}}
 
     </li>
-    <li><a class=" faye-btn" href="/statis?tag={{params["tag"]}}&role=13{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" {%if params[ "role"]=="13" %}style="background-color:beige;" {%end%}>客服顾问{{params["datatype_name"]}}</a>
+    <li>
+        {%if exists%}
+        {%if str(params['role'])=='13'%}
+        <a class=" faye-btn" href="#">客服顾问{{params["datatype_name"]}}</a>
+        {%elif str(params['role'])=='1'%}
+        <a class=" faye-btn" href="#">销售顾问{{params["datatype_name"]}}</a>
+        {%elif str(params['role'])=='6'%}
+        <a class=" faye-btn" href="#">在线客服{{params["datatype_name"]}}</a>
+        {%end%}
+        {%else%}
+        <a class=" faye-btn" href="/statis?tag={{params["tag"]}}&role=13{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" {%if params[ "role"]=="13" %}style="background-color:beige;" {%end%}>客服顾问{{params["datatype_name"]}}</a>
 
             <a class=" faye-btn" href="/statis?tag={{params["tag"]}}&role=1{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" {%if params["role"]=="1"%}style="background-color:beige;" {%end%}>销售顾问{{params["datatype_name"]}}</a>
             <a class=" faye-btn" href="/statis?tag={{params["tag"]}}&role=6{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}"  {%if params["role"]=="6"%}style="background-color:beige;" {%end%}>在线客服{{params["datatype_name"]}}</a>
-
+{%end%}
     </li>
 </ol>
 
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <a class="nav-item nav-link {%if not params["type_id"]%}active {%end%}" id="nav-home-tab" href="/statis?tag={{params["tag"]}}{%if params["role"]%}&role={{params["role"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}">全
+        <a class="btn btn-light  nav_padding  {%if not params["type_id"]%}active {%end%}" id="nav-home-tab" href="/statis?tag={{params["tag"]}}{%if params["role"]%}&role={{params["role"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}">全
             部
         </a>
         {%for item in btype%}
-        <a class="nav-item nav-link {%if params["type_id"]==str(item.id)%}active{%end%}" href="/statis?tag={{params["tag"]}}&type_id={{item.id}}{%if params["role"]%}&role={{params["role"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}"
+        <a class="btn btn-light  nav_padding  {%if params["type_id"]==str(item.id)%}active{%end%}" href="/statis?tag={{params["tag"]}}&type_id={{item.id}}{%if params["role"]%}&role={{params["role"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}"
             style="font-size:13px;">{{item.income_name}}
         </a>
         {%end%}
@@ -36,32 +46,15 @@
 </nav>
 
 
+  
 
-<div class="row" style="padding:10px;">
-
-    <div class="col-lg-12">
-    <form>
+    <form class="search_box">
         <table style="font-size:80%;">
             <thread>
-                <tr class="faye-tdti">
 
-                    <td>
-                        {%if params["role"]=="1"%}销售顾问
-                        {%elif params["role"]=="13"%}
-客服顾问
-                         {%elif params["role"]=="6"%}
-                            在线客服
-                        {%end%}
-
-
-                    </td>
-                    <td>开始时间</td>
-                    <td>结束时间</td>
-                    <td></td>
-
-                </tr>
 
                 <tr>
+                        {%if not exists%}
                     <td>
                         <select name="gw" class="form-control">
                             <option value="0">选择{%if params["role"]=="1"%}销售顾问 {%elif params["role"]=="13"%}客服顾问 {%elif params["role"]=="6"%}在线客服 {%end%}</option>
@@ -72,7 +65,7 @@
                             {%end%}
                         </select>
                     </td>
-
+                    {%end%}
                     <td>
                         <input type="text" name="start" id="start" class="form-control" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}"
                         />
@@ -91,7 +84,7 @@
                         <input type="hidden" name="type_id" value="{{params["type_id"]}}" />
                         {%end%}
 
-                        <input type="submit" value="检索" class="form-control" />
+                        <input type="submit" value="检索" class="btn btn-info" />
                     </td>
                 </tr>
         </table>
@@ -109,9 +102,6 @@
 
 
 
-    </div>
-    <!-- /.col-lg-6 -->
-</div>
 <div class="table-responsive">
 
 <table class="table table-bordered"  style="width:1500px">
@@ -119,32 +109,24 @@
         <tr class="active">
             <th width="120">日期</th>
           <th width="80">合计</th>
+            {%if count.every_count%}
+            {%for item in count.every_count.split(',')%}
 
-            {%for item in t_kf%}
-                <th width="80">{{item.uid_name}}</th>
+            <th width="80">{{item.split('|')[0]}}</th>
+            {%end%}
             {%end%}
             <th></th>
         </tr>
 
         <tr style="background-color:bisque;">
             <td style="background-color: #efefef;">合计</td>
-           <td style="background-color: #efefef;">{{t_statis_kf_total_day_all.gc1}}</td>
+           <td style="background-color: #efefef;">{{count.ssc}}</td>
+           {%if count.every_count%}
+           {%for item in count.every_count.split(',')%}
+            <td>{{item.split('|')[1]}}</td>
+           {%end%}
+           {%end%}
 
-             {%for item in t_kf%}
-<td>
-            {%for row_total in t_statis_kf_total%}
-                    {%if row_total.uid_name==item.uid_name%}
-                            {{row_total.total_income}}
-                            {%break%}
-                    {%end%}
-
-
-
-            {%end%}
-            </td>
-
-
-            {%end%}
                         <td></td>
 
         </tr>
@@ -159,26 +141,15 @@
          {{item.ct}}
      </td>
         <td width="120" style="background-color: #efefef;">
-        {%for row_total in t_statis_kf_total_day%}
-                {%if item.ct==row_total.ct%}
-    {{row_total.gc1}}
-                    {%break%}
-                {%end%}
-
-        {%end%}
+            {{item.sc}}
      </td>
 
- {%for row in t_kf%}
+ {%for row in count.every_count.split(',')%}
 <td>
-     {%for r in item.gc.split(",")%}
-        {%if r and r.split("|")[0]==row.uid_name%}
-            {{r.split("|")[1]}}
-            {%break%}
-        {%else%}
+{%for m in item.gc.split(',')%}
+    {%if m.split('|')[0]==row.split('|')[0]%}
+    {{m.split('|')[1]}}
     {%end%}
-
-
-
 {%end%}
 </td>
 {%end%}

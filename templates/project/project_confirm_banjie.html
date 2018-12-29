@@ -42,9 +42,9 @@
                     <td><input type="text" name="gendan" id="gendan" class="form-control" placeholder="跟单专员" value="{%if params['gendan']%}{{params['gendan']}}{%end%}"></td>
                     <td><input type="text" name="sale_man" id="sale_man" class="form-control" placeholder="销售顾问" value="{%if params['sale_man']%}{{params['sale_man']}}{%end%}"></td>
                     <td><input type="text" name="start_time" id="start_time" class="form-control" placeholder="开始时间" value="{%if params['start_time']%}{{params['start_time']}}{%end%}"></td>
-                    <td>至</td>
+                  
                     <td><input type="text" name="end_time" id="end_time" class="form-control" placeholder="结束时间" value="{%if params['end_time']%}{{params['end_time']}}{%end%}"></td>
-                    <td><input value="检 索" type="submit">
+                    <td><input value="检 索" type="submit" class="btn btn-info">
                     <input type="hidden" value="{{tag}}" name="tag"/>
                     <input type="hidden" value="{{step}}" name="step"/>
                     </td>
@@ -55,10 +55,10 @@
       </form>
            <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                     <a href="/project?tag=project_confirm_banjie" class="nav-item nav-link {%if not step%}active{%end%}" >全部</a>
-                    <a href="/project?tag=project_confirm_banjie&step=1" class="nav-item nav-link {%if step=='1'%}active{%end%}" >待确认</a>
-                     <a href="/project?tag=project_confirm_banjie&step=2" class="nav-item nav-link {%if step=='2'%}active{%end%}" >已确认</a>
-                     <a href="/project?tag=project_confirm_banjie&step=3" class="nav-item nav-link {%if step=='3'%}active{%end%}" >异常待确定</a>
+                     <a href="/project?tag=project_confirm_banjie" class="btn btn-light  nav_padding {%if not step%}active{%end%}" >全部</a>
+                    <a href="/project?tag=project_confirm_banjie&step=1" class="btn btn-light  nav_padding {%if step=='1'%}active{%end%}" >待确认</a>
+                     <a href="/project?tag=project_confirm_banjie&step=2" class="btn btn-light  nav_padding {%if step=='2'%}active{%end%}" >已确认</a>
+                     <a href="/project?tag=project_confirm_banjie&step=3" class="btn btn-light  nav_padding {%if step=='3'%}active{%end%}" >异常待确定</a>
     
         </div>
         </nav>  

@@ -1,0 +1,412 @@
+
+ {% extends "../base.html" %} {%block title%}地址管理{%end%} 
+
+ {%block body%}
+
+ <ol class="breadcrumb faye-ti">
+   <li class="breadcrumb-item">
+     主面板
+   </li>
+   <li class="breadcrumb-item active">地址管理  
+   
+   
+   
+<!--
+   <a href="javascript:void(0)" style="background-color:#ccc;padding:8px;" id="a_add_modal">新增</a>
+   -->
+   </li>
+   
+ </ol>
+<nav class="nav nav-pills flex-column flex-sm-row">
+  <a class=" btn btn-light flex-sm-fill text-sm-center nav-link {%if not ctype and not act_id%}active{%end%} " {%if not ctype%}active{%end%} href="addr?tag=all">全部
+     <span class="badge badge-secondary">{{all_count}}</span>
+  
+  </a>&nbsp;
+   <a class="btn btn-light  flex-sm-fill text-sm-center nav-link {%if  ctype=="expired" and not act_id%}active{%end%}" href="addr?tag=all&ctype=expired">地址到期
+     <span class="badge badge-secondary">{{expired_count}}</span>
+   </a>
+
+&nbsp;
+    {%for item in project_type%}
+        <a class="btn flex-sm-fill text-sm-center nav-link {%if  str(item.order_int)==act_id%} btn-dark {%else%}btn-light {%end%}" href="addr?tag=all&act_id={{item.order_int}}">{{item.type_name}}
+  <span class="badge badge-secondary">{{item.cc}}</span>
+        </a>&nbsp;
+    {%end%}
+   <a class=" btn  btn-light flex-sm-fill text-sm-center nav-link  {%if  ctype=="expired_customer"%}active{%end%}" href="addr?tag=all&ctype=expired_customer">拖欠
+      <span class="badge badge-secondary">{{custoemr_expired_count}}</span>
+   
+   </a>
+
+</nav>
+
+<style>
+
+table {
+  border: 0;
+  padding: 0;
+  margin: 0 0 20px 0;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 5px;
+  /* NOTE: th padding must be set explicitly in order to support IE */
+  text-align: center;
+  font-weight: bold;
+  line-height: 2em;
+  color: #FFF;
+  background-color: #555;
+}
+
+tbody td {
+  padding: 10px;
+  line-height: 18px;
+  border-top: 1px solid #E0E0E0;
+}
+
+tbody tr:nth-child(2n) {
+  background-color: #F7F7F7;
+}
+
+tbody tr:hover {
+  background-color: #EEEEEE;
+}
+
+td {
+  text-align: center;a_add_modal
+}
+
+td:first-child,
+th:first-child {
+  text-align: left;
+}
+
+
+</style>
+<form class="search-box">
+<table style="margin-bottom:1px;">
+<tbody>
+<tr>
+<td><input type="text" name="company" placeholder="公司名称" class="form-control" value="{{company}}"></td>
+<td>
+<input type="hidden" name="tag" value="all">
+<input type="hidden" name="ctype" value="{{ctype}}">
+
+
+<input type="submit" class="btn " value="检索">
+</td>
+</tr>
+</tbody>
+</table>
+</form>
+
+<div class="table-responsive" style="margin-top:1px;">
+<table  style="width:2500px">
+  <thead id="header">
+                <tr>
+                {%if ctype=="expired" and role=='7'%}
+                 <th>发起</th>
+                 {%end%}
+
+                  <th width="50">编号</th>
+                     <th>最新动态</th>  
+                  
+                      <th>跟单人</th>  
+
+                  <th>企业名称</th>
+                      
+                  <th>企业代码</th> <!-- 销售隐藏--->
+                  <th>承租人</th>
+                  <th>地址性质</th>
+                <th>地址性质类型</th>  
+                <th>工商专员</th>   <!-- 销售隐藏--->
+                <th>安排时间</th>   <!-- 销售隐藏--->
+                <th>租赁开始时间</th>   <!-- 销售隐藏--->
+                <th>租赁结束时间</th>  
+           
+                <th >物业安排</th>   <!-- 销售隐藏--->
+                <th>原挂靠地址</th>  
+                <th >现执照地址</th>  
+                <th>联系电话</th>  
+                <th>客服顾问</th>  
+                <th>销售顾问</th>  
+             
+            
+                </tr>
+              </thead>
+               <tbody>
+                    {%if t_addr_manager%}
+              {%for item in t_addr_manager%}
+                <tr>   {%if ctype=="expired"  and role=='7' %}
+                  <td>
+                  
+               
+                  <a id="{{item.id}}" company_name="{{item.company}}" now_addr="{{item.now_addr}}" href="javascript:void(0)" class="a_from_cq"><img src="/static/ico/1.png" width="30"/></a>
+       
+              
+
+
+                  </td>    {%end%}
+
+
+
+                  <td>{{item.id}}</td>
+                   <td width="160">{%if item.act_id_name%}{{item.act_id_name}}{%if item.act_by_uid_name%}({{item.act_by_uid_name}}){%end%}{%end%}</td> 
+
+                    <td width="90">{%if item.a_follow_uid_name%}{{item.a_follow_uid_name}}{%else%}无{%end%}</td>
+
+                  <td><a href="addr?tag=show&addr_id={{item.id}}&guid=dfsafdasfafafafafdaf34432343232dfssfdfsd&from_tag=all">{{item.company}}</a></td>
+                     
+                  <td>{%if item.company_uid%}{{item.company_uid}}{%end%}</td>
+                  <td>{{item.rent_by}}</td>
+                  <td>{{item.addr_type}}</td>
+                   <td>{{item.addr_con}}</td>
+                   <td>{{item.cq_uid_name}}</td>      
+                   <td>{%if item.cq_uid_at%}{{item.cq_uid_at.strftime("%Y-%m-%d")}}{%end%}</td> 
+                   <td>{%if item.rent_start%}{{item.rent_start.strftime("%Y-%m-%d")}}{%end%}</td> 
+                   <td>{%if item.rent_end%}{{item.rent_end.strftime("%Y-%m-%d")}}{%end%}</td> 
+                   <td>{{item.addr_manager}}</td> 
+                        <td style="width:200px;" title="{{item.old_addr}}">  {%if item.old_addr and len(item.old_addr) > 40%} {{item.old_addr[:40]}}... {%else%} {{item.old_addr}} {%end%}</td> 
+                   <td style="width:200px;" title="{{item.now_addr}}">{%if item.now_addr and  len(item.now_addr) > 40%} {{item.now_addr[:40]}}... {%else%} {{item.now_addr}} {%end%}</td>            
+          
+                   <td>{%if item.customer_tel%}{{item.customer_tel}}{%else%}无{%end%}</td> 
+                   <td>{{item.gw_uid_name}}</td> 
+                   <td>{{item.xs_uid_name}}</td> 
+                  
+                </tr>
+            {%end%}
+                      {%else%}
+
+  <tr><td colspan="8">当前没有可处理数据哦.</td> </tr>
+                {%end%}
+              </tbody>
+            </table>
+
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=all&page={{ pagination.page - 1}}{%if ctype%}&ctype={{ctype}}{%end%}{%if act_id%}&act_id={{act_id}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=all&page={{page}}{%if act_id%}&act_id={{act_id}}{%end%}{%if ctype%}&ctype={{ctype}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% else %}
+          <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+          {% end %} 
+          
+          {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="?tag=all&page={{pagination.page+1}}{%if act_id%}&act_id={{act_id}}{%end%}{%if ctype%}&ctype={{ctype}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>
+          </div>
+        </main>
+
+
+<div id="add_set_member" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="myModalLabel_linkman">分配跟进人
+                    <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                        <i class="btn-icon-only icon-remove">×</i>
+                        </i>
+                    </a>
+
+                </h5>
+            </div>
+            <div class="modal-body form-horizontal" id="site_mod">
+
+          <div class="form-group well">
+                <div class="col-md-12 " id="msg_cq" style="background-color:#ccc;">
+
+                  
+                   
+                </div>
+          
+                <!-- /controls -->
+            </div>
+
+
+            <div class="form-group">
+                <div class="col-md-10">
+                    <label class="control-label" for="username" id="xs_name">销售顾问</label>
+                    
+                    
+  <select  name="income_name_member"  class="form-control" >
+                 <option value="0">请选择</option>
+                         {%for m  in t_user_teams%}
+                         {%if m.team_id==1%}
+                             <option value="{{m.id}}">{{m.name}}</option>
+                         {%end%}
+                         {%end%}
+                 </select>
+
+
+
+   
+                </div>
+                <!-- /controls -->
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-10">
+                    <label class="control-label" for="username" id="gw_name">客服顾问</label>
+                 <select  name="income_name_member"  class="form-control" >
+                 <option value="0">请选择</option>
+                         {%for m  in t_user_teams%}
+                         {%if m.team_id==2%}
+                             <option value="{{m.id}}">{{m.name}}</option>
+                         {%end%}
+                         {%end%}
+                 </select>
+                </div>
+                <!-- /controls -->
+            </div>
+  
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="username">备注内容</label>
+                    <textarea type="text" class="form-control " id="ass_body" name="plan_body" placeholder=""></textarea>
+                    <div class="alert alert-danger" role="alert" id="ass_body_msg" style="display:none;"></div>
+                  
+                </div>
+          
+                <!-- /controls -->
+            </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <button class="btn btn-primary" id="btn_save_set_member">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="add_from_cq_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="myModalLabel_linkman_title_cq">发起地址收费请求
+                    <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                        <i class="btn-icon-only icon-remove">×</i>
+                        </i>
+                    </a>
+
+                </h5>
+            </div>
+            <div class="modal-body form-horizontal" id="site_mod">
+
+
+
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="username">现执照地址</label>
+                    <textarea type="text" class="form-control " id="req_addr_now" name="cq_addr_now"  ></textarea>
+                    <div class="alert alert-danger" role="alert" id="req_addr_now_msg" style="display:none;"></div>
+                </div>
+                <!-- /controls -->
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="username">备注</label>
+                    <textarea type="text" class="form-control " id="cq_addr_remark" name="cq_addr_remark" placeholder=""></textarea>
+                    <div class="alert alert-danger" role="alert" id="cq_addr_remark_msg" style="display:none;"></div>
+                    <br>
+                </div>
+          
+                <!-- /controls -->
+            </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <button class="btn btn-primary" id="btn_save_cq_addr">发起</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%end%} 
+
+{%block js%}
+<script>
+$(function(){
+        _xsrf = getCookie("_xsrf")
+       $(".a_add_modal").on("click",function(){
+        id = $(this).attr("id")
+         $("#btn_save_cq_addr").attr("addr_id",0)
+           gw_uid_name = $(this).attr("gw_uid_name")
+           xs_uid_name = $(this).attr("xs_uid_name")
+           req_addr_now=$(this).attr("req_addr_now")
+           req_remark = $(this).attr("req_remark")
+           created_by = $(this).attr("created_by")
+           bcreated_at = $(this).attr("bcreated_at")
+           
+           if(gw_uid_name!=""){
+               gw_uid_name="<font color='red'>---原销售顾问:"+gw_uid_name+'</font>'
+           }
+            if(xs_uid_name!=""){
+               xs_uid_name="---原销售顾问:"+xs_uid_name
+           }
+            if(req_remark==""){
+                req_remark="无"
+            }
+           msg_cq = "发起人:<br/><font color='blue'><b>"+created_by+"---"+bcreated_at+"</b></font><br/>现执照地址:<br/><b>"+req_addr_now+"</b><br/>发起人备注:<br/><b>"+req_remark+"</b><br/>"
+
+
+            $("#msg_cq").html(msg_cq)
+            $("#gw_name").text("客服顾问"+gw_uid_name)
+            $("#xs_name").text("销售顾问"+xs_uid_name)
+            $("#btn_save_set_member").attr("addr_id",id)
+
+            $("#add_set_member").modal("show")
+        })
+
+
+
+
+       $(".a_from_cq").on("click",function(){
+
+            $("#cq_addr_now").val("")
+            $("#cq_addr_remark").val("")
+            $("#btn_save_cq_addr").attr("addr_id",0)
+
+            id = $(this).attr("id")
+            company_name=$(this).attr("company_name")
+            now_addr = $(this).attr("now_addr")
+            $("#myModalLabel_linkman_title_cq").text("发起地址收费请求--"+company_name)
+
+
+            $("#cq_addr_now").val(now_addr)
+            $("#btn_save_cq_addr").attr("addr_id",id)
+
+
+            $("#add_from_cq_modal").modal("show")
+
+
+        })
+
+        $("#btn_save_cq_addr").on("click",function(){
+            cq_addr_now = $("#cq_addr_now").val()
+            cq_addr_remark =  $("#cq_addr_remark").val()
+            addr_id = $(this).attr("addr_id")
+            $.post("/addr?tag=add_req",{"cq_addr_now":cq_addr_now,"cq_addr_remark":cq_addr_remark,"addr_id":addr_id,"_xsrf": _xsrf},function(){
+
+                    location.reload()
+            })
+        })
+})
+</script>
+
+
+ {%end%}

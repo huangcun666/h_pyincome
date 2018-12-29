@@ -1,0 +1,177 @@
+
+ {% extends "../base.html" %} {%block title%}挂靠地址续期{%end%} 
+
+ {%block body%}
+ <ol class="breadcrumb faye-ti">
+   <li class="breadcrumb-item">
+     主面板
+   </li>
+   <li class="breadcrumb-item active">挂靠地址续期
+    
+  
+   
+   </li>
+   
+ </ol>
+
+<nav class="nav nav-pills flex-column flex-sm-row">
+  <a class=" btn btn-light flex-sm-fill text-sm-center nav-link {%if not ctype and not act_id%}active{%end%} " {%if not ctype%}active{%end%} href="addr?tag=addr_list_sales">全部
+     <span class="badge badge-secondary">{{all_count}}</span>
+  
+  </a>
+
+&nbsp;
+    {%for item in project_type%}
+    {%if item.order_int==1%}
+      {%continue%}
+      {%end%}
+        <a class="btn flex-sm-fill text-sm-center nav-link {%if  str(item.order_int)==act_id%} btn-dark {%else%}btn-light {%end%}" href="addr?tag=addr_list_sales&act_id={{item.order_int}}">{{item.type_name}}
+  <span class="badge badge-secondary">{{item.cc}}</span>
+        </a>&nbsp;
+    {%end%}
+   <a class=" btn  btn-light flex-sm-fill text-sm-center nav-link  {%if  ctype=="expired_customer"%}active{%end%}" href="addr?tag=addr_list_sales&ctype=expired_customer">拖欠
+      <span class="badge badge-secondary">{{custoemr_expired_count}}</span>
+   
+   </a>
+
+</nav>
+
+
+
+<style>
+
+table {
+  border: 0;
+  padding: 0;
+  margin: 0 0 20px 0;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 5px;
+  /* NOTE: th padding must be set explicitly in order to support IE */
+  text-align: center;
+  font-weight: bold;
+  line-height: 2em;
+  color: #FFF;
+  background-color: #555;
+}
+
+tbody td {
+  padding: 10px;
+  line-height: 18px;
+  border-top: 1px solid #E0E0E0;
+}
+
+tbody tr:nth-child(2n) {
+  background-color: #F7F7F7;
+}
+
+tbody tr:hover {
+  background-color: #EEEEEE;
+}
+
+td {
+  text-align: center;
+}
+
+td:first-child,
+th:first-child {
+  text-align: left;
+}
+
+
+</style>
+
+<div class="table-responsive" style="margin-top:10px;">
+<table  style="width:1500px">
+
+  <thead id="header">
+                <tr>
+                  <th>#</th>
+                     {%if act_id==4%}
+                      <th style="width:60px;">处理结果</th> 
+                    {%end%}
+                     <th>最新动态</th>  
+                  <th>企业名称</th>
+                      
+                  <th>地址性质</th>
+                <th>地址性质类型</th>  
+   
+                <th>租赁结束时间</th>  
+           
+                <th >原挂靠地址</th>  
+                <th>现执照地址</th>  
+                <th>联系电话</th>  
+           
+                </tr>
+              </thead>
+               <tbody>
+               {%if t_addr_manager%}
+              {%for item in t_addr_manager%}
+                <tr>
+
+                  <td>{{item.id}}</td>
+                   <td width="160">{%if item.act_id_name%}{{item.act_id_name}}{%if item.act_by_uid_name%}(操作--{{item.act_by_uid_name}}){%end%}{%end%}</td> 
+                      {%if act_id==4%}
+                      <td style="width:60px;">{%if item.finish_type_name%} {{item.finish_type_name}} {{item.finish_uid_at}} {%end%}</td> 
+                    {%end%}
+                      <td><a href="addr?tag=show&addr_id={{item.id}}&guid=4bca4592-cf6f-4d14-87fa-51714ad7745d&&from_tag=addr_list_sales">{{item.company}}</a></td>
+                  <td>{{item.addr_type}}</td>
+                   <td>{{item.addr_con}}</td>
+                   <td>{{item.rent_end.strftime("%Y-%m-%d")}}</td> 
+             <td style="width:200px;" title="{{item.old_addr}}">  {%if item.old_addr and len(item.old_addr) > 40%} {{item.old_addr[:40]}}... {%else%} {{item.old_addr}} {%end%}</td> 
+                   <td style="width:200px;" title="{{item.now_addr}}">{%if item.now_addr and  len(item.now_addr) > 40%} {{item.now_addr[:40]}}... {%else%} {{item.now_addr}} {%end%}</td>            
+                   <td>{%if item.customer_tel%}{{item.customer_tel}}{%else%}无{%end%}</td> 
+             
+                
+                </tr>
+                
+            {%end%}
+            {%else%}
+  <tr><td colspan="8">当前没有可处理数据哦.</td> </tr>
+                {%end%}
+              </tbody>
+            </table>
+
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=my&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% else %}
+          <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+          {% end %} 
+          
+          {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>
+          </div>
+        </main>
+
+{%end%} 
+
+{%block js%}
+
+<script>
+$(function(){
+
+    $("#list_company").click()
+})
+</script>
+
+ {%end%}

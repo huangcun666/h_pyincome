@@ -1,0 +1,526 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          主面板
+        </li>
+        <li class="breadcrumb-item active">跟单分配列表 <div class="btn-group">
+  <button type="button" style="font-size:12px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" id="btn_group_action" aria-haspopup="true" aria-expanded="false">
+    选中操作(0)
+  </button>
+
+  <div class="dropdown-menu" id="btnmenu_show">
+    <a class="dropdown-item" href="javascript:void(0)" id="btn_group_set_toMember" style="font-size:12px;">批量分配</a>
+  </div>
+</div></li>
+      </ol>
+
+
+     
+
+      <nav>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="team_cq1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongCQ">新增工商专员 </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+<div class="modal-body form-horizontal" id="site_mod">
+
+
+    <div class="form-group">
+    <label for="inputEmail3" class="col-sm-5 control-label">工商专员</label>
+    <div class="col-sm-10">
+          <select id="cq_member" name="cq_member"  class="form-control" >
+                <option value="0">请选择</option>
+                        {%for m  in t_user_teams_cq%}
+                            <option value="{{m.id}}" >{%if m.name=="周萍" or m.name=="外资"%}{{m.name}}(无需流转){%else%}{{m.name}}{%end%}</option>
+                     
+                        {%end%}
+                </select>
+    </div>
+  </div>
+
+    <div class="form-group">
+    <label for="inputEmail3" class="col-sm-5 control-label">跟单业务</label>
+    <div class="col-sm-10">
+            <select id="cq_btype_id" name="cq_btype_id"  class="form-control" >
+                <option value="0">请选择</option>
+                        {%for m  in t_cq_service%}
+
+                            <option value="{{m.id}}">{{m.income_name}}</option>
+
+                        {%end%}
+                </select>
+    </div>
+  </div>
+
+      </div>
+      <div class="modal-footer">
+
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                 <button class="btn btn-primary" target="_blank" id="btn_save_team_cq">保 存</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-item nav-link {%if not last_milepost_id and not ntag%}active{%end%}" style="font-size:12px;"
+      href="/project?tag=projects_state
+      {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
+      {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
+      {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
+      {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
+      {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
+      {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
+      {%if params["end"]%}&end={{params["end"]}}{%end%}
+      {%if params["start"]%}&start={{params["start"]}}{%end%}
+      {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" >全 部</a>
+      <a class="nav-item nav-link {%if  ntag=="not_transition"%}active{%end%}"  style="font-size:12px;"
+      href="/project?tag=projects_state&ntag=not_transition
+      {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
+      {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
+      {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
+      {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
+      {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
+      {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
+      {%if params["end"]%}&end={{params["end"]}}{%end%}
+      {%if params["start"]%}&start={{params["start"]}}{%end%}
+      {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" >无需流转
+      <span class="badge badge-danger">{{wait_count1.count}}</span>
+      </a>
+      <a class="nav-item nav-link {%if  ntag=="wait"%}active{%end%}"  style="font-size:12px;"
+      href="/project?tag=projects_state&ntag=wait
+      {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
+      {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
+      {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
+      {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
+      {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
+      {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
+      {%if params["end"]%}&end={{params["end"]}}{%end%}
+      {%if params["start"]%}&start={{params["start"]}}{%end%}
+      {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" >待分配
+      <span class="badge badge-danger">{{wait_count.count}}</span>
+      </a>
+
+
+    {%for idx,item in enumerate(project_btypes)%}
+    <a class="nav-item nav-link " btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"  style="font-size:12px;"
+      href="/project?tag=projects_state&last_milepost_id={{item.id}}
+      {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
+      {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
+      {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
+      {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
+      {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
+      {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
+      {%if params["end"]%}&end={{params["end"]}}{%end%}
+      {%if params["start"]%}&start={{params["start"]}}{%end%}
+      {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" style="font-size:13px;">{%if item.id==165%}已填写办结信息,待仓管接单 {%else%}{{item.income_name}}{%end%}<span class="badge badge-danger">{{item.c}}</span></a>
+    {%end%}
+    
+    <a class="nav-item nav-link {%if  ntag=="is_cancel"%}active{%end%}" style="font-size:12px;" href="/project?tag=projects_state&ntag=is_cancel">取消待审核
+        <span class="badge badge-danger">{{cancel_wait_count1.count}}</span>
+    </a>
+    <a class="nav-item nav-link {%if  ntag=="is_cancel_confirm" %}active{%end%}" style="font-size:12px;" href="/project?tag=projects_state&ntag=is_cancel_confirm">取消单
+        <span class="badge badge-danger">{{cancel_confirm_count1.count}}</span>
+    </a>
+
+
+
+</div>
+
+
+
+</nav><br/>
+             <div class="tab-content" id="nav-tabContent">
+
+  <div class="tab-pane fade show  active " >
+
+
+
+ <form>
+ <table>
+    <tr>
+      <td>跟单业务</td>
+            <td>销售顾问</td>
+      <td>工商专员</td>
+      <td>在线客服</td>
+      <td>来源渠道</td>
+      <td>楼盘</td>
+          <td>
+开始时间
+       </td>   
+       
+               <td>
+结束时间
+       </td>   
+              <td>
+                客户/编号/公司/业务
+            </td>
+       <td>
+ 
+       </td>
+
+     
+                     
+    </tr>
+
+        <tr>
+
+
+      <!-- <td>
+
+<select name="income_bussniss" class="form-control">
+  <option  value="0">请选择业务类型</option>
+    {%for idx,item in enumerate(t_project_bussniss)%}
+    
+        <option value="{{item.id}}"   {%if params["income_bussniss"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+    {%end%}
+</select></td> -->
+<td>
+        <select id="cq_btype_id" name="cq_btype_id"  class="form-control" >
+                <option value="0">请选择</option>
+                        {%for m  in t_cq_service%}
+
+                            <option value="{{m.id}}" {%if params["cq_btype_id"]==str(m.id)%}selected{%end%}>{{m.income_name}}</option>
+
+                        {%end%}
+                </select>
+</td>
+              <td>
+
+<select name="sales" class="form-control" >
+  <option  value="0">销售顾问</option>
+    {%for idx,item in enumerate(t_user_sales)%}
+        <option value="{{item.id}}" {%if params["sales"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+    {%end%}
+</select></td>
+      <td>
+<select name="cq" class="form-control" >
+  <option  value="0">工商专员</option>
+    {%for idx,item in enumerate(t_user_cq)%}
+        <option value="{{item.id}}" {%if params["cq"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+    {%end%}
+</select>
+      </td>
+
+       <td>
+<select name="kefu" class="form-control">
+  <option  value="0">请选择在线客服</option>
+    {%for idx,item in enumerate(t_users)%}
+    {%if item.team_id==4%}
+        <option value="{{item.id}}"  {%if params["kefu"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+ {%end%}
+    {%end%}
+</select>
+       </td>
+       <td>
+<select name="from_id" class="form-control">
+  <option  value="0">请选择来源渠道</option>
+    {%for idx,item in enumerate(t_income_type)%}
+        <option value="{{item.id}}"  {%if params["from_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+    {%end%}
+</select>
+       </td>
+   
+      <td>
+        <select name="building_id" class="form-control" >
+          <option value="0">请选择楼盘</option>
+            {%for idx,item in enumerate(t_building)%}
+                <option value="{{item.id}}"  {%if params["building_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+            {%end%}
+        </select>
+      </td>
+          <td>
+<input type="text" class="form-control" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
+
+
+
+
+       </td>
+                 <td>
+<input type="text" class="form-control" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+<input type="hidden" name="tag" value="{{tag}}"/>
+<input type="hidden" name="last_milepost_id" value="{%if params["last_milepost_id"]%}{{params["last_milepost_id"]}}{%end%}"/>
+<input type="hidden" name="ntag" value="{%if ntag%}{{ntag}}{%end%}"/>
+
+
+       </td>   
+    <td>
+        <input type="text" onkeypress="if(event.keyCode==13) {btn_search_query.click();return false;}" class="form-control" name="qc_key"
+            id="qc_key" placeholder="客户/编号/公司" value="{%if params["qc_key"]%}{{params["qc_key"]}}{%end%}" />
+    
+    
+    
+    
+    </td>
+
+
+       <td>
+       <input type="submit" value="检索" />
+       </td>
+    </tr>
+ </table>
+
+
+
+
+
+
+
+
+
+
+</form>
+
+
+
+<div class="alert alert-secondary" role="alert">
+
+ 共 {{pagination.total_count}} 条记录
+
+
+</div>
+                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="font-size:12px;" >
+                  <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                        <tr>                       
+                           <th width="20">
+                            <input type="checkbox" name="checkall" id="checkall"/>
+                            </th>
+                           <th width="60">
+                            编号
+                            </th>
+                             <th>业务名称</th>  
+
+                                <th  width="200">公司名称</th>  
+                             <th width="100">客户名称</th>  
+                     
+                            
+                            
+                             <th width="120">
+                            跟单专员
+                            </th>
+                            
+                              <th width="120">合同金额</th>
+                               
+                          
+                             <th width="80">创建人</th>
+<th width="160">创建时间</th>
+                            <th width="50"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {%if not t_projects%}
+                        <tr>
+                            <td colspan="9">没有相关记录</td>
+                        
+                        </tr>
+
+                    {%else%}
+                        {%for item in t_projects%}
+                        <tr ><td>
+                           
+                                <input type="checkbox" name="cbProject" value="{{item.id}}" project_id="{{item.id}}" project_guid="{{item.guid}}"/>
+                                
+                            </td>
+                               <td>
+                                {{item.id}}
+
+                            </td>  
+                            <td title="{{item.project_name}}">
+                            <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" title="{{item.project_name}}"
+                                                             >
+                                                            
+                                                                {%if len(item.project_name) > 40%} {{item.project_name[:40]}}....{%else%} {{item.project_name}} {%end%}
+</a>
+                            </td>  
+                                      <td>
+                                     {%if len(item.customer_company) > 30%} {{item.customer_company[:30]}}....{%else%} {{item.customer_company}} {%end%}
+                            </td>  
+                          <td>
+                                {{item.customer_name}}
+                            </td>  
+                           
+                             <td title="{%if not last_milepost_id%}{%if item.bsa%}{{item.bsa}} {%end%}{%end%}">
+                             {%if not  last_milepost_id%}
+                             {%if item.bsa%}
+
+                             {%if len(item.bsa) > 12%} <font color='blue'>{{item.bsa[:12]}}...</font>{%else%}<font color='blue'> {{item.bsa}} </font>{%end%}
+                           
+                            {%else%}
+
+                            {%if item.wait_set_state==1%}
+                                     <font color='green'>请设置跟单员</font>
+                            {%else%}
+                                      <font color='red'>待客户到款确认,可设置跟单</font>
+                             {%end%}
+
+
+  {%end%}
+
+  {%else%}
+
+{{item.member_name}}
+                             {%end%}
+                          
+                            </td>  
+                             <td>
+                                    {{item.all_income}}
+                            </td>
+                          <td>
+                            {{item.uid_name}}
+                            </td>
+                              <td>
+                            {{item.created_at}}
+                            </td>
+                            <td>
+                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn  btn-sm btn-secondary " title="{{item.id}}">查看</a>
+
+                            </td>
+                        </tr>
+                        {%end%}{%end%}
+                    </tbody>
+                </table>
+
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=projects_state&page={{ pagination.page - 1}}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+
+
+
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=projects_state&page={{page}}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+           {% else %}
+          <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+          {% end %}
+          {% end %} 
+
+         {% if pagination.has_next %}
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_state&page={{pagination.page+1}}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>                
+
+         </div>   </div>   
+      {% end %} 
+      
+      {%block js%}
+<script>
+     _xsrf = getCookie("_xsrf");
+     $(function(){
+             $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+    $("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59',
+language: 'zh-CN',initialDate: new Date()});
+            $("#nav-home-tab{{last_milepost_id}}").tab('show')
+
+         $("#btn_group_set_toMember").on("click",function(){
+                num = $("input[name=cbProject]:checked").length
+                if(num ==0){
+                    alert("请选择操作的业务哦.")
+                }
+                else{
+
+                    $("#cq_member").val("0")
+                    $("#team_cq1").modal("show")
+
+                }
+
+         })
+            {%if is_ok%}
+                
+                 $.notify({
+                    title: "提示:",
+                    message: "您的批量操作成功!"
+                });
+            {%end%}
+
+        $("#btn_save_team_cq").on('click',function(){
+
+            var project_id_str = "";
+
+            $('input[name=cbProject]').each(function() {
+                if(this.checked){
+                    
+                    project_id_str += $(this).val()+",";
+                }
+            });
+
+            project_id_str = project_id_str.substr(0, project_id_str.length - 1);   
+
+            var member_id = $("#cq_member").val()
+            var cq_btype_id = $("#cq_btype_id").val()
+            var cq_btype_id_name =$("#cq_btype_id option:selected").text()
+            if(member_id=="0"){
+            alert("请选择工商专员哦。")
+            $("#cq_member").focus()
+            return false;
+            }
+            else if(cq_btype_id=="0"){
+            alert("请选择办理的业务哦。")
+            $("#cq_member").focus()
+            return false;
+
+            }else{
+            console.log(member_id)
+            $.post("/project?tag=add_member_cq_group",{"cq_btype_id_name":cq_btype_id_name,"member_id":member_id,"project_id_str":project_id_str,"team_id":38,'_xsrf': _xsrf,"cq_btype_id":cq_btype_id },function(result){
+      
+                  location.reload()
+                  //is_ok
+            })
+            }
+        })
+
+        $("#checkall").on("change",function(){
+                    $('input[name=cbProject]').not(this).prop('checked', this.checked);
+                       $("#exampleModalLongCQ").text("批量分配"+$("input[name=cbProject]:checked").length+"条业务记录")
+                    $("#btn_group_action").text("选中操作("+$("input[name=cbProject]:checked").length+")")
+                                   $("#btnmenu_show").attr("class","dropdown-menu show")
+                if($("input[name=cbProject]:checked").length==0){
+                      $("#btnmenu_show").attr("class","dropdown-menu hide")
+                }
+                else{
+                     $("#btnmenu_show").attr("class","dropdown-menu show")
+                }
+        })
+
+    $("input[name=cbProject]").on("change",function(){
+
+             $("#btn_group_action").text("选中操作("+$("input[name=cbProject]:checked").length+")")
+
+                $("#exampleModalLongCQ").text("批量分配"+$("input[name=cbProject]:checked").length+"条业务记录")
+             
+                if($("input[name=cbProject]:checked").length==0){
+                      $("#btnmenu_show").attr("class","dropdown-menu hide")
+                }
+                else{
+                     $("#btnmenu_show").attr("class","dropdown-menu show")
+                }
+
+    })
+
+
+     })
+
+    
+</script>
+{%end%}

@@ -34,12 +34,20 @@ class TornadoBoilerplate(tornado.web.Application):
             user=options.mysql_user,
             password=options.mysql_password,
             connect_timeout=0)
-
-        self.db_building = torndb.Connection(
-            host=options.mysql_host_building,
-            database=options.mysql_database_building,
+        self.db_ext = torndb.Connection(
+            host=options.mysql_host,
+            database=options.mysql_database_ext,
             user=options.mysql_user,
-            password=options.mysql_password,connect_timeout=0)
+            password=options.mysql_password,
+            connect_timeout=0)
+        # self.db_building = torndb.Connection(
+        #     host=options.mysql_host_building,
+        #     database=options.mysql_database_building,
+        #     user=options.mysql_user,
+        #     password=options.mysql_password,connect_timeout=0)
+
+
+
 
 
 def main(mode):
@@ -62,15 +70,14 @@ if __name__ == "__main__":
         options.mysql_host = "192.168.2.169"
         # options.mysql_host = "127.0.0.1"
         options.port = 9999
-        options.mysql_database = "db_income_test1"
+        options.mysql_database = "db_income_test"
         options.mysql_database_customer = "db_customer_test"
-    elif mode=="dev1":
+    elif mode == "online":
         options.mysql_host = "192.168.2.168"
         # options.mysql_host = "127.0.0.1"
         options.port = 9999
         options.mysql_database = "db_income2"
         options.mysql_database_customer = "db_customer"
-
     else:
         print "please write app.py product/dev to run"
 

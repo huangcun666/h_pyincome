@@ -47,7 +47,7 @@ class ApiHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         tag = self.get_argument("tag","user")
-        query= self.get_argument("query")
+        query= self.get_argument("query",'')
         if tag =="user":
 
             response = []
@@ -56,7 +56,7 @@ class ApiHandler(BaseHandler):
 
                 for item in t_users:
                     response.append(item.name)
-                    print(item.name)
+                 
             self.write(tornado.escape.json_encode(response))
         elif tag == "userandid":
             response = []
@@ -104,6 +104,14 @@ class ApiHandler(BaseHandler):
                     response.append(item.company)
             print response,"lllll"
             self.write(tornado.escape.json_encode(response))
+        
+        elif tag=="department":
+            department=self.get_argument('department')
+            responsible_pers=self.db.query('''
+                select responsible_per  from t_todo_arrange a
+                inner join t_user b on a.responsible_per=b.name and department_name=%s group by department_name 
+            ''',department)
+            self.write({'responsible_pers':responsible_pers})
 
 
 

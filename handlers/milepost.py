@@ -47,7 +47,7 @@ class MilePostHandler(BaseHandler):
         uid = self.get_secure_cookie("uid")
         uid_name = self.get_secure_cookie("name")
         dt=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print "mile", tag
+        # print "mile", tag
         if tag == "confirm":
             mid = self.get_argument("mid",0)
             mp_id = self.get_argument("mp_id")
@@ -75,7 +75,7 @@ class MilePostHandler(BaseHandler):
                     if not t_projects_transfile:
                         return self.write("wrong_tran")
                     elif not  t_project and btype_id_name!="公司注销":
-                        print "l.......1"
+                        # print "l.......1"
                         return self.write("-100") #需要补资料
                 elif milepost.type_name==u'仓管通知销售交接':
                     t_projects_transfile = self.db.get('''
@@ -90,7 +90,7 @@ class MilePostHandler(BaseHandler):
                     # elif not  t_projects_transfile_sales:
                     #     return self.write("wrong_tran_sales")
                     elif not t_project and btype_id_name!="公司注销":
-                        print "l.......2", btype_id_name
+                        # print "l.......2", btype_id_name
                         return self.write("-100")  #需要补资料
 
 
@@ -174,7 +174,7 @@ class MilePostHandler(BaseHandler):
 
             result =1
             for item in mid.split(","):
-                print "item",item
+                # print "item",item
                 milepost = self.db.query(
                     "select * from t_projects_milepost where member_id=%s and confirm_at is null and (order_int=1 or order_int=2) order by order_int ",
                     item)
@@ -184,7 +184,7 @@ class MilePostHandler(BaseHandler):
                         confirm_at=%s,uid=%s,uid_name=%s 
                         where id=%s  
                     """, dt, uid, uid_name, row.id)
-                    print "bresult", bresult, "row.id0", row.id
+                    # print "bresult", bresult, "row.id0", row.id
                     if row.order_int == 2:
 
                         self.db.execute(
@@ -198,12 +198,12 @@ class MilePostHandler(BaseHandler):
             type_name = self.get_argument("type_name")
             result = 1
             for item in mid.split(","):
-                print item,type_name,"....."
+                # print item,type_name,"....."
                 milepost = self.db.query(
                     "select * from t_projects_milepost where member_id=%s and confirm_at is null and (type_name=%s) order by order_int ",
                     item, type_name)
                 for row in milepost:
-                    print item,type_name,".....",row
+                    # print item,type_name,".....",row
                     bresult = self.db.execute("""
                         update t_projects_milepost set 
                         confirm_at=%s,uid=%s,uid_name=%s 

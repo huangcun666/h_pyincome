@@ -11,32 +11,25 @@
       </ol>
 <form>
     <table>
-        <thead>
-            <tr>
-                <th>编号</th>
-                <th>公司名称</th>
-                <th></th>
-            </tr>
-        </thead>
+
         <tbody>
             <tr>
                 <td><input type="text" class="form-control" name="s_project_id" placeholder="编号" {%if params['s_project_id']%}value={{params['s_project_id']}}{%end%}></td>
-                <td><input type="text" class="form-control" name="s_company" placeholder="公司名" {%if params['s_company']%}value={{params['s_company']}}{%end%}></td>
+                <td><input type="text" class="form-control" name="s_company" placeholder="公司名称" {%if params['s_company']%}value={{params['s_company']}}{%end%}></td>
                 <td>
                     <input name="tag" value="{{tag}}" hidden>
-                    <input type="submit" value="检索"></td>
+                    <input type="submit" value="检索" class="btn btn-info"></td>
             </tr>
         </tbody>
     </table>
 </form>
 
-   <div class="card mb-3">
-        <div class="card-body">
+
                 <div class="table-responsive">
 
 
-                        <table class="table table-bordered" id="dataTable" >
-                          <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                        <table class="table " id="dataTable" >
+                          <thead style="background-color:#000;color:#fff ;">
                               <tr>
                               <th width="100">编号</th>
                                   <th width="200">公司名称</th>
@@ -88,6 +81,5 @@
               <div class="card-footer small text-muted"></div>
             </div>
         
-</div>
-</div>
+
 {%end%}

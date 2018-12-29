@@ -4,13 +4,18 @@
 
 
 
-/ <a href="/payment?tag=list">记账应收管理</a> 
+<a href="/payment?tag=list" {%if tag=="list"%}class="btn btn-danger"{%else%}class="btn btn-info"{%end%}>记账应收管理</a> 
 
 
-    / <a href="/payment?tag=list_company_in_customer">已成立公司到款列表</a>
-    / <a href="/payment?tag=list_company&state=reg">未成立公司到款列表</a>
-     /
-    <a href="/payment?tag=expire_customer&show_tag=1">即将到期客户费用列表</a>
-/<a href="/payment?tag=list_company_in_customer_req&pay_project_id=0&state=0">应收确认审核</a>
+    <a href="/payment?tag=list_company_in_customer" {%if tag=="list_company_in_customer" or ( tag=="list_company_in_customer_req" and  from_customer)%}class="btn btn-danger"{%else%}class="btn btn-info"{%end%}>已成立公司到款列表</a>
+    <a href="/payment?tag=list_company&state=reg" {%if tag=="list_company"%}class="btn btn-danger"{%else%}class="btn btn-info"{%end%}>未成立公司到款列表</a>
+    
+    <a href="/payment?tag=expire_customer&show_tag=1" {%if tag=="expire_customer" or (  tag=="expire_customer_req" and from_expire)%}class="btn btn-danger"{%else%}class="btn btn-info"{%end%}>即将到期客户费用列表</a>
+
+    <a href="/payment?tag=expire_customer_req&show_tag=0" {%if tag=="expire_customer_req" and not from_expire%}class="btn btn-danger" {%else%}class="btn btn-info"
+        {%end%}>发起应收审核</a>
+
+    <a href="/payment?tag=list_company_in_customer_req&pay_project_id=0&state=0" 
+{%if tag=="list_company_in_customer_req" and not from_customer%}class="btn btn-danger"{%else%}class="btn btn-info"{%end%}>到款确认审核</a>
 
      {%end%}
