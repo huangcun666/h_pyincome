@@ -6,16 +6,25 @@
 
 </style>
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         主面板
     </li>
-    <li class="breadcrumb-item active">到款统计
-            <a  {%if  params['step']=='0'%} style="background-color:beige;"{%end%} 
-            class="faye-btn" href="/statis?tag=projects_incomes">销售顾问</a>
-            <a {%if params['step']=='1'%}style="background-color:beige;"{%end%} 
-            class="faye-btn" href="/statis?tag=projects_incomes&step=1">客服顾问</a>
-            <a {%if params['step']=='2'%}style="background-color:beige;"{%end%} 
-            class="faye-btn" href="/statis?tag=projects_incomes&step=2">客服会计</a>
+    <li class="breadcrumb-item g1">到款统计</li>
+    <li class="g1 g1-left">
+            <a  {%if  params['step']=='0'%} class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%} 
+            href="/statis?tag=projects_incomes">销售顾问</a>
+    </li>
+    <li class="g1 g1-left">
+            <a {%if params['step']=='1'%}class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%} 
+            href="/statis?tag=projects_incomes&step=1">客服顾问</a>
+    </li>
+    <li class="g1 g1-left">
+            <a {%if params['step']=='2'%}class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%} 
+            href="/statis?tag=projects_incomes&step=2">客服会计</a>
+    </li>
+          
+            
+    
     </li>
 </ol>
 
@@ -39,8 +48,8 @@
     </nav>
 <div class="table-responsive">
 
-        <table class="table table-bordered"  style="width:2700px">
-                <thead class="thead-dark">
+        <table class="table table-bordered fayetable"  style="width:2700px">
+                <thead class="table_class">
                     <tr class="active">
                         <th width="120">日期</th>
                         <th>合计</th>

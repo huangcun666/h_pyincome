@@ -1,0 +1,304 @@
+{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item g1">
+         主面板
+        </li>
+        <li class="breadcrumb-item g1">注销部办结审核  <span class="badge badge-primary">当前: {{pagination.total_count}} 条记录</span>
+
+      
+     
+        </li>
+
+      </ol>
+
+
+
+
+
+
+
+
+<div class="table-responsive">
+
+
+
+ <form class="search_box pm2">
+ <table>
+
+
+        <tr>
+            <td >
+                <input value="{{params['key']}}" class="form-control" type="text" name="key" placeholder="编号/业务/客户/公司">
+            </td>
+      <td>
+<select name="member_id" class="form-control" >
+  <option  value="">跟进人</option>
+    {%for idx,item in enumerate(t_projects_logoff_members)%}
+        <option value="{{item.uid}}" {%if params["member_id"]==str(item.uid)%}selected{%end%}>{{item.uid_name}}</option> 
+    {%end%}
+</select>
+      </td>
+          <td>
+
+
+<input type="text" class="form-control" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
+
+
+
+
+       </td>
+              <td>
+<input type="text" class="form-control" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+
+                    </td>   
+                
+                 <td>
+<input type="hidden" name="tag" value="{{tag}}"/>
+<input type="hidden" name="state_id" value="{%if state_id%}{{state_id}}{%end%}"/>
+
+
+       </td>   
+            
+
+       <td>
+       <input type="submit" value="检索" class="btn btn-primary btn-sm" />
+       </td>
+    </tr>
+ </table>
+
+
+
+
+
+
+
+
+
+
+</form>
+
+
+
+
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="btn btn-light  nav_padding  " style="font-size:12px;" href="/project?tag=project_logoff_list">全部
+        <span class="badge badge-danger"></span>
+    </a>
+    {%for item in logoff_type%}
+    <a class="btn btn-light  nav_padding {%if  str(item.order_int)==state_id%}active{%end%}" style="font-size:12px;" href="/project?tag=project_logoff_list&state_id={{item.order_int}}">{{item.income_name}}
+        <span class="badge badge-danger">{{item.cc}}</span>
+    </a>
+    {%end%}
+ 
+
+
+
+</div>
+
+
+
+</nav>
+<div class="table-responsive">
+                  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0"
+                   style="font-size:13px;min-width:1200px;">
+                    <thead class="table_class">
+                        <tr>
+                             <th >业务名称</th>
+                            <th  width="180">公司名称</th>
+                            <th  width="80">客户名称</th>
+                            <th  width="280">办结信息</th>
+                            <th  width="150"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="fayetbody">
+                        {%if  t_projects_logoff%}
+                        {%for item in t_projects_logoff%}
+                            <tr>
+                                <td><a title="{{item.project_name}}" href="/project?tag=show&guid={{item.project_guid}}&id={{item.project_id}}" target="_">
+                                    {%if len(item.project_name)>50%}{{item.project_name[:50]}}...{%else%}{{item.project_name}}{%end%}
+                                
+                                (业务编号:{{item.id}})</a>
+                                </td>
+                                  <td>{{item.customer_company}}</td>
+                                <td>{{item.customer_name}}</td>
+                                <td>
+                                {{item.finish_at}}: <br/>({{item.uid_name}}) 发起办结 <font color='blue'><b>[{{item.type_id_name}}]</b></font> 申请<br/>
+                                
+                               
+                                </td>
+
+                                <td>
+                                 
+                                  {%if item.state_id==2%}
+                                    
+                                <span class="badge badge-info">{%if item.leader_uid==int(uid)%}  你{%else%}{{item.leader_uid_name}}{%end%} 已审核通过 {{item.leader_at}}</span>  
+                                    
+                                    
+                                {%elif item.state_id==3 %}
+                                    
+                                 <span class="badge badge-danger"> {%if item.leader_uid==int(uid)%} 你{%else%}{{item.leader_uid_name}}{%end%}  驳回办结:
+                                 
+                                 {%if item.last_reject_remark%} {{item.last_reject_remark}}{%else%}无{%end%} {{item.leader_at}}</span>    
+ 
+
+                                {%elif item.state_id==1%}
+                                    <a href="javascript:void(0)" msg="{{item.uid_name}}的{{item.type_id_name}}" class="btn btn-primary btn-sm btn_save_logoff_confirm" logoff_id="{%if item.id%}{{item.id}}{%else%}0{%end%}" type_id="{{item.type_id}}" mid="{{item.mid}}" project_id="{{item.project_id}}" >审核通过</a>
+                                 
+                                   <a href="javascript:void(0)" msg="{{item.uid_name}}的{{item.type_id_name}}" class="btn btn-danger btn-sm btn_save_reject" logoff_id="{%if item.id%}{{item.id}}{%else%}0{%end%}" type_id="{{item.type_id}}" mid="{{item.mid}}" project_id="{{item.project_id}}" >驳回</a>
+               
+
+                              
+                            
+                                    
+                                    
+
+                                 {%end%} 
+
+                                 
+                                </td>
+                            </tr>
+                        {%end%}
+                        {%else%}
+                            <tr><td colspan="10">还没有数据哦~</td></tr>
+                        {%end%}
+                    </tbody>
+              
+                </table>
+            </div>
+<div class="col-sm-12 col-md-7">
+   <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+      <ul class="pagination">
+    {% if pagination.has_prev %}
+         <li class="paginate_button page-item previous " id="dataTable_previous">
+         <a href="?tag=my&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+        {% end %}
+        {%for page in pagination.iter_pages() %}
+         {% if page %}
+         {% if page != pagination.page %}
+         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         {% else %}
+          <li class="paginate_button page-item active">
+            <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
+          {% end %}
+          {% else %}
+          <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a></span></li>
+          {% end %} 
+          
+          {%end %}
+
+         {% if pagination.has_next %}
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+     {% end %} </ul>
+   </div>
+</div>
+
+         </div>
+        </div>
+    
+<!-- Modal -->
+
+<div class="modal fade" id="modal_reject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document" >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="projects_note">驳回申请</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+    <div class="modal-body form-horizontal" id="site_mod">
+       
+         <div class="col-sm-12">
+        <textarea id='reject_remark' class="form-control" type="text" name="reject_remark" style="height:110px;"></textarea>
+      </div>
+
+
+
+        </div>
+           <div class="modal-footer">
+
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                     <button class="btn btn-primary" id="btn_save_logoff_reset">驳回申请</button>
+
+          </div>
+      </div>
+    </div>
+
+
+{%end%}
+
+
+
+ {%block js%}
+ <script>
+    $(function(){
+    _xsrf =  getCookie("_xsrf")
+    $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+    $("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59',
+language: 'zh-CN',initialDate: new Date()});
+    $(".btn_save_logoff_confirm").on("click",function(){
+        msg = $(this).attr("msg")
+        if(confirm("确认通过"+msg+"审核吗?")){
+
+            
+                logoff_id=$(this).attr("logoff_id")
+                mid = $(this).attr("mid")
+                project_id = $(this).attr("project_id")
+                type_id = $(this).attr("type_id")
+                $.post("/project?tag=confirm_logoff",{"project_id":project_id,"mid":mid,"type_id":type_id,'_xsrf':_xsrf,"logoff_id":logoff_id},function(result){
+
+                if(result=="0"){
+                    location.reload()
+                }else{
+                    alert(result)
+                }
+                })
+           }
+     })
+
+    $(".btn_save_reject").on("click",function(){
+        logoff_id=$(this).attr("logoff_id")
+        mid = $(this).attr("mid")
+        project_id = $(this).attr("project_id")
+        type_id = $(this).attr("type_id")
+        msg = $(this).attr("msg")
+              $("#btn_save_logoff_reset").attr("msg",msg)
+        $("#btn_save_logoff_reset").attr("logoff_id",logoff_id)
+        $("#btn_save_logoff_reset").attr("project_id",project_id)
+        $("#btn_save_logoff_reset").attr("mid",mid)
+        $("#btn_save_logoff_reset").attr("type_id",type_id)
+
+            $("#modal_reject").modal("show")
+    })
+
+     $("#btn_save_logoff_reset").on("click",function(){
+        msg = $(this).attr("msg")
+        if(confirm("确认驳回"+msg+"办结?")){
+        logoff_id=$(this).attr("logoff_id")
+        reject_remark = $("#reject_remark").val()
+        mid = $(this).attr("mid")
+        project_id = $(this).attr("project_id")
+        type_id = $(this).attr("type_id")
+        $.post("/project?tag=reset_logoff",{"project_id":project_id,"mid":mid,"type_id":type_id,'_xsrf':_xsrf,"logoff_id":logoff_id,"reject_remark":reject_remark},function(result){
+
+          if(result=="0"){
+            location.reload()
+          }else{
+            alert(result)
+          }
+           
+
+        })
+
+        }
+
+
+     })
+
+    })
+ </script>
+
+{%end%}

@@ -1,5 +1,17 @@
  {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
 
+<style>
+body .modal {
+  width: 50%; /* desired relative width */
+  left: 25%; /* (100%-width)/2 */
+  /* place center */
+  margin-left:auto;
+  margin-right:auto;
+}
+
+
+
+</style>
 <div class="main">
     <div class="main-inner">
         <div class="container">
@@ -26,7 +38,7 @@
                                             <form class="form-search" id="query_form">
                                                     <input type="text" value="{{company}}" name="company" class="input-medium seexpire_customerarch-query" placeholder="公司名称">
                                             <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
-             
+
                                                     <button type="submit" class="btn">检 索</button>
                                                     <input type="hidden" value="{{tag}}" name="tag"/>
                                                 <input type="hidden" value="{{show_tag}}" name="show_tag" />
@@ -37,7 +49,7 @@
 
                                                   </form>
 
-                                                 
+
 
 <ul class="nav nav-tabs" id="myTab">
 
@@ -45,7 +57,9 @@
         <a href="/payment?tag=expire_customer&show_tag=1" id="customer_tab">待处理</a>
     </li>
 
-
+    <li {%if show_tag=="-1000"%} class="active" {%end%}>
+            <a href="/payment?tag=expire_customer_req&show_tag=-1000&from_expire=1" id="customer_tab">已发起待处理</a>
+        </li>
 
 
 <li>
@@ -70,11 +84,10 @@
                 <ul class="nav nav-tabs" id="myTab">
 
 
-                    
+
 <li {%if show_tag=="1"  and not by_tag%} class="active" {%end%}>
     <a href="/payment?tag=expire_customer&show_tag=1" id="customer_texpire_customerab">全部</a>
 </li>
-
      {%for item in t_customer_type%}
         <li {%if  by_tag==item.name %} class="active" {%end%}>
             <a href="payment?tag=expire_customer&by_tag={{item.name}}" id="customer_tab">{{item.name}}</a>
@@ -86,8 +99,8 @@
 
 
                                         <div class="alert">
-                                        
-                           
+
+
                                         当前数量: {{pagination.total_count}}
                                         <span style="font: 15px;">合计待收金额: {{total.wait_pay_total}} 元</span>
 
@@ -95,10 +108,10 @@
 
                                         {%if customers%}
 
-                                        <table class="table" style="margin:5px;">
+        <table class="table  table-bordered " style="font-size:12px;">
                                             <thead>
                                                 <tr style="background-color: black; color:#fff;">
-                                            
+
 
                                                     <th style="min-width:150px;">公司名称</th>
 
@@ -119,7 +132,7 @@
                                                     <th width="160">最新收款明细</th>
                                                     <th width="160">待收明细</th>
 <th width="30">待收金额</th>
- 
+
  <th width="30"></th>
 
 
@@ -132,12 +145,13 @@
                                                 <tr>
 
 
-                                              
-     
+
+
                                                     <td>
-         <a href="/customer?tag=show&id={{item.customer_id}}&guid={{item.guid}}">{{item.company}}</a>
+         <a target="_blank" href="/customer?tag=show&id={{item.customer_id}}&guid={{item.guid}}">{{item.company}}</a>
+
         <a class="modify_customer_detail btn-sm control"
-         customer_id="{{item.customer_id}}" 
+         customer_id="{{item.customer_id}}"
          promo_id="{{item.promo_id}}|{{item.promo_id_name}}" is_general="{{item.is_general}}"
          pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
          pay_service_amount = "{{item.pay_service_amount}}"
@@ -146,8 +160,14 @@
          customer_type="{{item.customer_type}}"  href="javascript:void(0)"
          customer_company = "{{item.company}}"
         >
-            <img src="/static/images/modify.png" width="20"/></a>
-                                                    </td>
+            <img src="/static/images/modify.png" width="20"/></a>{%if item.is_general%}<font color='red'><i class="icon-star"></i> 一般纳税人</font>{%end%}
+                                    {%if item.customer_type_name%}<br />
+                                    <span style="font-size:11px; color:blue;"><i class="icon-star"></i> {{item.customer_type_name}}
+
+                                    </span>
+
+                                    {%end%}
+                                                     </td>
                                                      <td>{{item.acc_uid_name}}</td>
                                                     <td>{{item.pay_pay_typeid_name}}</td>
                                                     <td>{{item.pay_service_amount}}</td>
@@ -158,7 +178,7 @@
                                                     <td {%if item.acc_end and  compare_date(item.acc_end,dt_next)%} style="background-color:lemonchiffon" {%end%}>
                                                         {%if item.acc_end%} {{item.acc_end.strftime("%Y-%m")}} {%end%}
 
-                                                  
+
                                                     </td>
                                                     <td  {%if item.acc_book_end and  compare_date(item.acc_book_end,dt_next)%} style="background-color:lemonchiffon" {%end%}>
 
@@ -169,26 +189,27 @@
 
 
  {%if show_tag=="1"%}
-<td {%if item.wait_pay_amount%}style="background-color:lemonchiffon"{%end%}>{{item.wait_pay_amount}}</td>
+<td {%if item.faqi_again==1%}style="background-color:#db3325;"{%elif item.wait_pay_amount%}style="background-color:lemonchiffon"{%end%}>{{item.wait_pay_amount}}</td>
 <td>
 <a class="btn handler_detail btn-sm control" type='button'
 customer_id="{{item.customer_id}}"
 item_id="{{item.id}}"
 cp_title_id="{{item.cp_title_id}}"
 e_wait_pay_amount = "{{item.wait_pay_amount}}"
-wait_pay="{%if item.acc_end and   compare_date(item.acc_end,dt_next)%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}{%if item.acc_book_end and  compare_date(item.acc_book_end,dt_next)%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}(年付)账册费:{{item.pay_book_amount}}元{%end%}"
+wait_pay="{%if item.acc_end and  compare_date(item.acc_end,dt_next)%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}
+{%if item.acc_book_end and  compare_date(item.acc_book_end,dt_next)%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}(年付)账册费:{{item.pay_book_amount}}元{%end%}"
      last_waitpay_expire = "{{item.pb_remark}}"
     href="javascript:void(0)"
      curr_expire_pay="{%if item.acc_end and compare_date(item.acc_end,dt_next)%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
     {%end%}{%if item.acc_book_end%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
-    
+
     href="javascript:void(0)"
     company_name="{{item.company}}"
-    
+    customer_remark="{%if item.customer_remark%}{{item.customer_remark}}{%else%}无{%end%}"
     >
      发起</a>
 
- 
+
 </td>
 {%end%}
 {%if show_tag=="2"%}
@@ -208,10 +229,12 @@ acc_book_end = "{%if item.acc_book_end%}{{item.acc_book_end.strftime("%Y-%m")}}{
 pb_remark = "{%if item.pb_remark%}{{item.pb_remark}}{%end%}"
 al_remark="{%if item.al_remark%}{{item.al_remark}}{%end%}"
 e_wait_pay_amount = "{{item.wait_pay_amount}}"
+    customer_remark="{%if item.customer_remark%}{{item.customer_remark}}{%else%}无{%end%}"
+
 >编辑</a></td>
 
 {%end%}
-                
+
 
                                                 </tr>
                                                 {%end%}
@@ -281,13 +304,17 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
 
 <table border="1" style="padding:10px; width:100%">
 
-     
+
     <tr style="background:#ccc;">
-        <td colspan="8">公司名称</td>
+        <td colspan="4">公司名称</td>
+          <td colspan="4">客户备注</td>
     </tr>
-    <tr id="company_name">
-    
+    <tr >
+        <td id="company_name"  colspan="4"></td>
+         <td id="customer_remark"  colspan="4"></td>
     </tr>
+
+
     <tr style="background:#ccc;">
         <td colspan="8">当前收款基本信息</td>
     </tr>
@@ -321,11 +348,11 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
 
         <div class="control-group">
             <label class="control-label" for="lastname">最新应收明细<span style="font-size:12px; color:red;font-weight:bolder;">(表示到目前为止客户所有记账欠款明细)</span>
-            
-           
+
+
             </label>
             <div class="controls">
-                <textarea type="text" class="span5" id="wait_pay_remark" name="wait_pay_remark" value="" style="height: 50px; color:darkblue;font-size:14px;"></textarea><br/>
+                <textarea type="text" class="span6" id="wait_pay_remark" name="wait_pay_remark" value="" style="height: 50px; color:darkblue;font-size:14px;"></textarea><br/>
                 <input type="checkbox" name="req_close" id="req_close" value="1" /> 无应收订单
             </div>
             <!-- /controls -->
@@ -350,7 +377,7 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
 
     </div>
     <div class="modal-footer">
-   
+
         <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
         <button class="btn btn-primary" id="btn_save_wai_pay">保存</button>
     </div>
@@ -361,54 +388,54 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="myModalLabel_account">修改发起
-    
-    
+
+
             </h3>
         </div>
         <div class="modal-body">
             <div class="control-group">
-    
+
                 <table border="1" style="padding:10px;">
-    
-    
+
+
                     <tr style="background:#ccc;">
                         <td colspan="8">公司名称</td>
                     </tr>
                     <tr id="company_name1">
-    
+
                     </tr>
                     <tr style="background:#ccc;">
                         <td colspan="8">当前收款基本信息</td>
                     </tr>
                     <tr id="service_price1">
-    
+
                     </tr>
-    
+
                     <tr style="background:#ccc;">
                         <td colspan="8">上期收款明细</td>
                     </tr>
                     <tr id="last_payment1">
-    
+
                     </tr>
                     <tr style="background:#ccc;">
                         <td colspan="8">到期信息</td>
                     </tr>
                     <tr id="curr_expire1">
-    
+
                     </tr>
                     <!--  <tr style="background:#ccc;">
             <td colspan="8">本期到款明细</td>
         </tr>
         <tr id="curr_payment_detail">
-    
+
         </tr>
     -->
                 </table>
-    
+
     <div class="control-group">
-    
+
         <label class="control-label" for="acc_end">记账费到期时间
-    
+
         </label>
         <div class="controls">
             <input type="text" class="span2 " id="acc_end1" name="acc_end1" value=""><br/>
@@ -417,9 +444,9 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
         <!-- /controls -->
     </div>
     <div class="control-group">
-    
+
         <label class="control-label" for="account">账册费到期时间
-    
+
         </label>
         <div class="controls">
             <input type="text" class="span2" id="acc_book_end1" name="acc_book_end1" value="">
@@ -427,9 +454,9 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
         </div>
         <!-- /controls -->
     </div>
-    
-    
-    
+
+
+
     <div class="control-group">
         <label class="control-label" for="al_remark">已收明细</label>
         <div class="controls">
@@ -444,7 +471,7 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
         </div>
         <!-- /controls -->
     </div>
-    
+
         <div class="control-group">
             <label class="control-label" for="lastname">待收金额</label>
             <div class="controls">
@@ -452,12 +479,12 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
             </div>
             <!-- /controls -->
         </div>
-    
+
             </div>
-    
+
         </div>
         <div class="modal-footer">
-    
+
             <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
             <button class="btn btn-primary" id="btn_save_wai_pay1">保存</button>
         </div>
@@ -468,7 +495,7 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
 <script src="/static/combodate.js"></script>
 
 
- 
+
  {% include "customer_modify_base.html" %}
 <script>
 
@@ -477,12 +504,12 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
 
             $("#insert_totxt").on("click",function(){
                 txt = $("#last_waitpay_expire").text()
-                
-                
-                
-                
+
+
+
+
                 $("#wait_pay_remark").val($("#wait_pay_remark").val()+"\n"+txt)
-                
+
             })
             $('#acc_end1').combodate({
              format: "YYYY-MM",
@@ -501,7 +528,7 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
              if (this.checked) {
                  $("#wait_pay_remark").val("")
              }else{
-                
+
                   $("#wait_pay_remark").val($("#btn_save_wai_pay").attr("waipay"))
              }
          });
@@ -553,20 +580,21 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
                  $("#account_remark").val("")
                 $("#company_name").text("")
                 $("#insert_totxt").hide()
+                customer_remark = $(this).attr("customer_remark")
                 if(last_waitpay_expire=="None"){
-                   
+
                        $("#last_waitpay_expire").html("<td colspan='8'>无</td>")
                 }else{
                           $("#last_waitpay_expire").html("<td colspan='8'>" + last_waitpay_expire + "</td>")
                           $("#insert_totxt").show()
 
                 }
-               
+
 
 
                 $.get("/payment?tag=get_last_payment", { "customer_id": customer_id }, function (result) {
                     if (result.code == 1) {
-                        
+
                         html = "<td>付款方式</td><td>" + result.customer.customer_paytype_id_name + "</td>"
                         html += "<td>总服务费</td><td>" + result.customer.customer_service_amount + "</td>"
                         html += "<td>月服务费</td><td>" + result.customer.customer_service_amount_month + "</td>"
@@ -589,13 +617,16 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
                         } else {
                             $("#curr_last_payment").html("<td colspan='8'>" + result.customer.pb_remark + "</td>")
                         }
-                        
+
                        $("#curr_expire").html("<td colspan='8'>" + curr_expire_pay + "</td>")
-                        $("#company_name").html("<td colspan='8'>" + company_name + "</td>")
+                        $("#company_name").html(company_name )
+                        $("#customer_remark").html( customer_remark)
+
+
 
                         $("#btn_save_wai_pay").attr("payment_id", result.customer.payment_id)
 
-                        
+
                         $("#wait_pay_remark").val(wait_pay)
                         $("#a_handler_modal").modal("show")
                     } else {
@@ -603,7 +634,7 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
 
                     }
                 }, "json")
-                
+
 
             })
 
@@ -670,7 +701,7 @@ $(".edit_detail").on("click", function () {
 
             $("#btn_save_wai_pay1").attr("pay_id", result.customer.payment_id)
 
-    
+
             $("#wait_pay_remark").val(wait_pay)
             $("#a_handler_modal1").modal("show")
         } else {
@@ -681,7 +712,7 @@ $(".edit_detail").on("click", function () {
 
 
 })
-$("#btn_save_wai_pay1").on("click",function () { 
+$("#btn_save_wai_pay1").on("click",function () {
 
 acc_end=$('#acc_end1').combodate("getValue","YYYY-MM");
 acc_book_end=$('#acc_book_end1').combodate("getValue","YYYY-MM");
@@ -699,7 +730,7 @@ $.post("payment?tag=add",
     "pay_id2":pay_id,
     "wait_pay_amount": e_wait_pay_amount
 
-},function (result) { 
+},function (result) {
     if(result=="-100"){
     $("#acc_end").focus()
     alert("要填写记账费到期日期哦")

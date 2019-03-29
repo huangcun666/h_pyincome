@@ -3,10 +3,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item active">订单流转动态列表</li>
+        <li class="breadcrumb-item g1">订单流转动态列表</li>
       </ol>
 
 
@@ -62,7 +62,7 @@
           </div>
   
           <div class="modal-body form-horizontal" id="site_mod">
-              <table class="table table-bordered" id="dataTable" cellspacing="0" style="font-size:12px;">
+              <table class="table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:12px;">
                   <thead>
                       <tr>
                         
@@ -75,7 +75,7 @@
 
                       </tr>
                   </thead>
-                  <tbody id="my_allgroups">
+                  <tbody class="fayetbody" id="my_allgroups">
                       {%for item in all_categorys%}
                       <tr id="{{item.id}}" class='my_allgroup hh' category_id="{{item.id}}">
                         <td>{{item.id}}</td>
@@ -206,7 +206,7 @@
 {%end%}
 <div class="table-responsive">
                   <table class="table table-bordered" id="dataTable"  cellspacing="0" style=" width:1800px;font-size:13px;">
-                 <thead class="thead-dark">
+                 <thead class="table_class">
                         <tr>
             
                         {%if params["last_milepost_id"]=="163"%}
@@ -218,10 +218,12 @@
                            <th width="20">
                             编号
                             </th>
+                            <th width="100">客户名称</th>
+                            <th width="200">公司名称</th>
                              <th width="200">业务名称</th>
 
-                                <th width="200">公司名称</th>
-                             <th width="100">客户名称</th>
+                           
+                           
 
 
 
@@ -251,16 +253,18 @@
                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}" class="btn " title="{{item.id}}" style="font-size:13px;"> {{item.id}}</a>
 
                             </td>
+                          
+                        <td>
+                              {{item.customer_name}}
+                          </td>
+                          <td>
+                            {{item.customer_company}}
+                        </td>
                             <td>
                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}" class="btn " title="{{item.id}}" style="font-size:13px;"> {{item.project_name}}</a>
 
                             </td>
-                                      <td>
-                                {{item.customer_company}}
-                            </td>
-                          <td>
-                                {{item.customer_name}}
-                            </td>
+                           
 
                              <td>
                                     {%if item.last_milepost_id_name%}

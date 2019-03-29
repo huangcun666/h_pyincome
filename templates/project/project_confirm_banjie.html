@@ -2,36 +2,23 @@
 
 
 <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">办结确认
+        <li class="breadcrumb-item g1">办结确认
             {%if t_projects and (params['project_id'] or params['project_name'] 
             or params['customer_company'] or params['customer_name'] or params['customer_tel'] 
             or params['gendan'] or params['sale_man'] or (params['start_time'] and params['end_time']))%}
-                <a href="{{output_path}}" class="btn btn-primary btn-sm">点击下载数据（Excel格式）</a>
+            <li class="g1 g1-left">    
+            <a href="{{output_path}}" class="btn btn-primary btn-sm">点击下载数据（Excel格式）</a>
+                </li>
             {%end%}
         </li>
       </ol>
 
 
-      <form class="form-search" id="query_form">
+      <form class="form-search pm2" id="query_form">
         <table>
-            <thead>
-                <tr>
-                    <th>编号</th>
-                    <th>业务名称</th>
-                    <th>公司名称</th>
-                    <th>客户名称</th>
-                    <th>电话</th>
-                    <th>跟单专员</th>
-                    <th>销售顾问</th>
-                    <th>办结时间</th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
             <tbody>
                 <tr>
                     <td><input type="text" name="project_id" class="form-control" placeholder="编号" value="{%if params['project_id']%}{{params['project_id']}}{%end%}"></td>
@@ -44,7 +31,7 @@
                     <td><input type="text" name="start_time" id="start_time" class="form-control" placeholder="开始时间" value="{%if params['start_time']%}{{params['start_time']}}{%end%}"></td>
                   
                     <td><input type="text" name="end_time" id="end_time" class="form-control" placeholder="结束时间" value="{%if params['end_time']%}{{params['end_time']}}{%end%}"></td>
-                    <td><input value="检 索" type="submit" class="btn btn-info">
+                    <td><input value="检 索" type="submit" class="btn btn-primary btn-sm">
                     <input type="hidden" value="{{tag}}" name="tag"/>
                     <input type="hidden" value="{{step}}" name="step"/>
                     </td>
@@ -63,7 +50,7 @@
         </div>
         </nav>  
         <div class="table-responsive">
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0"  style="width:2000px" >
+                  <table class="table table-bordered fayetable" id="dataTable" width="100%" cellspacing="0"  style="width:2000px" >
                   <thead style="background-color:#000;color:#fff ; font-size:13px;">
                         <tr>                       
                     
@@ -91,7 +78,7 @@
                             <th width="50"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                     {%if not t_projects%}
                         <tr>
                             <td colspan="9">没有相关记录</td>

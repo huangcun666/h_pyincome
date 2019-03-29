@@ -2,10 +2,12 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item active">跟单分配列表 <div class="btn-group">
+        <li class="breadcrumb-item g1">跟单分配列表 </li>
+                <li class="g1 g1-left">
+            <div class="btn-group">
   <button type="button" style="font-size:12px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" id="btn_group_action" aria-haspopup="true" aria-expanded="false">
     选中操作(0)
   </button>
@@ -149,7 +151,7 @@
 
 
 
- <form>
+ <form class="pm2">
  <table>
     <tr>
       <td>跟单业务</td>
@@ -292,8 +294,8 @@
 
 
 </div>
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="font-size:12px;" >
-                  <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                  <table class="table table-bordered fayetable" id="dataTable" width="100%" cellspacing="0" style="font-size:12px;" >
+                  <thead class="table_class">
                         <tr>                       
                            <th width="20">
                             <input type="checkbox" name="checkall" id="checkall"/>
@@ -320,7 +322,7 @@
                             <th width="50"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                     {%if not t_projects%}
                         <tr>
                             <td colspan="9">没有相关记录</td>

@@ -3,10 +3,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">业务搜索</li>
+        <li class="breadcrumb-item g1">业务搜索</li>
       </ol>
    <div class="card mb-3">
         <div class="card-body">
@@ -14,8 +14,8 @@
               <div class="alert alert-info" role="alert">您查找的关键词： <b>{{search_key}}</b> 找到{{len(t_projects)}}条记录</div>
 
    
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                  <table class="table table-bordered fayetable" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="table_class">
                         <tr>
                          <th width="70">编号</th>
                             <th>名称</th>
@@ -28,7 +28,7 @@
                             <th width="100"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                         {%for item in t_projects%}
                         <tr id="{{item.id}}">
                                <td>
@@ -77,10 +77,10 @@
                             <td>
                                 {%if role=="12"%}  
                                 <a href="/project?tag=projects_simple_details&guid={{item.guid}}&id={{item.id}}" 
-                                class="btn btn-info " title="{{item.id}}">查看</a>
+                                class="btn btn-primary btn-sm" title="{{item.id}}">查看</a>
                                 {%else%}
                                 <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" 
-                                class="btn btn-info " title="{{item.id}}">查看</a>
+                                class="btn btn-primary btn-sm" title="{{item.id}}">查看</a>
                                 {%end%}
                             </td>
                         </tr>

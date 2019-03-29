@@ -25,7 +25,7 @@
                                                 <label class="control-label" for="username">公司名称</label>
                                                 <div class="controls">
                                                     <!--罗佳颖-->
-         <input type="text"  {%if role not in ['3','2','5','8'] or uid==161%}readonly="readonly"{%end%} 
+         <input type="text"  {%if role not in ['3','2','5','8'] or uid==161%}readonly="readonly"{%end%}
          class="span6 " id="company" name="company" value="{%if t_customer.company%}{{t_customer.company}}{%end%}">
                   <p id="msg_company" class="help-block" style="color:red"></p>
                                                 </div>
@@ -89,18 +89,18 @@
                                                 <!-- /controls -->
                                             </div>
 
-                                    
+
                                             <div class="control-group">
                                                 <label class="control-label" for="acc_uid_name">客服会计</label>
                                                 <div class="controls">
-                                         
+
                                                 <input type="text" name="acc_uid_name" id="acc_uid_name" class="form-control" value="{{t_customer.acc_uid_name}}"/>
 
                                                     <p id="msg_is_general" class="help-block" style="color:red"></p>
                                                 </div>
                                                 <!-- /controls -->
                                             </div>
-                                            
+
                                             <div class="control-group">
                                                 <label for="promo_id" class="control-label">优惠活动:
                                                 </label>
@@ -108,7 +108,7 @@
                                                 <select name="promo_id" id="promo_id" class="form-control" {%if role not in ['2','3','5','8'] or uid==161%}disabled="disabled"{%end%}>
                                                     <option value="0">==请选择优惠活动==</option>
                                                     {% for idx, item in enumerate(t_promo_types) %}
-                                            
+
                                                     <option value="{{item.id}}|{{item.income_name}}" {%if t_customer.promo_id==item.id%}selected{%end%}>
                                                         {{item.income_name}}
                                                     </option>
@@ -121,8 +121,8 @@
                                             <div class="control-group">
                                                 <label class="control-label" for="is_general">是否一般纳税人</label>
                                                 <div class="controls">
-                                                    <input type="radio" name="is_general" value="1"  {%if t_customer.is_general==0%}checked="true"{%end%} /> 是
-                                                    <input type="radio" name="is_general" value="0" {%if t_customer.is_general==1%}checked="true"{%end%}/> 否
+                                                    <input type="radio" name="is_general" value="1"  {%if t_customer.is_general==1%}checked="true"{%end%} /> 是
+                                                    <input type="radio" name="is_general" value="0" {%if t_customer.is_general==0%}checked="true"{%end%}/> 否
                                                     <p id="msg_is_general" class="help-block" style="color:red"></p>
                                                 </div>
                                                 <!-- /controls -->
@@ -190,7 +190,7 @@
 </label>
                                                 <div class="controls">
                                                 {%for item in t_customer_type%}
-                                                    <input type="checkbox" name="customer_type" {%if role not in ['2','3','5','8'] or uid==161%}disabled="disabled"{%end%} 
+                                                    <input type="checkbox" name="customer_type" {%if role not in ['2','3','5','8'] or uid==161%}disabled="disabled"{%end%}
                                                     {%if t_customer.customer_type%}
                                                     {%for s in t_customer.customer_type.split(",")%}
                                                         {%if s==str(item.id)%}
@@ -214,7 +214,7 @@
                                                 <div class="controls">
         {%for idx,item in enumerate(t_payment_type)%}
              <input type="radio" name="pay_type_id" fee="{{item.fee}}" value="{{item.id}}" pay_typeid_name="{{item.name}}"
-             
+
              {%if item.id==t_customer.paytype_id %} checked="true" {%end%} {%if role not in ['2','3','5','8'] or uid==161%}disabled="disabled"{%end%}/> {{item.name}}
    {%end%}
 
@@ -253,7 +253,7 @@
                                                     <input type="text" class="span6" id="addr_type" name="addr_type" value="{%if t_customer.addr_cp%}{{t_customer.addr_cp}}{%end%}" >
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="control-group">
                                                 <label class="control-label" for="lastname">地址期限</label>
                                                 <div class="controls">
@@ -263,7 +263,7 @@
                                             </div>
 
 
-                                           
+
                                              <div class="control-group">
                                                 <label class="control-label" for="lastname">成立日期</label>
                                                 <div class="controls">
@@ -284,7 +284,7 @@
 
 
 
-                         
+
 
 
                                             <div class="control-group">
@@ -306,7 +306,7 @@
                                                 <!-- /controls -->
                                             </div>
 
-                     
+
 
                                                                                          <div class="control-group">
                                                 <label class="control-label" for="lastname">地税分局</label>
@@ -326,14 +326,14 @@
                                                 <!-- /controls -->
                                             </div>
 
-                   
-
-                        
 
 
 
 
-                                  
+
+
+
+
 
 
                 <div class="control-group">
@@ -410,49 +410,49 @@
              laydate.render({
                     elem: '#addr_expire' //指定元素
            });
-           
+
         _xsrf = getCookie("_xsrf")
 
 
 
 
     $('input[type="radio"][name="pay_type_id"]').click(function(){
-                   
+
                    service_amount = $("#service_amount").val()
                    if ($(this).is(':checked'))
                    {
                       if($(this).attr("fee")>0){
                             $("#service_amount").removeAttr("readOnly")
-                          
+
                        }else{
                             $("#service_amount").val("0")
                            all_total = 0
                        }
-   
-   
+
+
                        all_total =  service_amount / $(this).attr("fee");
                        console.log(all_total)
                        if (all_total==Infinity){
                            all_total = 0
-   
+
                        }
                        $("#service_amount_month").val(intToFloat(all_total))
                    }
        });
-   
 
-              
+
+
           $('#service_amount').keyup(function() {
                            all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
                              if (all_total==Infinity){
                            all_total = 0
-                           
+
                        }
                            $("#service_amount_month").val(intToFloat(all_total))
-   
-   
+
+
            });
-   
+
 $("#acc_uid_name").typeahead({
 source: function (query, process) {
 return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
@@ -464,13 +464,13 @@ return process(JSON.parse(data));
 
 
     $('input[type="radio"][name="pay_type_id"]').click(function(){
-                   
+
                 service_amount = $("#service_amount").val()
                 if ($(this).is(':checked'))
                 {
                    if($(this).attr("fee")>0){
                          $("#service_amount").removeAttr("readOnly")
-                       
+
                     }else{
                          $("#service_amount").val("0")
                         all_total = 0
@@ -490,7 +490,7 @@ return process(JSON.parse(data));
 
 
 function intToFloat(val){
-        return new Number(val).toFixed(2);
+    return new Number(val).toFixed(2);
 }
 
         $("#btn_save_customer").on("click", function () {
@@ -511,7 +511,7 @@ function intToFloat(val){
             var reg_tel = $("#reg_tel").val()
             var land_tax =  $("#land_tax").val()
             var national_tax = $("#national_tax").val()
-            
+
             var saic = $("#saic").val()
             var reg_date = $("#reg_date").val()
             var end_date = $("#end_date").val()
@@ -522,14 +522,14 @@ function intToFloat(val){
             var credit_rating = $("input[name=credit_rating]:checked").val()
             var customer_rating = $("input[name=customer_rating]:checked").val()
             var credit_rating_name = $("input[name=credit_rating]:checked").attr("title")
-            var customer_rating_name = $("input[name=customer_rating]:checked").attr("title") 
+            var customer_rating_name = $("input[name=customer_rating]:checked").attr("title")
             var customer_type = ""  //$("input[name=customer_type]:checked").val()
-            var customer_type_name ="" //$("input[name=customer_type]:checked").attr("title") 
+            var customer_type_name ="" //$("input[name=customer_type]:checked").attr("title")
             var promo_id=$("#promo_id").val()
             var acc_uid_name = $("#acc_uid_name").val()
             var zone = $("#zone").val()
             var city = $("#city").val()
-        
+
             var  service_amount_month = $("#service_amount_month").val()
             var  pay_type_id =$("input[name='pay_type_id']:checked").val()
             var  fee =$("input[name='pay_type_id']:checked").attr("fee")
@@ -547,10 +547,10 @@ function intToFloat(val){
                             customer_type_name= customer_type_name +$(this).attr("title")+","
                             customer_type = customer_type+$(this).val()+","
                     }
-                
+
             })
            customer_type_name = customer_type_name.slice(0, -1);
-            customer_type = customer_type.slice(0, -1);   
+            customer_type = customer_type.slice(0, -1);
 
             if (company==""){
                  $("#msg_company").text("公司名称不能为空哦。")
@@ -559,8 +559,11 @@ function intToFloat(val){
 
 
             else{
-        
 
+                $("#btn_save_customer").attr('disabled','disabled')
+                setTimeout(function aa() { 
+                    $('#btn_save_customer').removeAttr('disabled')
+                 },1000)
                 $.post("/customer?tag=add",{
                     "service_amount_month":service_amount_month,
                     "service_amount":service_amount,
@@ -568,7 +571,7 @@ function intToFloat(val){
                     "pay_type_id":pay_type_id,
                     "pay_typeid_name":pay_typeid_name,
                     "customer_id":"{{t_customer.id}}",
-                    "customer_guid":"{{t_customer.guid}}",                    
+                    "customer_guid":"{{t_customer.guid}}",
                     "zone":zone,
                     "city":city,
                     "acc_uid_name":acc_uid_name,
@@ -580,11 +583,12 @@ function intToFloat(val){
                     "customer_rating":customer_rating,
                     "customer_type_name":customer_type_name,
                     "customer_type":customer_type,
-                    "customer_rating_name":customer_rating_name,                    
+                    "customer_rating_name":customer_rating_name,
                     "land_tax":land_tax,
                     "national_tax":national_tax,
                     "saic":saic,"promo_id":promo_id,
                     "company": company,
+                    "fee":fee,
                 "reg_tel": reg_tel,"reg_person": reg_person,
                 "reg_date":reg_date,"end_date":end_date,
                 "reg_addr":reg_addr,"reg_number": reg_number,
@@ -602,7 +606,6 @@ function intToFloat(val){
                     else{
                         location.href=result
                     }
-                    
                     console.log(result)
                 })
 

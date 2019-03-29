@@ -1,6 +1,44 @@
 
  {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+<style>
+#myTab li a {color: #555; text-decoration: none;}
+.nav-tabs>.active>a {border-bottom-color: #ddd;}
+.nav-tabs>.active>a:hover {border-bottom-color: #ddd; }
+.nav-tabs .active>a .badge {background-color: red;}
+.es-xuank {height: 35px; border-bottom: 1px solid #ddd; margin-bottom: 20px;}
+.es-xuank a {line-height: 35px; display: inline-block; width: 107px; height: 35px; text-align: center; color: #8d8d8d;}
+.es-xuank .es-xuanz {border:1px solid #ddd;  border-radius: 3px; background-color: #fff; border-bottom:2px solid #fff; display: inline-block; color: #4aaacc; font-weight: 600;}
 
+.form-search {overflow: hidden;}
+.es-gsmc {border-radius: 2px;}
+.hanggao {display: inline-block; line-height: 28px;}
+.hanggao span {margin-top: 2px; display: inline-block;}
+
+ul li {list-style-type:none; }
+.es-table {margin-top: 15px; font-size: 12px;}
+.es-top {height: 47px;  background-color: #000; color: #fff; margin: 0;}
+.es-top li {float: left; line-height: 47px; padding-left: 5px; box-sizing: border-box; overflow: hidden;}
+.es-hang {border-bottom: 1px solid #ddd; overflow: hidden;}
+.es-hang ul {margin: 0;overflow: hidden; height: 58px;}
+.es-hang ul li {float: left; padding-left: 5px; padding-right: 5px; box-sizing: border-box; padding-top: 20px;}
+.eslabel {font-size: 12px;}
+.eslabel a {display: inline-block; background-color: #4db0d2; margin: 2px; color: #fff; padding: 2px; font-size: 12px;}
+.caoz {width: 35px; height: 35px;  float: left; line-height: 14px; padding: 2px;  border: 1px solid #a5a5a5;  display: inline-block; text-align: center; border-radius: 5px; margin: 1px; box-sizing: border-box; color: #a5a5a5;}
+.caoz:hover {border:1px solid #4db0d2; color: #4db0d2;}
+.es-skr {height: 25px; }
+.es-skr .p1 {float:left; text-align: center; {%if is_manager=='1' and not my %} padding-left: 15px;width: 260px;{%else%}width:220px;{%end%} font-size: 12px; line-height: 10px;}
+.es-skr .p2 {float: right; color: #4db0d2; margin-top: 5px; font-size: 12px;}
+.es-skr .p2 span {margin-right: 15px;}
+.genj {display: inline-block; border-radius: 5px; background-color: #4db0d2; color: #fff; width: 50px; height: 25px; border:1px solid #439bb9; line-height: 25px; text-align: center;}
+.genj:hover {color: #fff;}
+.eslantable{
+    width:1138px;
+}
+.gudi {width: 1172px; height:28px; background-color: #fff;  position: fixed; bottom: 20px; left: 50%; margin-left: -586px;}
+.gudi-left {float: left; font-size:14px;}
+.gudi-right {float: right; font-size:14px;}
+.gudi-right select {width: 40px;}
+</style>
  <div class="main">
 <div class="main-inner">
 <div class="container">
@@ -9,7 +47,11 @@
 <div class="widget ">
 <div class="widget-header">
 <i class="icon-user"></i>
-<h3>{%if t_user_relation and check_under %}其他会计{%else%}{{name}}{%end%}的客户 <a class="btn btn-primary btn-sm  customer_new "  href="customer?tag=add" >新建客户</a> 
+<h3>
+
+
+
+{%if t_user_relation and check_under %}其他会计{%elif kj and  kj=="100000"%}待分配{%elif my%}{{name}}{%else%}全部{%end%}的客户
     {%if t_user_relation %}
     {%if check_under%}
     <a class="btn btn-primary btn-sm  customer_new "  href="/customer?my=1" >返回我的客户</a>
@@ -18,23 +60,63 @@
     {%end%}
     {%end%}
     {%if department_name=='销售部'%}
-   
+
       <a class="btn btn-primary btn-sm"  href="/payment?tag=assist_list">协助列表</a>
 
   {%end%}
+
+
+     <a class="btn {%if not tag_parent_id%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1&tag_parent_id=0{%if my%}&my={{my}}{%end%}">全部</a>
+     <a class="btn {%if  tag_parent_id==1%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1&tag_parent_id=1{%if my%}&my={{my}}{%end%}">记账</a>
+          <a class="btn {%if  tag_parent_id==2%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1&tag_parent_id=2{%if my%}&my={{my}}{%end%}">非记账</a>
+
 </h3>
 </div> <!-- /widget-header -->
 <div class="widget-content">
 <div class="tab-content">
 <div class="tab-pane active" id="formcontrols">
+{%if not new_tag%}
+    <ul class="nav nav-tabs" id="myTab">
 
+        <li {%if  not by_tag%} class="active" {%end%}>
+            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&show_tag=1{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}" id="customer_tab">全部<span class="badge badge-danger">{{type_count_map[0][1]}}</span></a>
+        </li>
+
+
+     {%for item in t_customer_type%}
+        <li {%if  by_tag==item.name %} class="active" {%end%}>
+            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&by_tag={{item.name}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}"
+            id="customer_tab">{{item.name}}<span class="badge badge-danger">{{type_count_map[item.id][1]}}</span></a>
+        </li>
+    {%end%}
+
+    </ul>
+{%else%}
+
+    <ul class="nav nav-tabs" id="myTab">
+
+        <li {%if  not tag_id%} class="active" {%end%}>
+            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&show_tag=1{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}" id="customer_tab">全部<span class="badge badge-danger">{{type_count_map[0][1]}}</span></a>
+        </li>
+
+
+     {%for item in t_customer_tags%}
+        <li {%if  tag_id==item.order_int %} class="active" {%end%}>
+            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&tag_id={{item.order_int}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}"
+            id="customer_tab">{{item.name}}<span class="badge badge-danger">{{type_count_map[item.order_int][1]}}</span></a>
+        </li>
+    {%end%}
+    </ul>
+{%end%}
+
+    
 <fieldset>
 
 <form class="form-search" id="query_form">
   <input type="text" value="{{keyword}}" name="keyword" class="input-medium search-query" placeholder="公司名称/电话/姓名">
 
   <select name="qtype">
-    
+
         <option value="company" {%if qtype=="company"%}selected{%end%}>公司名称</option>
         <option value="lname" {%if qtype=="lname"%}selected{%end%}>联系人姓名</option>
               <option value="tel" {%if qtype=="tel"%}selected{%end%}>电话</option>
@@ -47,14 +129,20 @@
       {%end%}
   </select>
   {%else%}
-  <input type="text" name="kj" class="input-medium" style="width:80px;" placeholder="会计" value="{%if kj %}{{kj}}{%end%}">
+  <input type="text" name="kj" class="input-medium" style="width:80px;" placeholder="会计" value="{%if kj and kj!="100000" %}{{kj}}{%end%}">
  {%end%}
   <input type="checkbox" value="记账" name="jz" {%if jz%}checked{%end%}/> 记账
     <input type="checkbox" value="楼盘"  name="lp" {%if lp%}checked{%end%}/> 楼盘客户
 
-    
+
   <button type="submit" class="btn">检 索</button>
   <input type="hidden" value="{{tag}}" name="tag"/>
+  {%if page_count%}
+  <input type="hidden" name="page_count" value="{{page_count}}">
+  {%end%}
+  {%if by_tag%}
+  <input type="hidden" name="by_tag" value="{{by_tag}}">
+{%end%}
   {%if my%}
   <input type="hidden" value="{{my}}" name="my"/>
 {%end%}
@@ -63,19 +151,24 @@
 {%end%}
 
 
-                
+
 
 
             {%if is_manager=='1' and not my%}
                             <a href="/customer?tag=customer_list_uid">信用代码对比</a>
                             {%end%}
 
+{%if role=='3' or role=='8'%}
+<a href="javascript:void(0);" id="export_data" class="btn btn-info" keyword="{{keyword}}"
+qtype="{{qtype}}" kj="{{kj}}" lp="{{lp}}" jz="{{jz}}">导出excel</a>
+{%end%}
+
 </form>
 
 {%if keyword%}
 <div class="alert fade in">
             <button type="button" class="close" data-dismiss="alert">×</button>
-            <strong>  共找到 {{pagination.total_count}} 条记录</strong> 
+            <strong>  共找到 {{pagination.total_count}} 条记录</strong>
           </div>
 
 {%end%}
@@ -84,95 +177,225 @@
 
                         {%if customers%}
                         {%if is_manager=='1' and not my%}
-                        <a class="btn btn-primary btn-sm change_kj">批量修改客服会计</a>
+                        <a class="btn btn-info btn-sm change_kj">批量修改客服会计</a>
+
+                        <a href="/customer?kj=100000&jz=记账&tag=all" class="btn btn-info btn-sm change_kj">记账待分配客户</a>
+                      
+                      
+                        <a href="/customer?tag=customer_list_except" target="_blank" class="btn btn-info btn-sm change_kj">异常分配会计客户</a>
+                      
+                      
                         {%end%}
-              <table class="table" style="margin:5px;">
-                     <thead>
-                             
-                                <tr style="background-color: black; color:#fff;">
-                                        {%if kj%}
-                                        <th style="min-width:60px;">请选择</th>
-                                        {%end%}
-                                        {%if is_manager=='1' and not my %}
-                                        <th style="min-width:30px;">
-                                            <input type="checkbox" id="choose_all">全选
-                                        </th>
-                                        {%end%}
-                                <th style="min-width:60px;">编号</th>
-                                <th style="min-width:180px;">公司名称</th>
-                                            <th>客户类型</th>
-                                     
-                                      <th>地址类型</th>
-                                <th style="min-width:150px;">注册区域</th>
-                                <th style="min-width:60px;">社会信用代码</th>
-                             
-                         
-                          
-                              
-                                <th>客服会计</th>
-                                <th style="min-width:100px;">创建时间</th>
-                                <th></th>
-                                </tr>
-                            </thead>
-                <tbody>
-    
-     {%for customer in customers%}
-                    <tr>
-                            {%if kj%}
-                            <td ><input type="checkbox" value="{{customer.id}}" id="check"></td>
-                            {%end%}
-                            {%if is_manager=='1' and not my%}
-                            <td><input type="checkbox" value="{{customer.id}}" name="check_customer"></td>
-                            {%end%}
-                       <td>{{customer.id}}</td>
-                        <td>{{customer.company}}</td>
-                              <td>
-                          {{customer.customer_type_name}}
-                        </td>
-                        <td>
-                          {{customer.addr_type}}
-                        </td>
-                        <td>{{customer.zone}}</td>
-                        <td>{{customer.company_reguid}}</td>
-                    
-           
                    
-                        <td>
-                          {{customer.acc_uid_name}}
-                        </td>
-                        <td>{{customer.created_at.strftime("%Y-%m-%d")}}</td>
-                        <td><a class="btn customer_detail btn-sm control"  type='button' href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}">查看</a></td>
+                        <div class="es-table">
+                               
+                            <div  class="eslantable">
+                                <ul class="es-top" style='background-color:#989898'>
+                                        {%if is_manager=='1' and not my %}
+                                    <li style="width: 40px;"><input type="checkbox" id="choose_all"></li>{%end%}
+                                    <li style="width: 39px;">编号</li>
+                                    <li style="width: 226px;">公司名称/社会信用代码</li>
+                                    <li style="width: 70px;">纳税类型</li>
+                                    <li style="width: 66px;">会计标记</li>
+                                    <li style="width: 66px;">地址类型</li>
+                                    <li style="width: 66px;">客服会计</li>
+                                    <li style="width: 66px;">有无税种</li>
+                                    <li style="width: 41px;">社保</li>
+                                    <li style="width: 86px;">本年收入</li>
+                                    <li style="width: 107px;">首要联系人</li>
+                                    <li style="width: 77px;">注备</li>
+                                    <li style="width: 66px;">跟进记录</li>
+                                    <li style="width: 122px;">操作</li>
+                                </ul>
+                            </div>
+                            <div style="overflow: hidden;">
+                                    {%for customer in customers%}
+                                <div class="es-hang">
+                                       
+                                    <ul id="{{customer.id}}">
+                                            {%if is_manager=='1' and not my%}
+                                        <li style="width: 40px;">
+                                        <input type="checkbox"  value="{{customer.id}}" name="check_customer"></li>
+                                        {%end%}
+                                        <li style="width: 39px;">{{customer.id}}</li>
+                                        <li style="width: 226px;"><a target="_blank" href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if not new_tag%}&old_tag=1{%end%}">{{customer.company}}</a> <br>
 
-                     
-                    </tr>
-                    {%end%}
+                                            {%if new_tag%}
 
-              
-                
-                </tbody>
-              </table>
-       
+
+  <p class="eslabel">
+{%if customer.tag_parent_id_name!=customer.tag_id_name%}
+
+  <a href="#">{{customer.tag_parent_id_name}}</a> 
+ {%end%}
+  {%if customer.tag_id_name%}
+ <a href="#">{{customer.tag_id_name}}</a> 
+ {%end%}
+
+   {%if customer.is_building%}
+ <a href="#">楼盘</a> 
+ {%end%}
+  
+   {%if customer.is_year%}
+ <a href="#">工商年检</a> 
+ {%end%}
+ 
+  
+   {%if customer.is_clearly%}
+ <a href="#">汇算清缴</a> 
+ {%end%}
+ 
+
+ </p>
+
+
+
+
+                                        {%else%}
+                                            {% if customer.customer_type_name%}
+                                            <p class="eslabel">
+                                         
+                                            标签：
+                                            {%for item in customer.customer_type_name.split(',')%}
+                                            {%if item!=''%}
+                                            <a href="#">{{item}}</a>
+                                            {%end%}
+                                            {%end%}
+
+                                        {%end%}
+                                        </p>
+                                        {%end%}
+                                        </li>
+
+                                        <li style="width: 70px;">{%if customer.is_general%}<span style="color:#439bb9">一般纳税人</span>{%end%}
+                                            {%if uid=='153'%}
+                                           <a href="https://www.tianyancha.com/search?key={{customer.company}}" target="_blank" style="height:16px;line-height:20px;display: inline-block;
+                                           border-radius: 5px;
+                                           background-color: #4db0d2;
+                                           color: #fff;
+                                           width: 26px;
+                                          
+                                           border: 1px solid #439bb9;
+                                     
+                                           text-align: center;">公司</a>
+                                           {%if customer.company_reguid%}
+                                           <a href="https://www.tianyancha.com/search?key={{customer.company_reguid}}" target="_blank" style="height:16px;line-height:20px;display: inline-block;
+                                           border-radius: 5px;
+                                           background-color: #4db0d2;
+                                           color: #fff;
+                                           width: 26px;
+                                          
+                                           border: 1px solid #439bb9;
+                                     
+                                           text-align: center;">代码</a>
+                                           {%end%}
+                                            {%end%}
+                                        </li>
+                                        <li style="width: 66px;">
+                                            {%if customer.acc_type_name%}
+                                            {%for item in customer.acc_type_name.split(',')%}
+                                            {{item}}<br>
+                                            {%end%}
+                                            {%end%}
+                                        </li>
+                                        <li style="width: 66px;">{{customer.addr_type}}</li>
+                                        <li style="width: 66px;"> {%if customer.acc_uid_name%}{{customer.acc_uid_name}}{%end%}</li>
+                                        <li style="width: 66px;">{%if customer.is_check%}{%if customer.is_check==0%}否{%elif customer.is_check==1%}是({{customer.btype_id_name}}){%end%}{%end%}</li>
+                                        <li style="width: 41px;">{%if customer.ss_num%}{{customer.ss_num}}{%end%}</li>
+                                        <li style="width: 86px;">{%if customer.income%}{{customer.income}}{%end%}</li>
+                                        <li style="width: 107px;">{%if customer.tel%}{{customer.name}}<br>{{customer.tel}}{%end%}</li>
+                                        <li style="width: 77px;"></li>
+                                        <li style="width: 66px;"><a href="#" class="genj">跟进</a></li>
+                                        <li style="width: 122px;">
+                                            <a href="#" class="caoz">报税登记</a>
+                                            <a href="#" class="caoz">记账登记</a>
+                                            <a href="javascript:void(0)" class="caoz genduo" style="line-height: 24px;" customer_id="{{customer.id}}">更多</a>
+                                            
+                                            {%if '250' in role_list or role=="3" %}
+                                            <a href="/payment?tag=assist_list" class="caoz">发起协助</a>
+                                            {%else%}
+                                            <a href="#" class="caoz" title="fq">发起协助</a>
+                                            {%end%}
+                                            <a href="#" class="caoz">推荐业务</a>
+                                            <a href="/project?tag=todo_arrange&comp={{customer.company}}" target="_blank" class="caoz">事项安排</a>
+                                            <a href="/project?tag=my&customer_company={{customer.company}}&show_model=1" target="_blank" class="caoz">收取款项</a>
+                                            <a href="#" class="caoz">客户标记</a>
+                                            <a href="#" class="caoz" style="line-height: 24px;">审批</a>
+                                        </li>
+                                    </ul>
+                                    <div class="es-skr">
+                                        <div class="p1">{%if customer.company_reguid%}<br>{{customer.company_reguid}}{%end%}</div>
+                                        <div class="p2">（付款方式：<span>{{customer.paytype_id_name}}</span>     月服务费：<span>{{customer.service_amount_month}}</span>     账册费：<span>{{customer.book_amount}}</span>    {%raw get_payment_info(customer.id) %}）</div>
+                                    </div>
+                                   
+                                </div>
+                                {%end%}
+                            </div>
+                        </div>
+
+                        <div class="gudi">
+                            <div class="gudi-left">
+                                <select name="page_count" id="page_count">
+                                    {%for item in ['20','50','100','200']%}
+                                    <option value="{{item}}" {%if page_count==item%}selected{%end%}>每页显示{{item}}个客户</option>
+                                    {%end%}
+                                </select>
+                            </div>
+                            <div class="gudi-right">共{{pagination.pages}}页/{{pagination.total_count}}条记录  
+
+                           
+                                    {% if pagination.has_prev %}
+                                    {%if kj%}
+                                    <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">&laquo; 上页</a>
+                                    {%else%}
+                                    <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%} {%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">&laquo; 上页</a> {% end %}
+                                    {%end%}
+                                    {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                    {%if kj%}
+                                  
+                                            <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">[{{ page }}]</a>
+                                    {%else%}
+                                    
+                                        <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">[{{ page }}]</a>
+                                    {%end%}
+                                    {% else %}
+                                   <span class="active"><a href="#">{{ page }}</a></span>
+                                    {% end %} {% else %}
+                                    <span class="active"><a href="#">....</a></span>
+                                    {% end %} {%end %} {% if pagination.has_next %}
+                                    {%if kj%}
+                                    <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">下页 &raquo;</a>
+                                    {%else%}
+                                    <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">下页 &raquo;</a>
+                                    {%end%}
+                                    {% end %}
+                               
+                                <input name="input_page" style="width:25px;height:9px;margin-top:5px;" placeholder="页数">
+                                 
+                            </div>
+                        </div>
+
                     {%else%}
                         还没有客户哦。
-                               
+
                     {%end%}
-                    
-            
-                              <div class="pagination">
+
+
+                              <!-- <div class="pagination">
                         <ul>
                             {% if pagination.has_prev %}
                             {%if kj%}
-                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">&laquo; 上页</a></li>
+                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">&laquo; 上页</a></li>
                             {%else%}
-                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%} {%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">&laquo; 上页</a></li> {% end %}
+                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%} {%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">&laquo; 上页</a></li> {% end %}
                             {%end%}
                             {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             {%if kj%}
                             <li>
-                                    <a href="/customer?tag={{tag}}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">{{ page }}</a></li>
+                                    <a href="/customer?tag={{tag}}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">{{ page }}</a></li>
                             {%else%}
-                            <li> 
-                                <a href="/customer?tag={{tag}}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">{{ page }}</a></li>
+                            <li>
+                                <a href="/customer?tag={{tag}}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">{{ page }}</a></li>
                             {%end%}
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
@@ -180,18 +403,18 @@
                             <li><span class="active"><a href="#">....</a></span></li>
                             {% end %} {%end %} {% if pagination.has_next %}
                             {%if kj%}
-                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">下页 &raquo;</a></li>
                             {%else%}
-                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">下页 &raquo;</a></li>
                             {%end%}
                             {% end %}
                         </ul>
-                    </div>  
+                    </div> -->
 </fieldset>
 <div id="a_add_trans_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-          <h3 id="myModalLabel_trans">批量修改客服会计</h3> 
+          <h3 id="myModalLabel_trans">批量修改客服会计</h3>
         </div>
         <div class="modal-body">
           <div class="control-group">
@@ -206,22 +429,22 @@
             </div>
             <!-- /controls -->
           </div>
-    
+
         </div>
-      
-      
-      
-      
-      
+
+
+
+
+
         <div class="modal-footer">
           <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
           <button class="btn btn-primary" id="btn_save_kj">保存</button>
         </div>
       </div>
 </div>
-   
 
-               
+
+
 </div>
 </div>
 </div> <!-- /widget-content -->
@@ -231,9 +454,9 @@
 </div> <!-- /container -->
  </div>
 
- 
 
-    {%end%} 
+
+    {%end%}
 
     {%block js%}
 
@@ -247,33 +470,33 @@ $(function () {
             $("#all_customer").attr('class',"active")
     {%end%}
 
-    $('#submit_check').on('click',function (param) { 
-        var id_array=new Array();  
-        $('input[id="check"]:checked').each(function(){  
-        id_array.push($(this).val());//向数组中添加元素  
-            });  
-        var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串  
+    $('#submit_check').on('click',function (param) {
+        var id_array=new Array();
+        $('input[id="check"]:checked').each(function(){
+        id_array.push($(this).val());//向数组中添加元素
+            });
+        var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
         $.post(
             'customer?tag=add_relation',
             {
                 "_xsrf":_xsrf,
                 "idstr":idstr
-            },function (result) { 
+            },function (result) {
                 alert('添加成功')
              }
-        )  
+        )
      })
-     $('#choose_all').on('change',function () { 
+     $('#choose_all').on('change',function () {
          $('input[name=check_customer]').not(this).prop('checked',this.checked);
       })
     $('.change_kj').on('click',function () {
         $('#a_add_trans_modal').modal('show')
      })
-    $('#btn_save_kj').on('click',function () { 
+    $('#btn_save_kj').on('click',function () {
         var kj_id=$('select[name=kj_name]').val()
         var kj_name=$('select[name=kj_name] option:selected').text()
-        customer_ids=[] 
-        $('input[name=check_customer]:checked').each(function () { 
+        customer_ids=[]
+        $('input[name=check_customer]:checked').each(function () {
             customer_ids.push($(this).val())
          })
          customer_ids=customer_ids.join(',')
@@ -291,14 +514,93 @@ $(function () {
                     'customer_ids':customer_ids,
                     'kj_id':kj_id,
                     'kj_name':kj_name
-             },function (result) { 
+             },function (result) {
                  location.reload()
               }
          )
          }
      })
+    $('#export_data').click(function () {
+        if(confirm('确认导出？')){
+        keyword=$(this).attr('keyword')
+        qtype=$(this).attr('qtype')
+        kj=$(this).attr('kj')
+        lp=$(this).attr('lp')
+        jz=$(this).attr('jz')
+        $.post('/customer?tag=export_customer',{
+            '_xsrf':_xsrf,
+            'keyword':keyword,
+            'qtype':qtype,
+            'kj':kj,
+            'lp':lp,
+            'jz':jz,
+            'by_tag':"{{by_tag}}",
+            'my':"{{my}}"
+        },function (data) {
+            location.href=data['output_path']
+         })
+        }
+
+     })
+     $('.caoz[href=#]').click(function () { 
+         if($(this).attr('title')=='fq'){
+             alert('无权限')
+         }else{
+         alert('开发中')
+         }
+      })
+      $('.genj').click(function () { 
+          alert('开发中')
+       })
+       $("#page_count").on('change',function () { 
+        location.href='/customer?tag={{tag}}&page_count='+$(this).val()+'{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}'
+        })
+        $(document).keyup(function(event){
+        if(event.keyCode ==13){
+            input_page=$('input[name=input_page]').val()
+            if(input_page!='' && !isNaN(input_page)){
+                if( parseInt(input_page)==0){
+                    alert('页数不为0')
+                }else if(parseInt(input_page)>parseInt('{{pagination.pages}}')){
+                    alert('页数过大')
+                }else{
+           
+                    location.href='/customer?tag={{tag}}&page='+input_page+'{%if page_count%}&page_count={{page_count}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}'
+                }
+            }
+  }
+});
+    $(window).scroll(function(){
+        if ($(window).scrollTop()>=367) {
+            $(".eslantable").css({
+                "position":"fixed",
+                "top":"0px",
+                "left":"50%",
+                "margin-left":"-569px",
+                "z-index":"99"
+                
+            })
+        } else{
+            $(".eslantable").removeAttr("style")
+        }
+    });
 
 });
+
+$(function(){
+    $(".genduo").click(function(){
+        customer_id=$(this).attr('customer_id')
+        height1=$(".es-hang ul[id="+customer_id+"]").height()
+        
+		if (height1=='58') {
+			$(".es-hang ul[id="+customer_id+"]").animate({height:"164px"});
+			
+		} else {
+			$(".es-hang ul[id="+customer_id+"]").animate({height:"58px"});
+		
+		}
+	})
+})
 
 </script>
 

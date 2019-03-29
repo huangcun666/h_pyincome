@@ -2,11 +2,12 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">业务记录
-            <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add_recode" >新 建 </a>
+        <li class="breadcrumb-item g1">业务记录</li>
+        <li class="g1 g1-left">
+            <a href="javascript:void(0)" class="btn btn-primary btn-sm" id="btn_add_recode" >新 建 </a>
         </li>
 
       </ol>
@@ -17,8 +18,8 @@
             <div class="table-responsive">
 
 
-            <table class="table table-bordered" id="dataTable"  cellspacing="0">
-            <thead style="background-color:#000;color:#fff">
+            <table class="table table-bordered fayetable" id="dataTable"  cellspacing="0">
+            <thead class="table_class">
                 <tr>
                     <th width="250">业务记录</th>
                     <th width="100">合同金额</th>
@@ -27,14 +28,14 @@
                     <th width="20"></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="fayetbody">
                 {%for item in project_recode%}
                 <tr>
                     <td>{{item.recode}}</td>
                     <td>{{item.money}}</td>
                     <td>{{item.dingjin}}</td>
                     <td>{{item.created_at}}</td>
-                    <td><a class="btn btn-info change_recode" 
+                    <td><a class="btn btn-primary btn-sm change_recode" 
                         id="{{item.id}}"
                         recode="{{item.recode}}" 
                         money="{{item.money}}"

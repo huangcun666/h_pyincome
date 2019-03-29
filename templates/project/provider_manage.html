@@ -2,21 +2,22 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">{%if kz%}刻章供应商{%else%}地址供应商{%end%}
-                {%if is_gy_manage=='1'%} <a href="javascript:void(0)" class="btn btn-info btn-sm" id="{%if kz%}btn_add_kz{%else%}btn_add_addr{%end%}" >新 建 </a>
+        <li class="breadcrumb-item g1">{%if kz%}刻章供应商{%else%}地址供应商{%end%}</li>
+                {%if is_gy_manage=='1'%} 
+                <li class="g1 g1-left">
+                <a href="javascript:void(0)" class="btn btn-primary btn-sm" id="{%if kz%}btn_add_kz{%else%}btn_add_addr{%end%}" >新 建 </a></li>
             {%end%}
-        </li>
 
       </ol>
       <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <a class="nav-item nav-link {%if not kz%}active{%end%}" id="nav-home-tab"
+                <a class="btn btn-light  nav_padding {%if not kz%}active{%end%}" id="nav-home-tab"
                 href="/project?tag=provider_manage" >地址供应商管理</a>
               
-              <a class="nav-item nav-link {%if kz%}active{%end%}"
+              <a class="btn btn-light  nav_padding {%if kz%}active{%end%}"
                 href="/project?tag=provider_manage&kz=1" style="font-size:13px;">刻章供应商管理</a>
                </div>
         </nav>
@@ -25,23 +26,23 @@
             <div class="card-body">
             <div class="table-responsive">
             
-            <table class="table table-bordered" id="dataTable"  cellspacing="0" style="width:2800px;">
-            <thead style="background-color:#000;color:#fff">
+            <table class="table table-bordered fayetable" id="dataTable"  cellspacing="0" style="width:2800px;">
+            <thead class="table_class">
                 <tr>
                     {% if kz%}
-                    <th width="100">区域</th>
+                    <th width="80">区域</th>
                     <th>刻章项目</th>
                     <th width="100">价格</th>
-                    <th width="100">创建时间</th>
-                    <th width="100">创建人</th>
+                    <th width="80">创建时间</th>
+                    <th width="80">创建人</th>
                     <th width="100">报价历史</th>
                     {%if is_gy_manage=='1'%}
                     <th width="100"></th>
                     {%end%}
                     {%else%}
-                    <th width="100">供应商</th>
-                    <th width="100">区域</th>
-                    <th width="100">类型</th>
+                    <th width="80">供应商</th>
+                    <th width="80">区域</th>
+                    <th width="120">类型</th>
                     
                     <th width="100">地址性质</th>
                     <th width="100">成本价格</th>
@@ -53,16 +54,16 @@
                     <th width="100">经营范围限制</th>
                     <th width="100">发票限制</th>
                     <th width="100">受理材料</th>
-                    <th width="100">是否能解锁</th>
-                    <th width="100">是否可以续费</th>
+                    <th width="80">是否能解锁</th>
+                    <th width="80">是否可以续费</th>
                     <th width="100">担保事项</th>
-                    <th width="100">创建人</th>
-                    <th width="100">创建时间</th>
-                    <th width="100"></th>
+                    <th width="80">创建人</th>
+                    <th width="80">创建时间</th>
+                    <th width="80"></th>
                     {%end%}
                 </tr>
             </thead>
-                <tbody>
+                <tbody class="fayetbody">
 
                         {% if kz%}
                             {% if kz_provider_manage %}
@@ -73,10 +74,10 @@
                                     <td>{{item.b}}</td>
                                     <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
                                     <td>{{item.uid_name}}</td>
-                                    <td><a class="btn btn-info kz_detail_history" href="javascript:void(0);"
+                                    <td><a class="btn btn-primary btn-sm kz_detail_history" href="javascript:void(0);"
                                           kz_history="{{item.c}}">查看</a></td>
                                           {%if is_gy_manage=='1'%}
-                                    <td><a class="btn btn-info change_kz" href="javascript:void(0);"
+                                    <td><a class="btn btn-primary btn-sm change_kz" href="javascript:void(0);"
                                          id="{{item.id}}" kz_project="{{item.kz_project}}" 
                                          price="{{item.b}}" area="{{item.area}}">修改</a></td>
                                     {%end%}
@@ -118,7 +119,7 @@
                             
                                 {%if is_gy_manage=='1'%}
                                 {%end%}
-                            <td><a class="btn btn-info change_addr" href="javascript:void(0);" id="{{item.id}}"
+                            <td><a class="btn btn-primary btn-sm change_addr" href="javascript:void(0);" id="{{item.id}}"
                                 provider="{{item.provider}}" area="{{item.area}}" type="{{item.type}}" addr_nature="{{item.addr_nature}}"
                                 cost_price="{{item.cost_price}}" register_price="{{item.register_price}}"  same_area_change_price="{{item.same_area_change_price}}"
                                 dif_area_change_price="{{item.dif_area_change_price}}"  address="{{item.address}}" business_scope_limit="{{item.business_scope_limit}}"  

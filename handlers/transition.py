@@ -37,6 +37,7 @@ class MTransitionHandler(BaseHandler):
             nums=self.db.get(
                 """
                 select count(*) count, 
+
                  (select count(*) c from t_todo_arrange_status aa inner join t_todo_arrange aa1
                   on aa.todo_id=aa1.id where aa.created_at is  null and aa.updated_at is null
                   and (aa1.responsible_per=%s or aa1.banshi_per=%s)) a,
@@ -49,8 +50,14 @@ class MTransitionHandler(BaseHandler):
                  on ee.id=dd.todo_id where dd.created_at is not null and dd.updated_at is not null
                  and (ee.responsible_per=%s or ee.banshi_per=%s)
                 )
-                c from t_todo_arrange_status a
-                """,uid_name,uid_name,uid_name,uid_name,uid_name,uid_name)
+                c
+                from t_todo_arrange a inner join t_user b
+                 on a.responsible_per=b.name
+                 left join t_user c on a.banshi_per=c.name
+                  inner join t_todo_arrange_status d
+                   on a.id=d.todo_id
+                   where (a.responsible_per=%s or a.banshi_per=%s)
+                """,uid_name,uid_name,uid_name,uid_name,uid_name,uid_name,uid_name,uid_name)
 
             if todo=='1':
                 sql='and d.created_at is NULL and d.updated_at is NULL '
@@ -133,8 +140,14 @@ class MTransitionHandler(BaseHandler):
                  on ee.id=dd.todo_id where dd.created_at is not null and dd.updated_at is not null
                  and (ee.responsible_per=%s or ee.banshi_per=%s)
                 )
-                c from t_todo_arrange_status a
-                """,uid_name,uid_name,uid_name,uid_name,uid_name,uid_name)
+                c 
+                  from t_todo_arrange a inner join t_user b
+                 on a.responsible_per=b.name
+                 left join t_user c on a.banshi_per=c.name
+                  inner join t_todo_arrange_status d
+                   on a.id=d.todo_id
+                   where (a.responsible_per=%s or a.banshi_per=%s)
+                """,uid_name,uid_name,uid_name,uid_name,uid_name,uid_name,uid_name,uid_name)
             if result:
                 if bs_area:
                     sql+=' and a.bs_area="%s"'%bs_area
@@ -160,8 +173,8 @@ class MTransitionHandler(BaseHandler):
                     on a.responsible_per=b.name
                     left join t_user c on a.banshi_per=c.name
                     inner join t_todo_arrange_status d
-                    on a.id=d.todo_id where """+sql[4:]+"""
-                     order by a.created_at desc""")
+                    on a.id=d.todo_id where (a.responsible_per=%s or a.banshi_per=%s) """+sql+"""
+                     order by a.created_at desc""",uid_name,uid_name)
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page - 1) * pre_page
                 todo_arranges=self.db.query(
@@ -172,8 +185,8 @@ class MTransitionHandler(BaseHandler):
                     on a.responsible_per=b.name
                     left join t_user c on a.banshi_per=c.name
                     inner join t_todo_arrange_status d
-                    on a.id=d.todo_id where """+sql[4:]+"""
-                    order by a.created_at desc limit %s,%s""",startpage,pre_page)
+                    on a.id=d.todo_id where (a.responsible_per=%s or a.banshi_per=%s) """+sql+"""
+                    order by a.created_at desc limit %s,%s""",uid_name,uid_name,startpage,pre_page)
 
             else:
                 departments=self.db.query(

@@ -41,31 +41,47 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
 </style>
 
  <ol class="breadcrumb">
-   <li class="breadcrumb-item">
+   <li class="breadcrumb-item g1">
      主面板
    </li>
-   <li class="breadcrumb-item active">我的业务(关联)</li>
- </ol><div class="table-responsive">     
- <form class="search_box">
+   <li class="breadcrumb-item g1">{%if params["showtype"]=="recommend"%}我的推荐业务 {%else%}我的业务(关联){%end%}</li>
+ </ol><div class="table-responsive">
+        <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="btn btn-light  nav_padding {%if not params['show_tag']%} active {%end%}"
+                        href="/project?tag=relation_projects" style="font-size:13px;">我的关联业务
+                        <span class="badge badge-danger"></span>
+                        </a>
+                        <a class="btn btn-light  nav_padding {%if params['show_tag']=='other_projects'%} active {%end%}"
+                        href="/project?tag=relation_projects&show_tag=other_projects" style="font-size:13px;">授权业务
+                        <span class="badge badge-danger"></span>
+                        </a>
+                        <a class="btn btn-light  nav_padding {%if params['show_tag']=='other_relation_projects'%} active {%end%}"
+                        href="/project?tag=relation_projects&show_tag=other_relation_projects" style="font-size:13px;">关联授权业务
+                        <span class="badge badge-danger"></span>
+                        </a>
+                </div>
+            </nav>    
+ <form class="search_box pm2">
         <table style="font-size:90%;">
 
         <tbody>
                 <tr class="faye-selsect">
              <td>
-       
+
        <select name="income_bussniss" class="form-control">
          <option  value="0">请选择业务类型</option>
            {%for idx,item in enumerate(t_project_bussniss)%}
-           
-               <option value="{{item.id}}"   {%if params["income_bussniss"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+
+               <option value="{{item.id}}"   {%if params["income_bussniss"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option>
            {%end%}
        </select></td>
-       
+
              <td>
        <select name="cq" class="form-control" >
          <option  value="0">工商专员</option>
            {%for idx,item in enumerate(t_user_cq)%}
-               <option value="{{item.id}}" {%if params["cq"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+               <option value="{{item.id}}" {%if params["cq"]==str(item.id)%}selected{%end%}>{{item.name}}</option>
            {%end%}
        </select>
              </td>
@@ -74,8 +90,8 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
                       <option  value="0">请选择销售顾问</option>
                         {%for idx,item in enumerate(t_users)%}
                         {%if item.team_id==1%}
-                            <option value="{{item.id}}" 
-                             {%if params["xiaoshou"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+                            <option value="{{item.id}}"
+                             {%if params["xiaoshou"]==str(item.id)%}selected{%end%}>{{item.name}}</option>
                      {%end%}
                         {%end%}
                     </select>
@@ -85,74 +101,88 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
          <option  value="0">请选择在线客服</option>
            {%for idx,item in enumerate(t_users)%}
            {%if item.team_id==4%}
-               <option value="{{item.id}}"  {%if params["kefu"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+               <option value="{{item.id}}"  {%if params["kefu"]==str(item.id)%}selected{%end%}>{{item.name}}</option>
         {%end%}
            {%end%}
        </select>
               </td>
               <td>
+                <select name="kfgw" class="form-control">
+                  <option  value="0">请选择客服顾问</option>
+                    {%for idx,item in enumerate(t_users)%}
+                    {%if item.team_id==2%}
+                        <option value="{{item.id}}"  {%if params["kfgw"]==str(item.id)%}selected{%end%}>{{item.name}}</option>
+                 {%end%}
+                    {%end%}
+                </select>
+                       </td>
+              <td>
        <select name="from_id" class="form-control">
          <option  value="0">请选择来源渠道</option>
            {%for idx,item in enumerate(t_income_type)%}
-               <option value="{{item.id}}"  {%if params["from_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+               <option value="{{item.id}}"  {%if params["from_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option>
            {%end%}
        </select>
               </td>
-          
+
              <td>
                <select name="building_id" class="form-control" >
                  <option value="0">请选择楼盘</option>
                    {%for idx,item in enumerate(t_building)%}
-                       <option value="{{item.id}}"  {%if params["building_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
+                       <option value="{{item.id}}"  {%if params["building_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option>
                    {%end%}
                </select>
              </td>
                  <td>
-       <input type="text" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
-       
-     
-       <input type="hidden" name="tag" value="{{tag}}"/>
+       <input class="form-control" type="text" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
 
-       
+
+       <input type="hidden" name="tag" value="{{tag}}"/>
+<input type="hidden" name="tag" value="{{params["showtype"]}}" />
+
               </td>
               <td>
-<input type="text" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+<input type="text" name="end" class="form-control" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
 
               </td>
 <td>
-    <input type="text" name="key" id="key" placeholder="编号/业务/公司/电话/客户" value="{%if params["key"]%}{{params["key"]}}{%end%}" />
+    <input  class="form-control" type="text" name="key" id="key" placeholder="编号/业务/公司/电话/客户" value="{%if params["key"]%}{{params["key"]}}{%end%}" />
 
 </td>
 <td>
-    <input type="submit" value="检索" class="btn btn-info" />
+    {%if params['show_tag']%}<input type="hidden" value="{{params['show_tag']}}" name='show_tag'>{%end%}
+    <input type="hidden" value="{{tag}}" name='tag'>
+    <input type="submit" value="检索" class="btn btn-primary btn-sm" />
 
 </td>
            </tr>
         </tbody>
         </table>
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
+
+
+
+
+
+
+
+
+
+
        </form>
 
-   
-<table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:12px;width:100%; margin-top:10px;">
-            <thead style="background-color:#000;color:#fff ; ">
+
+<table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:12px;width:100%; margin-top:10px;">
+            <thead class="table_class">
                    <tr>
-                       <th width="50">编号</th> 
-                       <th>业务名称</th> 
-                       <th  width="200">公司名称</th>  
-                        <th  width="60">客户</th>  
-                       <th  width="100">联系方式</th> 
+                       <th width="50">编号</th>
+                       <th>业务名称</th>
+                       <th  width="200">公司名称</th>
+                        <th  width="60">客户</th>
+                       <th  width="100">联系方式</th>
+                        <th width="75">推荐人</th>
                         <th width="75">客服顾问</th>
                         <th width="75">销售顾问</th>
+
                         <th width="75">工商专员</th>
                         <th width="75">在线客服</th>
                          <th width="80">合同金额</th>
@@ -160,38 +190,44 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
                    <th width="80">创建时间</th>
                    </tr>
                </thead>
-               <tbody>
+               <tbody class="fayetbody">
                     {%if t_projects%}
                         {%for item in t_projects%}
                         <tr id="{{item.id}}">
        <td>
                                 {{item.id}}
 
-                            </td>  
+                            </td>
                               <td title="{{item.project_name}}">
                               <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}"  title="{{item.project_name}}" >
                              {%if len(item.project_name) > 40%} {{item.project_name[:40]}}... {%else%} {{item.project_name}} {%end%}</a>
 
-                            </td>  
+                            </td>
                             <td title="{{item.customer_company}}">
 
                                 {{item.customer_company}}
-                            </td>  
+                            </td>
                                     <td>
                                     {{item.customer_name}}
-                                
-                            </td>   
+
+                            </td>
                           <td>
                                 {{item.customer_tel}}
-                            </td> 
-
+                            </td>
+<td {%if role=="10"%}style="color:blue"{%end%}>
+    {%if item.recommend_staff%}
+    {{item.recommend_staff}}
+    {%else%}
+    无
+    {%end%}
+</td>
                              <td>
                              {% for t in item.team_list.split(",")%}
                                 {%if t.split('|')[1]=='36'%}
                                     <font color='blue'>{{t.split('|')[0]}}</font>
                                     {%end%}
                             {%end%}
-                            </td> 
+                            </td>
                             <td>
                                 {% for t in item.team_list.split(",")%}
                                 {%if t.split('|')[1]=='34'%}
@@ -237,18 +273,34 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
            <div class="col-sm-12 col-md-7">
                 <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
                     <ul class="pagination">
-    
+
                         {% if pagination.has_prev %}
                         <li class="paginate_button page-item previous " id="dataTable_previous">
-                        <a href="/project?tag=relation_projects&page={{ pagination.page - 1}}{%if params["xiaoshou"]%}&kefu={{params["xiaoshou"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                        <a href="/project?tag=relation_projects&page={{ pagination.page - 1}}
+                        {%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}
+                        {%if params["xiaoshou"]%}&kefu={{params["xiaoshou"]}}{%end%}
+                        {%if params["showtype"]%}&showtype={{params["showtype"]}}{%end%}
+                        {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
+                        {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
+                        {%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}
+                        {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
+                        {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
+                        {%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}
+                        {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                         <li class="paginate_button page-item ">
-                            <a href="/project?tag=relation_projects&page={{ page }}{%if params["xiaoshou"]%}&kefu={{params["xiaoshou"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                            <a href="/project?tag=relation_projects&page={{ page }}{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}{%if params["xiaoshou"]%}&kefu={{params["xiaoshou"]}}{%end%}
+                            {%if params["showtype"]%}&showtype={{params["showtype"]}}{%end%}
+                            {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
+                            {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                         {% else %}
                         <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                         {% end %} {% else %}
                         <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
                         {% end %} {%end %} {% if pagination.has_next %}
-                        <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=relation_projects&page={{pagination.page+1}}{%if params["xiaoshou"]%}&kefu={{params["xiaoshou"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                        <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=relation_projects&page={{pagination.page+1}}{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}{%if params["xiaoshou"]%}&kefu={{params["xiaoshou"]}}{%end%}
+                            {%if params["showtype"]%}&showtype={{params["showtype"]}}{%end%}
+                            {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
+                            {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
                         {% end %}
                     </ul>
                 </div>
@@ -279,8 +331,8 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
        var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
        return r ? r[1] : undefined;
    }
-   $(function () { 
-     
+   $(function () {
+
     $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
 language: 'zh-CN',initialDate: new Date()});
     $("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59',

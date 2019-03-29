@@ -2,10 +2,10 @@
 
 
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         主面板
     </li>
-    <li class="breadcrumb-item active">销售计划
+    <li class="breadcrumb-item g1">销售计划
 
 
 
@@ -14,35 +14,35 @@
 
 </ol>
 <nav>
-    <div class="nav faye-a nav-tabs" id="nav-tab" role="tablist">
-        <a class="nav-item nav-link {%if not todo%}active{%end%}" id="nav-home-tab"
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="btn btn-light  nav_padding {%if not todo%}active{%end%}" id="nav-home-tab"
         href="/plan?tag=list_plan{%if my%}&my=1{%end%}" >全 部
         <span class="badge badge-danger">{{sums.a}}</span></a></a>
-    <a class="nav-item nav-link {%if todo=='1'%}active{%end%}"
+    <a class="btn btn-light  nav_padding {%if todo=='1'%}active{%end%}"
       href="/plan?tag=list_plan&todo=1{%if my%}&my=1{%end%}" style="font-size:13px;">待完成
       <span class="badge badge-danger">{{sums.b}}</span></a>
-      <a class="nav-item nav-link {%if todo=='2'%}active{%end%}"
+      <a class="btn btn-light  nav_padding {%if todo=='2'%}active{%end%}"
       href="/plan?tag=list_plan&todo=2{%if my%}&my=1{%end%}" style="font-size:13px;"> 已完成
       <span class="badge badge-danger">{{sums.c}}</span></a>
-      <a class="nav-item nav-link {%if todo=='3'%}active{%end%}"
+      <a class="btn btn-light  nav_padding {%if todo=='3'%}active{%end%}"
       href="/plan?tag=list_plan&todo=3{%if my%}&my=1{%end%}" style="font-size:13px;"> 已过期
       <span class="badge badge-danger">{{sums.d}}</span></a>
     </div>
 </nav>
 
     <div class="table-responsive">   
-    <table class="table table-bordered" style="width: 100%;" >
-        <thead style="background-color:#000;color:#fff ; font-size:12px;">
+    <table class="table table-bordered fayetable" style="width: 100%;" >
+        <thead  class="table_class">
             <tr>
 
                 <th width="80">来源</th>
 
                 <th  >计划内容</th>
-                <th width="100">实施时间</th>
+                <th width="150">实施时间</th>
                 <th width="80">计划类型</th>
 
                 <th width="80">创建人</th>
-                <th width="120">创建时间</th>
+                <th width="150">创建时间</th>
                 <th width='120'>到期时间</th>
                 <th width='80'>查看</th>
                 {%if todo!='2'%}
@@ -50,7 +50,7 @@
                 {%end%}
             </tr>
         </thead>
-        <tbody style=" font-size:12px;">
+        <tbody class="fayetbody" style=" font-size:12px;">
             {%if t_plan%} {%for item in t_plan%}
 
             <tr>
@@ -73,8 +73,8 @@
                     {{item.created_at}}
                 </td>
                 <td>{%if item.is_read==1%}已完成{%elif item.dq<0 %}已过期{{abs(item.dq)}}天{%elif item.dq==0%}今天到期{%else%}{{item.dq}}{%end%}</td>
-                <td><a class="btn btn-info" href="{{item.rel_url}}">查看</a></td>
-                {%if todo!='2'%}<td>{%if item.is_read==0%}<a class="btn btn-info confirm_finish" id="{{item.id}}" rel_id="{{item.rel_id}}" href="javascript:void(0);">确认完成</a>{%end%}</td>   
+                <td><a class="btn btn-primary btn-sm" href="{{item.rel_url}}">查看</a></td>
+                {%if todo!='2'%}<td>{%if item.is_read==0%}<a class="btn btn-primary btn-sm confirm_finish" id="{{item.id}}" rel_id="{{item.rel_id}}" href="javascript:void(0);">确认完成</a>{%end%}</td>   
                     {%end%}
             </tr>
             {%end%} {%else%}

@@ -38,10 +38,10 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
 </style>
 <!-- 发业源码结束 -->
       <ol class="breadcrumb faye-ti">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item active">我的订单流转动</li>
+        <li class="breadcrumb-item g1">我的订单流转动</li>
       </ol>
 
 
@@ -76,7 +76,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
     height: auto;
   }
 </style>
- <form  style="margin-top: 10px;">
+ <form class="pm2"  style="margin-top: 10px;">
  <table  style="font-size:12px">
     <!-- <tr  class="faye-tdti">
       <td>业务类型</td>
@@ -192,7 +192,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
                 </td>
 
        <td>
-       <input type="submit" value="检索"  class="btn btn-info"  id="btn_search_query"/>
+       <input type="submit" value="检索"  class="btn btn-primary btn-sm"  id="btn_search_query"/>
        </td>
     </tr>
  </table>
@@ -255,7 +255,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
           </div>
   
           <div class="modal-body form-horizontal" id="site_mod">
-              <table class="table table-bordered" id="dataTable" cellspacing="0" style="font-size:12px;">
+              <table class="table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:12px;">
                   <thead>
                       <tr>
                         
@@ -268,7 +268,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
 
                       </tr>
                   </thead>
-                  <tbody id="my_allgroups">
+                  <tbody class="fayetbody" id="my_allgroups">
                       {%for item in all_categorys%}
                       <tr id="{{item.id}}" class='my_allgroup hh' category_id="{{item.id}}">
                         <td>{{item.id}}</td>
@@ -402,9 +402,9 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
 {%end%}
 
             <div class="table-responsive">
-              <table class="table table-bordered" cellspacing="0" style="font-size:12px;">
+              <table class="table table-bordered fayetable" cellspacing="0" style="font-size:12px;">
             
-                <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                <thead class="table_class">
 
     
                         <tr>
@@ -434,7 +434,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
 <th width="200">最新办理进度</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                         {%for item in t_projects%}
                             <tr>
                                 <td>
@@ -612,7 +612,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
 </div><br/>
 <div class="table-responsive">
   
-            <table class="table table-bordered" id="dataTable" cellspacing="0" style="font-size:12px;">
+            <table class="table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:12px;">
                   <thead style="background-color:#000;color:#fff ; font-size:13px;">
                         <tr>
 <th style="vertical-align: middle !important;text-align: center;" width="20">
@@ -634,7 +634,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
 
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                         {%for item in t_projects%}
                         <tr>
                              <td style="vertical-align: middle !important;vertical-align: center !important;text-align: left;">

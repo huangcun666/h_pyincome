@@ -3,10 +3,10 @@
 
  {%block body%}
  <ol class="breadcrumb faye-ti">
-   <li class="breadcrumb-item">
+   <li class="breadcrumb-item g1">
      主面板
    </li>
-   <li class="breadcrumb-item active">挂靠地址续期
+   <li class="breadcrumb-item g1">挂靠地址续期
     
   
    
@@ -14,8 +14,8 @@
    
  </ol>
 
-<nav class="nav nav-pills flex-column flex-sm-row">
-  <a class=" btn btn-light flex-sm-fill text-sm-center nav-link {%if not ctype and not act_id%}active{%end%} " {%if not ctype%}active{%end%} href="addr?tag=addr_list_sales">全部
+<nav class="nav nav-tabs">
+  <a class="btn btn-light  nav_padding {%if not ctype and not act_id%}active{%end%} " {%if not ctype%}active{%end%} href="addr?tag=addr_list_sales">全部
      <span class="badge badge-secondary">{{all_count}}</span>
   
   </a>
@@ -25,11 +25,11 @@
     {%if item.order_int==1%}
       {%continue%}
       {%end%}
-        <a class="btn flex-sm-fill text-sm-center nav-link {%if  str(item.order_int)==act_id%} btn-dark {%else%}btn-light {%end%}" href="addr?tag=addr_list_sales&act_id={{item.order_int}}">{{item.type_name}}
+        <a class="btn btn-light  nav_padding {%if  str(item.order_int)==act_id%} active {%end%}" href="addr?tag=addr_list_sales&act_id={{item.order_int}}">{{item.type_name}}
   <span class="badge badge-secondary">{{item.cc}}</span>
         </a>&nbsp;
     {%end%}
-   <a class=" btn  btn-light flex-sm-fill text-sm-center nav-link  {%if  ctype=="expired_customer"%}active{%end%}" href="addr?tag=addr_list_sales&ctype=expired_customer">拖欠
+   <a class="btn btn-light  nav_padding  {%if  ctype=="expired_customer"%}active{%end%}" href="addr?tag=addr_list_sales&ctype=expired_customer">拖欠
       <span class="badge badge-secondary">{{custoemr_expired_count}}</span>
    
    </a>
@@ -38,7 +38,7 @@
 
 
 
-<style>
+<!-- <style>
 
 table {
   border: 0;
@@ -81,12 +81,11 @@ th:first-child {
 }
 
 
-</style>
+</style> -->
 
 <div class="table-responsive" style="margin-top:10px;">
-<table  style="width:1500px">
-
-  <thead id="header">
+      <table class="table table-bordered fayetable" style="width:1500px" >
+          <thead  class="table_class">
                 <tr>
                   <th>#</th>
                      {%if act_id==4%}
@@ -106,7 +105,7 @@ th:first-child {
            
                 </tr>
               </thead>
-               <tbody>
+               <tbody class="fayetbody">
                {%if t_addr_manager%}
               {%for item in t_addr_manager%}
                 <tr>
@@ -119,7 +118,7 @@ th:first-child {
                       <td><a href="addr?tag=show&addr_id={{item.id}}&guid=4bca4592-cf6f-4d14-87fa-51714ad7745d&&from_tag=addr_list_sales">{{item.company}}</a></td>
                   <td>{{item.addr_type}}</td>
                    <td>{{item.addr_con}}</td>
-                   <td>{{item.rent_end.strftime("%Y-%m-%d")}}</td> 
+                   <td>{%if item.rent_end%}{{item.rent_end.strftime("%Y-%m-%d")}}{%end%}</td> 
              <td style="width:200px;" title="{{item.old_addr}}">  {%if item.old_addr and len(item.old_addr) > 40%} {{item.old_addr[:40]}}... {%else%} {{item.old_addr}} {%end%}</td> 
                    <td style="width:200px;" title="{{item.now_addr}}">{%if item.now_addr and  len(item.now_addr) > 40%} {{item.now_addr[:40]}}... {%else%} {{item.now_addr}} {%end%}</td>            
                    <td>{%if item.customer_tel%}{{item.customer_tel}}{%else%}无{%end%}</td> 
@@ -139,12 +138,12 @@ th:first-child {
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=my&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="addr?tag=addr_list_sales&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
         {% end %}
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="addr?tag=addr_list_sales&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -156,7 +155,7 @@ th:first-child {
           {%end %}
 
          {% if pagination.has_next %}
-         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="addr?tag=addr_list_sales&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>

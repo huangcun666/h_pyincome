@@ -3,12 +3,11 @@
 
 
  <ol class="breadcrumb">
-   <li class="breadcrumb-item">
+   <li class="breadcrumb-item g1">
      主面板
    </li>
-   <li class="breadcrumb-item active">附件
-        {%if role=='8' or role=='5'%}<a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add">新 建 </a>{%end%}
-</li>
+   <li class="breadcrumb-item g1">附件</li>
+        {%if role=='8' or role=='5'%}<li class="g1 g1-left"><a href="javascript:void(0)" class="btn btn-primary btn-sm" id="btn_add">新 建 </a></li>{%end%}
 
  </ol>
 
@@ -21,7 +20,7 @@
 <!-- /.col-lg-6 -->
 </div>
 
-<table class="table table-striped" style="padding:10px;">
+<table class="table table-striped fayetable" style="padding:10px;">
         <thead>
           <tr>
          <th>附件</th>
@@ -30,7 +29,7 @@
          <th width='100'></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="fayetbody">
           {%if t_upload_file%}
           {%for item in t_upload_file%}
           <tr>
@@ -44,7 +43,7 @@
 
             <td>
               {%if item.uid_name==name%}
-                <a href="javascript:void(0)"  class="btn btn-info btn-sm delete_upload_file" file_id="{{item.id}}"
+                <a href="javascript:void(0)"  class="btn btn-primary btn-sm delete_upload_file" file_id="{{item.id}}"
           >删除</a>
               {%end%}
 

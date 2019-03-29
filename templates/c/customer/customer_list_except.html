@@ -1,0 +1,119 @@
+
+ {% extends "../base.html" %} {%block title%}异常分配会计客户{%end%} {% block body %}
+
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>异常分配会计客户
+</h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+
+<fieldset >
+<div class="alert">
+    <span style="font: 15px;"> 当前数量: {{pagination.total_count}} 个</span>
+    </div>   
+
+                       <table class="table table-bordered "  style="margin-top:10px;">
+
+                     <thead>
+
+                              <tr>
+                                <th style="min-width:60px;">确认单编号</th>
+                                <th style="min-width:130px;">公司名称</th>
+        <th style="min-width:80px;">创建时间</th>
+                                <th style="min-width:100px;">业务名称</th>
+
+                              <th style="min-width:80px;"></th>
+                                </tr>
+                            </thead>
+                <tbody>
+{%if customers%}
+                 
+     {%for customer in customers%}
+                    <tr>
+                         
+          <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}"  target="_blank">{{customer.id}}</a></td>
+                        <td><a href="/customer?tag=show&id={{customer.customer_id}}&guid={{customer.customer_guid}}" target="_blank"><i class="   icon-th"></i> {{customer.customer_company}}</a></td>
+                        
+                    
+                        <td>{{customer.created_at.strftime("%Y-%m-%d")}}</td>
+                          <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}" target="_blank"><i class="  icon-th-list"></i> {{customer.project_name}}</a></td>
+                 
+                    <td><a class="btn customer_detail btn-sm  control"  
+                         href="/customer?tag=edit&guid={{customer.customer_guid}}&id={{customer.customer_id}}" target="_blank"><i class=" icon-pencil"></i> 修改</a></td>
+                  
+                    </tr>
+                    {%end%}
+
+
+
+                </tbody>
+              </table>
+
+                    {%else%}
+                        还没有客户哦。
+
+                    {%end%}
+
+
+                              <div class="pagination">
+                        <ul>
+                            {% if pagination.has_prev %}
+                            {%if kj%}
+                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}">&laquo; 上页</a></li>
+                            {%else%}
+                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %}
+                            {%end%}
+                            {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            {%if kj%}
+                            <li>
+                                    <a href="/customer?tag={{tag}}&page={{ page }}">{{ page }}</a></li>
+                            {%else%}
+                            <li>
+                                <a href="/customer?tag={{tag}}&page={{ page }}">{{ page }}</a></li>
+                            {%end%}
+                            {% else %}
+                            <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                            {% end %} {% else %}
+                            <li><span class="active"><a href="#">....</a></span></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            {%if kj%}
+                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}">下页 &raquo;</a></li>
+                            {%else%}
+                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}">下页 &raquo;</a></li>
+                            {%end%}
+                            {% end %}
+                        </ul>
+                    </div>
+</fieldset>
+
+
+
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+
+
+    {%end%}
+
+    {%block js%}
+
+<script>
+
+</script>
+
+
+    {%end%}

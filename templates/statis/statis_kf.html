@@ -6,29 +6,36 @@
 
 </style>
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         主面板
     </li>
-    <li class="breadcrumb-item active">营销中心
+    <li class="breadcrumb-item g1">营销中心
         {{params["datatype_name"]}}
 
     </li>
-    <li>
+   
         {%if exists%}
         {%if str(params['role'])=='13'%}
-        <a class=" faye-btn" href="#">客服顾问{{params["datatype_name"]}}</a>
+        <li class="g1 g1-left">
+        <a class=" faye-btn" href="#">客服顾问{{params["datatype_name"]}}</a></li>
         {%elif str(params['role'])=='1'%}
-        <a class=" faye-btn" href="#">销售顾问{{params["datatype_name"]}}</a>
+        <li class="g1 g1-left">
+        <a class=" faye-btn" href="#">销售顾问{{params["datatype_name"]}}</a></li>
         {%elif str(params['role'])=='6'%}
-        <a class=" faye-btn" href="#">在线客服{{params["datatype_name"]}}</a>
+        <li class="g1 g1-left">
+        <a class=" faye-btn" href="#">在线客服{{params["datatype_name"]}}</a></li>
         {%end%}
         {%else%}
-        <a class=" faye-btn" href="/statis?tag={{params["tag"]}}&role=13{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" {%if params[ "role"]=="13" %}style="background-color:beige;" {%end%}>客服顾问{{params["datatype_name"]}}</a>
-
-            <a class=" faye-btn" href="/statis?tag={{params["tag"]}}&role=1{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" {%if params["role"]=="1"%}style="background-color:beige;" {%end%}>销售顾问{{params["datatype_name"]}}</a>
-            <a class=" faye-btn" href="/statis?tag={{params["tag"]}}&role=6{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}"  {%if params["role"]=="6"%}style="background-color:beige;" {%end%}>在线客服{{params["datatype_name"]}}</a>
-{%end%}
-    </li>
+        <li class="g1 g1-left">
+        <a  href="/statis?tag={{params["tag"]}}&role=13{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" {%if params[ "role"]=="13" %} class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%}>客服顾问{{params["datatype_name"]}}</a>
+            </li>
+            <li class="g1 g1-left">
+            <a  href="/statis?tag={{params["tag"]}}&role=1{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" {%if params["role"]=="1"%}class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;"{%end%}>销售顾问{{params["datatype_name"]}}</a>
+            </li> <li class="g1 g1-left">
+            <a  href="/statis?tag={{params["tag"]}}&role=6{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}"  {%if params["role"]=="6"%}class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%}>在线客服{{params["datatype_name"]}}</a>
+                </li>
+            {%end%}
+    
 </ol>
 
 <nav>
@@ -48,7 +55,7 @@
 
   
 
-    <form class="search_box">
+    <form class="search_box pm2">
         <table style="font-size:80%;">
             <thread>
 
@@ -84,7 +91,7 @@
                         <input type="hidden" name="type_id" value="{{params["type_id"]}}" />
                         {%end%}
 
-                        <input type="submit" value="检索" class="btn btn-info" />
+                        <input type="submit" value="检索" class="btn btn-primary btn-sm" />
                     </td>
                 </tr>
         </table>
@@ -104,8 +111,8 @@
 
 <div class="table-responsive">
 
-<table class="table table-bordered"  style="width:1500px">
-    <thead class="thead-dark">
+<table class="table table-bordered fayetable"  style="width:1500px">
+    <thead class="table_class">
         <tr class="active">
             <th width="120">日期</th>
           <th width="80">合计</th>

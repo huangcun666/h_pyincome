@@ -2,10 +2,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">内部推荐审核
+        <li class="breadcrumb-item g1">内部推荐审核
         </li>
       </ol>
       <nav>
@@ -21,7 +21,7 @@
 
     </div>
     </nav>
-    <form class="search_box">
+    <form class="search_box pm2">
 
         <table>
 
@@ -36,7 +36,7 @@
                         {%if step%}
                         <input name="step" value="{{step}}" hidden>
                         {%end%}
-                        <input type="submit" value="检索" class="btn btn-info"></td>
+                        <input type="submit" value="检索" class="btn btn-primary btn-sm"></td>
                 </tr>
             </tbody>
         </table>
@@ -44,8 +44,8 @@
 
 
             <div class="table-responsive">   
-            <table class="table table-bordered" id="dataTable"  cellspacing="0">
-            <thead style="background-color:#000;color:#fff">
+            <table class="table table-bordered fayetable" id="dataTable"  cellspacing="0">
+            <thead class="table_class">
                 <tr>
                     <th width="100">编号</th>
                     <th width="100">公司名</th>
@@ -60,7 +60,7 @@
                     {%end%}
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="fayetbody">
                 {%for item in t_projects%}
                 <tr>
                     <td>{{item.p_id}}</td>

@@ -3,10 +3,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item active">待审核业务
+        <li class="breadcrumb-item g1">待审核业务
         
         
         <!--<a href="" class="btn btn-info">只看需要确认的</a>-->
@@ -18,8 +18,8 @@
 
      
              
-               <table class="table faye-table table-bordered" id="dataTable" cellspacing="0">
-                     <thead style="background-color:#000;color:#fff ; ">
+               <table class="table faye-table table-bordered fayetable"  id="dataTable" cellspacing="0">
+                     <thead class="table_class">
                         <tr>
                          <th width="60">编号</th>
                             <th>业务名称</th>   
@@ -27,7 +27,7 @@
                             {%if int(role)==2%}  <th width="110">待出纳确认 <a id="order_int" href="/project?tag=list_confirm&order_int=0{%if page1%}&page={{page1}}{%end%}" data-toggle="tooltip" data-placement="right" title="按财务数量排序"><span class="fa fa-sort"></span></a> 
                              </th><th width="110">已确认未打印 <a id="order_int" href="/project?tag=list_confirm&order_int=1{%if page1%}&page={{page1}}{%end%}" data-toggle="tooltip" data-placement="right" title="按未打印数量排序"><span class="fa fa-sort"></span></a></th>{%end %}
                             {%if  int(role)==5%} <th width="110">待合同确认  </th>{%end %}
-                            {%if  int(role)==3%}<th width="110">待财务确认 <a id="order_int" href="/project?tag=list_confirm&order_int=0{%if page1%}&page={{page1}}{%end%}" data-toggle="tooltip" data-placement="right" title="按财务数量排序"><span class="fa fa-sort"></span></a>  </th> 
+                            {%if  int(role)==3 or int(role)==5%}<th width="110">待财务确认 <a id="order_int" href="/project?tag=list_confirm&order_int=0{%if page1%}&page={{page1}}{%end%}" data-toggle="tooltip" data-placement="right" title="按财务数量排序"><span class="fa fa-sort"></span></a>  </th> 
                             <th width="110">已确认未打印 <a id="order_int" href="/project?tag=list_confirm&order_int=1{%if page1%}&page={{page1}}{%end%}" data-toggle="tooltip" data-placement="right"  title="按未打印数量排序"><span class="fa fa-sort"></span></a></th>
                             {%end %}
 
@@ -52,7 +52,7 @@
                             <th width="100"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                         {%for item in t_projects%}
                         <tr id="{{item.id}}">
 
@@ -85,7 +85,7 @@
                              {%end %} </td>
                              {%end %}
 
-                             {%if  int(role)==3%} 
+                             {%if  int(role)==3 or int(role)==5%} 
                              <td {%if item.d > 0%} style="background-color:pink;" {%end%}>
                             <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}#daokuanjiesuan" title="{{item.id}}">{{item.d}}</a>
                              </td> 

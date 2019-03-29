@@ -1,0 +1,2268 @@
+
+ {% extends "../base.html" %} {%block title%}{%if not my%}全部{%else%}{{name}}{%end%}的{{curr_year}}年
+
+
+汇算清缴{%end%} {% block body %}
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>{%if not my%}所有{%else%}{{name}}{%end%}的{{curr_year}}年
+
+
+汇算清缴
+
+<a href="#" data-toggle="popover" data-placement="bottom" id="curr_year_popver"
+ data-html="true"    data-trigger="focus"
+  data-content="{%for item in range(2018,2030)%}<a href='/clearly{%if my%}?my={{params['my']}}{%end%}&curr_year={{item}}'>{{item}}</a> - {%end%}"
+
+ title=""
+  data-original-title="年份选择">(切换)</a>
+{%if not params["state"]  and  params["my"]=="1" %}
+<button class="btn btn-primary btn-sm  customer_new  change_kj" action="start" >发起</button>
+
+{%elif params["state"]==1 and role=="8"%}
+
+<button class="btn btn-primary btn-sm  customer_new  change_kj_price" action="price" >批量指导价</button>
+
+
+{%elif params["state"]==2 and role=="8"%}
+<button class="btn btn-primary btn-sm  customer_new  change_kj_ass" action="price" >批量分配</button>
+
+
+{%end%}
+
+
+
+
+<style>
+body .modal {
+  width: 80%; /* desired relative width */
+  left: 10%; /* (100%-width)/2 */
+  /* place center */
+  margin-left:auto;
+  margin-right:auto;
+}
+
+
+
+</style>
+</h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+
+<fieldset>
+
+<form class="form-search" id="query_form">
+  <input type="text" value="{{keyword}}" name="keyword" class="input-medium search-query" placeholder="公司名称/电话/姓名">
+
+
+  {%if check_under%}
+  <select name="check_kj" style="width:80px;" >
+      <option value="">选择会计</option>
+      {%for item in t_user_relation %}
+      <option value="{{item.uid_name}}" {%if check_kj==item.uid_name%}selected{%end%}>{{item.uid_name}}</option>
+      {%end%}
+  </select>
+  {%else%}
+  <input type="text" name="kj" class="input-medium" style="width:80px;" placeholder="会计" value="{%if kj %}{{kj}}{%end%}">
+ {%end%}
+
+    <input type="hidden" value="{{tag}}" name="tag"/>
+  <input type="hidden" value="{{params["year_type"]}}" name="year_type"/>
+  <input type="hidden" value="{{params["clearly_type"]}}" name="clearly_type"/>
+ <input type="hidden" value="{{params["cpl"]}}" name="cpl"/>
+  {%if params["my"]%}
+  <input type="hidden" value="{{params["my"]}}" name="my"/>
+
+
+{%end%}
+
+{%if check_under%}
+<input type="hidden" value="{{check_under}}" name="check_under">
+{%end%}
+
+
+{%if params["state"]%}
+<input type="hidden" value="{{params['state']}}" name="state">
+{%end%}
+
+
+{%if params["confirm"]%}
+<input type="hidden" value="{{params['confirm']}}" name="confirm">
+{%end%}
+
+
+
+{%if params["wait"]%}
+<input type="hidden" value="{{params['wait']}}" name="wait">
+{%end%}
+
+{%if params["by_tag"]%}
+<input type="hidden" value="{{params['by_tag']}}" name="by_tag">
+{%end%}
+
+{%if params["finish"]%}
+<input type="hidden" value="{{params['finish']}}" name="finish">
+{%end%}
+
+
+{%if params["state"]==2%}
+  <select name="sale" style="width:100px;" >
+      <option value="">销售顾问</option>
+      {%for item in t_sale %}
+      <option value="{{item.name}}" {%if params["sale"]==item.name%}selected{%end%}>{{item.name}}</option>
+      {%end%}
+  </select>
+    <select name="kf" style="width:100px;" >
+      <option value="">客服顾问</option>
+      {%for item in t_kf %}
+      <option value="{{item.name}}" {%if params["kf"]==item.name%}selected{%end%}>{{item.name}}</option>
+      {%end%}
+  </select>
+    <select name="gj" style="width:100px;" >
+      <option value="">应收跟进人</option>
+      {%for item in t_gj %}
+      <option value="{{item.name}}" {%if params["gj"]==item.name%}selected{%end%}>{{item.name}}</option>
+      {%end%}
+  </select>
+
+
+{%end%}
+{%if params["state"]==3%}
+{%if role=="8"%}
+  <input type="text" name="ass_name" class="input-medium" style="width:80px;" placeholder="跟进人" value="{%if params["ass_name"] %}{{params["ass_name"]}}{%end%}">
+{%end%}
+  <input type="text" name="ass_day" class="input-medium" style="width:80px;" placeholder="跟进天数起" value="{%if params["ass_day"] %}{{params["ass_day"]}}{%end%}">
+
+  <input type="text" name="ass_day_end" class="input-medium" style="width:80px;" placeholder="跟进天数止" value="{%if params["ass_day_end"] %}{{params["ass_day_end"]}}{%end%}">
+  <input type="text" name="ass_num" class="input-medium" style="width:80px;" placeholder="跟进次数起" value="{%if params["ass_num"] %}{{params["ass_num"]}}{%end%}">
+  <input type="text" name="ass_num_end" class="input-medium" style="width:80px;" placeholder="跟进次数止" value="{%if params["ass_num_end"] %}{{params["ass_num_end"]}}{%end%}">
+
+
+{%end%}
+  <button type="submit" class="btn">检 索</button>
+</form>
+
+
+
+
+
+
+<ul class="nav nav-tabs" id="myTab">
+{%if role!="1"%}
+    <li {%if not params["state"] and not params["wait"]%}class="active" {%end%}>
+        <a href="/clearly?curr_year={{curr_year}}{%if my%}&my={{params['my']}}{%end%}" id="customer_tab">待发起</a>
+
+    </li>
+
+    <li {%if  not params["state"] and  params["wait"]%}class="active" {%end%}>
+        <a href="/clearly?curr_year={{curr_year}}&wait=2{%if my%}&my={{params['my']}}{%end%}" id="customer_tab">已发起</a>
+    </li>
+
+{%end%}
+
+
+
+    {%for item in t_type%}
+
+
+    <li {%if params["state"]==item.order_int%}class="active" {%end%}>
+        <a href="/clearly?curr_year={{curr_year}}&state={{item.order_int}}{%if my%}&my={{params['my']}}{%end%}" id="customer_tab">{{item.name}}</a>
+    </li>
+    {%end%}
+
+  
+
+</ul>
+
+
+ <a style="margin-bottom:9px;" class="btn btn-small {%if not params["by_tag"]%}btn-info {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 全部</a>
+ <a style="margin-bottom:9px;" class="btn btn-small {%if  params["by_tag"]=="正常"%}btn-info {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}&by_tag=正常" id="customer_tab" title="非解约/停账/注销/逾期"><i class="icon-star"></i> 正常客户</a>
+
+ <a style="margin-bottom:9px;" class="btn btn-small {%if  params["by_tag"]=="非记账"%}btn-info {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}&by_tag=非记账" id="customer_tab"><i class="icon-star"></i> 非记账</a>
+
+     {%for item in t_customer_type%}
+
+            <a style="margin-bottom:9px;" class="btn btn-small {%if  params["by_tag"]==item.name %}btn-info {%end%}" href="/clearly?curr_year={{curr_year}}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}&by_tag={{item.name}}" id="customer_tab"><i class="icon-star"></i> {{item.name}}</a>
+
+    {%end%}
+
+{%if params["state"]==3%}<br/>
+    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["confirm"]==0%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 全部</a>
+      <a style="margin-bottom:9px;" class="btn btn-small {%if  params["confirm"]==1%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}&confirm=1{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 待接单</a>
+    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["confirm"]==2%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}&confirm=2{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 已接单</a>
+    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["cpl"]=="3"%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["wait"]%}&wait={{params['wait']}}{%end%}&state=3&cpl=3{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 已办结</a>
+
+
+{%end%}
+
+
+
+{%if params["state"]==4%}<br/>
+    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["finish"]==0%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 全部</a>
+      <a style="margin-bottom:9px;" class="btn btn-small {%if  params["finish"]==1%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&finish=1{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办结</a>
+    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["finish"]==2%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&finish=2{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 未办结</a>
+
+
+{%end%}
+{%if params["state"]==8%}<br/>
+      <a style="margin-bottom:9px;" class="btn btn-small {%if  params["year_type"]==0%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&year_type=0{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办理中</a>
+    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["year_type"]==1%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&year_type=1{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办理审核</a>
+        <a style="margin-bottom:9px;" class="btn btn-small {%if  params["year_type"]==2%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&year_type=2{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 已办结</a>
+
+{%end%}
+{%if params["state"]==6%}<br/>
+      <a style="margin-bottom:9px;" class="btn btn-small {%if  params["clearly_type"]==0%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&clearly_type=0{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办理中</a>
+    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["clearly_type"]==1%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&clearly_type=1{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办理审核</a>
+        <a style="margin-bottom:9px;" class="btn btn-small {%if  params["clearly_type"]==2%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&clearly_type=2{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 已办结</a>
+
+{%end%}
+{%if customers%}
+         {%if t_staff_total and (params["state"] ==2 or params["state"] ==3) and role=="8"%}
+          <br/>
+                       {%for item in t_staff_total%}
+                      <a style="margin-bottom:9px;" class="btn btn-small {%if  params["ass_name"]==item.ass_uid_name %}btn-primary {%end%} "  href="/clearly?curr_year={{curr_year}}&ass_name={{item.ass_uid_name}}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}"><i class=" icon-thumbs-up
+"></i>{%if item.ass_uid_name%}{{item.ass_uid_name}}{%else%}未分配{%end%} ({{item.c}})</a>
+                        {%end%}
+
+
+
+         {%end%}
+
+         <div class="alert fade in">
+
+
+共{{pagination.total_count}}条记录
+
+        <a href="/clearly?curr_year={{curr_year}}&sf=1&regdate={{curr_year}}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}" id="customer_tab">
+            执照{{curr_year}}或以前的客户</a>
+
+    
+         
+       / <a href="/clearly?curr_year={{curr_year}}&sf=2&regdate={{int(curr_year)+1}}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}" id="customer_tab">
+       执照{{int(curr_year)+1}}或以后的客户</a>
+
+
+
+          {%if keyword%}  <strong> {{keyword}}</strong>{%end%}
+          </div>
+
+              <table class="table  table-bordered "  style="font-size:12px;">
+                     <thead>
+                                <tr style="background-color: black; color:#fff;">
+
+
+
+
+                                <th style="width:12px;">
+                                            <input type="checkbox" id="choose_all">
+                                </th>
+
+                                <th >公司名称</th>
+
+                                            <th  style="width:60px;">执照日期</th>
+{%if params["state"]  or  params["wait"]%}
+
+                                      <th  style="width:60px;">当年收入</th>
+
+
+
+
+  {%if params["state"]>= 2%}
+           <th style="width:70px;">报备价</th>
+
+           <th style="width:55px;">非报备价</th>
+  <th style="width:110px;">指导价备注</th>
+
+
+  {%else%}
+         <th style="width:80px;">发起时间</th>
+ {%end%}
+
+
+ {%end%}
+  {%if params["state"]== 2%}
+    <th style="width:80px;">跟进人</th>
+
+ {%end%}
+  {%if params["state"]== 3%}
+      <th style="width:200px;">跟进周期</th>
+    <th style="width:70px;">跟进人</th>
+
+ {%end%}
+
+
+
+
+
+
+
+
+                                <th  style="{%if params["state"]>3%}width:280px;{%else%}width:70px;{%end%}"></th>
+                                </tr>
+
+                            </thead>
+                <tbody>
+
+     {%for customer in customers%}
+                    <tr>
+       
+
+                            <td><input type="checkbox" company="{{customer.company}}"
+                            value="{{customer.a_customer_id}}" name="check_customer"
+                            {%if params["state"] >0%} clearly_id="{{customer.clearly_id}}" price_remark="{%if customer.price_remark%}{{customer.price_remark}}{%end%}" g_price="{{customer.g_price}}" no_price="{{customer.no_price}}" {%end%}></td>
+
+                        <td>{%if not customer.data_check %}<a target="_blank" href="/customer?tag=show&id={{customer.a_customer_id}}&guid={{customer.guid}}">
+                         <i class=" icon-tags"></i>{{customer.company}}</a>{%else%}
+
+                        <a target="_blank" href="/customer?tag=show&id={{customer.a_customer_id}}&guid={{customer.guid}}">{{customer.data_company}}</a><br/>
+                        <span style="font-size:11px; color:red;">(原公司名称:{{customer.company}})</span>{%end%}
+
+<br/>
+                        {%if  customer.customer_type_name%}
+                        <span style="font-size:11px; color:blue;"><i class="icon-star"></i> {{customer.customer_type_name}}
+
+                        </span>
+
+                        {%end%}    {%if customer.is_general%}<font color='red'><i class="icon-star"></i> 一般纳税人</font>{%end%}
+
+  <br/><i class=" icon-credit-card"></i> 已核定税种:
+   {%if customer.is_check%}是    ({%if customer.btype_id%}<font color='blue'>核定</font> {%else%}<font color='red'>查账</font> {%end%}){%else%}否 {%end%}
+&nbsp;
+    <i class="icon-group"></i> 社保:        {{customer.ss_num}} 人
+    <br/>
+   <span style="font-size:11px; color:blue;"><i class="icon-user
+"></i> 会计:{{customer.acc_uid_name}}</span>
+
+
+                        </td>
+
+                              <td style="font-size:11px;">
+
+                          {% if customer.reg_date%}
+                          {{customer.reg_date.strftime("%Y-%m-%d")}}
+                          {%end%}
+
+
+                        </td>
+                        {%if params["state"] or  params["wait"]  %}
+                        <td>
+                          {{customer.income}}
+                        </td>
+
+
+
+      {%if params["state"]>= 2%}
+          <td>
+                    {%if customer.g_price%}
+                        <span style="{%if customer.change_price%}color:red;{%end%}">    {{customer.g_price}}     </span>
+                            {%else%}
+                           {{customer.g_price}}
+                          {%end%}
+
+                {%if role=="8"%}
+                          <a  clearly_id="{{customer.clearly_id}}" is_general="{{customer.is_general}}"
+                        lk="{{customer.lk}}"
+                        class=" control change_kj_price_modify"
+                        company="{{customer.company}}"
+                        customer_id="{{customer.a_customer_id}}"
+                                 data_company="{{customer.data_company}}"
+                                    cremark="{%if customer.cremark%}{{customer.cremark}}{%end%}"
+                                    ass_uid_name="{%if customer.ass_uid_name%}{{customer.ass_uid_name}}{%end%}"
+         data_check="{{customer.data_check}}"
+         is_check="{{customer.is_check}}"
+         btype_id="{{customer.btype_id}}"
+         income="{{customer.income}}"
+         ss_num="{{customer.ss_num}}"
+         action="g_price"
+         price_remark = "{%if customer.price_remark%}{{customer.price_remark}}{%end%}"
+no_price="{{customer.no_price}}"
+g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}}{%end%}"
+                         href="javascript:void(0)"><i class="icon-edit
+"></i></a>
+{%end%}
+
+                        </td>
+
+         <td>
+                   {%if customer.no_price%}
+                        <span style="{%if customer.change_price1%}color:red;{%end%}">
+                          {{customer.no_price}}
+                            {%else%}
+                          {{customer.no_price}}
+                          {%end%}
+                        </span>
+
+                        </td>
+                                 <td>
+                                 {%if customer.price_remark%}
+                          {{customer.price_remark}}
+                            {%else%}
+
+                          {%end%}
+
+
+                        </td>
+                        {%else%}
+                                      <td>{%if customer.uid_at%}{{customer.uid_at.strftime("%Y-%m-%d")}}{%end%}</td>
+ {%end%}
+
+
+
+
+
+
+                         {%end%}
+
+                           {%if params["state"]== 2%} <td>
+    <font color='blue'>{%if customer.sale%}<i class="icon-user
+"></i>{{customer.sale}}{%else%}无{%end%}(销售)</font><br/>
+      <font color='green'>{%if customer.kf%}<i class="icon-user
+"></i>{{customer.kf}}{%else%}无{%end%}(客服)</font><br/>
+       <font color=''>  {%if customer.gj%}<i class="icon-user
+"></i>{{customer.gj}}{%else%}无{%end%}(跟进人)</font>
+  </td>
+ {%end%}
+
+
+
+
+
+
+
+
+
+                       {%if params["state"]== 3%}
+                        <td> {%raw get_clearly_stat(customer.clearly_id,dt)%}</td>
+                        <td>
+                         <i class="icon-user
+"></i>{{customer.ass_uid_name}}
+{%if role=="8"%}
+     <a  clearly_id="{{customer.clearly_id}}" is_general="{{customer.is_general}}"
+                        lk="{{customer.lk}}"
+                        class=" change_kj_ass_modify"
+                        company="{{customer.company}}"
+                        customer_id="{{customer.a_customer_id}}"
+                                 data_company="{{customer.data_company}}"
+                                    cremark="{%if customer.cremark%}{{customer.cremark}}{%end%}"
+                                    ass_uid_name="{%if customer.ass_uid_name%}{{customer.ass_uid_name}}{%end%}"
+         data_check="{{customer.data_check}}"
+         is_check="{{customer.is_check}}"
+         btype_id="{{customer.btype_id}}"
+         income="{{customer.income}}"
+         ss_num="{{customer.ss_num}}"
+         action="g_price"
+         price_remark = "{%if customer.price_remark%}{{customer.price_remark}}{%end%}"
+no_price="{{customer.no_price}}"
+ass_uid_name="{{customer.ass_uid_name}}"
+g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}}{%end%}"
+                         href="javascript:void(0)"><i class="icon-edit
+"></i></a>
+                        </td>
+
+
+ {%end%}
+ {%end%}
+
+
+                        <td class="td-actions">
+
+
+                        {%if params["wait"] %}
+                        <a  clearly_id="{{customer.clearly_id}}" is_general="{{customer.is_general}}"
+                        lk="{{customer.lk}}"
+                        class="btn  btn-sm control curr_change_kj  btn-info "
+                        company="{{customer.company}}"
+                        customer_id="{{customer.a_customer_id}}"
+                                 data_company="{{customer.data_company}}"
+         data_check="{{customer.data_check}}"
+         is_check="{{customer.is_check}}"
+         btype_id="{{customer.btype_id}}"
+         income="{{customer.income}}"
+         ss_num="{{customer.ss_num}}"
+      g_price="{{customer.g_price}}"
+no_price="{{customer.no_price}}"
+price_remark = "{%if customer.price_remark%}{{customer.price_remark}}{%end%}"
+                                    cremark="{%if customer.cremark%}{{customer.cremark}}{%end%}"
+
+
+
+      btype_id_name="{{customer.btype_id_name}}"
+         g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}}{%end%}"
+                         type='button' href="javascript:void(0)">修改</a>
+
+
+                       {%elif params["state"]==1 and role=="8"%}
+         <a  clearly_id="{{customer.clearly_id}}" is_general="{{customer.is_general}}"
+                        lk="{{customer.lk}}"
+                        class="btn btn-info btn-sm control curr_change_kj"
+                        company="{{customer.company}}"
+                        customer_id="{{customer.a_customer_id}}"
+                                 data_company="{{customer.data_company}}"
+                                    cremark="{%if customer.cremark%}{{customer.cremark}}{%end%}"
+         data_check="{{customer.data_check}}"
+         is_check="{{customer.is_check}}"
+         btype_id="{{customer.btype_id}}"
+         income="{{customer.income}}"
+         ss_num="{{customer.ss_num}}"
+         action="g_price"
+         price_remark = "{%if customer.price_remark%}{{customer.price_remark}}{%end%}"
+no_price="{{customer.no_price}}"
+g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}}{%end%}"
+                         type='button' href="javascript:void(0)">指导价</a>
+
+  {%elif params["state"]==2 and role=="8"%}
+         <a  clearly_id="{{customer.clearly_id}}" is_general="{{customer.is_general}}"
+                        lk="{{customer.lk}}"
+                        class="btn btn-info btn-sm control curr_change_kj"
+                        company="{{customer.company}}"
+                        customer_id="{{customer.a_customer_id}}"
+                                 data_company="{{customer.data_company}}"
+                                    cremark="{%if customer.cremark%}{{customer.cremark}}{%end%}"
+                                    ass_uid_name="{%if customer.ass_uid_name%}{{customer.ass_uid_name}}{%end%}"
+         data_check="{{customer.data_check}}"
+         is_check="{{customer.is_check}}"
+         btype_id="{{customer.btype_id}}"
+         income="{{customer.income}}"
+         ss_num="{{customer.ss_num}}"
+         action="g_price"
+         price_remark = "{%if customer.price_remark%}{{customer.price_remark}}{%end%}"
+no_price="{{customer.no_price}}"
+g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}}{%end%}"
+                         type='button' href="javascript:void(0)">分配</a>
+
+
+
+
+
+  {%elif params["state"]==3 and not params["cpl"]%}
+
+
+        {%if not customer.ass_uid_confirm%}
+         <a  clearly_id="{{customer.clearly_id}}"
+                        class="btn btn-warning btn-sm control curr_change_jd"
+
+                         type='button' href="javascript:void(0)"><i class=" icon-info-sign"></i> 接单</a>
+
+{%else%}
+         <a  clearly_id="{{customer.clearly_id}}" is_general="{{customer.is_general}}"
+                        start_title="处理"
+                        lk="{{customer.lk}}"
+                        class="btn btn-info btn-sm control curr_change_kj"
+                        company="{{customer.company}}"
+                        customer_id="{{customer.a_customer_id}}"
+                                 data_company="{{customer.data_company}}"
+                                    cremark="{%if customer.cremark%}{{customer.cremark}}{%end%}"
+                                    ass_uid_name="{%if customer.ass_uid_name%}{{customer.ass_uid_name}}{%end%}"
+         data_check="{{customer.data_check}}"
+         is_check="{{customer.is_check}}"
+         btype_id="{{customer.btype_id}}"
+         income="{{customer.income}}"
+         ss_num="{{customer.ss_num}}"
+         action="g_price"
+         price_remark = "{%if customer.price_remark%}{{customer.price_remark}}{%end%}"
+no_price="{{customer.no_price}}"
+style="margin-bottom:2px;"
+g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}}{%end%}"
+                         type='button' href="javascript:void(0)"><i class="icon-comment-alt"></i>处理</a>
+
+
+<a href="javascript:void(0)" company= "{{customer.company}}" class="a_finish_modal btn btn-success btn-sm" 
+ clearly_id="{{customer.clearly_id}}" action="staff"><i class="  icon-ok-circle"></i> 办结</a>
+{%end%}
+
+
+
+             {%elif not params["state"] and  params["my"] %}
+        <a is_general="{{customer.is_general}}"
+        clearly_id = "0"
+        class="btn customer_detail btn-sm control curr_change_kj  btn-info "
+         company="{{customer.company}}"
+
+          customer_id="{{customer.a_customer_id}}"
+           type='button' href="javascript:void(0)">发起</a>
+
+         {%elif params["state"]>3 and not params["cpl"]%}
+
+
+
+           {%if  customer.ass_end_confirm%}
+         <i class=" icon-arrow-right"></i> 1.申请{%if customer.result_id==3%}
+        <font color='red'>(无需处理)</font>
+        {%else%}办结{%end%}({{customer.ass_uid_name}}){{customer.ass_end_confirm}}
+        {%end%}
+
+            {%if  customer.ass_leader_uid_at%}<br/>
+        <i class=" icon-arrow-right"></i> 2.确认办结({{customer.ass_leader_uid_name}}){{customer.ass_leader_uid_at}}<br/>
+        {% raw get_project_info(customer.project_id)%}
+        {%end%}
+        {%if  customer.finance_uid_at%}
+        <i class=" icon-arrow-right"></i> 3.财务审核({{customer.finance_uid_name}}){{customer.finance_uid_at}}<br/>
+        {%end%}
+
+        {%if  customer.clearly_end_at  and params["state"]==6%}
+        <i class=" icon-arrow-right"></i> 4.({{customer.clearly_end_uid_name}})发起汇算办结{{customer.clearly_end_at}}<br/>
+        {%if customer.clearly_end_remark%}
+           <font color='red'>办结备注: {{customer.clearly_end_remark}} </font><br/>
+        {%end%}
+             {%if customer.clearly_end_file%}
+           <font color='red'><a href="{{customer.clearly_end_file}} " target="_blank"><i class="icon-large icon-picture
+"></i>查看办结截图</a></font><br/>
+
+
+        {%end%}
+        {%end%}
+
+
+        {%if  customer.year_end_at and params["state"]==8%}
+        <i class=" icon-arrow-right"></i> 4.({{customer.year_end_uid_name}})发起年检办结{{customer.year_end_at}}<br/>
+              {%if customer.year_end_remark%}
+           <font color='red'>办结备注: {{customer.year_end_remark}} </font><br/>{%end%}
+     {%if customer.year_end_file%}
+           <font color='red'><a href="{{customer.year_end_file}}" target="_blank"><i class="icon-large icon-picture
+"></i>查看办结截图</a></font><br/>
+
+
+        {%end%}
+        {%end%}
+       {%if customer.ass_finish_uid_remark%}
+                <br/>
+                {{customer.ass_finish_uid_remark}}
+
+
+
+                                {%end%}
+ {%if role=="8" and params["state"]==4%}
+<a href="javascript:void(0)" class="a_finish_modal btn btn-warning btn-sm"
+clearly_id="{{customer.clearly_id}}" action="leader">负责人审核</a>
+{%end%}
+
+      {%if (role=="8" or role=="3" or role=="5") and params["state"]==5%}
+<a href="javascript:void(0)" class="a_finish_modal btn btn-warning btn-sm"
+clearly_id="{{customer.clearly_id}}" action="leader">财务审核</a>
+{%end%}
+
+ {%if (role=="8" or role=="10") and params["state"]==6%}
+
+
+{%if customer.clearly_end==1%}
+
+
+{%if  is_manager%}
+<a href="javascript:void(0)" class="a_end_type btn btn-info btn-sm"
+type_end="clearly_2"
+end_state="2"
+result_id="{{customer.result_id}}"
+type_end_name="确认汇算办结"
+ass_end_remark="{%if customer.clearly_end_remark%}{{customer.clearly_end_remark}}{%end%}"
+milepost_id="{{customer.milepost_id}}"
+file_path="{%if customer.clearly_end_file%}{{customer.clearly_end_file}}{%end%}"
+
+company= "{{customer.company}}{%if customer.data_check%}[{{customer.data_company}}]{%end%}-汇算"
+clearly_id="{{customer.clearly_id}}" action="leader">确认汇算办结</a>
+{%end%}
+
+
+{%elif customer.clearly_end==2%}
+
+      {%if  customer.finance_uid_at%}
+      <i class=" icon-arrow-right"></i> 5.({{customer.clearly_end_uid_name}})确认汇算办结{{customer.clearly_end_confirm_at}}
+        {%end%}
+
+{%else%}
+
+<a href="javascript:void(0)" class="a_end_type btn btn-warning btn-sm"
+
+type_end="clearly_1"
+end_state="1"
+type_end_name="汇算办结"
+company= "{{customer.company}}{%if customer.data_check%}[{{customer.data_company}}]{%end%} -汇算"
+milepost_id="{{customer.milepost_id}}"
+result_id="{{customer.result_id}}"
+
+ass_end_remark="{%if customer.clearly_end_remark%}{{customer.clearly_end_remark}}{%end%}"
+clearly_id="{{customer.clearly_id}}" action="leader">汇算办结</a>
+
+
+
+
+{%end%}
+
+
+ {%end%}
+
+
+      {%if (role=="8" or role=="7") and params["state"]==8%}
+
+
+{%if customer.year_end==1%}
+
+
+<a href="javascript:void(0)" class="a_end_type btn btn-warning btn-sm"
+type_end="year_2"
+end_state="2"
+result_id="{{customer.result_id}}"
+
+type_end_name="确认年检办结"
+milepost_id="{{customer.milepost_id}}"
+file_path="{%if customer.year_end_file%}{{customer.year_end_file}}{%end%}"
+
+ass_end_remark="{%if customer.year_end_remark%}{{customer.year_end_remark}}{%end%}"
+company= "{{customer.company}}{%if customer.data_check%}[{{customer.data_company}}]{%end%}-年检"
+clearly_id="{{customer.clearly_id}}" action="leader">确认年检办结</a>
+
+{%elif customer.year_end==2%}
+
+      {%if  customer.finance_uid_at%}
+       <i class=" icon-arrow-right"></i> 5.({{customer.year_end_confirm_uid_name}})确认年检办结{{customer.year_end_confirm_at}}
+        {%end%}
+
+{%else%}
+
+<a href="javascript:void(0)" class="a_end_type btn btn-primary btn-sm"
+type_end="year_1"
+end_state="1"
+type_end_name="年检办结"
+file_path="{%if customer.year_end_file%}{{customer.year_end_file}}{%end%}"
+ass_end_remark="{%if customer.year_end_remark%}{{customer.year_end_remark}}{%end%}"
+company= "{{customer.company}}{%if customer.data_check%}[{{customer.data_company}}]{%end%}-年检"
+milepost_id="{{customer.milepost_id}}"
+result_id="{{customer.result_id}}"
+clearly_id="{{customer.clearly_id}}" action="leader">年检办结</a>
+
+
+
+
+{%end%}
+
+
+
+{%end%}
+
+
+   {%end%}
+
+
+
+                        </td>
+
+
+                    </tr>
+                    {%end%}
+
+
+                </tbody>
+              </table>
+
+                    {%else%}
+
+                               <div class="alert">
+                                              <button type="button" class="close" data-dismiss="alert">×</button>
+                                              <strong>      当前没有客户哦。</strong>
+                                            </div>
+                    {%end%}
+
+
+                              <div class="pagination">
+                        <ul>
+                            {% if pagination.has_prev %}
+                            {%if kj%}
+                            <li><a href="/clearly?page={{ pagination.page - 1}}&curr_year={{curr_year}}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">&laquo; 上页</a></li>
+                            {%else%}
+                            <li><a href="/clearly?page={{ pagination.page - 1}}&curr_year={{curr_year}}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%} {%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">&laquo; 上页</a></li> {% end %}
+                            {%end%}
+                            {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            {%if kj%}
+                            <li>
+                                    <a href="/clearly?page={{ page }}&curr_year={{curr_year}}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">{{ page }}</a></li>
+                            {%else%}
+                            <li>
+                                <a href="/clearly?page={{ page }}&curr_year={{curr_year}}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">{{ page }}</a></li>
+                            {%end%}
+                            {% else %}
+                            <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                            {% end %} {% else %}
+                            <li><span class="active"><a href="#">....</a></span></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            {%if kj%}
+                            <li><a href="/clearly?page={{pagination.page+1}}&curr_year={{curr_year}}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">下页 &raquo;</a></li>
+                            {%else%}
+                            <li><a href="/clearly?page={{pagination.page+1}}&curr_year={{curr_year}}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">下页 &raquo;</a></li>
+                            {%end%}
+                            {% end %}
+                        </ul>
+                    </div>
+</fieldset>
+
+<div id="finish_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="ass_title">办结</h3>
+        </div>
+        <div class="modal-body" id="finish_ass">
+
+
+
+
+
+
+    </div>
+
+       <div class="modal-body" id="finish_ass_leader">
+
+
+                  <div class="control-group">
+                        <div class="controls">
+                             <input type="radio" value="1"  name="ass_finish_leader" title="通过">确认办结
+                             <input type="radio" value="2"  name="ass_finish_leader" title="重新安排">重新安排
+                             <input type="radio" value="3"  name="ass_finish_leader" title="无需处理">无需处理
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="control-group" id="ass_by_leader_group">
+                        <label class="control-label" for="lastname">跟进人</label>
+
+                        <div class="controls">
+                           <input type="text" id="ass_by_leader" name="ass_by_leader"/>
+
+                           <input data-provide="typeahead" class="re_ass_uid_name" type="text" placeholder="跟进人" id="ass_uid_name'+customer_id+'" name="ass_uid_name'+customer_id+'" style="width:60px;" />
+                        </div>
+                    </div>
+
+
+                    <div class="control-group">
+                        <label class="control-label" for="lastname">备注</label>
+
+                        <div class="controls">
+                           <textarea  id="ass_finish_uid_remark_leader" style="margin: 0px 0px 9px; width: 491px; height: 61px;"></textarea>
+                        </div>
+                    </div>
+
+
+
+    </div>
+
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+
+
+        </div>
+      </div>
+</div>
+
+
+
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+
+<div id="price_one_modal" class="modal  hide fade" style="  width: 30%; left: 35%;margin-left:auto;margin-right:auto; " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="price_title">设置指导价格</h3>
+        </div>
+       <div class="modal-body" id="finish_ass_leader">
+
+                    <div class="control-group" id="ass_by_leader_group">
+                        <label class="control-label" for="lastname">报备价格</label>
+
+                        <div class="controls">
+                           <input type="text" id="one_g_price" name="one_g_price"/>
+
+                        </div>
+                    </div>
+                     <div class="control-group" id="ass_by_leader_group">
+                        <label class="control-label" for="lastname">非报备价格</label>
+
+                        <div class="controls">
+                           <input type="text" id="one_no_price" name="one_no_price"/>
+
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="lastname">报价备注</label>
+
+                        <div class="controls">
+                           <textarea  id="one_price_remark" name="one_price_remark" style="margin: 0px 0px 9px; width: 80%; height: 61px;"></textarea>
+                        </div>
+                    </div>
+
+
+
+    </div>
+
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+             <button class="btn btn-primary" id="btn_save_one_price">保存</button>
+
+        </div>
+      </div>
+</div>
+
+
+
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+
+
+<div id="price_modal" class="modal  hide fade" style="  width: 30%; left: 35%;margin-left:auto;margin-right:auto; " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="price_title">批量设置指导价格</h3>
+        </div>
+
+
+       <div class="modal-body" id="finish_ass_leader">
+
+
+
+
+
+
+                    <div class="control-group" id="ass_by_leader_group">
+                        <label class="control-label" for="lastname">报备价格</label>
+
+                        <div class="controls">
+                           <input type="text" id="group_g_price" name="group_g_price"/>
+
+                        </div>
+                    </div>
+                     <div class="control-group" id="ass_by_leader_group">
+                        <label class="control-label" for="lastname">非报备价格</label>
+
+                        <div class="controls">
+                           <input type="text" id="group_no_price" name="group_no_price"/>
+
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="lastname">报价备注</label>
+
+                        <div class="controls">
+                           <textarea  id="group_price_remark" name="group_price_remark" style="margin: 0px 0px 9px; width: 80%; height: 61px;"></textarea>
+                        </div>
+                    </div>
+
+
+
+    </div>
+
+        <div class="modal-footer">
+          <buttype_end_name>关闭</button>
+             <type_end_name">保存</button>
+
+        </div>type_end_name
+      </div>
+</div>
+
+
+
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+
+
+<div id="ass_modal" class="modal  hide fade" style="  width: 30%; left: 35%;margin-left:auto;margin-right:auto; " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="price_title">批量分配</h3>
+        </div>
+
+
+       <div class="modal-body" id="finish_ass_leader">
+                    <div class="control-group" id="ass_by_leader_group">
+                        <label class="control-label" for="lastname">跟进人</label>
+
+                        <div class="controls">
+                           <input type="text" id="group_ass_name" name="group_ass_name"  class="ass_uid_name" data-provide="typeahead" />
+                        </div>
+                    </div>
+    </div>
+
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+             <button class="btn btn-primary" id="btn_save_group_ass">保存</button>
+
+        </div>
+      </div>
+</div>
+
+
+
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+<div id="modal_finish" class="modal  hide fade" style="  width: 30%; left: 35%;margin-left:auto;margin-right:auto; " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="finish_title"></h3>
+        </div>
+
+
+       <div class="modal-body" id="finish_ass_leader">
+
+       
+                           <div class="control-group" >
+                        <label class="control-label" for="lastname" id="end_upload_title" >办结截图</label>
+
+                        <div class="controls">
+                             <input type="file" id="file" name="file"/>
+
+                        </div>
+                    </div>
+                     <input type="hidden" id="isfile" name="isfile">
+                    <div class="control-group" id="ass_remark_div" >
+                        <label class="control-label" for="lastname" id="end_remark_title">备注(可选填写)</label>
+
+                        <div class="controls">
+                             <textarea  id="finish_remark" style="margin: 0px 0px 9px; width: 380px; height: 61px;"></textarea>
+
+                        </div>
+                    </div>
+    </div>
+
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+             <button class="btn btn-primary" id="btn_save_to_end">保存</button>
+
+        </div>
+      </div>
+</div>
+
+
+
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+
+
+
+
+<div id="ass_modal_modify" class="modal  hide fade" style="  width: 30%; left: 35%;margin-left:auto;margin-right:auto; " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="ass_modify_title"></h3>
+        </div>
+
+
+       <div class="modal-body" id="finish_ass_leader">
+                    <div class="control-group" id="ass_by_leader_group">
+                        <label class="control-label" for="lastname">跟进人</label>
+
+                        <div class="controls">
+                           <input type="text" id="ass_name_modify" name="ass_name_modify"  class="ass_uid_name" data-provide="typeahead" />
+                        </div>
+                    </div>
+    </div>
+
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+             <button class="btn btn-primary" id="btn_save_ass_modify">保存</button>
+
+        </div>
+      </div>
+</div>
+
+
+
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+<div id="started_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="start_title">发起</h3>
+        </div>
+        <div class="modal-body">
+
+
+          <table class="table">
+          <thead>
+          <tr style="font-size:11px;">
+                              <th >公司</th>
+                              <th width="80">执照日期</th>
+
+                              <th width="80">一般纳税人</th>
+
+                               <th width="450">联系人信息</th>
+
+
+            </tr>
+            </thead>
+            <tbody  id="start_table">
+
+
+
+            </tbody>
+          </table>
+
+
+
+<div class="widget" id="ass_remark_list_div">
+            <div class="widget-header"> <i class="icon-file"></i>
+              <h3>跟进记录
+              <input type="text" id="ass_msg" style="width:400px; marigin-left:120px;" />
+              <a href="javascript:void(0)" class="btn btn-info" style="margin-bottom:9px;" id="btn_savemsg">保存记录</a>
+               <span style="" id="msg_count"></span>
+              </h3>
+
+            </div>
+            <!-- /widget-header -->
+            <div class="widget-content">
+              <ul class="messages_layout" id="ass_remark_list">
+
+
+
+              </ul>
+            </div>
+            <!-- /widget-content -->
+          </div>
+        </div>
+        <div class="modal-footer">
+
+            {%if params["state"]==2 or role=="8"%}
+          <button class="btn btn-danger" id="btn_ass_price_roll">撒回指导价</button>
+          {%end%}
+
+
+          <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+
+          {%if params["state"]!=3 or role=="8"%}
+          <button class="btn btn-primary" id="btn_save_kj">保存</button>
+          {%end%}
+
+
+        </div>
+      </div>
+</div>
+
+
+
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+
+
+    {%end%}
+
+    {%block js%}
+
+<script src="/static/c/laydate/laydate.js"></script> <!-- 改成你的路径 -->
+
+<script>
+
+$(function () {
+    _xsrf = getCookie("_xsrf")
+	{%if my%}
+            $("#m_clearly").attr('class',"active")
+    {%else%}
+            $("#m_clearly").attr('class',"active")
+    {%end%}
+
+
+    $("#btn_ass_price_roll").on("click",function(){
+        if(confirm("确认撒回吗?")){
+
+        $.post("/clearly?tag=ass_price_roll",
+        {"_xsrf":_xsrf,"clearly_id":clearly_id},function(result){
+
+                  location.reload()
+
+
+        })
+
+
+        }
+
+
+    })
+
+
+
+  $("#ass_by_leader_group").hide()
+     $("#curr_year_popver").popover();
+
+     $('input[name=ass_finish_leader]').on('change',function () {
+         result_choice = $(this).val()
+         if(result_choice=="2"){
+             $("#ass_by_leader_group").show()
+         }
+      })
+
+
+ $(".a_end_type").on("click",function(){
+
+        type_end= $(this).attr('type_end')
+        end_state= $(this).attr('end_state')
+        clearly_id= $(this).attr("clearly_id")
+        milepost_id = $(this).attr("milepost_id")
+        type_end_name = $(this).attr("type_end_name")
+         company = $(this).attr("company")
+         result_id=$(this).attr("result_id")
+        $("#finish_title").text(company)
+        $("#end_remark_title").text(type_end_name+"备注(可选填写)")
+         {%if  (params["state"]==6 and  params["clearly_type"]==1) or  (params["state"]==8 and  params["year_type"]==1)%}
+         $('#file').hide()
+         $("#finish_remark").hide()
+         file_path =$(this).attr('file_path')
+         ass_end_remark =$(this).attr("ass_end_remark")
+         end_html = " <font color='red'><a href='"+file_path+"' target='_blank'><i class='icon-large icon-picture'></i>查看办结截图</a></font>"
+         if(undefined!=ass_end_remark &&  ass_end_remark!=""){
+             end_html +="<br/>备注:"+ass_end_remark
+         }
+        
+         $("#end_upload_title").html(end_html)
+        $("#end_remark_title").text("")
+        $("#btn_save_to_end").text("确认办结")
+         {%end%}
+         
+        if(result_id=="3"){
+
+             $("#end_upload_title").html("<font color='red'>该订单("+type_end_name+")无需办理,无需上传截图</font>")
+         }
+
+        $("#btn_save_to_end").attr("clearly_id",clearly_id)
+        $("#btn_save_to_end").attr("milepost_id",milepost_id)
+        $("#btn_save_to_end").attr("type_end",type_end)
+        $("#btn_save_to_end").attr("end_state",end_state)
+        $("#btn_save_to_end").attr("result_id",result_id)
+
+
+
+
+        $("#modal_finish").modal("show")
+      })
+
+  $("#btn_save_to_end").on("click",function(){
+        clearly_id= $(this).attr("clearly_id")
+        clearly_end = $(this).attr("clearly_end")
+        milepost_id = $(this).attr("milepost_id")
+        finish_remark = $("#finish_remark").val()
+        type_end= $(this).attr('type_end')
+        end_state= $(this).attr('end_state')
+
+    var formData = new FormData();
+     formData.append('file', $('#file')[0].files[0]);
+     formData.append('_xsrf', _xsrf );
+      formData.append("clearly_end",clearly_end)
+        formData.append("clearly_id",clearly_id)
+          formData.append("milepost_id",milepost_id)
+         formData.append("finish_remark",finish_remark)
+         formData.append("result_id",result_id)
+
+         
+   formData.append("type_end",type_end)
+      formData.append("end_state",end_state)
+      $.ajax({
+            url : 'clearly?tag=to_end',
+            type : 'POST',
+            data : formData,
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            success : function(data) {
+           if(data == "0"){
+                    location.reload()
+            }else{
+                    alert(data)
+            }
+            
+            
+            }
+      });
+
+
+
+      })
+
+
+
+
+    $(".a_finish_modal").on("click",function(result){
+        clearly_id= $(this).attr("clearly_id")
+        action = $(this).attr("action")
+        company =$(this).attr("company")
+        if(action=="leader"){
+            $.get("/clearly?tag=clearly_customer_list_details{%if params["state"]%}&state={{params["state"]}}{%end%}",{"clearly_id":clearly_id},function(result){
+
+                $("#finish_ass").html(result)
+            })
+             $("#finish_ass_leader").hide()
+            $("#finish_ass").show()
+
+        }else{
+
+            $.get("/clearly?tag=clearly_customer_list_details{%if params["state"]%}&state={{params["state"]}}{%end%}",{"clearly_id":clearly_id},function(result){
+
+                $("#finish_ass").html(result)
+            })
+             $("#finish_ass_leader").hide()
+            $("#finish_ass").show()
+            $("#ass_title").text(company+'-- 跟进办结 ')
+        }
+
+        console.log(clearly_id)
+        $(".btn_save_finish").val(clearly_id)
+        $("#finish_modal").modal("show")
+
+    })
+ $(document).on("click", ".btn_save_finish",function(){
+        detail_id = $(this).attr("detail_id")
+        clearly_id= $(this).attr("clearly_id")
+        btype_id = $(this).attr("btype_id")
+        btype_id_name = $(this).attr("btype_id_name")
+        result_remark = $("#result_remark_"+btype_id).val()
+        result_id = $("input[name=result_"+btype_id+"]:checked").val()
+        result_id_name = $("input[name=result_"+btype_id+"]:checked").attr("title")
+        amount = $("input[name=amount_"+btype_id+"]").val()
+        project_id = $("input[name=project_id_"+btype_id+"]").val()
+        action = $(this).attr('action')
+         var intRegex = /^\d+$/;
+        if(detail_id==undefined){
+            alert("detail_id 不存在")
+        }
+        else if(result_id==undefined){
+            $("input[name=result_"+btype_id+"]:checked").focus()
+            alert("请选择办结状态哦")
+        }else if (amount=="" && $.isNumeric(amount)==false){
+            $("input[name=amount_"+btype_id+"]").focus()
+            alert("业务金额要填写哦.")
+
+        }else if (project_id=="" && intRegex.test(project_id)==false){
+            $("input[name=project_id_"+btype_id+"]").focus()
+            alert("确认单编号要填写哦.")
+        }
+        else{
+            $.post("/clearly?tag=ass_finish",{"_xsrf":_xsrf,
+            "state":{{params["state"]}},
+            "action":action,
+            "btype_id":btype_id,
+            "btype_id_name":btype_id_name
+            ,"amount":amount,"project_id":project_id,"clearly_id":clearly_id,
+            "result_id":result_id,"result_remark":result_remark,
+            "result_id_name":result_id_name,"amount":amount,"project_id":project_id,"detail_id":detail_id},
+            function(result){
+         if(result==0){
+           location.reload()
+
+                   }else if(result >0){
+
+                        $.get("/clearly?tag=clearly_customer_list_details{%if params["state"]%}&state={{params["state"]}}{%end%}",{"clearly_id":clearly_id},function(result){
+
+                $("#finish_ass").html(result)
+            })
+                   }
+                   else
+                   {
+                       alert(result)
+                   }
+            })
+        }
+
+
+
+    })
+
+    $('#submit_check').on('click',function (param) {
+        var id_array=new Array();
+        $('input[id="check"]:checked').each(function(){
+        id_array.push($(this).val());//向数组中添加元素
+            });
+        var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
+        $.post(
+            'customer?tag=add_relation',
+            {
+                "_xsrf":_xsrf,
+                "idstr":idstr
+            },function (result) {
+                alert('添加成功')
+             }
+        )
+     })
+     $('#choose_all').on('change',function () {
+         $('input[name=check_customer]').not(this).prop('checked',this.checked);
+      })
+    lk_num = 0
+
+function genHtml(custsomer_id,company,is_general,clearly_id,data_company,data_check,is_check,btype_id,_ss_num,_income,lk,g_price,reg_date,cremark,no_price,ass_uid_name,price_remark){
+
+        sList=""
+               is_general_html = ""
+        if(is_general==1){
+                is_general_html +="<input type='radio' customer_id='"+customer_id+"' name='is_general_"+customer_id+"' value='1' checked/>是 <input  customer_id='"+customer_id+"'  name='is_general_"+customer_id+"'  value='0' type='radio'/>否"
+        }else{
+                is_general_html +="<input type='radio' customer_id='"+customer_id+"'   name='is_general_"+customer_id+"'  value='1'/>是 <input type='radio' customer_id='"+customer_id+"'  name='is_general_"+customer_id+"' value='0'    checked/>否"
+        }
+        t_linkman_type_html = "<br/><font style='font-size:11px;'><b>联系人职务:</b></font>"
+        {%for item in t_linkman_type%}
+            t_linkman_type_html += "&nbsp;<input class='lk_type' type='radio' customer_id='"+customer_id+"'  value='{{item.order_int}}' id='lk_type_id_"+customer_id+"' name='lk_type_id_"+customer_id+"'  value='0'/>{{item.income_name}}"
+
+        {%end%}
+        is_data_check=""
+        is_data_check_css =""
+        no_data_check=""
+        is_data_company_data=""
+        if(data_check!=undefined ){
+            if(data_check==1){
+
+                no_data_check=" checked='false' "
+                is_data_company_data = "value='"+data_company+"'"
+            }else{
+                    is_data_check=" checked='true' "
+                     is_data_check_css = "display:none;"
+
+            }
+
+        }else{
+            is_data_check_css = "display:none;"
+        }
+
+        sList += '<tr ><td  style="vertical-align: text-top"><input readonly="true" style="width:90%" type="text" id="company_'+customer_id+'" name="company_'+customer_id+'" value="'+company+'"/>'
+        sList +="<br/><span style='font-size:12px;'><b>请核对公司名是否正确:</b></font><input type='radio' "+is_data_check+" class='rb_company' customer_id='"+customer_id+"' name='rb_company"+customer_id+"' value='0' />是 <input  "+no_data_check+"   class='rb_company'  customer_id='"+customer_id+"'  name='rb_company"+customer_id+"'  value='1' type='radio'/>否"
+        sList += '<input '+is_data_company_data+' style="width:90%;'+is_data_check_css+'" type="text" id="data_company_'+customer_id+'" placeholder="正确的公司名称" name="data_company_'+customer_id+'" />'
+
+        sList +='<br/><a  style="width:45%; margin-bottom:9px; font-size:11px;" href="https://www.tianyancha.com/search?key='+company+'" target="_blank"><i class="icon-large icon-search"></i>天眼查</a>&nbsp;&nbsp;&nbsp;<a  style="width:45%; margin-bottom:9px;font-size:11px;" href="http://cri.gz.gov.cn/Search/Result?keywords='+company+'" target="_blank"><i class="icon-large icon-search"></i>商事主体信息查询平台</a></td>'
+        if(reg_date==undefined){
+            reg_date=""
+        }
+       sList +='<td  style="vertical-align: text-top"><input id="reg_date'+customer_id+'" name="reg_date'+customer_id+'" class="reg_date" type="text" value="'+reg_date+'" style="width:120px;margin-bottom:9px; font-size:11px;" /></td>'
+        sList +='<td  style="vertical-align: text-top">'+is_general_html+'<br/><br/><br/></td>'
+        sList +='<td  id="lk_td_'+customer_id+'"" style="vertical-align: text-top">'
+
+
+        if(clearly_id > 0){
+
+            lk_arr = lk.split(",")
+            $.each( lk_arr, function( lk_num, value ) {
+                val_name = value.split("|")[0]
+                val_tel = value.split("|")[1]
+                val_remark = value.split("|")[2]
+                val_gender = value.split("|")[3]
+                is_gender=""
+                no_gender=""
+
+                if(val_gender!=undefined ){
+                    if(val_gender==1){
+                        is_gender=" checked='true' "
+                    }else{
+                        no_gender=" checked='true' "
+                    }
+                }
+
+
+
+                if(lk_num>0){
+                    sList+='<span id="lkman_'+customer_id+"_"+lk_num+'"><a class ="minus_linkman" customer_id="'+customer_id+"_"+lk_num+'" href="javascript:void(0)" style="font-size:16px;"><i class="btn-icon-only icon-minus"> </i></a>'
+
+                }else{
+
+                   sList +='<a class ="add_linkman" customer_id="'+customer_id+'" href="javascript:void(0)" style="font-size:16px;"><i class="btn-icon-only  icon-plus"> </i></a>'
+
+                }
+                sList+='<input  type="text" value="'+val_name+'" placeholder="联系人" name="lk_name'+customer_id+'" id="lk_name'+customer_id+"_"+lk_num+'"   style="width:20%; margin-bottom:9px;" />'
+                sList+='<input type="text" value="'+val_tel+'" placeholder="联系电话" name="lk_tel'+customer_id+'" id="lk_tel'+customer_id+"_"+lk_num+'"   style="width:25%; margin-bottom:9px;" />'
+                sList+='<input type="text" value="'+val_remark+'" placeholder="联系人职务" id="lk_remark_'+customer_id+"_"+lk_num+'" name="lk_remark_'+customer_id+"_"+lk_num+'"   style="width:18%;margin-bottom:9px;" />&nbsp;'
+                sList+='<input '+is_gender+' type="radio" id="gender_'+customer_id+"_"+lk_num+'" name="gender_'+customer_id+"_"+lk_num+'" value="1" checked="checked" style="margin-bottom:9px;" > 先生 '
+                sList+='<input '+no_gender+' type="radio" id="gender_'+customer_id+"_"+lk_num+'" name="gender_'+customer_id+"_"+lk_num+'" value="0" style="margin-bottom:9px;" > 女士 '
+                sList+='</span><br/>'
+
+            });
+
+            }else{
+                sList +='<a class ="add_linkman" customer_id="'+customer_id+'" href="javascript:void(0)" style="font-size:16px;"><i class="btn-icon-only  icon-plus"> </i></a>'
+                sList+='<input type="text" placeholder="联系人" name="lk_name'+customer_id+'" id="lk_name'+customer_id+"_"+lk_num+'" value=""  style="width:20%; margin-bottom:9px;" />'
+                sList+='<input type="text" placeholder="电话" name="lk_tel'+customer_id+'" id="lk_tel'+customer_id+"_"+lk_num+'" value=""  style="width:25%; margin-bottom:9px;" />'
+                sList+='<input type="text" placeholder="职务" id="lk_remark_'+customer_id+"_"+lk_num+'" name="lk_remark_'+customer_id+'" value=""  style="width:18%;margin-bottom:9px;" />'
+                sList+='&nbsp;<input type="radio" id="gender_'+customer_id+"_"+lk_num+'" name="gender_'+customer_id+"_"+lk_num+'" value="1" checked="checked"  style="margin-bottom:9px;"> 先生 '
+                sList+='<input type="radio" id="gender_'+customer_id+"_"+lk_num+'" name="gender_'+customer_id+"_"+lk_num+'" value="0"  style="margin-bottom:9px;"> 女士 '
+
+            }
+
+        sList += '</td></tr>'
+            is_is_check=""
+        no_is_check=""
+        is_btype_id_css=""
+        if(is_check!=undefined ){
+            if(is_check==1){
+                is_is_check=" checked='true' "
+            }else{
+                no_is_check=" checked='false' "
+               is_btype_id_css ="display:none;"
+            }
+        }else{
+            is_btype_id_css ="display:none;"
+
+        }
+
+
+        sList +=' <tr  style="background-color:#f9f6f1;" id="data_clearly'+customer_id+'"><td colspan="4">'
+        sList+="<table style='width:100%'>"
+        is_btype_id=""
+        no_btype_id=""
+        if(btype_id!=undefined ){
+            if(btype_id==1){
+                is_btype_id=" checked='true' "
+            }else{
+                no_btype_id=" checked='false' "
+            }
+        }
+        console.log(is_check)
+        if(cremark==undefined){
+            cremark=""
+        }
+
+        sList +='<thead style="font-size:11px;"> <tr ><th>备注</th> <th width="80">已核定税种</th><th width="100">核定/查账</th>'
+        sList +=  '<th width="80">当年收入</th>  <th width="80">社保人数</th><th width="80" style="color:red;background-color:#f7f7eb;">报备价格</th><th width="80" style="color:red;background-color:#f7f7eb;">非报备价格</th><th width="80" style="color:red;background-color:#f7f7eb; ">报价备注</th><th width="80" style="color:red;">跟进人</th></tr></thead>'
+        sList +='<td><textarea style="width:100%;" id="cremark_'+customer_id+'" value="'+cremark+'">'+cremark+'</textarea></td>'
+        sList += '<td><span id="is_check_'+customer_id+'"><input '+is_is_check+' type="radio" value="1"  class="is_check" name="is_check'+customer_id+'" customer_id="'+customer_id+'"  id="is_check'+customer_id+'"/>是 <input  '+no_is_check+' type="radio" class="is_check" customer_id="'+customer_id+'"  value="0"  name="is_check'+customer_id+'" id="is_check'+customer_id+'"/>否</span></td>'
+        sList+='<td><span style="'+is_btype_id_css+'background-color:#d9eef9; padding:3px;" class="sp_btype" id="sp_btype_'+customer_id+'"><input  '+is_is_check+'  type="radio" customer_id="'+customer_id+'"  name="btype_id'+customer_id+'" id="btype_id'+customer_id+'" btype_id_name="核定" value="1"/>核定  <input   '+no_btype_id+'  customer_id="'+customer_id+'"  type="radio" name="btype_id'+customer_id+'" id="btype_id'+customer_id+'" btype_id_name="查账" value="0"/>查账</span></td>'
+        ss_num_html=""
+        if(_ss_num!=undefined){
+            ss_num_html="value='"+_ss_num+"'"
+
+        }
+        income_html=""
+        if(_income!=undefined){
+            income_html="value='"+_income+"'"
+        }
+        g_price_html=""
+        if(g_price!=undefined){
+            g_price_html="value='"+g_price+"'"
+        }
+        no_price_html=""
+        if(g_price!=undefined){
+            no_price_html="value='"+no_price+"'"
+        }
+        ass_uid_name_html=""
+        if(ass_uid_name!=undefined){
+            ass_uid_name_html="value='"+ass_uid_name+"'"
+        }
+        price_remark_html = ""
+        if(price_remark!=undefined){
+            price_remark_html="value='"+price_remark+"'"
+        }
+
+        sList += '<td><input  '+income_html+'  class="income" type="text" placeholder="收入金额" id="income'+customer_id+'" name="income'+customer_id+'" customer_id="'+customer_id+'"  style="width:80px;"/></td>'
+        sList +='<td ><input '+ss_num_html+' type="text" placeholder="社保人数" id="ss_num'+customer_id+'" name="ss_num'+customer_id+'" style="width:80px;" /></td>'
+
+         sList +='<td style="background-color:#f7f7eb;" ><input '+g_price_html+' type="text"  {%if role!="8" or params["state"] <1%} disabled {%end%} placeholder="报备价格" id="g_price'+customer_id+'" name="g_price'+customer_id+'" style="width:80px;" /></td>'
+        sList +='<td style="background-color:#f7f7eb;" ><input '+no_price_html+' type="text"  {%if role!="8" or params["state"] <1 %} disabled {%end%} placeholder="非报备价格" id="no_price'+customer_id+'" name="no_price'+customer_id+'" style="width:80px;" /></td>'
+          sList +='<td style="background-color:#f7f7eb;" ><input '+price_remark_html+' type="text"  {%if role!="8" or params["state"] <1 %} disabled {%end%} placeholder="报价备注" id="price_remark'+customer_id+'" name="price_remark'+customer_id+'" style="width:160px;" /></td>'
+
+    sList +='<td ><input '+ass_uid_name_html+' data-provide="typeahead" class="ass_uid_name" type="text"  {%if role!="8" or params["state"] <2 %} disabled {%end%} placeholder="跟进人" id="ass_uid_name'+customer_id+'" name="ass_uid_name'+customer_id+'" style="width:60px;" /></td>'
+
+
+
+
+          sList += '</table></td></tr>'
+
+
+
+        return sList
+    }
+
+
+
+
+ $(document).on("click", ".curr_change_kj",function(){
+            start_title = $(this).attr("start_title")
+            $("#start_title").text(start_title)
+            clearly_id = $(this).attr('clearly_id')
+
+            company =$(this).attr("company")
+            customer_id =$(this).attr("customer_id")
+
+            is_general = $(this).attr("is_general")
+            var lk = $(this).attr("lk")
+            data_check = $(this).attr("data_check")
+            data_company=$(this).attr("data_company")
+            is_check = $(this).attr("is_check")
+            btype_id = $(this).attr("btype_id")
+            var _ss_num = $(this).attr('ss_num')
+
+            var _income = $(this).attr("income")
+            var g_price = $(this).attr("g_price")
+            var no_price = $(this).attr("no_price")
+
+            var reg_date = $(this).attr("reg_date")
+            var cremark = $(this).attr("cremark")
+            var ass_uid_name =  $(this).attr("ass_uid_name")
+            var price_remark = $(this).attr("price_remark")
+
+            shtml = genHtml(customer_id,company,is_general,clearly_id,data_company,
+            data_check,is_check,btype_id,_ss_num,_income,lk,g_price,reg_date,cremark,
+            no_price,ass_uid_name,price_remark)
+
+            $("#start_table").html(shtml)
+            lay('.reg_date').each(function(){
+            laydate.render({
+                elem: this
+                ,trigger: 'click'
+            });
+            });
+            $(".ass_uid_name").typeahead({
+                 source:[{%for item in t_user%}"{{item.name}}",{%end%}]
+
+            });
+
+      //   $("#lk_td_"+customer_id).append(bsList)
+           $('#started_modal').modal('show')
+            $("#btn_savemsg").attr("clearly_id",clearly_id)
+            if(clearly_id > 0){
+
+
+            $.get("/clearly?tag=ass_remark",{"clearly_id":clearly_id},function(res){
+                    $("#ass_remark_list").html(res)
+
+            })
+ }else{
+     $("#ass_remark_list_div").hide()
+ }
+
+            //.tge("&clearly_id="+clearly_id)
+    })
+            $("#group_ass_name").typeahead({
+
+                 source:[{%for item in t_user%}"{{item.name}}",{%end%}]
+
+            });
+
+
+$(document).on("click", ".is_check",function(){
+    is_check = $(this).val()
+    customer_id=$(this).attr("customer_id")
+
+    if(is_check==1){
+        $("#sp_btype_"+customer_id).show()
+
+    }else{
+        $("#sp_btype_"+customer_id).hide()
+    }
+})
+
+
+$("#btn_savemsg").on("click",function(){
+    clearly_id = $(this).attr("clearly_id")
+    ass_msg=$("#ass_msg").val()
+    if(ass_msg==""){
+            $("#ass_msg").focus()
+            alert('跟进记录不能为空哦.')
+    }else{
+        $.post("/clearly?tag=ass_msg",{"_xsrf":_xsrf,"clearly_id":clearly_id,"ass_msg":ass_msg,"ctype":"跟进记录"},function(result){
+
+            $.get("/clearly?tag=ass_remark",{"clearly_id":clearly_id},function(res){
+                    $("#ass_remark_list").html(res)
+
+            })
+
+        })
+
+    }
+
+})
+
+
+
+$(document).on("click", ".rb_company",function(){
+    customer_id=$(this).attr("customer_id")
+    data_check = $(this).attr("value")
+
+    if(data_check==1){
+         $("#data_company_"+customer_id).show()
+
+
+    }else{
+        $("#data_company_"+customer_id).hide()
+
+
+    }
+})
+
+$(document).on("click", ".lk_type",function(){
+
+    lk_type_id = $(this).val()
+    customer_id=$(this).attr("customer_id")
+
+    if(lk_type_id==3){
+        $("#lk_remark_"+customer_id).show()
+
+    }else{
+        $("#lk_remark_"+customer_id).hide()
+    }
+
+})
+$(document).on("click", ".add_linkman",function(){
+    lk_num= lk_num+1
+    customer_id=$(this).attr("customer_id")
+    sLists  = ""
+    sLists +='<span id="lkman_'+customer_id+"_"+lk_num+'"><a class ="minus_linkman" customer_id="'+customer_id+"_"+lk_num+'" href="javascript:void(0)" style="font-size:16px;"><i class="btn-icon-only icon-minus"> </i></a>'
+    sLists+='<input type="text" placeholder="联系人" name="lk_name'+customer_id+'" id="lk_name'+customer_id+"_"+lk_num+'" value=""  style="width:20%; margin-bottom:9px;" />'
+    sLists+='<input type="text" placeholder="联系电话" name="lk_tel'+customer_id+'" id="lk_tel'+customer_id+"_"+lk_num+'" value=""  style="width:25%; margin-bottom:9px;" />'
+    sLists+='<input type="text" placeholder="联系人职务" id="lk_remark_'+customer_id+"_"+lk_num+'" name="lk_remark_'+customer_id+"_"+lk_num+'" value=""  style="width:18%;margin-bottom:9px;" />&nbsp;'
+    sLists+='<input type="radio" id="gender_'+customer_id+"_"+lk_num+'" name="gender_'+customer_id+"_"+lk_num+'" value="1" checked="checked" style="margin-bottom:9px;" > 先生 '
+    sLists+='<input type="radio" id="gender_'+customer_id+"_"+lk_num+'" name="gender_'+customer_id+"_"+lk_num+'" value="0" style="margin-bottom:9px;" > 女士 '
+    sLists+='</span>'
+
+
+
+  //  <a class ="minus_linkman" customer_id="'+customer_id+"_"+lk_num+'" href="javascript:void(0)" style="font-size:16px;"><i class="btn-icon-only icon-minus"> </i></a>'
+  //  sLists +='<input type="text" placeholder="联系人" name="lk_name" value=""  style="width:28%; margin-bottom:9px;" /><input type="text" placeholder="联系电话" name="lk_tel" value=""  style="width:28%; margin-bottom:9px;" /><input type="text" placeholder="联系人职务" id="lk_remark_'+customer_id+'" name="lk_remark_'+customer_id+'" value=""  style="width:28%;margin-bottom:9px;" /></span>'
+
+   $("#lk_td_"+customer_id).append(sLists)
+
+})
+$(document).on("click", ".minus_linkman",function(){
+       lk_num= lk_num-1
+
+    customer_id=$(this).attr("customer_id")
+    $("#lkman_"+customer_id).remove()
+
+})
+
+
+
+   $(".curr_change_jd").on("click",function(){
+       clearly_id=$(this).attr("clearly_id")
+       $.post("/clearly?tag=ass_confirm",{'_xsrf': _xsrf ,"clearly_id":clearly_id},function(result){
+
+       location.reload()
+       })
+   })
+
+    $('.change_kj').on('click',function () {
+        action = $(this).attr("action")
+
+         var sList = "";
+
+        $('input[type=checkbox][name=check_customer]:checked').each(function () {
+                company =$(this).attr("company")
+                customer_id =$(this).val()
+                is_general = $(this).attr("is_general")
+                sList +=genHtml(customer_id,company,is_general)
+        });
+
+
+        if(sList==""){
+             $("#start_table").html("<tr style='background-color:red;'><td colspan='4'>当前没有选择公司哦.</td></tr>")
+        }else{
+             $("#start_table").html(sList)
+        }
+        $('#started_modal').modal('show')
+
+     })
+
+    $('.change_kj_price').on('click',function () {
+        lk_json = [];
+        $('input[type=checkbox][name=check_customer]:checked').each(function () {
+                clearly_id =$(this).attr("clearly_id")
+                lk_json.push({clearly_id:clearly_id})
+        });
+
+
+        if(lk_json==""){
+            alert("当前没有选择要操作的公司哦.")
+        }else{
+             $("#btn_save_group_price").attr("clearly_ids",JSON.stringify(lk_json))
+                $('#price_modal').modal('show')
+        }
+
+
+     })
+
+    $('.change_kj_price_modify').on('click',function () {
+            no_price = $(this).attr('no_price')
+            g_price = $(this).attr("g_price")
+            price_remark = $(this).attr("price_remark")
+            clearly_id = $(this).attr("clearly_id")
+            $("#btn_save_one_price").attr("clearly_id",clearly_id)
+            $("#one_g_price").val(g_price)
+            $("#one_no_price").val(no_price)
+            $("#one_price_remark").val(price_remark)
+
+            $('#price_one_modal').modal('show')
+     })
+
+
+
+
+    $('.change_kj_ass').on('click',function () {
+        lk_json = [];
+        $('input[type=checkbox][name=check_customer]:checked').each(function () {
+                clearly_id =$(this).attr("clearly_id")
+                lk_json.push({clearly_id:clearly_id})
+        });
+
+        if(lk_json==""){
+            alert("当前没有选择要操作的公司哦.")
+        }else{
+             $("#btn_save_group_ass").attr("clearly_ids",JSON.stringify(lk_json))
+                $('#ass_modal').modal('show')
+        }
+     })
+
+
+
+
+    $('.change_kj_ass_modify').on('click',function () {
+        ass_uid_name = $(this).attr('ass_uid_name')
+        company = $(this).attr('company')
+        $("#ass_name_modify").val(ass_uid_name)
+        clearly_id = $(this).attr('clearly_id')
+        $("#btn_save_ass_modify").attr("clearly_id",clearly_id)
+
+        $("#ass_modify_title").text(company+"修改跟进人")
+             $('#ass_modal_modify').modal('show')
+
+     })
+
+
+
+   $("#btn_save_one_price").on("click",function(){
+            one_g_price = $("#one_g_price").val()
+            one_no_price =   $("#one_no_price").val()
+            one_price_remark = $("#one_price_remark").val()
+            clearly_id=$(this).attr("clearly_id")
+             if(one_g_price !=""  &&  $.isNumeric(one_g_price)==false){
+
+                    $("#one_g_price").focus()
+                    alert("报备价金额要为数值哦。")
+                     return false
+                }else if(one_g_price==""){
+                    $("#one_no_price").focus()
+                    alert("报备价金额要为数值,不能为空哦。")
+                     return false
+                }
+
+            else if(one_no_price !=""  &&  $.isNumeric(one_no_price)==false){
+
+                        $("#one_no_price").focus()
+                        alert("非报备价格金额要为数值哦。")
+                        return false
+            }else if(one_no_price==""){
+                              $("#one_no_price").focus()
+                        alert("非报备价格金额要为数值,不能为空哦。")
+                        return false
+            }
+           else{
+
+                $.post("/clearly?tag=ass_price",{
+                    '_xsrf': _xsrf ,
+                    "clearly_id":clearly_id,
+                    "one_g_price":one_g_price,
+                    "one_no_price":one_no_price,
+                    "one_price_remark":one_price_remark
+                },
+                function(result){
+                location.reload()
+                })
+
+
+           }
+
+
+
+
+   })
+
+
+
+    $("#btn_save_group_price").on("click",function(){
+        clearly_ids = $(this).attr("clearly_ids")
+        group_g_price = $("#group_g_price").val()
+        group_no_price = $("#group_no_price").val()
+        group_price_remark =  $("#group_price_remark").val()
+
+        if(group_g_price !=""  &&  $.isNumeric(group_g_price)==false){
+
+                    $("#group_g_price").focus()
+                    alert("报备价金额要为数值哦。")
+                     return false
+                }else if(group_g_price==""){
+                    $("#group_g_price").focus()
+                    alert("报备价金额要为数值,不能为空哦。")
+                     return false
+                }
+
+            else if(group_no_price !=""  &&  $.isNumeric(group_no_price)==false){
+
+                        $("#group_no_price").focus()
+                        alert("非报备价格金额要为数值哦。")
+                        return false
+            }else if(group_no_price==""){
+                              $("#group_no_price").focus()
+                        alert("非报备价格金额要为数值,不能为空哦。")
+                        return false
+            }
+else{
+ if(clearly_ids!=""){
+       var formData = new FormData();
+          formData.append('body',  clearly_ids);
+          formData.append('group_g_price',group_g_price);
+          formData.append('group_no_price',group_no_price);
+          formData.append('group_price_remark',group_price_remark);
+
+          formData.append('_xsrf', _xsrf );
+          $.ajax({
+                url : '/clearly?tag=group_price',
+                type : 'POST',
+                data : formData,
+                contentType: 'application/json; charset=utf-8',
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success : function(data) {
+                  console.log(data)
+                  if(data=="0"){
+                    location.reload()
+                  }else{
+
+                    alert(data)
+                  }
+
+                }
+          });
+        }
+
+}
+
+
+
+
+    })
+
+
+
+   $("#btn_save_ass_modify").on("click",function(){
+        clearly_id = $(this).attr("clearly_id")
+        ass_name= $("#ass_name_modify").val()
+
+            if(ass_name_modify==""){
+                    $("#ass_name_modify").focus()
+                    alert("跟进人,不能为空哦。")
+                    return false
+         }
+        else{
+                $.post("/clearly?tag=ass_one",
+                {"_xsrf":_xsrf,"clearly_id":clearly_id,"ass_name":ass_name,"curr_year":{{curr_year}}},function(result){
+                       if(result==0){
+
+                            location.reload()
+                       }else{
+                            alert(result)
+                       }
+
+
+
+                })
+
+
+        }
+
+
+    })
+
+
+
+
+   $("#btn_save_group_ass").on("click",function(){
+        clearly_ids = $(this).attr("clearly_ids")
+        group_ass_name= $("#group_ass_name").val()
+
+            if(group_ass_name==""){
+                            $("#group_ass_name").focus()
+                    alert("跟进人,不能为空哦。")
+                     return false
+                }
+
+
+
+        if(clearly_ids!=""){
+       var formData = new FormData();
+          formData.append('body',  clearly_ids);
+          formData.append('group_ass_name',group_ass_name);
+          formData.append('curr_year',{{curr_year}});
+
+
+          formData.append('_xsrf', _xsrf );
+          $.ajax({
+                url : '/clearly?tag=group_ass',
+                type : 'POST',
+                data : formData,
+                contentType: 'application/json; charset=utf-8',
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success : function(data) {
+                  console.log(data)
+                  if(data=="0"){
+                    location.reload()
+                  }else{
+
+                    alert(data)
+                  }
+
+                }
+          });
+        }
+
+
+    })
+
+
+
+
+
+    $('#btn_save_kj').on('click',function () {
+        var jsonArr = [];
+        state = {{params["state"]}}
+        $(".income").each(function(){
+                customer_id = $(this).attr("customer_id")
+                lk_json = [];
+                lk_arr_idx=0
+                $("input[name=lk_name"+customer_id+"]").each(function(){
+
+                        lk_name = $(this).val()
+                        lk_tel = $('#lk_tel'+customer_id+"_"+lk_arr_idx).val()
+                        lk_remark = $('#lk_remark_'+customer_id+"_"+lk_arr_idx).val()
+                        lk_gender = $("input[name=gender_"+customer_id+"_"+lk_arr_idx+"]:checked").val()
+
+                        if(lk_name!="" && lk_tel!=""){
+
+                            lk_json.push({name:lk_name,tel:lk_tel,remark:lk_remark,gender:lk_gender})
+                        }
+                        lk_arr_idx = lk_arr_idx+1
+                })
+                if(lk_json==""){
+                    alert("至少添加一个联系人哦")
+                    return false
+                }else{
+
+
+                is_general = $("input[name=is_general_"+customer_id+"]:checked").val()
+
+                income = $(this).val()
+                b_service_money = $.isNumeric(income)
+                is_check = $("input[name=is_check"+customer_id+"]:checked").val()
+                btype_id = $("input[name=btype_id"+customer_id+"]:checked").val()
+                btype_id_name = $("input[name=btype_id"+customer_id+"]:checked").attr("btype_id_name")
+                btn_data_check = $("#btn_data_check"+customer_id).attr("value")
+
+                cremark = $("#cremark_"+customer_id).val()
+
+                company = $("#company_"+customer_id).val()
+               reg_date = $("#reg_date"+customer_id).val()
+
+                rb_company = $("input[name=rb_company"+customer_id+"]:checked").val()
+
+                ss_num = $("#ss_num"+customer_id).val()
+                ass_uid_name =$("#ass_uid_name"+customer_id).val()
+               if(rb_company!=undefined && rb_company==1){
+                    company = $("#data_company_"+customer_id).val()
+               }
+                {%if role=="8"%}
+                    g_price = $("#g_price"+customer_id).val()
+                    no_price = $("#no_price"+customer_id).val()
+                    price_remark =  $("#price_remark"+customer_id).val()
+                {%end%}
+                if(rb_company==undefined){
+                    $("input[name=rb_company"+customer_id+"]").focus()
+                    alert("请核对公司名是否正确.")
+                     return false
+                }
+
+                else if (company==""){
+                    $("input[name=data_company_"+customer_id+"]").focus()
+                    alert("正确公司名不能为空哦!")
+                     return false
+                }
+                else if (reg_date==""){
+                    $("input[name=reg_date"+customer_id+"]").focus()
+                    alert("执照日期不能为空哦!")
+                     return false
+                }
+
+
+                else if(is_check==undefined){
+                    $("input[name=is_check"+customer_id+"]").focus()
+                    alert("已核对税种要选择哦.")
+                     return false
+                }
+                else if(btype_id==undefined && is_check==1){
+                   $("input[name=btype_id"+customer_id+"]").focus()
+                    alert("核定/查账要选择哦.")
+                     return false
+                }
+                else if(btn_data_check==0){
+
+                  $("#btn_data_check"+customer_id).focus()
+                    alert("要确认效对公司名/一般纳税人的数据是否正确哦。")
+                     return false
+                }
+                else if(income !=""  && b_service_money==false){
+
+                    $("#income"+customer_id).focus()
+                    alert("当年收入金额要为数值哦。")
+                     return false
+                }else if(income==""){
+                             $("#income"+customer_id).focus()
+                    alert("当年收入金额要为数值,不能为空哦。")
+                     return false
+                }
+                {%if role=="8" and  int(params["state"]) >= 1%}
+                 else if(g_price !=""  &&  $.isNumeric(g_price)==false){
+
+                    $("#g_price"+customer_id).focus()
+                    alert("报备价金额要为数值哦。")
+                     return false
+                }else if(g_price==""){
+                             $("#g_price"+customer_id).focus()
+                    alert("报备价金额要为数值,不能为空哦。")
+                     return false
+                }
+
+            else if(no_price !=""  &&  $.isNumeric(no_price)==false){
+
+                        $("#no_price"+customer_id).focus()
+                        alert("非报备价格金额要为数值哦。")
+                        return false
+                    }else if(no_price==""){
+                                $("#no_price"+customer_id).focus()
+                        alert("非报备价格金额要为数值,不能为空哦。")
+                        return false
+                    }
+
+
+                {%elif role=="8" and params["state"]>=2%}
+                 else if(ass_uid_name==""){
+                        $("#ass_uid_name"+customer_id).focus()
+                        alert("跟进人,不能为空哦。")
+                        return false
+                }
+                {%end%}
+
+
+
+                else{
+
+                    console.log("..."+ass_uid_name)
+                    jsonArr.push({
+                        state:state,
+                        reg_date:reg_date,
+                        income:income,
+                        is_check:is_check,
+                        customer_id:customer_id,
+                        btype_id:btype_id,
+                        btype_id_name:btype_id_name,
+                        data_company:company,
+                        ss_num:ss_num,
+                        lkman:lk_json,
+                        is_general:is_general,
+                        data_check:rb_company,
+                        cremark:cremark
+                         {%if role=="8"  %}
+                        ,price_remark:price_remark
+                        ,g_price:g_price
+                         ,no_price:no_price
+                         {%if params["state"] >=2%}
+                        ,ass_uid_name:ass_uid_name
+                         {%end%}
+
+                         {%end%}
+                    });
+                }
+
+                 }
+
+
+            })
+
+
+        if(jsonArr!=""){
+       var formData = new FormData();
+          formData.append('body',  JSON.stringify(jsonArr));
+          formData.append('curr_year',{{curr_year}});
+          formData.append('_xsrf', _xsrf );
+          $.ajax({
+                url : '/clearly?tag=add',
+                type : 'POST',
+                data : formData,
+                contentType: 'application/json; charset=utf-8',
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success : function(data) {
+                  console.log(data)
+                  if(data=="0"){
+                    location.reload()
+                  }else{
+
+                    alert(data)
+                  }
+
+                }
+          });
+        }
+
+
+
+     })
+
+
+
+});
+
+</script>
+
+
+    {%end%}

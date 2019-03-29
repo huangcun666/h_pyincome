@@ -2,10 +2,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">应收管理
+        <li class="breadcrumb-item g1">应收管理
         </li>
 
       </ol>
@@ -16,8 +16,8 @@
             <div class="table-responsive">
 
                 {%if customers%}
-            <table class="table table-bordered" id="dataTable"  cellspacing="0">
-            <thead style="background-color:#000;color:#fff">
+            <table class="table table-bordered fayetable" id="dataTable"  cellspacing="0">
+            <thead class="table_class">
                 <tr>
                     <th>公司名称</th>
                     <th width="110">总服务费</th>
@@ -26,7 +26,7 @@
                     <th width="110">客服会计</th>
                     <th width="100"></th>
                 </tr>
-                <tbody>
+                <tbody class="fayetbody">
                     {%for customer in customers%}
                                    <tr>
                                        <td>{{customer.customer_company}}</td>
@@ -36,7 +36,7 @@
                                        <td>{{(customer.all_income-customer.dd)}}</td>
                  <td>{{(customer.acc_uid_name)}}</td>
                                        
-                                       <td><a class="btn btn-info"
+                                       <td><a class="btn btn-primary btn-sm"
                                         href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}&to_tag=finance_tab">查看</a></td>
                
                                     

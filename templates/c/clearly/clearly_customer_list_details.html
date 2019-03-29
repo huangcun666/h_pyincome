@@ -1,0 +1,83 @@
+
+        <table class="table">
+            <thead>
+            <tr>
+                <td width="100">当前业务</td><td width="300">跟进状态</td><td  width="100">业务金额</td><td  width="100">确认单编号</td><td>备注</td><td width="200"></td>
+            </tr>
+            </thead>
+            <tbody>
+{%for item in t_customer_clearly_milepost%}
+<tr>
+    <td>{{item.mbtype_id_name}}</td><td>      <div class="control-group">
+            <div class="controls">
+                    <input type="radio" value="1" {%if item.result_id==1%} checked="checked"{%end%}  name="result_{{item.mbtype_id}}" title="办结">办结
+
+            <input type="radio" value="3" {%if item.result_id==3%} checked="checked"{%end%}  name="result_{{item.mbtype_id}}" title="无需处理">该无需处理
+
+
+            </div>
+        </div></td>
+
+        <td>
+        <input type="text" value="{%if item.amount%}{{item.amount}}{%else%}0{%end%}"  name="amount_{{item.mbtype_id}}" placeholder="收款金额" style="width:100px;">
+        </td>
+                            <td>
+        <input type="text" value="{%if item.project_id%}{{item.project_id}}{%end%}" name="project_id_{{item.mbtype_id}}" placeholder="确认单编号"  style="width:60px;">
+{%if item.project_id%}<a target="_blank" href="project?tag=show&id={{item.project_id}}&from_mod=clearly"><i class="icon-large icon-paper-clip
+"></i></a>{%end%}
+
+        </td>
+        <td>
+            <div class="controls">
+            <input type="text" value="{%if item.result_remark%}{{item.result_remark}}{%end%}" id="result_remark_{{item.mbtype_id}}" name="result_remark_{{item.mbtype_id}}" placeholder="备注" style=" width: 401px;">
+            </div>
+        </td>
+        <td style="{%if item.result_id==1%}background-color:#fcf8e3;{%end%}">
+
+           {%if  item.ass_end_confirm%}
+        1.申请{%if item.result_id==3%}
+        <font color='red'>(无需处理)</font>
+        {%else%}办结{%end%}({{item.ass_uid_name}}){{item.ass_end_confirm}}
+        {%end%}
+
+            {%if  item.ass_leader_uid_at%}<br/>
+        2.确认办结({{item.ass_leader_uid_name}}){{item.ass_leader_uid_at}}<br/>
+        {%end%}
+        {%if  item.finance_uid_at%}
+        3.财务审核({{item.finance_uid_name}}){{item.finance_uid_at}}<br/>
+        {%end%}
+
+
+
+
+        {%if item.mstate_id==4 and role=="8" and state=="4"%}
+
+        <button clearly_id="{{item.clearly_id}}" detail_id="{{item.id}}"
+        action="confirm_end"
+        class="btn btn-primary btn_save_finish" style="margin-bottom:9px;"
+         btype_id="{{item.mbtype_id}}" btype_id_name="{{item.mbtype_id_name}}">确认办结</button>
+
+        {%elif  item.mstate_id==5 and (role=="8" or role=="5" or role=="3") and state=="5" %}
+            <button clearly_id="{{item.clearly_id}}" detail_id="{{item.id}}"
+        action="finance_end"
+        class="btn btn-primary btn_save_finish" style="margin-bottom:9px;"
+         btype_id="{{item.mbtype_id}}" btype_id_name="{{item.mbtype_id_name}}">财务确认</button>
+
+
+        {%elif   state=="3" and item.mstate_id==3 and item.result_id!=1%}
+        <button clearly_id="{{item.clearly_id}}" detail_id="{{item.id}}"
+        class="btn btn-primary btn_save_finish" style="margin-bottom:9px;"
+        action="set_end"
+         btype_id="{{item.mbtype_id}}" btype_id_name="{{item.mbtype_id_name}}">提交审核</button>
+         {%end%}
+
+
+
+
+        </td>
+</tr>
+{%end%}
+
+
+
+ <tbody></table>

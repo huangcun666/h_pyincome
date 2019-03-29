@@ -2,11 +2,11 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">资料交接 
-            {%if launch%}<a class="btn btn-info btn-sm a_add_trans" href="javascript:void(0)">新建交接</a>{%end%}
+        <li class="breadcrumb-item g1">资料交接 </li><li class="g1 g1-left">
+            {%if launch%}<a class="btn btn-primary btn-sm a_add_trans" href="javascript:void(0)">新建交接</a>{%end%}
         </li>
 
       </ol>
@@ -21,7 +21,7 @@
 </nav>
 
 {%if not launch%}
-<form class="search-box">
+<form class="search-box pm2">
   <table>
 
   <tbody>
@@ -34,7 +34,7 @@
       </td>
       <td>
         <input type="hidden" name="tag" value="{{tag}}"/>
-        <input type="submit" value="检索" class="btn btn-info">
+        <input type="submit" value="检索" class="btn btn-primary btn-sm">
       </td>
       </tr>
   </tbody>
@@ -42,8 +42,8 @@
 </form>
 {%end%}
 <div class="table-responsive">
-                  <table class="table table-bordered" id="dataTable">
-                    <thead style="background-color:#000;color:#fff ; font-size:12px;">
+                  <table class="table table-bordered fayetable" id="dataTable">
+                    <thead class="table_class">
                         <tr>
                      
                             <th width="80">订单编号</th>
@@ -56,7 +56,7 @@
    <th width="80"></th>
                         </tr>
                     </thead>
-                    <tbody style=" font-size:12px;">
+                    <tbody class="fayetbody" style=" font-size:12px;">
                     {%if t_projects%}
                         {%for item in t_projects%}
                         
@@ -91,7 +91,7 @@
                               {%if launch%}
                               <a href="/project?tag=t_company{%if item.project_id%}&project_id={{item.project_id}}{%end%}&company={{item.customer_company}}{%if item.company_code%}&company_code={{item.company_code}}{%end%}" class="btn-primary btn">详细</a>
                               {%else%}
-                              <a href="/project?tag=projects_transition_details&id={{item.pt_id}}&project_id={{item.project_id}}" class="btn-info btn">详细</a>
+                              <a href="/project?tag=projects_transition_details&id={{item.pt_id}}&project_id={{item.project_id}}" class="btn-primary btn-sm btn">详细</a>
                               {%end%}
                             </td>
 
@@ -169,7 +169,7 @@
               <tr>
                   <td><input type="text" class="form-control" id="company" placeholder="请输入公司名称"/></td>
                   <td><input type="text" class="form-control" id="company_code" placeholder="请输入信用代码"/></td>
-                  <td><a class="btn btn-info" href="javascript:void(0);" id="search_transition">查询</a></td>
+                  <td><a class="btn btn-primary btn-sm" href="javascript:void(0);" id="search_transition">查询</a></td>
               </tr>
               </table>
               </form>
@@ -336,7 +336,7 @@ $('#search_transition').on('click',function () {
         $('#search_result').append(text)
       }
       else{
-        $('#search_result').append('<br><span>没找到~</span><a class="btn btn-info" href="javascript:void(0);" id="">创建</a>')
+        $('#search_result').append('<br><span>没找到~</span><a class="btn btn-primary btn-sm" href="javascript:void(0);" id="">创建</a>')
       }
     }
   )

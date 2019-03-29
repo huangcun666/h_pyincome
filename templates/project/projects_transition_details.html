@@ -2,10 +2,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">资料交接明细
+        <li class="breadcrumb-item g1">资料交接明细
         </li>
 
       </ol>
@@ -30,7 +30,7 @@
 <li class="list-group-item" style="background-color:#D6EAF8;"><h4>确认状态:</h4><span class="alert alert-info">已确认 {{t_projects.rec_by_uid_at}} {{t_projects.uid_name}}</span></li>
 {%end%}
 {% if not t_projects.rec_by_uid_at%}
-<li class="list-group-item"><button class="btn btn-info" id="confirm_btn" rec_by_uid_at="{%if t_projects.rec_by_uid_at%}{{t_projects.rec_by_uid_at}}{%end%}">
+<li class="list-group-item"><button class="btn btn-primary btn-sm" id="confirm_btn" rec_by_uid_at="{%if t_projects.rec_by_uid_at%}{{t_projects.rec_by_uid_at}}{%end%}">
   待确认</button></li>
   {%end%}
 </ul>

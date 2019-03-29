@@ -182,7 +182,7 @@
                                             </div>
                                             {%if t_projects%}
                                             <div class="control-group">
-                                                <label class="control-label">同名公司</label>
+                                                <label class="control-label">历史交易记录</label>
                                                 <div class="controls" id='show_projects'>
                                                     {%if len(t_projects)>5%}
                                                     {%for item in t_projects[:-1]%}
@@ -200,15 +200,34 @@
                                             <div class="control-group">
                                                 <label class="control-label" for="is_general">客户类型
 </label>
-                                                <div class="controls">
+<div class="controls">
+      <div style="border:none;display: inline;">
+{%for item in t_type_new_parents%}
+<input  {%if item.order==2%}checked{%end%} type="radio" name="tag_parent_id" value="{{item.order}}" title="{{item.name}}"/>{{item.name}} 
+{%end%}
+      </div>
+<div id='tag_box' style="border:none;" hidden>
+    &nbsp;&nbsp;(
+{%for item in t_type_new%}
+<input  type="radio" name="tag_id" value="{{item.order_int}}" title="{{item.name}}" />{%if item.parent_id==1%}{{item.name}}{%end%}
+{%end%}
+  )
+  <span id="msg_tag" style="color:red"></span>
+</div>
+
+<input  type="checkbox" name='is_building' value="1" >楼盘
+<input  type="checkbox" name='is_clearly' value="1">汇算清缴
+<input  type="checkbox" name='is_year' value="1">工商年检
+
+                                                <!-- <div class="controls">
                                                 {%for item in t_customer_type%}
                                                     <input type="checkbox" name="customer_type" value="{{item.id}}" title="{{item.name}}"/> {{item.name}}
                                                 {%end%}
                                                     <p id="msg_t_customer_type" class="help-block" style="color:red"></p>
-                                                </div>
+                                                </div> -->
                                                 <!-- /controls -->
                                             </div>
-
+                                        </div>
                                             <div class="control-group">
                                                 <label class="control-label" for="is_general">付款方式
 </label>
@@ -504,7 +523,7 @@ function intToFloat(val){
             var reg_date = $("#reg_date").val()
             var end_date = $("#end_date").val()
 
-            var company_reguid= $("#company_reguid").val()
+            var company_reguid= $("#company_reguid").val().replace(/\s+/g,"").toUpperCase()
             var industry_name = $("#industry_name").val()
             var is_general = $("input[name=is_general]:checked").val()
             var credit_rating = $("input[name=credit_rating]:checked").val()
@@ -522,6 +541,10 @@ function intToFloat(val){
             var  pay_typeid_name =$("input[name='pay_type_id']:checked").attr("pay_typeid_name")
             var  service_amount = $("#service_amount").val()
             var  book_amount = $("#book_amount").val()
+            tag_parent_id=$('input[name=tag_parent_id]:checked').val()
+            tag_parent_name=$('input[name=tag_parent_id]:checked').attr('title')
+            tag_id=$("input[name=tag_id]:checked").val()
+            tag_name=$("input[name=tag_id]:checked").attr('title')
 
             $("input[name=customer_type]").each(function(){
                  if (this.checked) {
@@ -539,7 +562,14 @@ function intToFloat(val){
             var acc_uid_name = $("#acc_uid_name").val()
             var zone = $("#zone").val()
             var city = $("#city").val()
-            
+            var is_building=$('input[name=is_building]:checked').val()
+            var is_clearly=$('input[name=is_clearly]:checked').val()
+            var is_year=$('input[name=is_year]:checked').val()
+            if(tag_parent_id=='2'){
+            tag_id=$("input[name=tag_id][value=11]").val()
+            tag_name=$("input[name=tag_id][value=11]").attr('title')
+            }
+    
             $("#msg_company").text("")
             $("#msg_is_general").text("")
             $("#msg_credit_rating").text("")
@@ -563,6 +593,12 @@ function intToFloat(val){
                  $("#msg_customer_type").text("客户评级要选哦。")
                  $("input[name=customer_type]:first").focus()
             }*/
+            else if((tag_id==undefined && tag_parent_id=='1')  || tag_parent_id==undefined) {
+                $("#msg_tag").text('未选择标签')
+                }
+                else if(company_reguid!='' && company_reguid.length!=18){
+      alert('信用代码长度需要为18位')
+    }
             else{
                 
                 $.post("/customer?tag=add",{
@@ -573,6 +609,13 @@ function intToFloat(val){
                     "pay_typeid_name":pay_typeid_name,
                     "zone":zone,
                     "city":city,
+                    "is_building":is_building,
+                    "is_clearly":is_clearly,
+                    "is_year":is_year,
+                    'tag_parent_id':tag_parent_id,
+                    'tag_parent_name':tag_parent_name,
+                    'tag_id':tag_id,
+                    'tag_name':tag_name,
                     "acc_uid_name":acc_uid_name,
                     "company_reguid":company_reguid,
                     "industry_name":industry_name,
@@ -640,6 +683,15 @@ $('body').on('click','#more_projects',function () {
         
      })
  })
+ $('input[name=tag_parent_id]').on('change',function () { 
+    if($(this).val()=='1'){
+     $("#tag_box").css('display','inline');
+      $("#tag_box").show()
+    }else if($(this).val()=='2'){
+        $("#tag_box").css('display','none');
+      $("#tag_box").hide()
+    }
+   })
 
     })
 

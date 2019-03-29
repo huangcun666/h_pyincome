@@ -1,4 +1,4 @@
-{% extends "../base.html" %} {%block title%}到款统计{%end%} {% block body %}
+{% extends "../base.html" %} {%block title%}催款统计{%end%} {% block body %}
 
 <style>
 
@@ -6,17 +6,28 @@
 
 </style>
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         主面板
     </li>
-    <li class="breadcrumb-item active">催款统计
-     
+    <li class="breadcrumb-item g1">催款统计
+        <a href='/statis?tag=customer_exchange'  {%if not show_tag%}class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;"{%end%}>催款统计</a>
+        <a href='/statis?tag=customer_exchange&show_tag=1'  {%if show_tag=='1'%}class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;"{%end%}>催款工作量</a>
     </li>
 </ol>
 <div class="table-responsive">
 
-        <table class="table table-bordered"  >
-                <thead class="thead-dark">
+        <table class="table table-bordered fayetable">
+                <thead class="table_class">
+                    {%if show_tag=='1'%}
+                    <tr class="active">
+                    <th width='150'>催款创建时间</th>
+                    <th width='250'>催款内容</th>
+                    <th width="150">公司名称</th>
+                    <th width='100'>催款人</th>
+                    <th width='100'>销售顾问</th>
+                    <th width='100'>客服顾问</th>
+                    </tr>
+                    {%else%}
                     <tr class="active">
                         <th width="120">日期</th>
                         <th width="100">合计</th>
@@ -31,8 +42,21 @@
                         {%end%}
                     
                         </tr>
+                    {%end%}
                 </thead>
                 <tbody>
+                    {%if show_tag=='1'%}
+                    {%for item in t_customer_exchange%}
+                    <tr>
+                        <td>{{item.created_at}}</td>
+                        <td>{{item.msg}}</td>
+                        <td>{{item.company}}</td>
+                        <td>{{item.uid_name}}</td>
+                        <td>{%if item.sale_man%}{{item.sale_man}}{%elif item.sale_man1%}{{item.sale_man1}}{%end%}</td>
+                        <td>{%if item.kf_man%}{{item.kf_man}}{%elif item.kf_man1%}{{item.kf_man1}}{%end%}</td>
+                    </tr>
+                    {%end%}
+                    {%else%}
                     <tr style="background-color:bisque;">
                         <td style="background-color: #efefef;">合计</td>
                         <td style="background-color: #efefef;">{{count.every_gc.split(',')[-1].split('|')[1]}}</td>
@@ -64,6 +88,7 @@
                         {%end%}
                     </tr>
                     {%end%}
+                    {%end%}
                 </tbody>
                        
             </table>
@@ -73,16 +98,16 @@
                         <ul class="pagination">
                             {% if pagination.has_prev %}
                             <li class="paginate_button page-item previous " id="dataTable_previous">
-                                <a href="/statis?tag=customer_exchange&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                <a href="/statis?tag=customer_exchange{%if show_tag%}&show_tag={{show_tag}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li class="paginate_button page-item ">
-                                <a href="/statis?tag=customer_exchange&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                <a href="/statis?tag=customer_exchange{%if show_tag%}&show_tag={{show_tag}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                             {% else %}
                             <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                             {% end %} {% else %}
                             <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
                             {% end %} {%end %} {% if pagination.has_next %}
                             <li class="paginate_button page-item next" id="dataTable_next">
-                            <a href="/statis?tag=customer_exchange&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                            <a href="/statis?tag=customer_exchange{%if show_tag%}&show_tag={{show_tag}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>

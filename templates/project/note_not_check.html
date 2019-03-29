@@ -1,28 +1,27 @@
 {% extends "../base.html" %} {%block title%}资料交接{%end%} {% block body %}
-
+<style>
+.badge{
+    font-size:100%;
+}
+</style>
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">审核事项
+        <li class="breadcrumb-item g1">审核事项
+        </li><li class="g1 g1-left">
             {%if not_check%}
-            <a class="btn btn-sm btn-info " href="/project?tag=note_check">返回</a>
+            <a class="btn btn-sm btn-primary btn-sm" href="/project?tag=note_check">返回</a>
             {%else%}
-            <a class="btn btn-sm btn-info " href="/project?tag=note_check&is_check=1">未审核</a>
+            <a class="btn btn-sm btn-primary btn-sm" href="/project?tag=note_check&is_check=1">未审核</a>
             {%end%}
         </li>
 
       </ol>
-<form>
+<form class="pm2">
     <table>
-        <thead>
-            <tr>
-                <th>业务内容</th>
-                <th>发起人</th>
-                <th></th>
-            </tr>
-        </thead>
+   
         <tbody>
             <tr>
                 <td><input class="form-control" name="project_name" placeholder="业务内容" value="{%if params['project_name']%}{{params['project_name']}}{%end%}"></td>
@@ -31,7 +30,7 @@
                     {%if not_check%}
                     <input type="hidden" name="is_check" value="{{not_check}}"/>
                     {%end%}
-                    <input type="submit" value="检索"/>
+                    <input type="submit"  class="btn btn-primary btn-sm" value="检索"/>
                     </td>
             </tr>
         </tbody>
@@ -40,8 +39,8 @@
 <div class="table-responsive">
 
 
-                  <table class="table table-bordered" id="dataTable">
-                    <thead style="background-color:#000;color:#fff ; font-size:12px;">
+                  <table class="table table-bordered fayetable" id="dataTable">
+                    <thead class="table_class">
                         <tr>
                      
                             
@@ -52,19 +51,19 @@
                           <th></th>
                         </tr>
                     </thead>
-                    <tbody style=" font-size:12px;">
+                    <tbody class="fayetbody" style=" font-size:12px;">
                             {% for item in t_projects_note_check%}
                         <tr>
                             <td>{{item.project_name}}</td>
                             <td>{{item.msg}}</td>
                             <td>
                                     
-                                    {%if item.state_id==0%} <span class="badge badge-info">已通过</span>{%elif item.state_id==1%} 
+                                    {%if item.state_id==0 and item.check_at%} <span  class="badge badge-info">已通过</span>{%elif item.state_id==0 and not item.check_at%} <span class="badge badge-success">待最终审核</span>{%elif item.state_id==1%} 
                                     <span class="badge badge-danger">未通过</span>{%elif item.is_check==1%}<span class="badge badge-dark">待审核</span>{%end%}
 
                             </td>
                             <td>{{item.uid_name}}</td>
-                            <td><a class="btn btn-info" href="/project?tag=not_check_detail&id={{item.id}}">查看</a></td>
+                            <td><a class="btn btn-primary btn-sm" href="/project?tag=not_check_detail&id={{item.id}}">查看</a></td>
                         </tr>
                         {%end%}
                     </tbody>

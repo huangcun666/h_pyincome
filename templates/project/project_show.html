@@ -1,4 +1,4 @@
-{% extends "../base.html" %} {%block title%}收入管理{%end%}
+{% extends "../base.html" %} {%block title%}{%if t_project.customer_company%}{{t_project.customer_company}}{%end%}-业务明细{%end%}
 
  {% block body %}
 
@@ -233,44 +233,69 @@ background-color: #007bff;
     color: #004974;
     text-decoration: none;
 }
-
+.diao-top {background-color: #fff; margin-top: 60px; margin-bottom: 20px;}
+.g1 {font-size: 10px; color: #414141; font-weight: 600; line-height: 42px;}
+.topxian {border-top: 3px solid #007aff;}
 </style>
 
-<div style="width:91%;position: fixed; top: 56px; left: 9%; z-index: 99; background-color: #6683ad; padding:13px; padding-left:20px; margin-bottom:10px;margin-left:20px;">   
-       <a href="#yewushouru" style="margin:5px;color:#FFF;">收入明细<span class="fa fa-fw fa-reply"></span></a>
-        <a href="#daokuanjiesuan" style="margin:5px;color:#FFF">到款信息<span class="fa fa-fw fa-reply"></span></a>
-          <a href="#jiaodaishixiang" style="margin:5px;color:#FFF">交代事项<span class="fa fa-fw fa-reply"></span></a>
-            <a href="#banlijindu" style="margin:5px;color:#FFF">办理进度<span class="fa fa-fw fa-reply"></span></a>
-              <a href="#addr_list" style="margin:5px;color:#FFF">安排地址<span class="fa fa-fw fa-reply"></span></a>
-                <a href="#xiezhu_list" style="margin:5px;color:#FFF">业务协助<span class="fa fa-fw fa-reply"></span></a>
-                  <a href="#yewuxiangguan" style="margin:5px;color:#FFF">业务人员<span class="fa fa-fw fa-reply"></span></a>
-                    <a href="#dingdanliuzhuan" style="margin:5px;color:#FFF">流转动态<span class="fa fa-fw fa-reply"></span></a>
-                      <a href="#xiangguanlianxiren" style="margin:5px;color:#FFF">相关联系人<span class="fa fa-fw fa-reply"></span></a>  
-                      <a href="#ziliaojiaojie" style="margin:5px;color:#FFF">资料交接<span class="fa fa-fw fa-reply"></span></a>            
-                      <a href="#shangchuanfujian" style="margin:5px;color:#FFF">上传附件<span class="fa fa-fw fa-reply"></span></a>                      
-                      <a href="#kuaidi" style="margin:5px;color:#FFF">快递<span class="fa fa-fw fa-reply"></span></a>            
-                    </div>
+                    <div class="ddlz-top">
+                        <a href="#yewushouru">收入明细</a>
+                        <a href="#daokuanjiesuan">到款信息</a>
+                        <a href="#jiaodaishixiang">交代事项</span></a>
+                        <a href="#banlijindu">办理进度</span></a>
+                        <a href="#addr_list">安排地址</a>
+                        <a href="#xiezhu_list">业务协助</a>
+                        <a href="#yewuxiangguan">业务人员</a>
+                        <a href="#dingdanliuzhuan">流转动态</a>
+                        <a href="#xiangguanlianxiren">相关联系人</a>
+                        <a href="#ziliaojiaojie">资料交接</a>
+                        <a href="#shangchuanfujian">上传附件</a>
+                        <a href="#kuaidi">快递</a>
+                      </div>
 
-      <ol class="breadcrumb" style="margin-top:40px;">
-        <li class="breadcrumb-item">
-         主面板
+
+
+      <ol class="breadcrumb diao-top">
+          <li class="breadcrumb-item g1">主面板</li>
+          <li class="breadcrumb-item g1">收入管理</li>
+          <li class="breadcrumb-item g1">{{t_project.project_name}}</li>
+          <li class="g1 g1-left">
+            {%if visible_project%}
+              {%if role=='9'%}
+
+              <a href='javascript:void(0)' id="btn_modify1" > <img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
+
+              {%else%}
+              <a href='javascript:void(0)' id="btn_modify" > <img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
+              {%end%}
+              {%end%}
+          </li>
+
+          <li class="g1 g1-left">
+            <a href="/project?tag=project_recode&id={{t_project.id}}" id="btn_recode" class="btn btn-primary btn-sm" style="font-size:0.6rem;">业务记录</a>
+          </li>
+          <li class="g1 g1-left"><a href="/project?tag=manage_addr&id={{t_project.id}}" id="btn_recode" class="btn btn-primary btn-sm" style="font-size:0.6rem;">
+            
+            办理地址管理</a>
+          </li>
+          {%if '292' in role_list%}
+        <li class="g1 g1-left">
+          <a href="javascript:void(0)" id="add_to_economic" 
+          class="btn btn-primary btn-sm" style="font-size:0.6rem;">
+          <i class="fa fa-plus" aria-hidden="true"></i>添加到经济普查</a>
         </li>
-        <li class="breadcrumb-item actve" style="float:right;" >收入管理 / {{t_project.project_name}}
-          {%if role=='9'%}
-          <a href='javascript:void(0)' id="btn_modify1" > <img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
-          {%else%}
-          <a href='javascript:void(0)' id="btn_modify" > <img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
-          {%end%}
-          <a href="/project?tag=project_recode&id={{t_project.id}}" id='btn_recode'>业务记录</a>
-          <a href="/project?tag=manage_addr&id={{t_project.id}}" id='btn_recode'>办理地址管理</a>
-
-        </li>
-        
-      </ol>
-
+        {%end%}
+          <!-- <li class="breadcrumb-item actve" style="float:right;">
+            <a href="javascript:void(0)" id="btn_modify">
+              <img alt="[编辑]" src="%E6%94%B6%E5%85%A5%E7%AE%A1%E7%90%86_files/modify.png" width="25">
+            </a>
+            <a href="http://127.0.0.1:9999/project?tag=project_recode&amp;id=2462" id="btn_recode">业务记录</a>
+            <a href="http://127.0.0.1:9999/project?tag=manage_addr&amp;id=2462" id="btn_recode">办理地址管理</a>
+          </li> -->
+        </ol>
 
 <div class="row" >
-    
+
 <div class="col-lg-12">
 {%if is_cancel==2%}
 	<div style="width: 153px; height: 149px; position: absolute; top: 24px; left: 132px; z-index: 9;">
@@ -306,8 +331,10 @@ background-color: #007bff;
                     {%end%}
                     {%else%}
                     {%end%}
+                    {%if visible_project%}
                     <a href="javascript:void(0)" id="relation_other_project" {%if t_projects_relation%}
                     project_relation_id={{t_projects_relation.id}} {%end%}>关联</a>
+                    {%end%}
                     <!-- {%if t_project.contract_confirm_id ==57 and role=='13'%}
                     <a href='javascript:void(0)' id="btn_modify1" id> <img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
                     {%end%} -->
@@ -357,7 +384,7 @@ background-color: #007bff;
 
           {%if company_history%}
           {%for row_c in  company_history%}
-          {{row_c.company}} &nbsp;
+          {{row_c.company}}-{{row_c.uid_name}} &nbsp;
           {%end%}
           {%else%}
           无
@@ -377,7 +404,7 @@ background-color: #007bff;
     </li>
    <!-- <li>
       <div class="fayet" style="border-left: none;">应收记录</div>
-      <div class="fayet3"> 
+      <div class="fayet3">
 
 上期应收: 2018.6-2018.11月服务费已收，2018.6-2019.5月账册费已收
 
@@ -571,6 +598,7 @@ background-color: #007bff;
       <div class="fayet">总欠款</div>
 			<div class="fayet1">
         {%if t_projects_income_allmoney['sum(income_money)'] %}
+
         {{t_project.all_income - t_project_income_wait.dd+t_projects_income_allmoney['sum(income_money)']-t_project_income_wait.cc}}
         {%else%}
         {{t_project.all_income - t_project_income_wait.dd-t_project_income_wait.cc}}
@@ -647,7 +675,7 @@ background-color: #007bff;
 
 
 
-               <div class="card mb-12" id="yewushouru">
+               <div class="card mb-12 topxian" id="yewushouru">
 
               <div class="card-body" >
                 <h6 class="card-title mb-1"><a href="#">业务收入明细</a>
@@ -694,72 +722,72 @@ background-color: #007bff;
                 {%end%}
                 <p id='daokuanjiesuan'></p>
               </div>
-              
+
               <div class="card-footer  text-muted"> 合计总服务费  {{t_project.all_income}} 元 </div>
-              
+
             </div>
 
-            <div class="card-columns">
+            <div class="card-columns topxian">
                 <div class="card mb-12" >
-            
+
                           <div class="card-body">
                         <h6 class="card-title mb-1"><a href="#">到款结算信息</a>
                                 {%if t_project.uid==int(uid) or role== "2" or role== "3" or role=="8" or int(getMemberId(t_project_members,"销售顾问")) == int(uid)  or int(getMemberId(t_project_members,"客服顾问")) == int(uid)%} /
                                  <a href="javascript:void(0)" id="new_income_other1" class=" mr-3 d-inline-block">
                                   <i class="fa fa-fw fa-comment"></i>新建</a>{%end%}
-            
-            
-            
+
+
+
              </h6>
-            
+
                           </div>
-            
-            
+
+
                           <hr class="my-0">
-            
+
                         {%if t_project_income_title%}
                         {%for item in t_project_income_title%}
                        <div class="card-body py-2 ">
                        {%if item.income_uid%} <a target="_blank" href="project?tag=print&project_id={{t_project.id}}&project_guid={{t_project.guid}}&title_id={{item.id}}">
                        <img width="20" src="/static/images/print.png">打印</a>{%end%}
-            
+
                        {%if item.fi_confirm_uid%} <a target="_blank" href="project?tag=print_to_customer_preview&project_id={{t_project.id}}&project_guid={{t_project.guid}}&title_id={{item.id}}">
                        <img width="20" src="/static/images/print.png">打印客户告知函</a>{%end%}
-            
+
                    {%if ( role=="3") or (role=="2"  and not item.income_uid) or  (t_project.uid==int(uid) and not item.income_uid) %}
                           <a alt="删除该条记录" href="javascript:void(0)" class="delete_income"
                           income_curr_id="{{item.id}}" income_curr_guid="{{item.guid}}">
                        <img width="20" src="/static/images/delete.png">删除</a>
             {%end%}
-            
-            
+
+
              <!-- {%if ( role=="3") or (role=="2"  and not item.income_uid) or (t_project.uid==int(uid) or not item.income_uid) %}{%end%} -->
             {%if  (role=='2' or role=='3' or role=='5') or (not item.income_uid) or (name=="陈太智")%}
-            
+
                         <a href="javascript:void(0)" income_at="{{item.income_at}}" pay_type_id="{{item.pay_type_id}}" pay_type_name="{{item.pay_type_name}}" parent_id="{{item.id}}" company_id="{{item.company_id}}" company_id_name="{{item.company_id_name}}"  class="show_income_modify" >
                         <img width="20" src="/static/images/modify.png"> 修改</a>{%end%}
                             {{item.income_at}}  {{item.uid_name}} 入账-
                             {{item.income_title}}
-                    
-                             - 
+
+                             -
                             {%if item.pay_list%}
                             <font color='blue'><b>[{{item.pay_list}}]</b></font>-
                             {%end%}
                             {{item.company_id_name}}-{{item.pay_type_name}} <b>合计:{{item.income_money_total}} 元</b>
-                           
-            
-            
-            
+
+
+
+
                          {%if item.income_uid%}
                           <span class="bg-success" style="color:#fff;font-size:14px; padding:5px;">  <b>出纳({{item.income_uid_name}})于{{item.income_uid_at}}确认</b></span>
-            
+
                             {%if item.fi_confirm_uid%}
                             <span class="bg-success" style="color:#fff;font-size:14px; padding:5px;">
-                             <b>{{item.fi_confirm_uid_name}}(财务)于{{item.fi_confirm_at}}确认</b></span>
-            
+                             <b>财务({{item.fi_confirm_uid_name}})于{{item.fi_confirm_at}}确认</b></span>
+
                             {%else%}
                             {%if role=="3"%}
-                                  <input type="button" income_id="{{item.id}}" class="btn btn-info btn_confirm" value="确认"
+                                  <input type="button" income_id="{{item.id}}" class="btn btn-primary btn-sm btn_confirm" value="确认"
                                    title_guid="{{item.guid}}"
                                     title_id="{{item.id}}" ctype="2" />
                               {%else%}
@@ -770,56 +798,56 @@ background-color: #007bff;
                            {%if item.is_print==0%}
                            <span class="bg-info" style="color:#fff;font-size:14px; padding:5px;margin-left:3px;">  <b>尚未打印</b>   </span>
                            {%else%}
-            
+
                            <span class="bg-dark" style="color:#fff;font-size:14px; padding:5px;margin-left: 3px;">  <b>已打印</b>   </span>
                            {%end%}
                          {%else%}
-            
+
                             {%if role=="2"%}
                                 <input type="button" title_id="{{item.id}}"  ctype="1"  class="btn_confirm" value="确认"
                               title_guid="{{item.guid}}"
                               />
-            
+
                               {%else%}
                                <span class="bg-info" style="color:#fff;font-size:16px; padding:8px;">   <b>待出纳确认</b>      </span>
-            
+
                               {%end%}
-            
-            
+
+
                          {%end%}
-            
-            
+
+
                          </div>        <hr class="my-0">
-            
+
                           {%end%}
-            
+
                             {%else%}
                                 <div class="card-body py-2 ">
                                           还没有代收款项结算信息哦
                                       </div>
                             {%end%}
-            
-            
+
+
                           <div class="card-footer  text-muted small">{{len(t_project_income_title)}} 笔到款
-            
+
                           合同金额：{{t_project.all_income}} 元|  待确认合同: {{wait_rec_income_money}} 元 |
                           已确认合同: {{rec_income_money}} 元
-            
+
                             代收合计：{{wait_rec_income_money_other.c+wait_rec_income_money_other.c}}
                              元|  待确认代收: {{wait_rec_income_money_other.c}} 元 |
                             已确认代收: {{rec_income_money_other.c}} 元
-            
-            
-            
+
+
+
                           </div>
                 </div>
-                <div class="card mb-12" id='yewuxiangguan'>
+                <div class="card mb-12 topxian" id='yewuxiangguan'>
 
                     <div class="card-body">
                       <h6 class="card-title mb-1"><a href="#">业务相关人员</a>
        {%if   t_project.uid==int(uid) or role=="7" or role=="8" or role=="3" or int(getMemberId(t_project_members,"客服顾问")) == int(uid) %} /
                        <a href="javascript:void(0)" id="a_add_team" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>设置</a>
-      
+
        {%end%}
          {%if (role=="7") or (role=="8") or (name=="陈月娇")%}
                              <a href="javascript:void(0)" id="a_add_team_cq" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i><b>新增工商专员</b></a>
@@ -834,71 +862,74 @@ background-color: #007bff;
                         <img class="d-flex mr-3" src="/static/images/avatar.jpeg" width="65" alt="{{item.team_name}}">
                         <div class="media-body">
                           <h6 class="mt-0 mb-1">
-                          <a href="#">{{item.name}}</a></h6>{{item.team_name}} 
+                          <a href="#">{{item.name}}</a></h6>{{item.team_name}}
                           {%if item.btype_id%}
       ({{item.btype_id_name}})
                           {%end%}
 
-      
-      
-                       {%if role=="7" and item.team_id==38 or  (item.btype_id==158 and name=="陈月娇")%}
-                
+
+
+                       {%if  role=="7" and item.team_id==38 or  (item.btype_id==158 and name=="陈月娇") or  (item.updated_uid_name==name and item.team_id==38) or role=='8' or name=='吴蔚亮'%}
+
                         <a href="javascript:void(0)"
                           team_id="{{item.team_id}}"
                           project_id="{{item.project_id}}"
+                          ddf="{{item.ddf}}"
                              mid="{{item.mid}}"
                              guid="{{item.guid}}" class="a_delete_member" guid="{{item.guid}}" staff_name="{{item.name}}">
                              <img width="20" src="/static/images/delete.png"/>
                              </a>
                       {%else%}
-      
-      
-                          {%if t_project.uid==int(uid) and item.team_id!=38%}
-      
+
+
+                          {%if t_project.uid==int(uid) and item.team_id!=38 or  item.updated_uid_name==name %}
+
                             <a href="javascript:void(0)"
                                 team_id="{{item.team_id}}" project_id="{{item.project_id}}"
-                                 mid="0"
+                                 mid="0" ddff="{{item.ddff}}"
                                   guid="{{item.guid}}" class="a_delete_member" guid="{{item.guid}}" staff_name="{{item.name}}">
                                   <img width="20" src="/static/images/delete.png"/>
                                   </a>
                         {%end%}
-      
-      
+
+
                           {%end%}
-      
-      
-      
+
+
+
                                   <ul class="list-inline mb-0">
                             <li class="list-inline-item">
                               {{item.created_at}}
                             </li>
-      
-      
+
+
                           </ul>
                         </div>
                       </div>  {%end%}
-      
-      
+
+
                       </div>
                       {%else%}
                       还没有设置相关人员哦
-      
+
                       {%end%}
-      
+
                     </div>
                     <div class="card-footer  text-muted small"> 当前有 {{len(t_project_members)}} 位成员</div>
                   </div>
              <!-- Example Social Card-->
-                        <div class="card mb-12" id='jiaodaishixiang'>
-            
+                        <div class="card mb-12 topxian" id='jiaodaishixiang'>
+
                           <div class="card-body">
                             <h6 class="card-title mb-1"><a href="#">交代事项</a>
-            
+                              {%if visible_project%}
                                <a href="javascript:void(0)" id="a_add_note"
                                class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                               
                                {%if role!='6'%}
                                <a href="javascript:void(0)" id="a_read_note"
                                class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-align-justify"></i>查看</a>
+                               {%end%}
                                {%end%}
                                {%if is_check=='1'%}
                                <a href="javascript:void(0)" id="a_check_note" class="mr-3 d-inline-block">
@@ -906,17 +937,17 @@ background-color: #007bff;
                                </a>
                                {%end%}
              </h6></div>
-            
-            
+
+
                           <hr class="my-0">
-            
+
                           <div class="card-body  bg-faded">
                          {%if project_note%}
                          {% if visible_note%}
                          {%for item in project_note%}
                          <div class="card-body py-2" {%if item.is_check==1 %}style="background-color:#D6EAF8;"{%end%}>
                        <span class="clearfix  z-1 ">
-            
+                        {%if visible_project%}
                 {%if item.note_id%}
                     <a class="mr-3 d-inline-block cancel_note" href="javascript:void(0)" note_id='{{item.aid}}' is_cancel='{{item.is_cancel}}'>
                         {%if item.is_cancel==0%}作废{%else%}恢复{%end%}</a>
@@ -926,20 +957,41 @@ background-color: #007bff;
                  <a href="javascript:void(0)" class="a_delete_note"  id="{{item.aid}}">
                    <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
                   {%end%}
+                  {%end%}
             <b>{%if item.state_id==0%} <span class="badge badge-info">已通过</span>{%elif item.state_id==1%} <span class="badge badge-danger">未通过</span>{%elif item.is_check==1%}<span class="badge badge-dark">待审核</span>{%end%}{{item.uid_name}} ({{item.creatd_at}} )</b> :<span style="font-size:20px; color:red;">
                <b>{%if item.is_cancel==1%}<s>{{item.msg}}</s>{%else%}{{item.msg}}{%end%}{%if item.remark%} 备注：{{item.remark}}{%end%}</b>
                <!--
             {%if item.note_id%}<span class="bg-primary" style="color:#fff;font-size: 80%;padding:5px;">已读</span>{%else%}
             <span class="bg-danger" style="color:#fff;font-size: 80%;padding:5px;">未读</span>{%end%}
                        </span>-->
-            
+
             {%if item.read_name%}
             {%for strs in item.read_name.split(",")%}
                 {%if strs%}
               <span class="badge badge-info">{{strs}}</span>
                 {%end%}
-            {%end%}{% if item.created_name%}{{item.created_name}}{%if item.state_id==0%}审核通过{%else%}驳回{%end%}
-            {%if item.remark%}&nbsp;备注：{{item.remark}}{%end%}{%end%}{%end%}
+            {%end%}
+            {% if item.check_at%}
+            {%if item.state_id==0 and item.check_at%}
+            <span class="alert alert-success">{{item.check_name}}
+            确认审核通过</span>{%else%} <span class="alert alert-danger">{{item.check_name}}驳回{</span>{%end%}
+             {%if item.remark%}备注：{{item.remark}}{%end%}
+             {%elif item.created_name%}
+            {%if item.state_id==0%}
+            <span class="alert alert-info">
+               {{item.created_name}}
+            审核通过(待确认)</span>
+             {%if item.state_id==0 and not item.check_at and '287' in role_list%}
+             <button  href="javascript:void(0);" check_id="{{item.check_id}}" class="check_note_finish">确认</button>
+             <button  href="javascript:void(0);" check_id="{{item.check_id}}" class="check_note_bouhui">驳回</button>
+             {%end%}
+             {%else%}
+             <span class="alert alert-danger">
+                 {{item.created_name}}
+             驳回</span>{%end%}
+             {%if item.remark%}备注：{{item.remark}}{%end%}
+             {%end%}
+            {%end%}
             {%if role=='3'%}
             {%if item.is_add_to_print==0%}
             <a href="javascript:void(0);" class="button btn-secondary btn-sm add_to_print" id="{{item.id}}" >添加到打印</a>
@@ -949,32 +1001,57 @@ background-color: #007bff;
             {%end%}
             </div>  <hr class="my-0">
                        {%end%}
-            
+
                          {%else%}
                         {%for item in project_note%}
                           <div class="card-body py-2 ">
                         <span class="clearfix  z-1">
-            
+                          {%if visible_project%}
                   <a href="javascript:void(0)" class="a_delete_note"  id="{{item.aid}}">
                     <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
+                    {%end%}
+                    {%if item.is_check==1 and not item.check_id %}
+                    <span class="badge badge-dark">待审核</span>{%end%}
             <b> {{item.creatd_at}} {{item.uid_name}}</b> :<span style="font-size:20px; color:red;"> <b>{{item.msg}}</b>
-            
-            
+
+
                         </span>
-            
+
             {%if item.read_name%}
             {%for strs in item.read_name.split(",")%}
               <span class="badge badge-info">{{strs}}</span>
             {%end%}
-            
+
             {%end%}
-            {% if item.created_name%}{{item.created_name}}{%if item.state_id==0%}审核通过{%else%}驳回{%end%}
-            {%if item.remark%}备注：{{item.remark}}{%end%}{%end%}
+          
+            {% if item.check_at%}
+           {%if item.state_id==0 and item.check_at%}
+           <span class="alert alert-success">{{item.check_name}}
+           确认审核通过</span>{%else%} <span class="alert alert-danger">{{item.check_name}}驳回{</span>{%end%}
+            {%if item.remark%}备注：{{item.remark}}{%end%}
+            {%elif item.created_name%}
+           {%if item.state_id==0%}
+           <span class="alert alert-info">
+              {{item.created_name}}
+           审核通过(待确认)</span>
+            {%if item.state_id==0 and not item.check_at and '287' in role_list%}
+            <button  href="javascript:void(0);" check_id="{{item.check_id}}" class="check_note_finish">确认</button>
+            <button  href="javascript:void(0);" check_id="{{item.check_id}}" class="check_note_bouhui">驳回</button>
+            {%end%}
+            {%else%}
+            <span class="alert alert-danger">
+                {{item.created_name}}
+            驳回</span>{%end%}
+            {%if item.remark%}备注：{{item.remark}}{%end%}
+            {%end%}
+
             {%if role=='3'%}
+            {%if visible_project%}
             {%if item.is_add_to_print==0%}
             <a href="javascript:void(0);" class="button btn-secondary btn-sm add_to_print" id="{{item.id}}" >添加到打印</a>
             {%else%}
             <a href="javascript:void(0);" class="button btn-secondary btn-sm delete_from_print" id="{{item.id}}">从打印移除</a>
+            {%end%}
             {%end%}
             {%end%}
             {%if item.is_chengjiao==1%}
@@ -988,97 +1065,100 @@ background-color: #007bff;
                             还没有交代事项哦
             </div>
                             {%end%}
-            
+
                           </div>
                           <div class="card-footer  text-muted"> 合计总服务费  {{t_project.all_income}} 元 </div>
                         </div>
-            
-            
-            
-             <div class="card mb-3" id="banlijindu">
-            
+
+
+
+             <div class="card mb-3 topxian" id="banlijindu">
+
                           <div class="card-body ">
                             <h6 class="card-title mb-1 ">
-            
+
             办理进度更新记录
-            
+
             {%if t_project.is_expedited==1%}
                  <font color='red' style="font-size:18px;"> <b>(加急业务)</b></font>
             {%end%}
-            
-            
+
+
                                {%if t_project.building_id > 0%}
                                 <font color='green'> (此业务为楼盘客户) </font>
-            
-            
-            
+
+
+
                                {%end%}
                                <!-- <a href="javascript:void(0)"
                                type_id="2"
                                 class=" mr-3 d-inline-block a_project_state_modal" style="font-size:14px;">
                                  <i class="fa fa-fw fa-comment"></i>新增</a> -->
                             </h6>
-            
+
                           </div>
-            
+
              <hr class="my-0">
-            
+
             <div class="row">
             <div class="col">
-            
-            
+
+
             <div style="margin-top:10px;margin-bottom:40px">
-            
+
                 <div class="qa-message-list" id="wallmessages">
                           <center> <h6 class="card-title mb-1 "><a href="#">公司注册办理进度</a>
-            
+
                            {%if t_project.building_id > 0%}
-            
+                           {%if visible_project%}
                            <span id="show_building_link_span">
                             <a target="_blank" class="show_building_link" href="http://building.gzfaye.com/show?modal_show=1&tag=customer_state&qid={{t_project.id}}&building_name={{t_project.building_id_name}}&urgent={{t_project.is_expedited}}&sales={{getMemberName(t_project_members,"销售顾问")}}&customer_tel={{t_project.customer_tel}}&customer_name={{t_project.customer_name}}&customer_company={{t_project.customer_company}}"
                             class=" mr-3 d-inline-block" style="font-size:14px;" type_id="1"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                            {%end%}
                             <a target="_blank" class="show_building_link" href="http://building.gzfaye.com/show?tag=customer_state&qid={{t_project.id}}&building_name={{t_project.building_id_name}}&urgent={{t_project.is_expedited}}&sales={{getMemberName(t_project_members,"销售顾问")}}&customer_tel={{t_project.customer_tel}}&customer_name={{t_project.customer_name}}&customer_company={{t_project.customer_company}}"
                             class=" mr-3 d-inline-block " style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
                             </span>
-            
-            
-            
+
+
+
                             <a target="_blank" class="show_building_link"
                               href="http://building.gzfaye.com/show?tag=list&is_my=1" class=" mr-3 d-inline-block" style="font-size:14px;">
                              <span class="fa fa-fw fa-align-justify"></span> 进入楼盘系统</a>
                            {%else%}
+                           {%if visible_project%}
                             <a href="javascript:void(0)"
                             class=" mr-3 d-inline-block a_project_state_modal" style="font-size:14px;" type_id="1"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                            {%end%}
                             <a href="javascript:void(0)"
                             class=" mr-3 d-inline-block show_all1" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-            
+
                {%end%}
-            
-            
+
+
                           </h5></center>
-            
-            
+
+
             {%if t_project.building_id > 0%}
                     <div id="show_building_status">
-            
-            
-            
+
+
+
                     </div>
-            
+
             {%else%}
                      {%if t_project_state_msg1%}
-            
+
                       {%for item in t_project_state_msg1[:4]%}
                       <div class="message-item" id="m9">
                         <div class="message-inner">
                           <div class="message-head clearfix">
-            
+
                             <div class="avatar pull-left"><img  src="/static/images/avatar.jpeg"></div>
                             <div class="user-detail">
                               <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                {{item.state_id_name}}</span>
                                </h5>
-            
+
                             </div>
                           </div>
                           {%if item.state_remark%}
@@ -1088,49 +1168,50 @@ background-color: #007bff;
                           {%else%}
                           无描述
                           {%end%}
-            
+
                       </div>
-            
-            
+
+
                       </div>
-            
+
                       {%end%}
                              {%else%}
                             <div class="card-body py-2 "><div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div></div>
                             {%end%}   {%end%}
                     </div>
-            
+
             </div>
-            
-            
-            
-            
+
+
+
+
             </div>
-            
+
               <div class="col">
-            
-            
+
+
                 <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
-            
+
                   <div class="qa-message-list" id="wallmessages">
                     <center>
                       <h6 class="card-title mb-1 ">
                         <a href="#">公司变更办理进度</a>
+                        {%if visible_project%}
                         <a href="javascript:void(0)"
                         class=" mr-3 d-inline-block a_project_state_modal1" style="font-size:14px;" type_id="2">
-                        <i class="fa fa-fw fa-comment"></i>新增</a>
+                        <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
                         <a href="javascript:void(0)"
                         class=" mr-3 d-inline-block show_all2" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
                         </h5>
                     </center>
-            
+
                     {%if t_project_state_msg2%}
                      {%for item in t_project_state_msg2[:4]%}
-            
+
                     <div class="message-item" id="m9">
                       <div class="message-inner">
                         <div class="message-head clearfix">
-            
+
                           <div class="avatar pull-left">
                             <img src="/static/images/avatar.jpeg">
                           </div>
@@ -1139,7 +1220,7 @@ background-color: #007bff;
                               <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
                               </span>
                             </h5>
-            
+
                           </div>
                         </div>
                         {%if item.state_remark%}
@@ -1147,53 +1228,54 @@ background-color: #007bff;
                           {{item.state_remark}}
                         </div>
                         {%else%} 无描述 {%end%}
-            
+
                       </div>
-            
-            
+
+
                     </div>
-            
+
                     {%end%} {%else%}
                     <div class="card-body py-2 ">
                       <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
                     </div>
                     {%end%}
                   </div>
-            
+
                 </div>
-            
-            
-            
-            
+
+
+
+
               </div>
-            
+
             </div>
             <div class="row">
                 <div class="col">
-            
-            
+
+
                 <div style="margin-top:10px;margin-bottom:40px">
-            
+
                     <div class="qa-message-list" id="wallmessages">
                               <center> <h6 class="card-title mb-1 "><a href="#">解除异常办理进度</a>
+                                {%if visible_project%}
                                 <a href="javascript:void(0)"
-                                class=" mr-3 d-inline-block a_project_state_modal2" style="font-size:14px;" type_id="3"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                                class=" mr-3 d-inline-block a_project_state_modal2" style="font-size:14px;" type_id="3"> <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
                                 <a href="javascript:void(0)"
                                 class=" mr-3 d-inline-block show_all3" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
                               </h5></center>
-            
+
                          {%if t_project_state_msg3%}
                           {%for item in t_project_state_msg3[:4]%}
                           <div class="message-item" id="m9">
                             <div class="message-inner">
                               <div class="message-head clearfix">
-            
+
                                 <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
                                 <div class="user-detail">
                                   <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                    {{item.state_id_name}}</span>
                                    </h5>
-            
+
                                 </div>
                               </div>
                               {%if item.state_remark%}
@@ -1203,12 +1285,12 @@ background-color: #007bff;
                               {%else%}
                               无描述
                               {%end%}
-            
+
                           </div>
-            
-            
+
+
                           </div>
-            
+
                           {%end%}
                                  {%else%}
                                 <div class="card-body py-2 ">
@@ -1216,39 +1298,39 @@ background-color: #007bff;
                                 </div>
                                 {%end%}
                         </div>
-            
+
                 </div>
-            
-            
-            
-            
+
+
+
+
                 </div>
-            
+
                   <div class="col">
-            
-            
+
+
                     <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
-            
+
                       <div class="qa-message-list" id="wallmessages">
                         <center>
                           <h6 class="card-title mb-1 ">
-                            <a href="#">公司注销办理进度</a>
+                            <a href="#">公司注销办理进度</a> {%if visible_project%}
                             <a href="javascript:void(0)"
                             class=" mr-3 d-inline-block a_project_state_modal3" style="font-size:14px;" type_id="4">
-                            <i class="fa fa-fw fa-comment"></i>新增</a>
+                            <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
                             <a href="javascript:void(0)"
                             class=" mr-3 d-inline-block show_all4" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
-            
+
                             </h5>
                         </center>
-            
+
                         {%if t_project_state_msg4%}
                          {%for item in t_project_state_msg4[:4]%}
-            
+
                         <div class="message-item" id="m9">
                           <div class="message-inner">
                             <div class="message-head clearfix">
-            
+
                               <div class="avatar pull-left">
                                 <img src="/static/images/avatar.jpeg">
                               </div>
@@ -1257,7 +1339,7 @@ background-color: #007bff;
                                   <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
                                   </span>
                                 </h5>
-            
+
                               </div>
                             </div>
                             {%if item.state_remark%}
@@ -1265,53 +1347,53 @@ background-color: #007bff;
                               {{item.state_remark}}
                             </div>
                             {%else%} 无描述 {%end%}
-            
+
                           </div>
-            
-            
+
+
                         </div>
-            
+
                         {%end%} {%else%}
                         <div class="card-body py-2 ">
                           <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
                         </div>
                         {%end%}
                       </div>
-            
+
                     </div>
-            
-            
-            
-            
+
+
+
+
                   </div>
-            
+
                 </div>
             <div class="row">
                     <div class="col">
-            
-            
+
+
                     <div style="margin-top:10px;margin-bottom:40px">
-            
+
                         <div class="qa-message-list" id="wallmessages">
                                   <center> <h6 class="card-title mb-1 "><a href="#">许可证办理进度</a>
-                                    <a href="javascript:void(0)"
-                                    class=" mr-3 d-inline-block a_project_state_modal4" style="font-size:14px;" type_id="5"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                                    {%if visible_project%}<a href="javascript:void(0)"
+                                    class=" mr-3 d-inline-block a_project_state_modal4" style="font-size:14px;" type_id="5"> <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
                                     <a href="javascript:void(0)"
                                     class=" mr-3 d-inline-block show_all5" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
                                   </h5></center>
-            
+
                              {%if t_project_state_msg5%}
                               {%for item in t_project_state_msg5[:4]%}
                               <div class="message-item" id="m9">
                                 <div class="message-inner">
                                   <div class="message-head clearfix">
-            
+
                                     <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
                                     <div class="user-detail">
                                       <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                        {{item.state_id_name}}</span>
                                        </h5>
-            
+
                                     </div>
                                   </div>
                                   {%if item.state_remark%}
@@ -1321,12 +1403,12 @@ background-color: #007bff;
                                   {%else%}
                                   无描述
                                   {%end%}
-            
+
                               </div>
-            
-            
+
+
                               </div>
-            
+
                               {%end%}
                                      {%else%}
                                     <div class="card-body py-2 ">
@@ -1334,38 +1416,39 @@ background-color: #007bff;
                                     </div>
                                     {%end%}
                             </div>
-            
+
                     </div>
-            
-            
-            
-            
+
+
+
+
                     </div>
-            
+
                       <div class="col">
-            
-            
+
+
                         <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
-            
+
                           <div class="qa-message-list" id="wallmessages">
                             <center>
                               <h6 class="card-title mb-1 ">
                                 <a href="#">商标办理进度</a>
+                                {%if visible_project%}
                                 <a href="javascript:void(0)"
                                 class=" mr-3 d-inline-block a_project_state_modal5" style="font-size:14px;" type_id="6">
-                                <i class="fa fa-fw fa-comment"></i>新增</a>
+                                <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
                                 <a href="javascript:void(0)"
                                 class=" mr-3 d-inline-block show_all6" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
                                 </h5>
                             </center>
-            
+
                             {%if t_project_state_msg6%}
                              {%for item in t_project_state_msg6[:4]%}
-            
+
                             <div class="message-item" id="m9">
                               <div class="message-inner">
                                 <div class="message-head clearfix">
-            
+
                                   <div class="avatar pull-left">
                                     <img src="/static/images/avatar.jpeg">
                                   </div>
@@ -1374,7 +1457,7 @@ background-color: #007bff;
                                       <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
                                       </span>
                                     </h5>
-            
+
                                   </div>
                                 </div>
                                 {%if item.state_remark%}
@@ -1382,53 +1465,55 @@ background-color: #007bff;
                                   {{item.state_remark}}
                                 </div>
                                 {%else%} 无描述 {%end%}
-            
+
                               </div>
-            
-            
+
+
                             </div>
-            
+
                             {%end%} {%else%}
                             <div class="card-body py-2 ">
                               <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
                             </div>
                             {%end%}
                           </div>
-            
+
                         </div>
-            
-            
-            
-            
+
+
+
+
                       </div>
-            
+
               </div>
             <div class="row">
                     <div class="col">
-            
-            
+
+
                     <div style="margin-top:10px;margin-bottom:40px">
-            
+
                         <div class="qa-message-list" id="wallmessages">
                                   <center> <h6 class="card-title mb-1 "><a href="#">特殊业务办理进度</a>
+                                    {%if visible_project%}
                                     <a href="javascript:void(0)"
                                     class=" mr-3 d-inline-block a_project_state_modal6" style="font-size:14px;" type_id="7"> <i class="fa fa-fw fa-comment"></i>新增</a>
+                                    {%end%}
                                     <a href="javascript:void(0)"
                                     class=" mr-3 d-inline-block show_all7" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
                                   </h5></center>
-            
+
                              {%if t_project_state_msg7%}
                               {%for item in t_project_state_msg7[:4]%}
                               <div class="message-item" id="m9">
                                 <div class="message-inner">
                                   <div class="message-head clearfix">
-            
+
                                     <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
                                     <div class="user-detail">
                                       <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
                                        {{item.state_id_name}}</span>
                                        </h5>
-            
+
                                     </div>
                                   </div>
                                   {%if item.state_remark%}
@@ -1438,12 +1523,12 @@ background-color: #007bff;
                                   {%else%}
                                   无描述
                                   {%end%}
-            
+
                               </div>
-            
-            
+
+
                               </div>
-            
+
                               {%end%}
                                      {%else%}
                                     <div class="card-body py-2 ">
@@ -1451,38 +1536,39 @@ background-color: #007bff;
                                     </div>
                                     {%end%}
                             </div>
-            
+
                     </div>
-            
-            
-            
-            
+
+
+
+
                     </div>
-            
+
                       <div class="col">
-            
-            
+
+
                         <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
-            
+
                           <div class="qa-message-list" id="wallmessages">
                             <center>
                               <h6 class="card-title mb-1 ">
                                 <a href="#">其他业务办理进度</a>
+                                {%if visible_project%}
                                 <a href="javascript:void(0)"
                                 class=" mr-3 d-inline-block a_project_state_modal7" style="font-size:14px;" type_id="8">
-                                <i class="fa fa-fw fa-comment"></i>新增</a>
+                                <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
                                 <a href="javascript:void(0)"
                                 class=" mr-3 d-inline-block show_all8" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
                                 </h5>
                             </center>
-            
+
                             {%if t_project_state_msg8%}
                              {%for item in t_project_state_msg8[:4]%}
-            
+
                             <div class="message-item" id="m9">
                               <div class="message-inner">
                                 <div class="message-head clearfix">
-            
+
                                   <div class="avatar pull-left">
                                     <img src="/static/images/avatar.jpeg">
                                   </div>
@@ -1491,7 +1577,7 @@ background-color: #007bff;
                                       <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
                                       </span>
                                     </h5>
-            
+
                                   </div>
                                 </div>
                                 {%if item.state_remark%}
@@ -1499,42 +1585,221 @@ background-color: #007bff;
                                   {{item.state_remark}}
                                 </div>
                                 {%else%} 无描述 {%end%}
-            
+
                               </div>
-            
-            
+
+
                             </div>
-            
+
                             {%end%} {%else%}
                             <div class="card-body py-2 ">
                               <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
                             </div>
                             {%end%}
                           </div>
-            
+
                         </div>
-            
-            
-            
-            
+
+
+
+
                       </div>
-            
+
               </div>
-            
-            
-            
-            
-            
-            
-                         
+              <div class="row">
+                  <div class="col">
+
+
+                  <div style="margin-top:10px;margin-bottom:40px">
+
+                      <div class="qa-message-list" id="wallmessages">
+                                <center> <h6 class="card-title mb-1 "><a href="#">创业补贴办理进度</a>
+                                  
+                                  {%if visible_project%}<a href="javascript:void(0)"
+                                  class=" mr-3 d-inline-block a_project_state_modal8" style="font-size:14px;" type_id="9"> <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
+                                  <a href="javascript:void(0)"
+                                  class=" mr-3 d-inline-block show_all9" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+                                </h5></center>
+
+                           {%if t_project_state_msg9%}
+                            {%for item in t_project_state_msg9[:4]%}
+                            <div class="message-item" id="m9">
+                              <div class="message-inner">
+                                <div class="message-head clearfix">
+
+                                  <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
+                                  <div class="user-detail">
+                                    <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
+                                     {{item.state_id_name}}</span>
+                                     </h5>
+
+                                  </div>
+                                </div>
+                                {%if item.state_remark%}
+                                <div class="qa-message-content">
+                                  {{item.state_remark}}
+                                </div>
+                                {%else%}
+                                无描述
+                                {%end%}
+
+                            </div>
+
+
+                            </div>
+
+                            {%end%}
+                                   {%else%}
+                                  <div class="card-body py-2 ">
+                                    <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                                  </div>
+                                  {%end%}
+                          </div>
+
+                  </div>
+
+
+
+
+                  </div>
+
+                    <div class="col">
+
+
+                      <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
+
+                        <div class="qa-message-list" id="wallmessages">
+                          <center>
+                            <h6 class="card-title mb-1 ">
+                              <a href="#">经济普查办理进度</a>
+                              {%if visible_project%}
+                              <a href="javascript:void(0)"
+                              class=" mr-3 d-inline-block a_project_state_modal9" style="font-size:14px;" type_id="10">
+                              <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
+                              <a href="javascript:void(0)"
+                              class=" mr-3 d-inline-block show_all10" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+                              </h5>
+                          </center>
+
+                          {%if t_project_state_msg10%}
+                           {%for item in t_project_state_msg10[:4]%}
+
+                          <div class="message-item" id="m9">
+                            <div class="message-inner">
+                              <div class="message-head clearfix">
+
+                                <div class="avatar pull-left">
+                                  <img src="/static/images/avatar.jpeg">
+                                </div>
+                                <div class="user-detail">
+                                  <h5 class="handle">{{item.uid_name}}
+                                    <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
+                                    </span>
+                                  </h5>
+
+                                </div>
+                              </div>
+                              {%if item.state_remark%}
+                              <div class="qa-message-content">
+                                {{item.state_remark}}
+                              </div>
+                              {%else%} 无描述 {%end%}
+
+                            </div>
+
+
+                          </div>
+
+                          {%end%} {%else%}
+                          <div class="card-body py-2 ">
+                            <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                          </div>
+                          {%end%}
                         </div>
-            
-            
+
+                      </div>
+
+
+
+
+                    </div>
+
+            </div>
+
+            <div class="row">
+              <div class="col col-6">
+
+
+                <div style="margin-top:10px;margin-bottom:40px; margin-right: 10px;">
+
+                  <div class="qa-message-list" id="wallmessages">
+                    <center>
+                      <h6 class="card-title mb-1 ">
+                        <a href="#">税务报到办理进度</a>
+                        {%if visible_project%}
+                        <a href="javascript:void(0)"
+                        class=" mr-3 d-inline-block a_project_state_modal10" style="font-size:14px;" type_id="11">
+                        <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
+                        <a href="javascript:void(0)"
+                        class=" mr-3 d-inline-block show_all11" style="font-size:14px;" ><span class="fa fa-fw fa-align-justify"></span>全部进度</a>
+                        </h5>
+                    </center>
+
+                    {%if t_project_state_msg11%}
+                     {%for item in t_project_state_msg11[:4]%}
+
+                    <div class="message-item" id="m9">
+                      <div class="message-inner">
+                        <div class="message-head clearfix">
+
+                          <div class="avatar pull-left">
+                            <img src="/static/images/avatar.jpeg">
+                          </div>
+                          <div class="user-detail">
+                            <h5 class="handle">{{item.uid_name}}
+                              <span style="font-size:13px;">{{item.created_at}} 将设置状态： {{item.state_id_name}}
+                              </span>
+                            </h5>
+
+                          </div>
+                        </div>
+                        {%if item.state_remark%}
+                        <div class="qa-message-content">
+                          {{item.state_remark}}
+                        </div>
+                        {%else%} 无描述 {%end%}
+
+                      </div>
+
+
+                    </div>
+
+                    {%end%} {%else%}
+                    <div class="card-body py-2 ">
+                      <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                    </div>
+                    {%end%}
+                  </div>
+
+                </div>
+
+
+
+
+              </div>
+            </div>
+
+
+
+
+                        </div>
+
+
                     </div>
 
                 <div class="card-columns">
                     <!-- Example Social Card-->
-                       <div class="card mb-12" id="addr_list">
+                       <div class="card mb-12 topxian" id="addr_list">
 
                       <div class="card-body">
                         <h6 class="card-title mb-1"><a href="#">安排地址动态</a>
@@ -1651,7 +1916,7 @@ background-color: #007bff;
 
 
         </div> </div> </div>
-        <div class="card mb-12" id="xiezhu_list">
+        <div class="card mb-12 topxian" id="xiezhu_list">
 
           <div class="card-body">
             <h6 class="card-title mb-1"><a href="#">业务协助</a>
@@ -1827,7 +2092,7 @@ background-color: #007bff;
 
        <div class="card-columns" id="trans_list">
             <!-- Example Social Card-->
-               <div class="card mb-12" id='dingdanliuzhuan'>
+               <div class="card mb-12 topxian" id='dingdanliuzhuan'>
 
               <div class="card-body">
                 <h6 class="card-title mb-1"><a href="#">订单流转动态</a>
@@ -1852,8 +2117,8 @@ background-color: #007bff;
  </li>
     {%end%}
      </ul>
- 
-<div class="tab-content" >
+
+<div class="tab-content" {%if curr_member and  curr_member.btype_id_name==u"公司注销" %}style="float:left; width:58%;"{%end%}>
 
     {%for idx,item in enumerate(project_btypes)%}
   <div class="tab-pane {%if item.mid==int(mid)%}active{%end%}" id="home{{item.mid}}" role="tabpanel" aria-labelledby="home-tab{{item.mid}}">
@@ -2114,7 +2379,8 @@ background-color: #007bff;
    <div class="alert alert-info" role="alert" style="padding:5px; margin-top:5px;">
 办结公司信息: <br/>
 
- 公司名称: <b>{{t_project.customer_company}} </b><br/>  统一社会信用代码: <b>{{t_project.company_uid}} </b><br/>
+ 公司名称: <b>{{t_project.customer_company}}{%if row.confirm_at and not t_customer %} <button id='edit_banjie'>修改</button> {%end%}
+ </b><br/>  统一社会信用代码: <b>{{t_project.company_uid}} </b><br/>
  法人:<b>{{t_project.comany_person}}</b><br/>
  注册地址:<b>{{t_project.city}}{{t_project.zone}}{{t_project.true_reg_addr}}</b><br/>
 
@@ -2237,7 +2503,7 @@ background-color: #007bff;
           <button class=" btn_cq_rec_order"   mid="{{row.member_id}}"  mp_id="{{row.id}}" guid="{{row.guid}}" btype_id_name="{{item.btype_id_name}}" name="btn_cq_rec_order">确认工商已办结,通知销售顾问{{getMemberName(t_project_members,"销售顾问")}},与客户交接
           </button>
 
-              <button class=" btn_cq_rec_order btn btn-info"  btype_id_name="{{item.btype_id_name}}"  mid="{{row.member_id}}" is_close="1" mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order"
+              <button class=" btn_cq_rec_order btn btn-primary btn-sm"  btype_id_name="{{item.btype_id_name}}"  mid="{{row.member_id}}" is_close="1" mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order"
               >业务办结,完成客户交接
           </button>
           {%else%}
@@ -2376,7 +2642,7 @@ background-color: #007bff;
 {{tans_row.uid_name}} 于{{tans_row.created_at}}上传
 
               <a href="javascript:void(0)" rec_by ="{{tans_row.rec_by}}"
-              class="btn btn-info btn-sm modify_transition"
+              class="btn btn-primary btn-sm modify_transition"
               transition_id="{{tans_row.id}}"
               rec_by_uid_at ="{%if tans_row.rec_by_uid_at%}{{tans_row.rec_by_uid_at}}{%else%}{%end%}"
 
@@ -2394,7 +2660,7 @@ background-color: #007bff;
               href="javascript:void(0)"
               rec_by ="{{tans_row.rec_by}}"
               type_ids="{{tans_row.type_ids}}"
-              class="btn btn-info btn-sm modify_transition_mobile"
+              class="btn btn-primary btn-sm modify_transition_mobile"
               transition_id="{{tans_row.id}}"
               tran_at="{{tans_row.tran_at}}"
               is_customer = "{{tans_row.is_customer}}"
@@ -2465,10 +2731,45 @@ background-color: #007bff;
 
 
 
-</div> 
+</div>
+
+{%if curr_member and  curr_member.btype_id_name==u"公司注销" and (curr_member.member_id==int(uid) or role=="7" or role=="8")%}
+<div class="tab-content" style="float:left;width:40%;">
+<li class="list-group-item" style="background:#eee;">
+注销业务办结确认
+</li>{%for logoff_item in t_logff_type%}
+<li class="list-group-item">
+<b>{{logoff_item.income_name}}</b>
+{%if logoff_item.finish_at%}
+<span class="badge badge-info">{{logoff_item.uid_name}} - 申请{{logoff_item.finish_at}}办结</span>
+
+{%if  logoff_item.state_id==2 %}
+<span class="badge badge-success">{{logoff_item.leader_uid_name}} {{logoff_item.leader_at}}  已确认</span>
 
 
-</div> 
+{%elif  logoff_item.state_id==3 %}
+
+                                 <span class="badge badge-danger"> {%if logoff_item.leader_uid==int(uid)%} 你{%else%}{{logoff_item.leader_uid_name}}{%end%} 驳回办结:
+
+                                 {%if logoff_item.last_reject_remark%} {{logoff_item.last_reject_remark}}{%else%}无{%end%} {{logoff_item.leader_at}}</span>
+                                  <button type_id="{{logoff_item.order_int}}" mid="{{mid}}" project_id="{{t_project.id}}" class="btn_save_logoff">重新确认</button>
+
+{%end%}
+
+
+{%else%}
+  <button type_id="{{logoff_item.order_int}}" mid="{{mid}}" project_id="{{t_project.id}}" class="btn_save_logoff">确认</button>
+{%end%}
+
+
+
+</li>{%end%}
+
+
+     </div>{%end%}
+
+
+</div>
 
 
 
@@ -2476,21 +2777,21 @@ background-color: #007bff;
 
  </div>
 
-          <div class="card mb-3" id='xiangguanlianxiren'>
+          <div class="card mb-3 topxian" id='xiangguanlianxiren'>
 
             <div class="card-body ">
               <h6 class="card-title mb-1 ">
                   <a href="#">相关联系人</a>
 
-
+                  {%if visible_project%}
                   <a href="javascript:void(0)" class=" mr-3 d-inline-block" id="a_add_linkman" title="{{t_project.id}}" style="font-size:14px;">
-                    <i class="fa fa-fw fa-comment"></i>新增</a>
+                    <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
 
               </h6>
 
             </div>
             <hr class="my-0">
-                <table class="table table-striped">
+                <table class="table table-striped fayetable">
                   <thead>
                   <tr>
                           <th style="width:100px;">名字/称呼</th>
@@ -2520,14 +2821,15 @@ background-color: #007bff;
 
 
                     <td>
+                      {%if visible_project%}
                                           <a href="javascript:void(0)"
-                                           class="btn btn-info modify_linkman"
+                                           class="btn btn-primary btn-sm modify_linkman"
                                             tel="{{item.tel}}"
                                             remark="{{item.remark}}"
                                             title="{{item.name}}"
                                             gender="{{item.gender}}"
                                             linkman_guid="{{item.guid}}"
-                                            linkman_id="{{item.id}}">编辑</a>
+                                            linkman_id="{{item.id}}">编辑</a>{%end%}
 
                       </td>
 
@@ -2557,13 +2859,14 @@ background-color: #007bff;
 
 
 
-          <div class="card mb-3" id='ziliaojiaojie'>
+          <div class="card mb-3 topxian" id='ziliaojiaojie'>
 
             <div class="card-body ">
               <h6 class="card-title mb-1 ">
      资料交接
+     {%if visible_project%}
     <a href="javascript:void(0)" class=" mr-3 d-inline-block" id="a_add_trans" title="{{t_project.id}}" style="font-size:14px;">
-      <i class="fa fa-fw fa-comment"></i>新增</a>
+      <i class="fa fa-fw fa-comment"></i>新增</a>{%end%}
       <a href="/project?tag=t_company&project_id={{t_project.id}}&company={{t_project.customer_company}}{%if t_project.company_uid%}&company_code={{t_project.company_uid}}{%end%}{%if t_company_id%}&id={{t_company_id.id}}{%end%}" class=" mr-3 d-inline-block" id="a_t_company" title="{{t_project.id}}" style="font-size:14px;">
           <i class="fa fa-fw fa-comment"></i>所有</a>
     </h3>
@@ -2573,7 +2876,7 @@ background-color: #007bff;
             </div>
             <hr class="my-0">
 
-          <table class="table table-striped" style="padding:3px; margin:5px;width:99%;">
+          <table class="table table-striped fayetable" style="padding:3px; margin:5px;width:99%;">
                   <thead>
                     <tr>
                       <th width="100">交接时间
@@ -2672,7 +2975,7 @@ background-color: #007bff;
 
                           <a href="javascript:void(0)"
                            rec_by ="{{item.rec_by}}"
-                            class="btn btn-info btn-sm modify_transition"
+                            class="btn btn-primary btn-sm modify_transition"
                              transition_id="{{item.id}}"
                           project_id="{{item.project_id}}"
                           tran_at="{{item.tran_at}}"
@@ -2686,7 +2989,7 @@ background-color: #007bff;
                             style="margin-top:5px;"
                             href="javascript:void(0)"
                             rec_by ="{{item.rec_by}}"
-                            class="btn btn-info btn-sm modify_transition_mobile"
+                            class="btn btn-primary btn-sm modify_transition_mobile"
                             transition_id="{{item.id}}"
                             tran_at="{{item.tran_at}}"
                             is_customer = "{{item.is_customer}}"
@@ -2711,22 +3014,24 @@ background-color: #007bff;
                 </table>
               </div>
 
-              <div class="card mb-3" id='shangchuanfujian'>
+              <div class="card mb-3 topxian" id='shangchuanfujian'>
 
                 <div class="card-body ">
                   <h6 class="card-title mb-1 ">
          上传附件
+         {%if visible_project%}
         <a href="javascript:void(0)" class=" mr-3 d-inline-block" id="a_add_trans_file" title="{{t_project.id}}" style="font-size:14px;">
           <i class="fa fa-fw fa-comment"></i>新增</a>
+          {%end%}
 
         </h3>
 
                   </h6>
 
-                </div>    
+                </div>
                 <hr class="my-0">
 
-                    <table class="table table-striped" style="padding:3px; margin:5px;width:99%;">
+                    <table class="table table-striped fayetable" style="padding:3px; margin:5px;width:99%;">
                       <thead>
                         <tr>
                        <th>附件名称</th>
@@ -2740,8 +3045,8 @@ background-color: #007bff;
                         {%for item in t_projects_transitions_file%}
                         <tr>
                       <td><a href="{{item.file_name}}" download="{{item.file_name.split('/')[-1]}}" style="font-size:13px;">{{item.file_name.split('/')[-1].split('.')[0]}}</a>
-                       
-                       
+
+
                         <a href="project?tag=view_img&img={{item.file_name}}" target="_blank" style="font-size:13px;"><img src="/static/ico/web_icon_051.png" height="20"/>查看</a>
 
 
@@ -2752,7 +3057,7 @@ background-color: #007bff;
                         {{item.uid_name}} {%end%}</td>
 
                           <td>
-                              {%if (item.uid==int(uid) or role=='11') and cg_confirm_at!=len(project_btypes) %}
+                              {%if (item.uid==int(uid) or role=='11') and cg_confirm_at!=len(project_btypes) or role=="8" or uid=='119' %}
                               <a href="javascript:void(0)"  class="btn-sm modify_transition1" transition_id="{{item.id}}"
                         >删除
                       {%end%}</a>
@@ -2769,15 +3074,15 @@ background-color: #007bff;
 
                       </tbody>
                     </table>
-                
+
                 </div>
 
-              <div class="card mb-3" id='kuaidi'>
+              <div class="card mb-3 topxian" id='kuaidi'>
 
                     <div class="card-body ">
                       <h6 class="card-title mb-1 ">
              快递
-    
+             {%if visible_project%}
               <div class="dropdown">
                 <a href="javascript:void(0)" class=" mr-3 d-inline-block" id="apply_express" title="{{t_project.id}}" style="font-size:14px;">
                   <i class="fa fa-fw fa-comment"></i>新增</a>
@@ -2786,11 +3091,11 @@ background-color: #007bff;
                   <a href="javascript:void(0)"  id="btn_add_express_rec" >新建收件 </a>
                 </div>
               </div>
-            
+              {%end%}
             </h3>
-    
+
                       </h6>
-    
+
                     </div>
                     <hr class="my-0">
                     <div class="card-body  bg-faded">
@@ -2799,19 +3104,19 @@ background-color: #007bff;
                           <li class="nav-item">
                             <a class="btn btn-light  nav_padding {%if int(express_list_type)==0%}active{%end%}"
                             href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&express_list_type=0#kuaidi">
-                          寄件  
+                          寄件
                           </a>
                           </li>
                           <li>
                           <a class="btn btn-light  nav_padding {%if int(express_list_type)==1%}active{%end%}"
                           href="/project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}&express_list_type=1#kuaidi">
-                        收件  
+                        收件
                         </a>
                           </li>
                           </ul>
-                          
+
                         {%if express_list_type=='0'%}
-                         <table class="table table-striped" style="padding:3px; margin:5px;width:99%;">
+                         <table class="table table-striped fayetable" style="padding:3px; margin:5px;width:99%;">
                           <thead>
                             <tr>
                            <th width="80">附件</th>
@@ -2833,7 +3138,7 @@ background-color: #007bff;
                             {%if t_express_send%}
                             {%for item in t_express_send%}
                             <tr>
-                                <td><a href="javascript:void(0);" class="filepath_detail" id="{{item.id}}" 
+                                <td><a href="javascript:void(0);" class="filepath_detail" id="{{item.id}}"
                                   file_path="{{item.file_path}}" uid_name="{{item.uid_name}}" send_at_name="{{item.send_at_name}}">附件</a></td>
                                 <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
                                 <td>{%if item.created_send_at %}{{item.created_send_at.strftime("%Y-%m-%d")}}{%end%}</td>
@@ -2855,12 +3160,13 @@ background-color: #007bff;
                                   {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核不通过 备注:{{item.accept_uid_remark}}
                                   {%end%}</td>
                                 <td>
+                                  {%if visible_project%}
                                   {%if item.accept_state==1 and express_manage=='1' and not item.send_at %}
-                                  <a class="btn btn-info confirm_send_express" id="{{item.id}}" href="javascript:void(0);">确认发件</a>
+                                  <a class="btn btn-primary btn-sm confirm_send_express" id="{{item.id}}" href="javascript:void(0);">确认发件</a>
                                   {%elif not item.accept_at and express_manage=='1'%}
-                                  <a class="btn btn-info check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
+                                  <a class="btn btn-primary btn-sm check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
                                   {%else%}
-                                  <a class="btn btn-info edit_express" href="javascript:void(0);"
+                                  <a class="btn btn-primary btn-sm edit_express" href="javascript:void(0);"
                                   id="{{item.id}}" rec_name="{{item.rec_name}}" rec_tel="{{item.rec_tel}}" created_send_at="{%if item.created_send_at%}{{item.created_send_at}}{%end%}"
                                   rec_addr="{{item.rec_addr}}"  rec_file="{{item.rec_file}}" rec_company="{{item.rec_company}}"
                                   express_type_id="{{item.express_type_id}}" created_at="{{item.created_at}}" other_rec_file="{{item.other_rec_file}}"
@@ -2869,20 +3175,21 @@ background-color: #007bff;
                                   send_or_rec="{{item.send_or_rec}}"
                                 >查看</a>
                                   {%end%}
+                                  {%end%}
                                 </td>
                             </tr>
                             {%end%}
                             {%else%}
                             <tr>
                               <td colspan="15">还没有哦。</td>
-    
+
                             </tr>
                            {%end%}
-    
+
                           </tbody>
                         </table>
                         {%elif express_list_type=='1'%}
-                        <table class="table table-striped" style="padding:10px;">
+                        <table class="table table-striped fayetable" style="padding:10px;">
                             <thead>
                               <tr>
                              <th width="80">附件</th>
@@ -2904,7 +3211,7 @@ background-color: #007bff;
                               {%if t_express_rec%}
                               {%for item in t_express_rec%}
                               <tr>
-                                  <td><a href="javascript:void(0);" class="filepath_detail" id="{{item.id}}" 
+                                  <td><a href="javascript:void(0);" class="filepath_detail" id="{{item.id}}"
                                     file_path="{{item.file_path}}" uid_name="{{item.uid_name}}" send_at_name="{{item.send_at_name}}">附件</a></td>
                                   <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
                                   <td>{%if item.created_send_at %}{{item.created_send_at.strftime("%Y-%m-%d")}}{%end%}</td>
@@ -2926,12 +3233,13 @@ background-color: #007bff;
                                     {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核不通过 备注:{{item.accept_uid_remark}}
                                     {%end%}</td>
                                   <td>
+                                    {%if visible_project%}
                                     {%if item.accept_state==1 and express_manage=='1' and not item.send_at %}
-                                    <a class="btn btn-info confirm_send_express" id="{{item.id}}" href="javascript:void(0);">确认发件</a>
+                                    <a class="btn btn-primary btn-sm confirm_send_express" id="{{item.id}}" href="javascript:void(0);">确认发件</a>
                                     {%elif not item.accept_at and express_manage=='1'%}
-                                    <a class="btn btn-info check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
+                                    <a class="btn btn-primary btn-sm check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
                                     {%else%}
-                                    <a class="btn btn-info edit_express" href="javascript:void(0);"
+                                    <a class="btn btn-primary btn-sm edit_express" href="javascript:void(0);"
                                     id="{{item.id}}" rec_name="{{item.rec_name}}" rec_tel="{{item.rec_tel}}" created_send_at="{%if item.created_send_at%}{{item.created_send_at}}{%end%}"
                                     rec_addr="{{item.rec_addr}}"  rec_file="{{item.rec_file}}" rec_company="{{item.rec_company}}"
                                     express_type_id="{{item.express_type_id}}" created_at="{{item.created_at}}" other_rec_file="{{item.other_rec_file}}"
@@ -2939,16 +3247,17 @@ background-color: #007bff;
                                     rec_file_ids="{{item.rec_file_ids}}" express_number="{{item.express_number}}" uid_name="{{item.uid_name}}" send_or_rec="{{item.send_or_rec}}"
                                   >查看</a>
                                     {%end%}
+                                    {%end%}
                                   </td>
                               </tr>
                               {%end%}
                               {%else%}
                               <tr>
                                 <td colspan="15">还没有哦。</td>
-      
+
                               </tr>
                              {%end%}
-      
+
                             </tbody>
                           </table>
                         {%end%}
@@ -2969,7 +3278,7 @@ background-color: #007bff;
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-        </div>        
+        </div>
 
         <div class="modal-body" id="site_mod">
             <div class="form-group">
@@ -2979,7 +3288,7 @@ background-color: #007bff;
                 <div class="alert alert-danger" role="alert" style="display:none;" id="er_accept_state">
                 </div>
                 </div>
-                
+
             </div>
             <div class="form-group">
               <div class="col-sm-10">
@@ -2989,7 +3298,7 @@ background-color: #007bff;
                   </div>
                   </div>
               </div>
-              
+
         </div>
 
 
@@ -3000,7 +3309,7 @@ background-color: #007bff;
         </div>
       </div>
     </div>
-  </div>   
+  </div>
 <div id="add_linkman_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document" >
         <div class="modal-content">
@@ -3440,7 +3749,130 @@ background-color: #007bff;
                   </div>
                 </div>
               </div>
+  <div class="modal modal-ku fade" id="project_state_modal8" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLongTitle">创业补贴办理进度</h5>
+                          <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
 
+                      <div class="modal-body form-horizontal" id="site_mod">
+
+                  <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-4 control-label">办理状态</label>
+                    <div class="col-sm-10">
+                       {%for idx,item in enumerate(t_project_state9)%}
+                          <input type="radio" value="{{item.id}}" state_id_name="{{item.msg_txt}}" checked
+
+                           name="state_id8"/>{{item.msg_txt}}
+                       {%end%}
+                    </div>
+                  </div>
+
+                      <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-4 control-label">备注：</label>
+                    <div class="col-sm-10">
+                      <textarea type="text" class="form-control" id="state_remark8" name="state_remark8" placeholder=""></textarea>
+                    </div>
+                  </div>
+
+
+                      </div>
+
+
+                    <div class="modal-footer">
+                               <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                               <button class="btn btn-primary"  id="btn_save_project_state8">保 存</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  <div class="modal modal-ku fade" id="project_state_modal9" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLongTitle">创业补贴办理进度</h5>
+                          <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+
+                      <div class="modal-body form-horizontal" id="site_mod">
+
+                  <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-4 control-label">办理状态</label>
+                    <div class="col-sm-10">
+                       {%for idx,item in enumerate(t_project_state10)%}
+                          <input type="radio" value="{{item.id}}" state_id_name="{{item.msg_txt}}" checked
+
+                           name="state_id9"/>{{item.msg_txt}}
+                       {%end%}
+                    </div>
+                  </div>
+
+                      <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-4 control-label">备注：</label>
+                    <div class="col-sm-10">
+                      <textarea type="text" class="form-control" id="state_remark9" name="state_remark9" placeholder=""></textarea>
+                    </div>
+                  </div>
+
+
+                      </div>
+
+
+                    <div class="modal-footer">
+                               <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                               <button class="btn btn-primary"  id="btn_save_project_state9">保 存</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal modal-ku fade" id="project_state_modal10" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLongTitle">税务报到办理进度</h5>
+                          <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+
+                      <div class="modal-body form-horizontal" id="site_mod">
+
+                  <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-4 control-label">办理状态</label>
+                    <div class="col-sm-10">
+                       {%for idx,item in enumerate(t_project_state11)%}
+                          <input type="radio" value="{{item.id}}" state_id_name="{{item.msg_txt}}" checked
+
+                           name="state_id10"/>{{item.msg_txt}}
+                       {%end%}
+                    </div>
+                  </div>
+
+                      <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-4 control-label">备注：</label>
+                    <div class="col-sm-10">
+                      <textarea type="text" class="form-control" id="state_remark10" name="state_remark10" placeholder=""></textarea>
+                    </div>
+                  </div>
+
+
+                      </div>
+
+
+                    <div class="modal-footer">
+                               <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                               <button class="btn btn-primary"  id="btn_save_project_state10">保 存</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
   <div class="modal modal-ku fade" id="project_state_show_all1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                   <div class="modal-dialog" role="document" >
                     <div class="modal-content">
@@ -3961,7 +4393,134 @@ background-color: #007bff;
                                   </div>
                                 </div>
                               </div>
+<div class="modal modal-ku fade" id="project_state_show_all9" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                                <div class="modal-dialog" role="document" >
+                                  <div class="modal-content">
+                                      <div class="modal-header">
+                                          <h5 class="modal-title" id="exampleModalLongTitle">创业补贴办理进度</h5>
+                                          <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
 
+                                      <div class="modal-body form-horizontal" id="site_mod">
+                                          {%if t_project_state_msg9%}
+                                          {%for item in t_project_state_msg9%}
+                                          <div class="message-item" id="m9">
+                                            <div class="message-inner">
+                                              <div class="message-head clearfix">
+
+                                                <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
+                                                <div class="user-detail">
+                                                  <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
+                                                   {{item.state_id_name}}</span>
+                                                   </h5>
+                                                   {%if item.uid==int(uid) or name=='罗文波'%}
+                                                   <div style="float: right;margin:5px;">
+                                                   <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
+                                              state_guid="{{item.guid}}"  class="btn  btn-outline-danger btn-sm delete_state" href="javascript:void(0)" >删除</a>
+
+                                             <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
+                                              state_guid="{{item.guid}}" class=" btn btn-outline-primary btn-sm  modify_state8" href="javascript:void(0)" >修改</a>
+                                            </div>
+                                          {%end%}
+
+                                                </div>
+                                              </div>
+                                              {%if item.state_remark%}
+                                              <div class="qa-message-content">
+                                                {{item.state_remark}}
+                                              </div>
+                                              {%else%}
+                                              无描述
+                                              {%end%}
+
+                                          </div>
+
+
+                                          </div>
+
+                                          {%end%}
+                                                 {%else%}
+                                                <div class="card-body py-2 ">
+                                                  <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                                                </div>
+                                                {%end%}
+
+
+                                      </div>
+
+
+                                    <div class="modal-footer">
+                                               <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+<div class="modal modal-ku fade" id="project_state_show_all10" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                                <div class="modal-dialog" role="document" >
+                                  <div class="modal-content">
+                                      <div class="modal-header">
+                                          <h5 class="modal-title" id="exampleModalLongTitle">经济普查办理进度</h5>
+                                          <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
+
+                                      <div class="modal-body form-horizontal" id="site_mod">
+                                          {%if t_project_state_msg10%}
+                                          {%for item in t_project_state_msg10%}
+                                          <div class="message-item" id="m9">
+                                            <div class="message-inner">
+                                              <div class="message-head clearfix">
+
+                                                <div class="avatar pull-left"><img src="/static/images/avatar.jpeg"></div>
+                                                <div class="user-detail">
+                                                  <h5 class="handle">{{item.uid_name}} <span style="font-size:13px;">{{item.created_at}} 将设置状态：
+                                                   {{item.state_id_name}}</span>
+                                                   </h5>
+                                                   {%if item.uid==int(uid) or name=='罗文波'%}
+                                                   <div style="float: right;margin:5px;">
+                                                   <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
+                                              state_guid="{{item.guid}}"  class="btn  btn-outline-danger btn-sm delete_state" href="javascript:void(0)" >删除</a>
+
+                                             <a curr_state_id="{{item.id}}" state_id="{{item.state_id}}" state_remark="{{item.state_remark}}" uid_name="{{item.uid_name}}" type_id="{{item.type_id}}"
+                                              state_guid="{{item.guid}}" class=" btn btn-outline-primary btn-sm  modify_state9" href="javascript:void(0)" >修改</a>
+                                            </div>
+                                          {%end%}
+
+                                                </div>
+                                              </div>
+                                              {%if item.state_remark%}
+                                              <div class="qa-message-content">
+                                                {{item.state_remark}}
+                                              </div>
+                                              {%else%}
+                                              无描述
+                                              {%end%}
+
+                                          </div>
+
+
+                                          </div>
+
+                                          {%end%}
+                                                 {%else%}
+                                                <div class="card-body py-2 ">
+                                                  <div class="alert alert-secondary" role="alert"> 还没有办理进度数据记录哦</div>
+                                                </div>
+                                                {%end%}
+
+
+                                      </div>
+
+
+                                    <div class="modal-footer">
+                                               <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
 <!-- Modal -->
 <div class="modal fade" id="file_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" >
@@ -4063,18 +4622,18 @@ background-color: #007bff;
       <label class="control-label" for="rec_by">签收方</label>
       <div class="col-md-10">
         <input type="text" id="rec_by" name="rec_by" value=""  class="form-control">
-  
+
       </div>
       <!-- /controls -->
     </div>
     <div  class="form-group">
       <label for="is_inner">类型</label>
       <div class="col-sm-10">
-     
+
         <input type="radio" name="is_inner" id="is_inner" value="0"/>外部交接
         <input type="radio" name="is_inner" id="is_inner" value="1"/>内部交接
         <p id="msg_rec_by" class="help-block" style="color:red"></p>
-       
+
       </div>
     </div>
     <!-- /control-group -->
@@ -4208,7 +4767,7 @@ background-color: #007bff;
      <label for="inputEmail3" class="col-sm-5 control-label">{{item.team_name}}</label>
      <div class="col-sm-10">
 
-  <select  name="income_name_member" team_id="{{item.team_id}}" guid="{{item.guid}}" title="{{item.team_name}}"  class="form-control" >
+  <select {%if item.member_id!=0 and item.ddff!=0 and  (role!='8' and name!='吴蔚亮') %} disabled cannot_update='1' {%end%} name="income_name_member" team_id="{{item.team_id}}" guid="{{item.guid}}" title="{{item.team_name}}"  class="form-control" >
                  <option value="0">请选择</option>
                          {%for m  in t_user_teams%}
                          {%if m.team_id==1%}
@@ -4226,7 +4785,7 @@ background-color: #007bff;
      <label for="inputEmail3" class="col-sm-5 control-label">{{item.team_name}}</label>
      <div class="col-sm-10">
 
-  <select  name="income_name_member" team_id="{{item.team_id}}" guid="{{item.guid}}" title="{{item.team_name}}"  class="form-control" >
+  <select {%if item.member_id!=0 and item.ddff!=0 and  (role!='8' and name!='吴蔚亮') %} disabled cannot_update='1'{%end%} name="income_name_member" team_id="{{item.team_id}}" guid="{{item.guid}}" title="{{item.team_name}}"  class="form-control" >
                  <option value="0">请选择</option>
                  {%for m  in t_user_teams%}
                  {%if m.team_id==2%}
@@ -4243,7 +4802,7 @@ background-color: #007bff;
      <label for="inputEmail3" class="col-sm-5 control-label">{{item.team_name}}</label>
      <div class="col-sm-10">
 
-  <select  name="income_name_member" team_id="{{item.team_id}}" guid="{{item.guid}}" title="{{item.team_name}}"  class="form-control" >
+  <select {%if item.member_id!=0 and item.ddff!=0 and  (role!='8' and name!='吴蔚亮') %} disabled cannot_update='1'{%end%}  name="income_name_member" team_id="{{item.team_id}}" guid="{{item.guid}}" title="{{item.team_name}}"  class="form-control" >
                  <option value="0">请选择</option>
                  {%for m  in t_user_teams%}
                  {%if m.team_id==3%}
@@ -4260,7 +4819,7 @@ background-color: #007bff;
      <label for="inputEmail3" class="col-sm-5 control-label">{{item.team_name}}</label>
      <div class="col-sm-10">
 
-  <select  name="income_name_member" team_id="{{item.team_id}}" guid="{{item.guid}}" title="{{item.team_name}}"  class="form-control" >
+  <select {%if item.member_id!=0 and item.ddff!=0 and  (role!='8' and name!='吴蔚亮') %} disabled cannot_update='1'{%end%} name="income_name_member" team_id="{{item.team_id}}" guid="{{item.guid}}" title="{{item.team_name}}"  class="form-control" >
                  <option value="0">请选择</option>
                  {%for m  in t_user_teams%}
                  {%if m.team_id==4%}
@@ -4301,7 +4860,7 @@ background-color: #007bff;
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-        </div>        
+        </div>
 
         <div class="modal-body" id="site_mod">
             <div class="form-group">
@@ -4316,9 +4875,9 @@ background-color: #007bff;
                   <label class="control-label" for="lastname">已上传附件</label>
                   <ul id="showFiles"></ul>
                 </div>
-                
+
             </div>
-              
+
         </div>
 
 
@@ -4329,7 +4888,7 @@ background-color: #007bff;
         </div>
       </div>
     </div>
-  </div>   
+  </div>
 <!-- Modal -->
 <div class="modal fade" id="income_modal_delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" >
@@ -4446,7 +5005,7 @@ background-color: #007bff;
             </select>
             {%if name=="陈太智"%}
             <a href="/project?tag=manage_chengjiao"><span class="fa fa-cog">管理</span></a>
-      
+
    {%end%}
       <div class="col-sm-12">
         <textarea id='note_content' class="form-control" type="text" name="note_content" style="height:110px;"></textarea>
@@ -4497,7 +5056,7 @@ background-color: #007bff;
                       </td>
                       <td><input class="form-control" id="supply_addr_type"  placeholder="地址类型"></td>
                       <td><input class="form-control" id="provider" placeholder="供应商"></td>
-                      <td><a class="btn btn-info" id="search_addr" href="javascript:void(0);">查询</a></td>
+                      <td><a class="btn btn-primary btn-sm" id="search_addr" href="javascript:void(0);">查询</a></td>
                     </tr>
               </tr>
             </tbody>
@@ -4575,7 +5134,7 @@ background-color: #007bff;
         <div class="col-sm-10">
             {%if t_projects_note_check %}
             {%for idx,item in enumerate(t_projects_note_check)%}
-
+           
             <span class="clearfix  z-1">
 
   <br>
@@ -4873,8 +5432,8 @@ background-color: #007bff;
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle">业务收入明细
           {%if role=='111111'%}
-          <a class="btn btn-info" id="project_type_detail_btn" href="javascript:void(0)">查看</a>
-          <a class="btn btn-info" id="project_type_insert" href="javascript:void(0)" style="display:none;">新增</a>
+          <a class="btn btn-primary btn-sm" id="project_type_detail_btn" href="javascript:void(0)">查看</a>
+          <a class="btn btn-primary btn-sm" id="project_type_insert" href="javascript:void(0)" style="display:none;">新增</a>
           {%end%}
         </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -5100,7 +5659,7 @@ background-color: #007bff;
 
             </div>
       {%end%}
-<!-- 
+<!--
           <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">业务所属公司:</label>
 
@@ -5119,7 +5678,7 @@ background-color: #007bff;
            {%end%}
 
           </div>
-          <div class="form-group">
+          <div class="form-group" id="div_is_expedited">
               <label for="exampleInputEmail1"  class="col-sm-4 control-label">加急业务: </label>
               <input type="radio" name="is_expedited"  value="1"  {% if t_project.is_expedited==1%}checked{%end%}/>&nbsp;是
               <input type="radio" name="is_expedited" value="0" {% if t_project.is_expedited==0%}checked{%end%}/>&nbsp;否
@@ -5248,7 +5807,7 @@ background-color: #007bff;
            {% end %}
 
           </div>
-                 <div class="form-group">
+                 <div class="form-group" id="div_is_finance">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">是否记账:</label>
 
 
@@ -5410,6 +5969,56 @@ background-color: #007bff;
       </div>
     </div>
   </div>
+<div class="modal fade" id="edit_banjie_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle_license">办结公司信息 </h5>
+
+
+          <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body form-horizontal" id="site_mod">
+
+            <div class="form-group">
+                <label for="exampleInputEmail1"  class="col-sm-4 control-label">企业名称:</label>
+                <input class="form-control"  value="{%if t_project.customer_company%}{{t_project.customer_company}}{%end%}" type="text" name="banjie_customer_company" id="banjie_customer_company"  placeholder="企业名称">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputEmail1"  class="col-sm-4 control-label">统一社会信用代码:</label>
+                <input class="form-control"  value="{%if t_project.company_uid%}{{t_project.company_uid}}{%end%}" type="text" name="banjie_company_uid" id="banjie_company_uid"  placeholder="统一社会信用代码">
+              </div>
+        </div>
+        <div class="modal-footer">
+
+
+
+
+
+       {%if not  t_project.contract_uid_name or role=="5" or role=="3" or role=='9' or role=='13'%}
+
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+               <button class="btn btn-primary" id="btn_save_banjie_project">保 存</button>
+
+
+        {%else%}
+            <div class="alert alert-warning" role="alert">
+                  合同岗位核对确认后，信息停止更改！
+              </div>
+
+        {%end%}
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
 <div class="modal fade" id="new_project_modal_kehu" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
 
     <div class="modal-dialog" role="document" >
@@ -6376,14 +6985,14 @@ background-color: #007bff;
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" ><span id="express_title">发起快递申请</span>
-                  <a class="btn btn-info btn-sm" id="choose_cutomer_addr_msg" href="javascript:void(0);">选择收件人信息</a>
+                  <a class="btn btn-primary btn-sm" id="choose_cutomer_addr_msg" href="javascript:void(0);">选择收件人信息</a>
             </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-  
-  
+
+
               <div class="modal-body" id="site_mod">
                   <div class="form-group">
                   <div class="col-sm-10">
@@ -6393,7 +7002,7 @@ background-color: #007bff;
                       <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_name">
                         </div>
                       </div>
-                      
+
                   </div>
                   <div class="form-group">
                     <div class="col-sm-10">
@@ -6417,7 +7026,7 @@ background-color: #007bff;
                       </div>
                       <div class="form-group">
                         <label class="control-label" for="tran_at">交接明细 </label>
-                  
+
                          <input type="checkbox" name="allcheck_express" id="allcheck_express"/>全选
                         <div class="col-sm-10">
                         {% for item in t_projects_type1%}
@@ -6485,7 +7094,7 @@ background-color: #007bff;
                                 <label for="recode" id='l_created_send_at'>发件时间</label>
                                 <input class="form-control" name="created_send_at" id="created_send_at" type="text" readonly="readonly">
                                 <div class="alert alert-danger" role="alert" style="display:none;" id="er_created_send_at">
-                                  </div>  
+                                  </div>
                               </div>
                             </div>
                       <div class="form-group">
@@ -6493,7 +7102,7 @@ background-color: #007bff;
                             <label for="recode" id="l_send_name">发件人</label>
                             <input class="form-control" name="send_name" id="send_name" type="text" placeholder="申请人" value="{{name}}">
                             <div class="alert alert-danger" role="alert" style="display:none;" id="er_send_name">
-                              </div>  
+                              </div>
                           </div>
                         </div>
                         <div class="form-group">
@@ -6501,18 +7110,18 @@ background-color: #007bff;
                                 <label for="recode">备注</label>
                                 <textarea class="form-control" name="express_remark" id="express_remark" type="text" placeholder="备注">
                       </textarea>
-                                
+
                               </div>
                             </div>
               </div>
-  
-  
+
+
               <div class="modal-footer">
                   <div class="alert alert-danger" role="alert" style="display:none;" id="er_express">
                       已审核不能修改
                     </div>
                          <button class="btn btn-primary" target="_blank" id="btn_save_express" >保存</button>
-  
+
               </div>
             </div>
           </div>
@@ -6522,18 +7131,18 @@ background-color: #007bff;
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" >选择 寄/收 件人信息
-                    
+
               </h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              
+
               <div class="modal-body" id="site_mod">
                 {% for item in t_cutomer_addr_msg%}
                   <div class="form-group">
                   <div class="col-sm-10">
-                    <input type="radio" name="choose_customer_addr" c_name="{{item.name}}" addr="{{item.addr}}" tel="{{item.tel}}">{{item.name}}<br> 
+                    <input type="radio" name="choose_customer_addr" c_name="{{item.name}}" addr="{{item.addr}}" tel="{{item.tel}}">{{item.name}}<br>
                     {{item.addr}} {{item.tel}}
                   </div>
               </div>
@@ -6552,13 +7161,13 @@ background-color: #007bff;
                 <div class="modal-content">
                   <div class="modal-header">
                     <h5 class="modal-title" id="xiezhu_title">办结确认
-      
+
                 </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
-                  </div>        
-      
+                  </div>
+
                   <div class="modal-body" id="site_mod">
                       <div class="form-group">
                       <div class="col-sm-10">
@@ -6567,7 +7176,7 @@ background-color: #007bff;
                           <div class="alert alert-danger" role="alert" style="display:none;" id="er_confirm_banjie">
                           </div>
                           </div>
-                          
+
                       </div>
                       <div class="form-group">
                         <div class="col-sm-10">
@@ -6576,21 +7185,21 @@ background-color: #007bff;
                                 </textarea>
                             <div class="alert alert-danger" role="alert" style="display:none;" id="er_remark">
                             </div>
-                              
+
                             </div>
                         </div>
-                        
+
                   </div>
-      
-      
+
+
                   <div class="modal-footer">
                       <input type="hidden" value="0" id="is_other" name="is_other" />
                              <button class="btn btn-primary" target="_blank" id="btn_confirm_banjie">保存</button>
-      
+
                   </div>
                 </div>
               </div>
-            </div> 
+            </div>
 
 <input type="hidden" value="0" name="parent_id_hide" id="parent_id_hide" />
 
@@ -6743,9 +7352,9 @@ $("#created_send_at").datetimepicker({ minView: 2, pickTime: false,todayBtn: tru
     language: 'zh-CN',initialDate: new Date()});
 
 $("#btn_add_express").on("click",function () {
-  $('#l_rec_name').text('收件人') 
-  $('#l_rec_tel').text('收件人电话') 
-  $('#l_rec_addr').text('收件人地址') 
+  $('#l_rec_name').text('收件人')
+  $('#l_rec_tel').text('收件人电话')
+  $('#l_rec_addr').text('收件人地址')
   $('#l_send_name').text('发件人')
   $("#express_title").text('发起快递寄件申请')
   $('#choose_cutomer_addr_msg').text('选择收件人信息')
@@ -6771,9 +7380,9 @@ $("#btn_add_express").on("click",function () {
   $("#add_express_modal").modal("show")
  })
  $("#btn_add_express_rec").on('click',function () {
-      $('#l_rec_name').text('寄件人') 
-      $('#l_rec_tel').text('寄件人电话') 
-      $('#l_rec_addr').text('寄件人地址') 
+      $('#l_rec_name').text('寄件人')
+      $('#l_rec_tel').text('寄件人电话')
+      $('#l_rec_addr').text('寄件人地址')
       $('#l_send_name').text('收件人')
       $("#express_title").text('发起快递收件申请')
       $('#choose_cutomer_addr_msg').text('选择寄件人信息')
@@ -6784,7 +7393,7 @@ $("#btn_add_express").on("click",function () {
        $('#btn_save_express').attr('send_or_rec','1')
        $("#er_express").hide()
       $('#btn_save_express').show()
-      $('#btn_save_express').removeAttr('express_id') 
+      $('#btn_save_express').removeAttr('express_id')
       $('input[name=rec_file]').prop('checked', false)
       $('#other_rec_file').val('')
       $('#express_number').val('')
@@ -6807,24 +7416,24 @@ $("#btn_add_express").on("click",function () {
     }
     $('#created_send_at').val($(this).attr('created_send_at'))
     if($(this).attr('send_or_rec')=='1'){
-      $('#l_rec_name').text('寄件人') 
-      $('#l_rec_tel').text('寄件人电话') 
-      $('#l_rec_addr').text('寄件人地址') 
+      $('#l_rec_name').text('寄件人')
+      $('#l_rec_tel').text('寄件人电话')
+      $('#l_rec_addr').text('寄件人地址')
       $('#l_send_name').text('收件人')
       $('#save_customer_add_msg').text('寄件人信息存入系统')
       $('#choose_cutomer_addr_msg').text('选择寄件人信息')
       $("#l_created_send_at").text('收件时间')
-      
-      
+
+
     }
     else if($(this).attr('send_or_rec')=='0'){
-      $('#l_rec_name').text('收件人') 
-      $('#l_rec_tel').text('收件人电话') 
-      $('#l_rec_addr').text('收件人地址') 
+      $('#l_rec_name').text('收件人')
+      $('#l_rec_tel').text('收件人电话')
+      $('#l_rec_addr').text('收件人地址')
       $('#l_send_name').text('发件人')
       $('#save_customer_add_msg').text('寄件人信息存入系统')
       $('#choose_cutomer_addr_msg').text('选择收件人信息')
-      
+
     }
   $("#other_rec_file").val($(this).attr('other_rec_file'))
   $("#express_number").val($(this).attr('express_number'))
@@ -6853,7 +7462,7 @@ $("#btn_add_express").on("click",function () {
  })
 
  $("#btn_save_express").on("click",function(){
-   
+
     var this_btn=$(this)
     var rec_name=$("#rec_name").val()
     var rec_tel=$("#rec_tel").val()
@@ -6877,10 +7486,10 @@ $("#btn_add_express").on("click",function () {
                 type_ids.push($(this).val());
                 type_names.push($(this).attr('income_name'))
            })
-    
+
     type_ids=type_ids.join(',')
     type_names=type_names.join(',')
- 
+
     if(rec_name==''){
       $('#rec_name').focus()
       $('#er_rec_name').text('收件人不能为空')
@@ -6941,7 +7550,7 @@ $("#btn_add_express").on("click",function () {
       'created_send_at':created_send_at,
       '_xsrf':_xsrf
       },function (result) {
-    
+
          if(result=='-2'){
           alert('已审核不能修改')
           location.reload()
@@ -6953,7 +7562,7 @@ $("#btn_add_express").on("click",function () {
         else{
           location.reload()
         }
-        
+
        })
           }
  })
@@ -7297,7 +7906,7 @@ $('#t_customer_company').hide()
   $("#div_acc").hide()
   $("#div_recommend_staff").hide()
   $("#div_addr_type").show()
-  
+
 {%end%}
 
 {%if t_project.busniess_from_id==3%}
@@ -7313,7 +7922,7 @@ $('#t_customer_company').hide()
     $("#customer_company").removeAttr('readonly')
       $("#div_pre_value").show()
       $("#div_addr_type").show()
-     
+
 {%end%}
 
 
@@ -7345,7 +7954,7 @@ $('#t_customer_company').hide()
   $("#customer_company").removeAttr('readonly')
   $("#div_pre_value").show()
   $("#div_addr_type").show()
-  
+
 {%end%}
 {%if t_project.busniess_from_id==200%}
 $('#same_company').show()
@@ -7359,7 +7968,7 @@ $('#same_company').show()
       $("#div_pre_value").show()
       $("#div_addr_type").show()
       $("#div_promo").hide()
-     
+
 {%end%}
 {%if t_project.busniess_from_id==202%}
 $('#t_customer_company').hide()
@@ -7387,9 +7996,24 @@ $('#t_customer_company').hide()
   $("#div_addr_type").hide()
   $("#div_promo").show()
 {%end%}
+{%if t_project.busniess_from_id==278%}
+  $('#t_customer_company').hide()
+  $('#same_company').hide()
+  $(".div_talk_type").hide()
+  $("#div_from_word").hide()
+  $("#div_building").hide()
+  $("#div_recommend_by").hide()
+  $("#div_recommend_staff").hide()
+  $("#div_acc").hide()
+  $("#div_pre_value").hide()
+  $("#div_addr_type").hide()
+  $("#div_promo").hide()
+  $("#div_is_expedited").hide()
+  $("#div_is_finance").hide()
+{%end%}
 $(".delete_state").on("click",function(){
 
-          
+
   if(confirm("确认删除该状态吗？")){
         curr_state_id = $(this).attr("curr_state_id")
         name=$(this).attr('uid_name')
@@ -7439,6 +8063,12 @@ $('.show_all7').on('click',function(){
 $('.show_all8').on('click',function(){
   $('#project_state_show_all8').modal("show");
 })
+$('.show_all9').on('click',function(){
+  $('#project_state_show_all9').modal("show");
+})
+$('.show_all10').on('click',function(){
+  $('#project_state_show_all10').modal("show");
+})
 
 $(".modify_state").on('click',function(){
     //  $("#project_state_modal").attr("width","756px;")
@@ -7452,7 +8082,7 @@ $(".modify_state").on('click',function(){
         "project_id":"{{t_project.id}}",
         "curr_state_id":curr_state_id,
         "type_id":type_id
-      },function (data) { 
+      },function (data) {
         if(data=='-100'){
           alert('已过修改期,如需修改,请联系罗文波')
         }else{
@@ -7466,7 +8096,7 @@ $(".modify_state").on('click',function(){
       $("#project_state_show_all1").modal("hide")
         }
        })
-    
+
 })
 $(".modify_state1").on('click',function(){
     //  $("#project_state_modal").attr("width","756px;")
@@ -7480,7 +8110,7 @@ $(".modify_state1").on('click',function(){
         "project_id":"{{t_project.id}}",
         "curr_state_id":curr_state_id,
         "type_id":type_id
-      },function (data) { 
+      },function (data) {
         if(data=='-100'){
           alert('已过修改期,如需修改,请联系罗文波')
         }else{
@@ -7493,7 +8123,7 @@ $(".modify_state1").on('click',function(){
       $("#project_state_show_all2").modal("hide")
         }
        })
-    
+
 
 })
 $(".modify_state2").on('click',function(){
@@ -7508,7 +8138,7 @@ $(".modify_state2").on('click',function(){
         "project_id":"{{t_project.id}}",
         "curr_state_id":curr_state_id,
         "type_id":type_id
-      },function (data) { 
+      },function (data) {
         if(data=='-100'){
           alert('已过修改期,如需修改,请联系罗文波')
         }else{
@@ -7535,7 +8165,7 @@ $(".modify_state3").on('click',function(){
         "project_id":"{{t_project.id}}",
         "curr_state_id":curr_state_id,
         "type_id":type_id
-      },function (data) { 
+      },function (data) {
         if(data=='-100'){
           alert('已过修改期,如需修改,请联系罗文波')
         }else{
@@ -7562,7 +8192,7 @@ $(".modify_state4").on('click',function(){
         "project_id":"{{t_project.id}}",
         "curr_state_id":curr_state_id,
         "type_id":type_id
-      },function (data) { 
+      },function (data) {
         if(data=='-100'){
           alert('已过修改期,如需修改,请联系罗文波')
         }else{
@@ -7589,7 +8219,7 @@ $(".modify_state5").on('click',function(){
         "project_id":"{{t_project.id}}",
         "curr_state_id":curr_state_id,
         "type_id":type_id
-      },function (data) { 
+      },function (data) {
         if(data=='-100'){
           alert('已过修改期,如需修改,请联系罗文波')
         }else{
@@ -7616,7 +8246,7 @@ $(".modify_state6").on('click',function(){
         "project_id":"{{t_project.id}}",
         "curr_state_id":curr_state_id,
         "type_id":type_id
-      },function (data) { 
+      },function (data) {
         if(data=='-100'){
           alert('已过修改期,如需修改,请联系罗文波')
         }else{
@@ -7643,7 +8273,7 @@ $(".modify_state7").on('click',function(){
         "project_id":"{{t_project.id}}",
         "curr_state_id":curr_state_id,
         "type_id":type_id
-      },function (data) { 
+      },function (data) {
         if(data=='-100'){
           alert('已过修改期,如需修改,请联系罗文波')
         }else{
@@ -7654,6 +8284,87 @@ $(".modify_state7").on('click',function(){
    //   $("#project_state_modal").css('margin', '100px auto 100px auto');
       $("#project_state_modal7").modal("show")
       $("#project_state_show_all8").modal("hide")
+        }
+       })
+
+})
+$(".modify_state8").on('click',function(){
+    //  $("#project_state_modal").attr("width","756px;")
+      state_remark = $(this).attr("state_remark")
+      curr_state_id = $(this).attr("curr_state_id")
+      state_id = $(this).attr("state_id")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) {
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id8'][value='"+state_id+"']").prop("checked","checked")
+      $("#state_remark8").val(state_remark)
+      $("#btn_save_project_state8").attr({"curr_state_id":curr_state_id,'type_id':9})
+//      $('#project_state_modal').css('width', '850px');
+   //   $("#project_state_modal").css('margin', '100px auto 100px auto');
+      $("#project_state_modal8").modal("show")
+      $("#project_state_show_all9").modal("hide")
+        }
+       })
+
+})
+$(".modify_state9").on('click',function(){
+    //  $("#project_state_modal").attr("width","756px;")
+      state_remark = $(this).attr("state_remark")
+      curr_state_id = $(this).attr("curr_state_id")
+      state_id = $(this).attr("state_id")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) {
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id9'][value='"+state_id+"']").prop("checked","checked")
+      $("#state_remark9").val(state_remark)
+      $("#btn_save_project_state9").attr({"curr_state_id":curr_state_id,'type_id':10})
+//      $('#project_state_modal').css('width', '850px');
+   //   $("#project_state_modal").css('margin', '100px auto 100px auto');
+      $("#project_state_modal9").modal("show")
+      $("#project_state_show_all10").modal("hide")
+        }
+       })
+
+})
+$(".modify_state10").on('click',function(){
+    //  $("#project_state_modal").attr("width","756px;")
+      state_remark = $(this).attr("state_remark")
+      curr_state_id = $(this).attr("curr_state_id")
+      state_id = $(this).attr("state_id")
+      type_id=$(this).attr('type_id')
+      $.post("/project?tag=expire_msg",
+      {
+        "_xsrf":_xsrf,
+        "project_id":"{{t_project.id}}",
+        "curr_state_id":curr_state_id,
+        "type_id":type_id
+      },function (data) {
+        if(data=='-100'){
+          alert('已过修改期,如需修改,请联系罗文波')
+        }else{
+          $(":radio[name='state_id10'][value='"+state_id+"']").prop("checked","checked")
+      $("#state_remark10").val(state_remark)
+      $("#btn_save_project_state10").attr({"curr_state_id":curr_state_id,'type_id':11})
+//      $('#project_state_modal').css('width', '850px');
+   //   $("#project_state_modal").css('margin', '100px auto 100px auto');
+      $("#project_state_modal10").modal("show")
+      $("#project_state_show_all11").modal("hide")
         }
        })
 
@@ -7760,6 +8471,27 @@ $("#btn_save_project_state7").attr("curr_state_id","0")
 $("#btn_save_project_state7").removeAttr("disabled")
 $("#project_state_modal7").modal("show")
 $("#btn_save_project_state7").attr("type_id",$(this).attr("type_id"))
+
+})
+$(".a_project_state_modal8").on("click",function(){
+$("#btn_save_project_state8").attr("curr_state_id","0")
+$("#btn_save_project_state8").removeAttr("disabled")
+$("#project_state_modal8").modal("show")
+$("#btn_save_project_state8").attr("type_id",$(this).attr("type_id"))
+
+})
+$(".a_project_state_modal9").on("click",function(){
+$("#btn_save_project_state9").attr("curr_state_id","0")
+$("#btn_save_project_state9").removeAttr("disabled")
+$("#project_state_modal9").modal("show")
+$("#btn_save_project_state9").attr("type_id",$(this).attr("type_id"))
+
+})
+$(".a_project_state_modal10").on("click",function(){
+$("#btn_save_project_state10").attr("curr_state_id","0")
+$("#btn_save_project_state10").removeAttr("disabled")
+$("#project_state_modal10").modal("show")
+$("#btn_save_project_state10").attr("type_id",$(this).attr("type_id"))
 
 })
 
@@ -8053,9 +8785,104 @@ $("#btn_save_project_state7").on("click",function(){
 }
 
 })
+$("#btn_save_project_state8").on("click",function(){
+    curr_state_id = $(this).attr("curr_state_id")
+    type_id = $(this).attr("type_id")
+    if(type_id==9){
+    state_id_name = $("input[name=state_id8]:checked").attr("state_id_name")
+    state_remark = $("#state_remark8").val()
+    state_id =  $("input[name=state_id8]:checked").val()
+    }else{
+    state_id_name = $("input[name=state_id1]:checked").attr("state_id_name")
+    state_remark = $("#state_remark0").val()
+    state_id =  $("input[name=state_id1]:checked").val()}
+    if(state_id==undefined){
 
+      alert("要选择办理状态哦")
+    }else{
+    $(this).attr("disabled","disabled")
+    $(this).text('保存中..')
 
+    $.post("project?tag=add_state",{
+        "_xsrf":_xsrf,
+        "type_id": type_id,
+        "curr_state_id":curr_state_id,
+        "project_id":{{t_project.id}},
+        "state_id":state_id,
+        "state_id_name":state_id_name,
+        "state_remark":state_remark}
+    ,function(result){
+         location.reload()
+    })
+}
 
+})
+
+$("#btn_save_project_state9").on("click",function(){
+    curr_state_id = $(this).attr("curr_state_id")
+    type_id = $(this).attr("type_id")
+    if(type_id==10){
+    state_id_name = $("input[name=state_id9]:checked").attr("state_id_name")
+    state_remark = $("#state_remark9").val()
+    state_id =  $("input[name=state_id9]:checked").val()
+    }else{
+    state_id_name = $("input[name=state_id1]:checked").attr("state_id_name")
+    state_remark = $("#state_remark0").val()
+    state_id =  $("input[name=state_id1]:checked").val()}
+    if(state_id==undefined){
+
+      alert("要选择办理状态哦")
+    }else{
+    $(this).attr("disabled","disabled")
+    $(this).text('保存中..')
+
+    $.post("project?tag=add_state",{
+        "_xsrf":_xsrf,
+        "type_id": type_id,
+        "curr_state_id":curr_state_id,
+        "project_id":{{t_project.id}},
+        "state_id":state_id,
+        "state_id_name":state_id_name,
+        "state_remark":state_remark}
+    ,function(result){
+         location.reload()
+    })
+}
+
+})
+
+$("#btn_save_project_state10").on("click",function(){
+    curr_state_id = $(this).attr("curr_state_id")
+    type_id = $(this).attr("type_id")
+    if(type_id==11){
+    state_id_name = $("input[name=state_id10]:checked").attr("state_id_name")
+    state_remark = $("#state_remark10").val()
+    state_id =  $("input[name=state_id10]:checked").val()
+    }else{
+    state_id_name = $("input[name=state_id1]:checked").attr("state_id_name")
+    state_remark = $("#state_remark0").val()
+    state_id =  $("input[name=state_id1]:checked").val()}
+    if(state_id==undefined){
+
+      alert("要选择办理状态哦")
+    }else{
+    $(this).attr("disabled","disabled")
+    $(this).text('保存中..')
+
+    $.post("project?tag=add_state",{
+        "_xsrf":_xsrf,
+        "type_id": type_id,
+        "curr_state_id":curr_state_id,
+        "project_id":{{t_project.id}},
+        "state_id":state_id,
+        "state_id_name":state_id_name,
+        "state_remark":state_remark}
+    ,function(result){
+         location.reload()
+    })
+}
+
+})
     $("textarea[name=income_remark]").on("blur",function(){
               remark = $(this).val()
               income_id = $(this).attr("income_id")
@@ -8228,16 +9055,16 @@ $("#btn_save_project1").on("click",function () {
                   },function (res) {
                     if(res['customer']!=undefined && res['customer']!='-1' && res['customer']!='-2'){
                       if(confirm("公司名存在，是否要更改?")){
-                    
+
                         if(res['same_customer']!=undefined){
-                        if(confirm('是否修改客户系统中相同公司的公司名？')){
-                          is_update_company_customer=1
-                        }
+                        // if(confirm('是否修改客户系统中相同公司的公司名？')){
+                        //   is_update_company_customer=1
+                        // }
                         }
                         if(res['project']!=undefined){
-                        if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
-                          is_update_company_project=1
-                        }
+                        // if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
+                        //   is_update_company_project=1
+                        // }
                         }
                         $.post("/project?tag=modify1",{
                         "project_id":"{{t_project.id}}",
@@ -8253,14 +9080,14 @@ $("#btn_save_project1").on("click",function () {
 
                   }else{
                       if(res['same_customer']!=undefined){
-                        if(confirm('是否修改客户系统中相同公司的公司名？')){
-                          is_update_company_customer=1
-                        }
+                        // if(confirm('是否修改客户系统中相同公司的公司名？')){
+                        //   is_update_company_customer=1
+                        // }
                         }
                       if(res['project']!=undefined){
-                        if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
-                          is_update_company_project=1
-                        }
+                        // if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
+                        //   is_update_company_project=1
+                        // }
                         }
                         $("#btn_save_project1").attr('disabled','disabled')
                         $("#btn_save_project1").text("保存中...")
@@ -8383,13 +9210,13 @@ $("#btn_save_project").on("click",function(){
                    console.log("hi3")
                   return false;
                 }
-              else if ((talk_type=="0" || talk_type==undefined) && (bf_value!="200" &&  bf_value != "202" && bf_value != "203" && bf_value!="3" )){
+              else if ((talk_type=="0" || talk_type==undefined) && (bf_value!="200" &&  bf_value != "202" && bf_value != "203" && bf_value!="3" && bf_value!='278')){
                   $("#talk_typeHelpInline").text("请选择来源方式哦。")
                    $("input[name=talk_type]:first").focus()
 
                   return false;
                 }
-                else if ( is_finance.val()==undefined){
+                else if ( is_finance.val()==undefined && bf_value!='278'){
                   $("#is_financeHelpInline").text("请选择是否记账。")
                     console.log("hi5")
                  $("input[name=is_finance]:first").focus()
@@ -8403,20 +9230,20 @@ $("#btn_save_project").on("click",function(){
                   return false;
                 }
 
-                else if (deal_day.val()==""  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3")){
+                else if (deal_day.val()==""  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3" && bf_value!='278')){
                    console.log("hi10")
                      $("#deal_dayHelpInline").text("成交周期不能为空哦！")
                      deal_day.focus()
                     return false
                 }
-                else if(b_deal_day==false  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3")){
+                else if(b_deal_day==false  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3" && bf_value!='278')){
                      console.log("hi11")
                     $("#deal_dayHelpInline").text("成交周期的天数必须是数值哦！")
                     deal_day.focus()
 
                     return false
                 }
-                else if(b==false  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3")){
+                else if(b==false  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3"  && bf_value!='278')){
                    console.log("b")
                     //alert("预计合同定金必须是数值哦！")
                      $("#pre_incomeHelpInline").text("预计合同定金必须是数值哦！")
@@ -8476,16 +9303,18 @@ $("#btn_save_project").on("click",function(){
                         if(confirm('是否将原公司添加到公司曾用名？')){
                           is_company_history=1
                         }
-                        if(res['same_customer']!=undefined && res['same_customer']!='' && "{{getMemberName(t_project_members,'销售顾问')}}"!="{{name}}"){
-                        if(confirm('是否修改客户系统中相同公司的公司名？')){
-                          is_update_company_customer=1
+                        {%if '279' in role_list%}
+                        if(res['same_customer']!=undefined && res['same_customer']!='' && "{{getMemberName(t_project_members,'销售顾问')}}"!="{{name}}" && $.inArray('279','{{role_list}}')){
+                        // if(confirm('是否修改客户系统中相同公司的公司名？')){
+                        //   is_update_company_customer=1
+                        // }
                         }
+                        if(res['project']!=undefined && res['project']!='' && "{{getMemberName(t_project_members,'销售顾问')}}"!="{{name}}" && $.inArray('279','{{role_list}}')){
+                        // if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
+                        //   is_update_company_project=1
+                        // }
                         }
-                        if(res['project']!=undefined && res['project']!='' && "{{getMemberName(t_project_members,'销售顾问')}}"!="{{name}}" ){
-                        if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
-                          is_update_company_project=1
-                        }
-                        }
+                        {%end%}
                         $(this).attr("disabled","disabled")
                         $(this).text("保存中...")
                         $.post("/project?tag=modify",{
@@ -8526,17 +9355,19 @@ $("#btn_save_project").on("click",function(){
                           is_company_history=1
                         }
                       }
+                      {%if '279' in role_list%}
                       if(res['same_customer']!=undefined && res['same_customer']!=''  && "{{getMemberName(t_project_members,'销售顾问')}}"!="{{name}}"){
-                        if(confirm('是否修改客户系统中相同公司的公司名？')){
-                          is_update_company_customer=1
-                        }
-                      
+                        // if(confirm('是否修改客户系统中相同公司的公司名？')){
+                        //   is_update_company_customer=1
+                        // }
+
                         }
                         if(res['project']!=undefined && res['project']!=''  && "{{getMemberName(t_project_members,'销售顾问')}}"!="{{name}}" ){
-                        if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
-                          is_update_company_project=1
+                        // if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
+                        //   is_update_company_project=1
+                        // }
                         }
-                        }
+                        {%end%}
                       // $('#btn_save_project').attr("disabled","disabled")
                       // $('#btn_save_project').text("保存中...")
                       $.post("/project?tag=modify",{
@@ -8940,12 +9771,12 @@ $("body").on("click",'#btn_save_income_servie',function(){
               });
           }
       })
-      $("input[name=is_free]:checked").each(function () { 
+      $("input[name=is_free]:checked").each(function () {
           sid=$(this).val()
           FreeList.push(sid)
        })
        FreeList=FreeList.join(',')
-      
+
       $(this).text("保存中..")
       $(this).attr("disabled","disabled")
 
@@ -9043,7 +9874,15 @@ $("#btn_save_fromword").on("click",function(){
       guid = $(this).attr("guid")
       mid = $(this).attr("mid")
       staff_name = $(this).attr("staff_name")
-      if(confirm("确认"+staff_name+"移出项目组吗？")){
+      ddf=$(this).attr('ddf')
+      ddff=$(this).attr('ddff')
+      team_id=$(this).attr('team_id')
+    if( (ddf!='0' && team_id=='38' || ddff!='0' && team_id!='38') && ('{{role}}'!='8' && '{{name}}'!='吴蔚亮' && "{{role}}"!='7') )
+    {
+        alert('已过删除时间，请联系管理员或财务经理删除!')
+      }
+    else{
+        if(confirm("确认"+staff_name+"移出项目组吗？")){
           $.post("/project?tag=delete_member",{"mid":mid, "_xsrf": _xsrf,"project_id":project_id,"guid":guid
           },function(result){
                 alert(staff_name+"移出操作成功！")
@@ -9052,6 +9891,8 @@ $("#btn_save_fromword").on("click",function(){
 
 
       }
+      }
+
   })
    $("#btn_contract_confrim").on("click",function(){
 
@@ -9141,7 +9982,7 @@ $("#btn_save_fromword").on("click",function(){
 
 
     $("#btn_save_income").on("click",function(){
-       
+
          var   pay_type_id = $("#pay_type_id").val()//
          var   pay_type_name =$("#pay_type_id option:selected").text()
 
@@ -9257,7 +10098,7 @@ $("#btn_save_fromword").on("click",function(){
            formData.append("income_at",income_at)
            //$(this).text('保存中')
           // $(this).attr('disabled','disabled')
-          
+
            $(this).attr("disabled","disabled")
            $.ajax({
                     url : '/project?tag=add_income',
@@ -9388,8 +10229,8 @@ $("#btn_save_fromword").on("click",function(){
        $("select[name=income_name_member]").each(function(){
                 guid =   $(this).attr("guid")
                 member_id = $(this).val()
-
-                $.post("/project?tag=add_member",{"_xsrf": _xsrf,"guid":guid,
+                cannot_update=$(this).attr('cannot_update')
+                $.post("/project?tag=add_member",{"_xsrf": _xsrf,"guid":guid,'cannot_update':cannot_update,
                 "member_id":member_id,"project_id":{{t_project.id}}},function(result){
                     location.reload()
                     console.log(result)
@@ -11140,6 +11981,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
         $('#search_other_project').on('click',function () {
           var project_id=$('#search_other_project_id').val()
           var project_name=$('#search_other_project_name').val()
+
           if(project_id=='' & project_name==''){
             alert('请填写检索内容')
           }else{
@@ -11147,7 +11989,8 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
             '/project?tag=search_relation_project',
             {
               'project_id':project_id,
-              'project_name':project_name
+              'project_name':project_name,
+              'current_id':"{{t_project.id}}"
             },function (result) {
               $('.relation_project_box').children().remove()
               result=result['projects']
@@ -11161,8 +12004,12 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                   text+='<tr><td>'+result[i].id+'</td><td>'+result[i].customer_company+'</td><td>'+
                   result[i].project_name+'</td><td>'
 
-                  if(result[i].relation_id==null){
-                  text+='<input class="relation_id" name="relation_id" type="radio" value="'+result[i].id+'"></td></tr>'}
+                  if(result[i].relation_id==null || (result[i].customer_company=="{{t_project.customer_company}}"&&result[i].is_inside==0)){
+                    if(result[i].relation_id!=null){
+                      
+                      text+='<input class="relation_id" project_relation_id="'+result[i].relation_id+'" name="relation_id" type="radio" value="'+result[i].id+'"></td></tr>'
+                    }else{
+                  text+='<input class="relation_id" name="relation_id" type="radio" value="'+result[i].id+'"></td></tr>'}}
                   else{
                     text+='已关联</td></tr>'
                   }
@@ -11174,8 +12021,12 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
             )
           }
          })
+
+    
+
         $('#btn_save_relation').on('click',function () {
               var be_relation_id=$('.relation_id:checked').val()
+              var be_relation_project_id=$('.relation_id:checked').attr('project_relation_id')
               var id=$(this).attr('project_relation_id')
               if(be_relation_id==undefined){
                 alert('未选择关联订单')
@@ -11190,7 +12041,8 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                   '_xsrf':_xsrf,
                   'relation_id':"{{t_project.id}}",
                   'be_relation_id':be_relation_id,
-                  'id':id
+                  'id':id,
+                  'be_relation_project_id':be_relation_project_id
                 },function (result){
                   if(result=='-1'){
                     if(confirm('该订单已经关联过了')){
@@ -11249,7 +12101,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
             location.reload()
            }
         )
-       
+
 
         }
         }
@@ -11290,21 +12142,21 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
         }
       })
       $(".check_express").on('click',function () {
-        $("#btn_check_express").attr('express_id',$(this).attr('id')) 
+        $("#btn_check_express").attr('express_id',$(this).attr('id'))
         $("#check_express_modal").modal("show")
      })
      $(".confirm_express").on('click',function () {
-        $("#btn_confirm_express").attr('express_id',$(this).attr('id')) 
+        $("#btn_confirm_express").attr('express_id',$(this).attr('id'))
         $("#confrim_express_modal").modal("show")
      })
-     $('#btn_check_express').on('click',function () { 
+     $('#btn_check_express').on('click',function () {
    var accept_state=$('#accept_state:checked').val()
    var accept_uid_remark=$('#accept_uid_remark').val()
    var express_id=$(this).attr('express_id')
   if(accept_state==undefined){
       $("#er_accept_state").text('请先选择')
       $("#er_accept_state").show()
-  }else if(accept_state=='2' && accept_uid_remark==''){    
+  }else if(accept_state=='2' && accept_uid_remark==''){
     $("#er_accept_uid_remark").text('不通过需要填写备注')
       $("#er_accept_uid_remark").show()
   }else{
@@ -11314,7 +12166,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
       'accept_state':accept_state,
       'accept_uid_remark':accept_uid_remark,
       'express_id':express_id
-    },function (result) { 
+    },function (result) {
       location.reload()
      })
   }
@@ -11338,7 +12190,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
       'express_number':express_number,
       'send_at':send_at,
       'express_id':express_id
-    },function (result) { 
+    },function (result) {
       location.reload()
      })
     }
@@ -11347,7 +12199,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
   $.post('/project?tag=confirm_send_express',
     { '_xsrf':_xsrf,
       'express_id':$(this).attr('id')
-    },function (result) { 
+    },function (result) {
       location.reload()
      })
  })
@@ -11399,7 +12251,7 @@ $('.filepath_detail').on('click',function () {
     $("#btn_express_filepath").attr('express_id',$(this).attr('id'))
     $("#express_filepath_modal").modal("show")
  })
- $("#btn_express_filepath").on('click',function () { 
+ $("#btn_express_filepath").on('click',function () {
     var formData = new FormData();
     for(var i=0,len=all_files.length;i<len;i++){
       formData.append('file'+i,all_files[i])
@@ -11450,11 +12302,185 @@ $('.filepath_detail').on('click',function () {
             'banjie_remark':banjie_remark,
             'guid':$(this).attr('guid'),
             'id':$(this).attr('banjie_id')
-        },function (result) { 
+        },function (result) {
             location.reload()
          })
         }
      })
+
+     $(".btn_save_logoff").on("click",function(){
+       type_id=$(this).attr("type_id")
+        mid = $(this).attr("mid")
+        project_id = $(this).attr("project_id")
+        $.post("/project?tag=set_logoff",{"project_id":project_id,"mid":mid,"type_id":type_id,'_xsrf':_xsrf},function(result){
+
+          if(result=="0"){
+            location.reload()
+          }else{
+            alert(result)
+          }
+
+        })
+
+
+     })
+
+        $(".btn_save_logoff_confirm").on("click",function(){
+        logoff_id=$(this).attr("logoff_id")
+        mid = $(this).attr("mid")
+        project_id = $(this).attr("project_id")
+        type_id = $(this).attr("type_id")
+        $.post("/project?tag=confirm_logoff",{"project_id":project_id,"mid":mid,"type_id":type_id,'_xsrf':_xsrf,"logoff_id":logoff_id},function(result){
+
+          if(result=="0"){
+            location.reload()
+          }else{
+            alert(result)
+          }
+        })
+
+
+     })
+     $(".btn_save_logoff_reset").on("click",function(){
+        logoff_id=$(this).attr("logoff_id")
+        mid = $(this).attr("mid")
+        project_id = $(this).attr("project_id")
+        type_id = $(this).attr("type_id")
+        $.post("/project?tag=reset_logoff",{"project_id":project_id,"mid":mid,"type_id":type_id,'_xsrf':_xsrf,"logoff_id":logoff_id},function(result){
+
+          if(result=="0"){
+            location.reload()
+          }else{
+            alert(result)
+          }
+
+
+        })
+
+
+     })
+
+     $("#edit_banjie").click(function () {
+       $("#edit_banjie_modal").modal('show')
+      })
+
+    $('#btn_save_banjie_project').click(function () {
+      customer_company = $("#banjie_customer_company").val();
+      banjie_company_uid=$("#banjie_company_uid").val();
+  is_update_company_customer=''
+  is_update_company_project=''
+  if(customer_company=='' || banjie_company_uid=='' ){
+    alert("公司名称不能为空哦")
+    return false
+  }else{
+    $.get("/project?tag=same_company",
+                  {  "project_id":"{{t_project.id}}",
+                    'customer_company':customer_company,
+                    'company':"{{t_project.customer_company}}"
+                  },function (res) {
+                    if(res['customer']!=undefined && res['customer']!='-1' && res['customer']!='-2'){
+                      if(confirm("公司名存在，是否要更改?")){
+
+                        if(res['same_customer']!=undefined){
+                        if(confirm('是否修改客户系统中相同公司的公司名？')){
+                          is_update_company_customer=1
+                        }
+                        }
+                        if(res['project']!=undefined){
+                        if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
+                          is_update_company_project=1
+                        }
+                        }
+                        $.post("/project?tag=modify1",{
+                        "project_id":"{{t_project.id}}",
+                        "project_guid":"{{t_project.guid}}",
+                        "banjie_company_uid":banjie_company_uid,
+                        "customer_company":customer_company,
+                        "is_update_company_project":is_update_company_project,
+                        "is_update_company_customer":is_update_company_customer,
+                        "_xsrf":_xsrf},function(result){
+                            console.log("result"+result)
+                            location.reload()
+                        })
+                      }
+
+                  }else{
+                      if(res['same_customer']!=undefined){
+                        if(confirm('是否修改客户系统中相同公司的公司名？')){
+                          is_update_company_customer=1
+                        }
+                        }
+                      if(res['project']!=undefined){
+                        if(confirm('是否修改确认单系统中其他相同公司的公司名？')){
+                          is_update_company_project=1
+                        }
+                        }
+                        $.post("/project?tag=modify1",{
+                        "project_id":"{{t_project.id}}",
+                        "project_guid":"{{t_project.guid}}",
+                        "banjie_company_uid":banjie_company_uid,
+                        "is_update_company_project":is_update_company_project,
+                        "is_update_company_customer":is_update_company_customer,
+                        "customer_company":customer_company,
+                        "_xsrf":_xsrf},function(result){
+                            console.log("result"+result)
+                            location.reload()
+                        })
+                  }
+                  })
+
+  }
+     })
+
+     $('.check_note_finish').click(function () {
+    check_id=$(this).attr('check_id')
+      if(confirm('确认通过?')){
+        $.post(
+       "/project?tag=check_note",
+       {
+         '_xsrf':_xsrf,
+         "check_id_pass":check_id
+       },function () { 
+         location.reload()
+        }
+     )
+      }
+   })
+
+   $('.check_note_bouhui').click(function () {
+    check_id=$(this).attr('check_id')
+      if(confirm('确认驳回?')){
+        $.post(
+       "/project?tag=check_note",
+       {
+         '_xsrf':_xsrf,
+         "check_id_bouhui":check_id
+       },function () { 
+         location.reload()
+        }
+     )
+      }
+   })
+   $("#add_to_economic").click(function () { 
+     if(confirm('确认添加到经济普查?')){
+      $.post('/company?tag=economic_census',{
+        '_xsrf':_xsrf,
+        'project_id':"{{t_project.id}}",
+        'step':'other_add'
+      },function (data) { 
+         if(data=='-1'){
+           alert('已是经济普查,无需添加。')
+         }else if(data=='-2'){
+           alert('需先创建客户')
+         }else if(data=='-3'){
+           alert('添加失败')
+         }else{
+           location.href=data
+         }
+       })
+     }
+    })
+
 })
 
 </script>

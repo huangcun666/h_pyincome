@@ -69,15 +69,18 @@ select.form-control:not([size]):not([multiple]) {height: calc(2rem + 0px);}
 <!-- 发业源码结束 -->
 
  <ol class="breadcrumb faye-ti">
-   <li class="breadcrumb-item">
+   <li class="breadcrumb-item g1">
      主面板
    </li>
-   <li class="breadcrumb-item active">事项安排
-        <a class=" faye-btn" href="/statis?tag=todo_arrange_count{%if todo%}&todo={{todo}}{%end%}" {%if not params['gb'] %}style="background-color:beige;" {%end%}>负责人统计</a>
-        <a class=" faye-btn" href="/statis?tag=todo_arrange_count&gb=bs{%if todo=='-1000'%}{%elif todo%}&todo={{todo}}{%end%}" {%if params['gb']=="bs" %}style="background-color:beige;" {%end%}>办事人统计</a>
+   <li class="breadcrumb-item g1">事项安排</li>
+   <li class="g1 g1-left"><a  href="/statis?tag=todo_arrange_count{%if todo%}&todo={{todo}}{%end%}" {%if not params['gb'] %}class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%}>负责人统计</a></li>
+   <li class="g1 g1-left"><a  href="/statis?tag=todo_arrange_count&gb=bs{%if todo=='-1000'%}{%elif todo%}&todo={{todo}}{%end%}" {%if params['gb']=="bs" %}class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%}>办事人统计</a></li>
+   <li class="g1 g1-left">
+     
+        
     
         <div class="dropdown">
-                <a href="javascript:void(0)" class="btn btn-info btn-sm" style="font-size:10px;" id='project_btn'>
+                <a href="javascript:void(0)" class="btn btn-primary btn-sm" style="font-size:10px;" id='project_btn'>
                         {%if params['way']=='day'%}按日统计{%elif params['way']=='month'%}按月统计{%elif params['way']=='week'%}按周统计{%end%}
                 <span class="fa fa-caret-down"></span>  
                 </a>
@@ -171,7 +174,7 @@ font-size: 12px;
 padding: 5px;
 }
 </style>
-<form style="margin-top: 5px;">
+<form style="margin-top: 5px;" class="pm2">
         <table>
             <tbody>
               <tr class="faye-selsect">
@@ -197,7 +200,7 @@ padding: 5px;
                   <input name="department" value="{{params['department']}}" hidden>
                   {%end%}
                   <input name="way" value="{{params['way']}}" hidden>
-                  <input type="submit" value="检 索"></td>
+                  <input type="submit" class="btn btn-primary btn-sm" value="检 索"></td>
               </tr>
             </tbody>
      
@@ -205,9 +208,9 @@ padding: 5px;
       </form>
           
 <div class="table-responsive">
-  <table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:11px;{%if count.every_count%}{%if len(count.every_count.split(','))<4 %}width:400px;{%end%}{%end%}">
+  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:11px;{%if count.every_count%}{%if len(count.every_count.split(','))<4 %}width:400px;{%end%}{%end%}">
         {%if count.every_count%}
-               <thead style="background-color:#000;color:#fff ; ">
+               <thead class="table_class">
                 
                 <tr>
                     <th width='120'>日期</th>

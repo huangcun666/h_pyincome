@@ -1,0 +1,433 @@
+{% extends "../base.html" %} {%block title%}商机开发管理{%end%} {% block body %}
+<style>
+.faye-btn {
+padding: 0.1rem 0.2rem;
+background-color: #9ec6ef;
+ margin-left: 20px; 
+ border-radius: 2px;}
+</style>
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item g1">
+         主面板
+        </li>
+        <li class="breadcrumb-item g1">商机开发管理</li>
+        <li class="g1 g1-left">
+        
+            <a href="javascript:void(0);" class="btn btn-primary btn-sm" id="add_cb_addr">新增</a>
+        </li>
+
+      </ol>
+      <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="btn btn-light  nav_padding {%if not step%} active {%end%}"
+                    href="/company?tag=business_develop_manage" style="font-size:13px;">全部 
+                    <span class="badge badge-danger"></span>
+                    </a>
+                <a class="btn btn-light  nav_padding {%if step=='1'%}active {%end%}"
+                href="/company?tag=business_develop_manage&step=1" style="font-size:13px;">待分配跟进人 
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding  {%if step=='2'%}active {%end%}"
+                href="/company?tag=business_develop_manage&step=2" style="font-size:13px;">待跟进人接单
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding  {%if step=='3'%}active {%end%}"
+                href="/company?tag=business_develop_manage&step=3" style="font-size:13px;"> 跟进人做办结处理 
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding  {%if step=='4'%}active {%end%}"
+                href="/company?tag=business_develop_manage&step=4" style="font-size:13px;">审核 
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding  {%if step=='5'%}active {%end%}"
+                href="/company?tag=business_develop_manage&step=5" style="font-size:13px;">通过 
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding  {%if step=='6'%}active {%end%}"
+                href="/company?tag=business_develop_manage&step=6" style="font-size:13px;">驳回 
+                <span class="badge badge-danger"></span>
+                </a>
+               </div>
+        </nav>
+
+<div class="table-responsive">
+
+                  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0">
+                    <thead class="table_class">
+                        <tr>
+                        <th width='100'>编号</th>
+                        <th width='100'>商机类型</th>
+                        <th width="100">客户姓名</th>
+                        <th width="150">公司名称</th>
+                        <th width="100">联系电话</th>
+                        <th width="100">业务需求</th>
+                        <!-- <th width="150">来源关键词</th>
+                        <th width="100">来源方式</th>
+                        <th width="100">来源渠道</th>
+                        <th width="150">来源端口</th>
+
+                        <th width="150">推荐人</th>
+                        <th width="200">被推荐公司名称</th>
+                        <th width="100">被推荐联系人姓名</th>
+                        <th width="100">被推荐联系人电话</th> -->
+                        <th width="100">备注</th>
+                        <th width="100">创建人</th>
+                        <th width="100">创建时间</th>
+                        <th width="100"></th>
+                    </tr>
+                </thead>
+                <tbody class="fayetbody"> 
+                    {%if business_develop_manage%}
+                    {%for item in business_develop_manage%}
+                    <tr>
+                        <td>{{item.id}}</td>
+                        <td>{{item.business_from_name}}</td>
+                        <td>{{item.customer_name}}</td>
+                        <td>{{item.company}}</td>
+                        <td>{{item.phone}}</td>
+                        <td>{{item.project_request}}</td>
+                        <td>{{item.remark}}</td>
+                        <td>{{item.uid_name}}</td>
+                        <td>{{item.created_at}}</td>
+                        <td><a href="/company?tag=show_business&id={{item.id}}&guid={{item.guid}}" class="btn btn-primary btn-sm">查看</a></td>
+                    </tr>
+                    {%end%}
+                    {%else%}
+                    <tr>
+                        <td colspan="15" style="text-align: left;">还没有哦~</td>
+                    </tr>
+                    {%end%}
+                </tbody>
+                </table>
+
+                <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                            <ul class="pagination">
+                                {% if pagination.has_prev %}
+                                <li class="paginate_button page-item previous " id="dataTable_previous">
+                                <a href="company?tag=business_develop_manage{%if step%}&step={{step}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                <li class="paginate_button page-item ">
+                                    <a href="company?tag=business_develop_manage{%if step%}&step={{step}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                {% else %}
+                                <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                {% end %} {% else %}
+                                <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
+                                {% end %} {%end %} {% if pagination.has_next %}
+                                <li class="paginate_button page-item next" id="dataTable_next"><a href="company?tag=business_develop_manage{%if step%}&step={{step}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                                {% end %}
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+
+    <div class="modal fade" id="add_business_develop_manage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                    <div class="modal-dialog" role="document" >
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="income_title_type">商机开发管理
+                        <!-- <button class="btn btn-danger delete_recode">&times;</button> -->
+                
+                      </h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                
+                        
+                        <div class="modal-body" id="site_mod">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1"  class="col-sm-4 control-label">业务来源: <small class="text-danger">（必填）</small></label>
+                    
+                               {% for idx, item in enumerate(t_income_type) %}
+                                        {%if role!='6' and item.id==2%}
+                                        {%else%}
+                                     <input type="radio" name="busniess_from"  value="{{item.id}}|{{item.income_name}}"
+                                     {%if role!='6'%}   {%if idx==1%}checked{%end%} {%else%}   {%if idx==0%}checked{%end%} {%end%} 
+                                   /> &nbsp;{{item.income_name}}
+                                        {%end%}
+                                     {% end %}
+                    
+                              </div>
+                              <div id="be_referrer_div">
+                              <div class="form-group">
+                                    <div class="col-sm-10">
+                                        <label for="be_referrer_company">被推荐公司名称</label>
+                                        <input  class="form-control" type="text" name="be_referrer_company" id="be_referrer_company" placeholder="被推荐公司名称">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                        <div class="col-sm-10">
+                                            <label for="be_referrer_name">被推荐联系人姓名</label>
+                                            <input  class="form-control" type="text" name="be_referrer_name" id="be_referrer_name" placeholder="被推荐联系人姓名">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <label for="be_referrer_name">被推荐联系人电话</label>
+                                                <input type="text"  class="form-control" name="be_referrer_phone" id="be_referrer_phone" placeholder="被推荐联系人电话">
+                                            </div>
+                                        </div>
+                                    </div>
+                              <div class="form-group">
+                                    <div class="col-sm-10">
+                                        <label for="customer_name" id="customer_name_lab">客户姓名</label>
+                                        <input placeholder="客户姓名" class="form-control" name="customer_name" id="customer_name" type="text">
+                          
+                                    </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <label for="company" id="company_lab">公司名称</label>
+                                                <input placeholder="公司名称" class="form-control" name="company" id="company" type="text">
+                                                <div class="alert alert-danger" id="er_company" style="margin-top:0px;display:none;"></div>
+                                            </div>
+                                            </div>
+                                            <div class="form-group">
+                                                    <div class="col-sm-10">
+                                                        <label for="phone" id="phone_lab">联系电话</label>
+                                                        <input placeholder="联系电话" class="form-control" name="phone" id="phone" type="text">
+                                          
+                                                    </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                            <div class="col-sm-10">
+                                                                <label for="project_request">业务需求</label>
+                                                                <input placeholder="业务需求" class="form-control" name="project_request" id="project_request" type="text">
+                                                  
+                                                            </div>
+                                                            </div>
+                                        
+                            <div id="source_div">
+                                    <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <label for="source_keyword">来源关键词</label>
+                                                <input placeholder="来源关键词" class="form-control" name="source_keyword" id="source_keyword" type="text">
+                                  
+                                            </div>
+                                            </div>
+                              <div class="form-group">
+                                <label for="exampleInputEmail1"  class="col-sm-4 control-label">来源方式: <small class="text-danger">（必填）</small></label>
+                    
+                               {% for idx, item in enumerate(t_talk_type) %}
+                                     <input type="radio" id="source_way" name="source_way"  value="{{item.id}}|{{item.income_name}}"
+                                     /> &nbsp;{{item.income_name}}
+                               {% end %}
+                              <small id="er_source_way" class="text-danger"></small>
+                              </div>
+                       
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"  class="col-sm-4 control-label">来源渠道: <small class="text-danger">（必填）</small></label>
+
+                        {% for idx, item in enumerate(t_business_channel) %}
+
+                                <input type="radio" name="source_place" id="source_place"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
+                        {% end %}
+
+
+                <small id="er_source_place" class="text-danger">
+                        
+                        </small>
+                        </div>
+                        <div class="form-group">
+                                <label for="exampleInputEmail1"  class="col-sm-4 control-label">来源端口: <small class="text-danger">（必填）</small></label>
+    
+                            {% for idx, item in enumerate(t_port_type) %}
+    
+                                    <input type="radio" id="source_port" name="source_port"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
+                            {% end %}
+    
+    
+                    <small id="er_source_port" class="text-danger">
+                            
+                            </small>
+                            </div>
+                        </div>
+                            <div class="form-group" id="referrer_div">
+                                    <div class="col-sm-10">
+                                        <label for="referrer">推荐人</label>
+                                        <input type="text" name="referrer" id="referrer" placeholder="推荐人"  class="form-control">
+                                    </div>
+                                </div>
+                            
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="arrange_date">备注</label>
+                                    <textarea placeholder="备注" class="form-control" name="remark" id="remark" type="text"></textarea>
+                                    <div class="alert alert-danger" style="margin-top:0px;display:none;" role="alert"  id="er_arrange_date">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                              
+                                     
+                        </div>
+                
+                
+                        <div class="modal-footer">
+                            <input type="hidden" value="0" id="is_other" name="is_other" />
+                                   <button class="btn btn-primary" target="_blank" id="btn_save">保 存</button>
+                
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+  {%end%}
+
+  {%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+$("#arrange_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+$("#purchaser_pay_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+$("#rent_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+$("#expire_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+$("#supply_js_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+
+$('#company').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"customer_company"}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
+$('#add_cb_addr').click(function () { 
+    $("#add_business_develop_manage").modal('show')
+ })
+ if($('input[name=busniess_from]:checked').val().split('|')[0]=='2'){
+    $('#source_div').show()
+    $('#referrer_div').hide()
+    $('#be_referrer_div').hide()
+
+ }else if($('input[name=busniess_from]:checked').val().split('|')[0]=='81'){
+    $('#source_div').hide()
+    $('#referrer_div').show()
+    $('#be_referrer_div').hide()
+ }else if($('input[name=busniess_from]:checked').val().split('|')[0]=='3'){
+    $('#source_div').hide()
+    $('#referrer_div').show()
+    $('#be_referrer_div').show()
+ }
+
+ $('input[name=busniess_from]').on('change',function () {
+    $('#er_source_way').text('')
+    $('#er_source_place').text('')
+    $('#er_source_port').text('')
+    $('#er_company').text('')
+    $('#er_company').hide()
+    $('#customer_name_lab').text('客户姓名')
+    $('#customer_name').attr('placeholder','客户姓名')
+    $('#company_lab').text('公司名称')
+    $('#company').attr('placeholder','公司名称')
+    $('#phone_lab').text('联系电话')
+    $('#phone').attr('placeholder','联系电话')
+    $('#customer_name').val('')
+    $('#company').val('')
+    $('#phone').val('')
+    $('#project_request').val('')
+    $('#source_keyword').val('')
+    $('#remark').val('')
+    $('#referrer').val('')
+    $('#be_referrer_company').val('')
+    $('#be_referrer_name').val('')
+    $('#be_referrer_phone').val('')
+    $('input[name=source_way]').prop('checked',false);
+    $('input[name=source_place]').prop('checked',false);
+    $('input[name=source_port]').prop('checked',false);
+
+     bf_id=$(this).val().split('|')[0]
+     if(bf_id=='2'){
+        $('#source_div').show()
+        $('#referrer_div').hide()
+        $('#be_referrer_div').hide()
+     }else if(bf_id=='81'){
+         $('#source_div').hide()
+         $('#referrer_div').show()
+         $('#be_referrer_div').hide()
+     }
+     else if(bf_id=='3'){
+         $('#customer_name_lab').text('客户推荐人')
+         $('#customer_name').attr('placeholder','客户推荐人')
+         $('#company_lab').text('推荐客户公司名称')
+         $('#company').attr('placeholder','推荐客户公司名称')
+         $('#phone_lab').text('客户推荐人电话')
+         $('#phone').attr('placeholder','客户推荐人电话')
+        $('#source_div').hide()
+        $('#referrer_div').hide()
+        $('#be_referrer_div').show()
+     }
+  })
+
+$('#btn_save').click(function () { 
+    busniess_from=$('input[name=busniess_from]:checked').val()
+    customer_name=$('#customer_name').val()
+    company=$('#company').val()
+    phone=$('#phone').val()
+    project_request=$('#project_request').val()
+    source_keyword=$('#source_keyword').val()
+    source_way=$('input[name=source_way]:checked').val()
+    source_place=$('input[name=source_place]:checked').val()
+    source_port=$('input[name=source_port]:checked').val()
+    remark=$('#remark').val()
+    referrer=$('#referrer').val()
+    be_referrer_company=$('#be_referrer_company').val()
+    be_referrer_name=$('#be_referrer_name').val()
+    be_referrer_phone=$('#be_referrer_phone').val()
+    if(source_way==undefined && busniess_from.split('|')[0]=='2'){
+            $('#er_source_way').text('请选择')
+        }else if(source_place==undefined && busniess_from.split('|')[0]=='2'){
+            $('#er_source_place').text('请选择')
+        }else if(source_port==undefined && busniess_from.split('|')[0]=='2'){
+            $('#er_source_port').text('请选择')
+        }
+    else if((busniess_from.split('|')[0]=='3' || busniess_from.split('|')[0]=='81')&& company==''){
+            $('#er_company').text('请填写公司名')
+            $('#er_company').show()
+        
+    }else{
+        $(this).attr('disabled','disabled')
+        $(this).text('保存中...')
+        $.post('/company?tag=business_develop_manage',{
+            '_xsrf':_xsrf,
+            'busniess_from':busniess_from,
+            'customer_name':customer_name,
+            'company':company,
+            'phone':phone,
+            'project_request':project_request,
+            'source_keyword':source_keyword,
+            'source_way':source_way,
+            'source_place':source_place,
+            'source_port':source_port,
+            'remark':remark,
+            'referrer':referrer,
+            'be_referrer_company':be_referrer_company,
+            'be_referrer_name':be_referrer_name,
+            'be_referrer_phone':be_referrer_phone
+        },function (data) {
+             if(data=='-1'){
+                $('#btn_save').attr('disabled',false)
+                $('#btn_save').text('保存')
+                 alert(company+'不存在客户系统！')
+             }else{
+                location.reload()
+             }
+            
+         })
+    }
+
+
+
+
+
+
+ })
+})
+</script>
+{%end%}

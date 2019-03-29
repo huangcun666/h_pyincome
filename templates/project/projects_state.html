@@ -1,29 +1,30 @@
 {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
-
-<div style="width:91%;position: fixed; top: 56px; left: 9%; z-index: 99; background-color:darkgrey; padding:13px; padding-left:30px; margin-bottom:10px;margin-left:30px;">
-    <a href="/project?tag=projects_state" style="margin:5px;color:#FFF;"><span class="fa fa-fw fa-sitemap"></span> 全部</a>
-
-    {%for item in t_project_type%}
-    <a {%if params["btype_id"]==str(item.id)%}style="background-color:#efefef; padding:4px;"{%end%}
-    href="/project?tag=projects_state&btype_id={{item.id}}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%} {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%} {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
-    {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" style="margin:5px;color:#FFF;">
-    <span class="fa fas fa-table"></span>{{item.income_name}}</a>
-    {%end%}
-  
-</div>
-      <ol class="breadcrumb" style="margin-top:30px;">
-        <li class="breadcrumb-item">
+    <div class="ddlz-top">
+        <a href="/project?tag=projects_state">全部</a>
+    
+        {%for item in t_project_type%}
+        <a {%if params["btype_id"]==str(item.id)%}style="background-color:#efefef; padding:4px;"{%end%}
+        href="/project?tag=projects_state&btype_id={{item.id}}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%} {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%} {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
+        {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}">
+        {{item.income_name}}</a>
+        {%end%}
+      
+    </div>
+      <ol class="breadcrumb diao-top">
+        <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item active">跟单分配列表 <div class="btn-group " style=" height:25px;">
-  <button type="button" style="font-size:12px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" id="btn_group_action" aria-haspopup="true" aria-expanded="false">
+        <li class="breadcrumb-item g1">跟单分配列表</li>
+        <li class="g1 g1-left">
+            <div class="btn-group">
+  <button type="button" style="font-size:12px;" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" id="btn_group_action" aria-haspopup="true" aria-expanded="false">
     选中操作(0)
   </button>
 
   <div class="dropdown-menu" id="btnmenu_show">
     <a class="dropdown-item" href="javascript:void(0)" id="btn_group_set_toMember" style="font-size:12px;">批量分配</a>
-  </div>
-</div></li>
+  </div></div>
+</li>
 
 
 
@@ -90,8 +91,8 @@
 
 
 
-  <div class="nav nav-tabs" id="nav-tab" role="tablist">
-      <a class="btn btn-light  nav_padding {%if not last_milepost_id and not ntag%}active{%end%}" style="font-size:12px;"
+  <div class="nav nav-tabs" id="nav-tab" role="tablist" style="margin-bottom: 20px;">
+      <a class="btn btn-light  nav_padding {%if not last_milepost_id and not ntag%}active{%end%}" 
       href="/project?tag=projects_state{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}
       {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
       {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
@@ -102,7 +103,7 @@
       {%if params["end"]%}&end={{params["end"]}}{%end%}
       {%if params["start"]%}&start={{params["start"]}}{%end%}
       {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}" >全 部</a>
-      <a class="btn btn-light  nav_padding {%if  ntag=="not_transition"%}active{%end%}"  style="font-size:12px;"
+      <a class="btn btn-light  nav_padding {%if  ntag=="not_transition"%}active{%end%}"  
       href="/project?tag=projects_state&ntag=not_transition
     {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
       {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
@@ -115,7 +116,7 @@
       {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}" >无需流转
       <span class="badge badge-danger">{{wait_count1.count}}</span>
       </a>
-      <a class="btn btn-light  nav_padding {%if  ntag=="wait"%}active{%end%}"  style="font-size:12px;"
+      <a class="btn btn-light  nav_padding {%if  ntag=="wait"%}active{%end%}"  
       href="/project?tag=projects_state&ntag=wait
     {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
       {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
@@ -131,7 +132,7 @@
 
 
     {%for idx,item in enumerate(project_btypes)%}
-    <a class="btn btn-light  nav_padding " btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"  style="font-size:12px;"
+    <a class="btn btn-light  nav_padding " btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"  
       href="/project?tag=projects_state&last_milepost_id={{item.id}}
       {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
       {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
@@ -144,10 +145,10 @@
       {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}" style="font-size:13px;">{%if item.id==165%}已填写办结信息,待仓管接单 {%else%}{{item.income_name}}{%end%}<span class="badge badge-danger">{{item.c}}</span></a>
     {%end%}
     
-    <a class="btn btn-light  nav_padding {%if  ntag=="is_cancel"%}active{%end%}" style="font-size:12px;" href="/project?tag=projects_state&ntag=is_cancel{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}">取消待审核
+    <a class="btn btn-light  nav_padding {%if  ntag=="is_cancel"%}active{%end%}"  href="/project?tag=projects_state&ntag=is_cancel{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}">取消待审核
         <span class="badge badge-danger">{{cancel_wait_count1.count}}</span>
     </a>
-    <a class="btn btn-light  nav_padding {%if  ntag=="is_cancel_confirm" %}active{%end%}" style="font-size:12px;" href="/project?tag=projects_state&ntag=is_cancel_confirm{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}">取消单
+    <a class="btn btn-light  nav_padding {%if  ntag=="is_cancel_confirm" %}active{%end%}"  href="/project?tag=projects_state&ntag=is_cancel_confirm{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}">取消单
         <span class="badge badge-danger">{{cancel_confirm_count1.count}}</span>
     </a>
 
@@ -164,7 +165,7 @@
 
 
 
- <form class="search_box">
+ <form class="search_box pm2">
  <table>
 
 
@@ -181,7 +182,7 @@
     {%end%}
 </select></td> -->
 <td>
-        <select id="cq_btype_id" name="cq_btype_id"  class="form-control" >
+        <select id="cq_btype_id" name="cq_btype_id"  class="custom-select" >
                 <option value="0">业务类型</option>
                         {%for m  in t_cq_service%}
 
@@ -192,14 +193,14 @@
 </td>
               <td>
 
-<select name="sales" class="form-control" >
+<select name="sales" class="custom-select" >
   <option  value="0">销售顾问</option>
     {%for idx,item in enumerate(t_user_sales)%}
         <option value="{{item.id}}" {%if params["sales"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
     {%end%}
 </select></td>
       <td>
-<select name="cq" class="form-control" >
+<select name="cq" class="custom-select" >
   <option  value="0">工商专员</option>
     {%for idx,item in enumerate(t_user_cq)%}
         <option value="{{item.id}}" {%if params["cq"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
@@ -208,7 +209,7 @@
       </td>
 
        <td>
-<select name="kefu" class="form-control">
+<select name="kefu" class="custom-select">
   <option  value="0">在线客服</option>
     {%for idx,item in enumerate(t_users)%}
     {%if item.team_id==4%}
@@ -218,7 +219,7 @@
 </select>
        </td>
        <td>
-<select name="from_id" class="form-control">
+<select name="from_id" class="custom-select">
   <option  value="0">来源渠道</option>
     {%for idx,item in enumerate(t_income_type)%}
         <option value="{{item.id}}"  {%if params["from_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
@@ -227,7 +228,7 @@
        </td>
    
       <td>
-        <select name="building_id" class="form-control" >
+        <select name="building_id" class="custom-select" >
           <option value="0">楼盘</option>
             {%for idx,item in enumerate(t_building)%}
                 <option value="{{item.id}}"  {%if params["building_id"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
@@ -263,7 +264,7 @@
 
 
        <td>
-       <input type="submit" value="检索" class="btn btn-info" />
+       <input type="submit" value="检索" class="btn btn-primary btn-sm" />
        </td>
     </tr>
  </table>
@@ -287,34 +288,28 @@
 
 
 </div>
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="font-size:12px;" >
-                  <thead style="background-color:#000;color:#fff ; font-size:13px;">
-                        <tr>                       
-                           <th width="20">
-                            <input type="checkbox" name="checkall" id="checkall"/>
-                            </th>
-                           <th width="60">
-                            编号
-                            </th>
-                             <th>业务名称</th>  
+                  <table class="table table-bordered fayetable" id="dataTable" width="100%" cellspacing="0" style="font-size:12px;" >
 
-                                <th  width="200">公司名称</th>  
-                             <th width="100">客户名称</th>  
-                     
-                            
-                            
-                             <th width="120">
-                            跟单专员
-                            </th>
-                            
-                              <th width="80">合同金额</th>
-                               
-                          
-                             <th width="70">创建人</th>
-<th width="150">创建时间</th>
+                  <thead class='table_class' >
+                        <tr>                       
+                                <th width="20">
+                                        <input type="checkbox" name="checkall" id="checkall">
+                                        </th>
+                                        <th style="width: 40px;">
+                                            编号
+                                        </th>
+                                        <th style="width: 150px;">业务名称</th>
+                                        <th style="width: 150px;">公司名称</th>
+                                        <th style="width: 80px;">客户名称</th>
+                                        <th style="width: 80px;">跟单专员</th>
+                                        <th style="width: 80px;">合同金额</th>
+                                        <th style="width: 60px;">创建人</th>
+                                        <th style="width: 130px;">创建时间</th>
+                                      
+                                
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                     {%if not t_projects%}
                         <tr>
                             <td colspan="9">没有相关记录</td>
@@ -378,6 +373,8 @@
                               <td>
                             {{item.created_at}}
                             </td>
+                           
+                         
                         </tr>
                         {%end%}{%end%}
                     </tbody>

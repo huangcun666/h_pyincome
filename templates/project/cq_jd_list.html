@@ -46,17 +46,21 @@
 </style>
 
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         工商统计列表
     </li>
-    <li><a class=" faye-btn" href="project?tag=cq_jd_list&show_tag=1" {%if params[ "show_tag"]=='1' %}style="background-color:beige;" {%end%}>接单列表</a>
-
-      <a class=" faye-btn" href="project?tag=cq_jd_list&show_tag=2" {%if params["show_tag"]=="2" %}style="background-color:beige;" {%end%}>办结列表</a>
-      <a class=" faye-btn" href="project?tag=cq_jd_list&show_tag=3" {%if params["show_tag"]=="3" %}style="background-color:beige;" {%end%}>联系客户</a>
-      <a class=" faye-btn" href="project?tag=cq_jd_list&show_tag=4" {%if params["show_tag"]=="4" %}style="background-color:beige;" {%end%}>跟进记录</a>
-      
+    <li class="g1 g1-left">
+      <a class="btn {%if params[ "show_tag"]=='1' %} btn-primary {%else%}btn-default{%end%} btn-sm" href="project?tag=cq_jd_list&show_tag=1" {%if params[ "show_tag"]!='1' %}style="background-color: #9ec6ef;" {%end%}>接单列表</a>
+    </li>
+    <li class="g1 g1-left">
+      <a class="btn {%if params[ "show_tag"]=='2' %} btn-primary{%else%}btn-default{%end%} btn-sm" href="project?tag=cq_jd_list&show_tag=2" {%if params["show_tag"]!="2" %}style="background-color: #9ec6ef;" {%end%}>办结列表</a>
+    </li>  <li class="g1 g1-left">
+      <a class="btn {%if params[ "show_tag"]=='3' %} btn-primary{%else%}btn-default{%end%} btn-sm" href="project?tag=cq_jd_list&show_tag=3" {%if params["show_tag"]!="3" %}style="background-color: #9ec6ef;" {%end%}>联系客户</a>
+      </li>  <li class="g1 g1-left">
+      <a class="btn {%if params[ "show_tag"]=='4' %} btn-primary{%else%}btn-default{%end%} btn-sm" href="project?tag=cq_jd_list&show_tag=4" {%if params["show_tag"]!="4" %}style="background-color: #9ec6ef;" {%end%}>跟进记录</a>
+      </li>  <li class="g1 g1-left">
       <div class="dropdown">
-            <a href="javascript:void(0)" class="btn  {%if params['count_type']=='project_name'%}btn-danger{%else%}btn-info{%end%} btn-sm" style="font-size:10px;" id='project_btn'>查看统计(办理项目)
+            <a href="javascript:void(0)" class="btn  {%if params['count_type']=='project_name'%}btn-primary{%else%}btn-default{%end%} btn-sm" {%if  params['count_type']!='project_name' %}style="background-color: #9ec6ef;" {%end%} id='project_btn'>查看统计(办理项目)
             <span class="fa fa-caret-down"></span>  
             </a>
             
@@ -66,8 +70,9 @@
               <a href="project?tag=cq_jd_list&count_type=project_name&way=week&show_tag={{params['show_tag']}}{%if params['count_type']=='project_name'%}{%if params['btype']%}&btype={{params['btype']}}{%end%}{%end%}{%if params['show_tag']=='2'%}{%if params['bj_check'] %}&bj_check={{params['bj_check']}}{%end%}{%end%}">按周统计</a>
             </div>
           </div>
+          </li>  <li class="g1 g1-left">
       <div class="dropdown">
-          <a href="javascript:void(0)" class="btn {%if params['count_type']=='gs'%}btn-danger{%else%}btn-info{%end%} btn-sm" style="font-size:10px;" id='gs_btn' >查看统计(工商专员)
+          <a href="javascript:void(0)" class="btn {%if params['count_type']=='gs'%}btn-primary{%else%}btn-default{%end%} btn-sm" {%if  params['count_type']!='gs' %}style="background-color: #9ec6ef;" {%end%} id='gs_btn' >查看统计(工商专员)
           <span class="fa fa-caret-down"></span>  
           </a>
           
@@ -81,9 +86,12 @@
             <a href="project?tag=cq_jd_list&count_type=gs&way=week&show_tag={{params['show_tag']}}{%if params['count_type']=='gs'%}{%if params['name']%}&name={{params['name']}}{%end%}{%end%}{%if params['show_tag']=='2'%}{%if params['bj_check'] %}&bj_check={{params['bj_check']}}{%end%}{%end%}">按周统计</a>
           </div>
         </div>
+        </li>
+      
         {%if params['show_tag']=='2'%}
+        <li class="g1 g1-left">
         <div class="dropdown">
-                <a href="javascript:void(0)" class="btn btn-danger btn-sm" style="font-size:10px;" id='bj_check_btn' >{%if params['bj_check']=='1'%}已确认{%elif params['bj_check']=='0'%}未确认{%end%}
+                <a href="javascript:void(0)" class="btn btn-danger btn-sm" id='bj_check_btn' >{%if params['bj_check']=='1'%}已确认{%elif params['bj_check']=='0'%}未确认{%end%}
                 <span class="fa fa-caret-down"></span>  
                 </a>
                 
@@ -98,8 +106,15 @@
                   ">未确认</a>
                 </div>
               </div>
+            </li>
+            {%if not params['way']%}
+            <li class="g1 g1-left">
+<a href="javascript:void(0);" class="btn btn-primary btn-sm" id='express_output' params="{{params}}">点击下载数据（Excel格式）</a>
+              </li>
+              {%end%}
+
 {%end%}
-</li>
+
 
   </ol>
   {%if params['way']%}
@@ -129,7 +144,7 @@
 <div class="card mb-3">
     <div class="card-body">
       {%if not params['way'] %}
-      <form>
+      <form class="pm2">
       <table>
           <tbody>
             <tr>
@@ -151,12 +166,11 @@
               <td>至</td>
               <td><input type="text" name="end_time" id="end_time" placeholder="{%if params['show_tag']=='2'%}办结{%else%}接单{%end%}结束时间" class="form-control" value="{{params['end_time']}}"></td>
               <td><input type="text" name="customer_name" placeholder="客户姓名" class="form-control" value="{{params['customer_name']}}"></td>
-              <td><input type="text" name='btype_name' placeholder="办理项目" class="form-control" value="{{params['btype_name']}}"></td>
               <td>
                 <select name="btype_name" id="" class="form-control">
                   <option value="">选择办理项目</option>
                   {%for item in t_projects_type%}
-                  <option value="{{item.income_name}}">{{item.income_name}}</option>
+                  <option value="{{item.income_name}}" {%if params['btype_name']==item.income_name%}selected{%end%}>{{item.income_name}}</option>
                   {%end%}
                 </select>
               </td>
@@ -175,7 +189,7 @@
       {%if params['way']%}
       <div class="table-responsive">
 
-          <table class="table table-bordered" id="dataTable" 
+          <table class="table table-bordered fayetable" id="dataTable" 
           {%if count.every_count%}
           {%if len(count.every_count.split(','))<4 and params['count_type']=='project_name'%}
           style="width:450px;"
@@ -185,7 +199,7 @@
           {%end%}
 
           >
-              <thead style="background-color:#000;color:#fff">
+              <thead class="table_class">
                   <tr>
                       {%if count.every_count%}
                       <th width='120'>日期</th>
@@ -208,7 +222,7 @@
                      
                   </tr>
               </thead>
-              <tbody>
+              <tbody class="fayetbody">
                   {% if t_projects%}
                   <tr>
                       <td>合计</td>
@@ -279,7 +293,7 @@
       {%else%}
         <div class="table-responsive">
 
-            <table class="table table-bordered" id="dataTable"  cellspacing="0" >
+            <table class="table table-bordered fayetable" id="dataTable"  cellspacing="0" >
                 <thead style="background-color:#000;color:#fff">
                     <tr>
                      
@@ -486,6 +500,18 @@ $(function () {
         $("#search_btn").removeAttr('disabled')
       }
      })
+    $('#express_output').on('click',function () {
+      if(confirm('确定导出？')){
+        params=$(this).attr('params')
+        $.get('/project?tag=express_output_cd_banjie',{
+      'params':params
+    },function (res) { 
+      location.href=res['output_path']
+    })
+      }
+    
+
+ })
  })
 </script>
 {%end%}

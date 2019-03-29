@@ -28,7 +28,10 @@ from handlers.account_receive import *
 from handlers.payment import *
 from handlers.addr import *
 from handlers.displaylist import *
+from handlers.clearly import *
+
 url_patterns = [
+    (r"/clearly", ClearlyHandler),
     (r"/plan", PlanHandler),
     (r"/company", CompanyHandler),
     (r"/statis", StatisHandler),
@@ -59,7 +62,7 @@ url_patterns = [
     (r'/lockuser/(\d+)', LockUserhandler),
     (r'/unlockuser/(\d+)', UnlockUserHandler),
     (r'/insertuser', InsertUserHandler),
-    (r'/changeuser/(\d+)', ChangeUserHandler),
+    (r'/changeuser', ChangeUserHandler),
     (r'/adminchangepassword/(\d+)', AdminChangePasswordHandler),
     # (r'/projectcategory',ProjectCategoryHandler),
     (r'/insertcategory', InsertCategoryHandler),

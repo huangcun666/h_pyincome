@@ -45,15 +45,16 @@
 </style>
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">报价管理
+        <li class="breadcrumb-item g1">报价管理
           
-
+        </li>
+        <li class="g1 g1-left">
 
                           {%if role=="8"%}
-                <a href="http://192.168.2.168:8000/admin" class="btn btn-info btn-sm">报价管理后台</a>
+                <a href="http://192.168.2.168:8000/admin" class="btn btn-primary btn-sm">报价管理后台</a>
                 
                 {%end%}
         </li>
@@ -91,15 +92,15 @@
     </tbody>
 </table>
 <center>
-<table class="table">
-    <thead>
+<table class="table fayetable">
+    <thead class="table_class">
         <tr style="background-color:#ccc;">
             <th colspan="4" style="text-align:center;">业务报价表</th>
           
         </tr>
     </thead>
 
-    <tbody id="product_show" >
+    <tbody class="fayetbody" id="product_show" >
         <tr>
             <td>类别</td>
             <td>业务</td>

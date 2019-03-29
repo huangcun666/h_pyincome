@@ -5,7 +5,7 @@
     background-color: #4CAF50;
     color: white;
     padding: 16px;
-    font-size: 10px;
+    font-size: 8px;
     border: none;
     cursor: pointer;
 }
@@ -19,13 +19,15 @@
     display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 100px;
+    min-width:74px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index:99;
 }
 
 .dropdown-content a {
     color: black;
-    padding: 12px 16px;
+    padding: 3px 4px;
+    font-size:13px;
     text-decoration: none;
     display: block;
 }
@@ -40,7 +42,12 @@
     background-color: #3e8e41;
 }
 
-.faye-btn {padding: 0.1rem 0.2rem; background-color: #9ec6ef; margin-left: 20px; border-radius: 2px;}
+.faye-btn {
+padding: 0.1rem 0.2rem;
+background-color: #9ec6ef;
+ margin-left: 20px; 
+ border-radius: 2px;}
+
 .file {
     position: relative;
     display: inline-block;
@@ -70,33 +77,41 @@
 
 </style>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">快递管理
-          {%if role=='14' or role=='8' or '237' in role_list%}
-
+        <li class="breadcrumb-item g1">快递管理
+          {%if role=='14' or role=='8' or role=='16' or role=='15' or '237' in role_list%}
+          <li class="g1 g1-left">
           <div class="dropdown">
-            <a href="javascript:void(0)" class="btn btn-info btn-sm" >新 建 </a>
+            <a href="javascript:void(0)"  class="btn btn-primary btn-sm">新建快递 </a>
             
             <div class="dropdown-content">
               <a href="javascript:void(0)"  id="btn_add_express" >新建寄件 </a>
               <a href="javascript:void(0)"  id="btn_add_express_rec" >新建收件 </a>
             </div>
           </div>
+          </li>
            {%end%}
-            <a href="http://www.sf-express.com/cn/sc/dynamic_function/waybill/" style="padding:5px;" class="faye-btn" target="_blank">快递查询</a>
-            <a class="faye-btn" style="{%if step=='0'%}background-color:#17a2b8;{%end%} padding:5px;" href="/project?tag=express_list">寄件列表</a>
-            <a class="faye-btn" style="{%if step=='1'%}background-color:#17a2b8;{%end%} padding:5px;" href="/project?tag=express_list&step=1">收件列表</a>
-
+           <li class="g1 g1-left">
+            <a href="http://www.sf-express.com/cn/sc/dynamic_function/waybill/"  class="btn btn-primary btn-sm" target="_blank">快递查询</a>
+            </li>
+            <li class="g1 g1-left">
+            <a class="btn {%if step=='0'%}btn-primary{%else%}btn-default{%end%} btn-sm" style="{%if step!='0'%}background-color: #9ec6ef;{%end%}" href="/project?tag=express_list">寄件列表</a>
+            </li>
+            <li class="g1 g1-left">
+            <a class="btn  {%if step=='1'%}btn-primary{%else%}btn-default{%end%} btn-sm" style="{%if step!='1'%}background-color: #9ec6ef;{%end%}" href="/project?tag=express_list&step=1">收件列表</a>
+              </li>
             {%if t_express and (params['department'] or params['start_time'] 
             or params['end_time'] or params['source'] or params['express_type'] 
             or params['payment_type']) %}
-                <a href="javascript:void(0);" id='express_output' step="{{step}}" todo="{{todo}}" params="{{params}}" class="btn btn-primary btn-sm">点击下载数据（Excel格式）</a>
-            {%end%}
+            <li class="g1 g1-left"> 
+              <a href="javascript:void(0);" id='express_output' step="{{step}}" todo="{{todo}}" params="{{params}}" class="btn btn-primary btn-sm">点击下载数据（Excel格式）</a>
+              </li>
+              {%end%}
           </li>
       </ol>
-      <form class="search_box">
+      <form class="search_box pm2">
 
 
         <table>
@@ -139,7 +154,7 @@
             </select></td>
             
                 
-              <td><input type="submit"  value="检 索" class="btn btn-info">
+              <td><input type="submit"  value="检 索" class="btn btn-primary btn-sm">
               <input type="hidden" value="{{tag}}" name="tag"/>
               <input type="hidden" value="{{step}}" name="step"/>
               <input type="hidden" value="{{todo}}" name="todo" />
@@ -183,16 +198,16 @@
     
             <div class="table-responsive">
                 {%if todo=='2' and  step=='0' and express_manage=='1'%}
-                <a class="btn btn-info btn-sm" href="javascript:void();" id="confirm_send_express_all" style="margin:3px;">批量发件</a>
+                <a class="btn btn-primary btn-sm" href="javascript:void();" id="confirm_send_express_all" style="margin:3px;">批量发件</a>
                 {%elif todo=='2' and  step=='1' and express_manage=='1'%}
-                <a class="btn btn-info btn-sm" href="javascript:void();" id="confirm_send_express_all" style="margin:3px;">批量收件</a>
+                <a class="btn btn-primary btn-sm" href="javascript:void();" id="confirm_send_express_all" style="margin:3px;">批量收件</a>
                 {%elif '245' in role_list and todo=='3'%}
-                <a class="btn btn-info btn-sm" href="javascript:void();" id="confirm_cw_express_all" style="margin:3px;">批量确认</a>
+                <a class="btn btn-primary btn-sm" href="javascript:void();" id="confirm_cw_express_all" style="margin:3px;">批量确认</a>
                 {%end%}
           
 
-                <table class="table table-bordered" id="dataTable"  style="width:2000px">
-                    <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                <table class="table table-bordered fayetable" id="dataTable"  style="width:2000px">
+                    <thead class="table_class">
                         <tr>
                           {%if (todo=='2' and  (step=='0' or step=='1')  and express_manage=='1') or ('245' in role_list and todo=='3')%}
                           <th width='70'>
@@ -227,7 +242,7 @@
                             {%end%}
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                       {%if t_express%}
                         {%for item in t_express%}
                         <tr>
@@ -244,7 +259,13 @@
                             <td>{{item.rec_name}}</td>
                             <td>{%if item.project_id!=0%}{{item.project_id}}{%else%}无{%end%}</td>
                             <td>{{item.rec_tel}}</td>
-                            <td>{{item.rec_file}}</td>
+                            <td title="{{item.rec_file}}">
+                              {%if len(item.rec_file)>50%}
+                              {{item.rec_file[:50]}}...
+                              {%else%}
+                              {{item.rec_file}}
+                              {%end%}
+                            </td>
                             <td>{{item.other_rec_file}}</td>
                             <td>{{item.express_type_id_name}}</td>
                             <td>{{item.payment_type_id_name }}</td>
@@ -255,9 +276,9 @@
                             <td>
                               {%if todo=='1'%}
                               {%if express_manage=='1'%}
-                              <a class="btn btn-info check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
+                              <a class="btn btn-primary btn-sm check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
                               {%elif item.uid_name==name%}
-                              <a class="btn btn-info edit_express" href="javascript:void(0);"
+                              <a class="btn btn-primary btn-sm edit_express" href="javascript:void(0);"
                               id="{{item.id}}" rec_name="{{item.rec_name}}" rec_tel="{{item.rec_tel}}" created_send_at="{%if item.created_send_at%}{{item.created_send_at}}{%end%}"
                               rec_addr="{{item.rec_addr}}"  rec_file="{{item.rec_file}}" rec_company="{{item.rec_company}}"
                               express_type_id="{{item.express_type_id}}" created_at="{{item.created_at}}" other_rec_file="{{item.other_rec_file}}"
@@ -269,7 +290,7 @@
                               {%end%}
                               {%elif todo=='2' %}
                               {%if express_manage=='1'%}
-                              <a class="btn btn-info confirm_send_express" id="{{item.id}}" href="javascript:void(0);">{%if step=='0'%}确认发件{%elif step=='1'%}确认收件{%end%}</a>
+                              <a class="btn btn-primary btn-sm confirm_send_express" id="{{item.id}}" href="javascript:void(0);">{%if step=='0'%}确认发件{%elif step=='1'%}确认收件{%end%}</a>
                               {%else%}
                               {{item.accept_at.strftime("%Y-%m-%d")}} 待{{item.accept_uid_name}}{%if step=='0'%}确认发件{%elif step=='1'%}确认收件{%end%}
                               {%end%}
@@ -281,7 +302,7 @@
                             </td>
                             {%end%}
                             {%if '245' in role_list and todo=='3'%}
-                            <td  width="100"> <a class="btn btn-info cw_confirm_express" id="{{item.id}}" href="javascript:void(0);">确认</a></td>
+                            <td  width="100"> <a class="btn btn-primary btn-sm cw_confirm_express" id="{{item.id}}" href="javascript:void(0);">确认</a></td>
                             {%elif  todo=='5' and item.confirm_at%}
                             <td>{{item.confirm_at.strftime("%Y-%m-%d")}}{{item.confirm_name}}已确认</td>
                             {%end%}
@@ -327,7 +348,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" ><span id="express_title">发起快递寄件申请</span>
-                <a class="btn btn-info btn-sm" id="choose_cutomer_addr_msg" href="javascript:void(0);">选择收件人信息</a>
+                <a class="btn btn-primary btn-sm" id="choose_cutomer_addr_msg" href="javascript:void(0);">选择收件人信息</a>
                 <a class=" btn btn-danger btn-sm" id="delete_express" href="javascript:void(0);">删除</a>
           </h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -696,8 +717,14 @@ $('.filepath_detail').on('click',function () {
     for(var i=0;i<file_path.length-1;i++){
       f=file_path[i].split('/')
 
-      showFiles.append('<br><li><a href="'+file_path[i]+'" download="'+f[f.length-1]+'">'+f[f.length-1].split('.')[0]+
-      '</a><a href="'+file_path[i]+'" class="btn" target="_blank">查看</a></li>')
+      text='<br><li><a href="'+file_path[i]+'" download="'+f[f.length-1]+'">'+f[f.length-1].split('.')[0]+
+      '</a><a href="'+file_path[i]+'" class="btn" target="_blank">查看</a>'
+      if(uid_name=="{{name}}" || send_at_name=="{{name}}"){
+        text+='<a href="javascript:void(0);" express_id='+$(this).attr('id')+' class="btn delete_file" style="color:red;" file_name="'+f[f.length-1].split('|')[0]+'">删除</a></li>'
+      }else{
+        text+='</li>'
+      }showFiles.append(text)
+      
     }
     }
     else(
@@ -890,6 +917,10 @@ $('#btn_confirm_express').on("click",function () {
       $('#er_express_number').show()
     }else if(created_send_at=='' && send_or_rec=='0'){
       $('#er_created_send_at').text('发件时间不能为空')
+      $('#er_created_send_at').show()
+    }
+    else if(created_send_at=='' && send_or_rec=='1'){
+      $('#er_created_send_at').text('收件时间不能为空')
       $('#er_created_send_at').show()
     }
     else if(send_name==''){
@@ -1116,6 +1147,22 @@ $('#express_output').on('click',function () {
      })
    }
 })
+$("body").on('click','.delete_file',function () { 
+  file_name=$(this).attr('file_name')
+  express_id=$(this).attr('express_id')
+  if(confirm('确认删除？')){
+    $.post('/project?tag=delete_express_file',
+    {
+      '_xsrf':_xsrf,
+      'file_name':file_name,
+      'express_file_id':express_id
+    },function (data) { 
+      location.reload()
+     }
+  )
+  }
+
+ })
 })
 </script>
 {%end%}

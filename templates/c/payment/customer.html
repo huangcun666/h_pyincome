@@ -141,17 +141,21 @@ margin: auto;
 <div class="widget">
 <div class="widget-header">
 <i class="icon-user"></i>
-<h3>客户详情
+<h3>客户详情 - {{customer.company}}
 </h3>
 </div>
 <div class="widget-content">
 		<div class="tabbable">
 						<ul class="nav nav-tabs" id="myTab">
 						  <li>
-						    <a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}&to_tag=customer_tab" id="a_customer_tab" >基础信息</a>
-						  </li>
-              <li ><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}&to_tag=finance_tab" id="a_finance_tab" >财务信息</a></li>
-              <li><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}&to_tag=exchange_tab" id="a_exchange_tab" >联系记录</a></li>
+						    <a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=customer_tab" id="a_customer_tab" >基础信息</a>
+                          </li>
+                          <li>
+                                <a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=payment_tab" >动态跟进</a>
+                              </li>
+                 
+              <li ><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=finance_tab" id="a_finance_tab" >财务信息</a></li>
+              <li><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=exchange_tab" id="a_exchange_tab" >联系记录</a></li>
 
               <li class="active"><a href="#payment_tab" id="a_payment_tab" data-toggle="tab">应收记录</a></li>
 
@@ -243,7 +247,7 @@ margin: auto;
                 {%end%}
             
             </td>
-            <th>{%if idx==0%}
+            <th>{%if idx==0 and( role=="8" or role=="5")%}
              <a class="btn handler_detail btn-sm control" type='button'
         customer_id="{{item.customer_id}}"
         item_id="{{item.id}}"
@@ -591,6 +595,9 @@ margin: auto;
                     formData.append('file', $('#record_file')[0].files[0])
                     formData.append('_xsrf', _xsrf)
                     formData.append('msg', msg)
+                    {%if t_customer_payment_max_assist%}
+                    formData.append('assist_id',{{t_customer_payment_max_assist.id}})
+                    {%end%}
                     formData.append('customer_id', customer_id)
                     formData.append('msg_time',$('#txt_time').val())
                     formData.append('etype', 2)

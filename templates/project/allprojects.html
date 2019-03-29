@@ -1,16 +1,22 @@
 {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">我的业务 
-          <a href="javascript:void(0)" class=" faye-btn" id="btn_add">新 建 </a>
-
+        {%if not params['correlation_projects']%}
+        <li class="breadcrumb-item g1">我的业务</li>
+        <li class="g1 g1-left">
+          <a href="javascript:void(0)" class="btn btn-primary btn-sm" id="btn_add">新 建 </a>
+        </li>
+          <li class="g1 g1-left">
          {% if role=='12'%}
-          <a href="/project?tag=project_relation" class="btn btn-info btn-sm">关联订单</a>
+          <a href="/project?tag=project_relation" class="btn btn-primary btn-sm">关联订单</a>
           {%end%}
         </li>
+        {%else%}
+        <li class="breadcrumb-item g1">相关业务</li>
+        {%end%}
 
       </ol>
 
@@ -19,27 +25,13 @@
 
 
 
- <form>
+ <form class="pm2">
         <table >
-            <thread>
-                <tr class="faye-tdti">
-
-      <td>业务类型</td>
-      <td>工商专员</td>
-      <td>客服顾问</td>
-      <td>在线客服</td>
-      <td>来源渠道</td>
-      <td>楼盘</td>
-          <td colspan="2">
-时间段
-       </td>
-    </tr>
-
         <tr>
       <td>
 
 <select name="income_bussniss" class="custom-select">
-  <option  value="0">请选择业务类型</option>
+  <option  value="0">业务类型</option>
     {%for idx,item in enumerate(t_project_bussniss)%}
     
         <option value="{{item.id}}"   {%if params["income_bussniss"]==str(item.id)%}selected{%end%}>{{item.income_name}}</option> 
@@ -56,7 +48,7 @@
       </td>
 <td>
     <select  name="kfgw" class="custom-select" >
-        <option value="0">请选择</option>
+        <option value="0">请选择客服顾问</option>
         {%for m  in t_user_teams%}
         {%if m.team_id==2%}
             <option value="{{m.id}}" {%if params["kfgw"]==str(m.id)%}selected{%end%}>{{m.name}}</option>
@@ -74,6 +66,7 @@
     {%end%}
 </select>
        </td>
+
        <td>
 <select name="from_id" class="custom-select">
   <option  value="0">请选择来源渠道</option>
@@ -95,14 +88,15 @@
 <input type="text" name="start" id="start" class="form-control"  placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
 
 <input type="hidden" name="tag" value="{{tag}}"/>
-
-
+{%if params['correlation_projects']%}
+<input type="hidden" name="correlation_projects" value="{{params['correlation_projects']}}"/>
+{%end%}
        </td>
        <td><input type="text" name="end" id="end" class="form-control"  placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
 
        </td>
        <td>
-       <input type="submit" value="检索" class="btn btn-info" />
+       <input type="submit" value="检索" class="btn btn-primary btn-sm" />
        </td>
 
     </tr>
@@ -121,9 +115,8 @@
 
 <div class="table-responsive">
 
-
-                  <table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:11px;width:2550px;">
-                    <thead style="background-color:#000;color:#fff ; ">
+                  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:11px;width:2550px;">
+                    <thead class="table_class">
                         <tr>
                         <th width="120">日期</th>
                             <!-- <th width="100">客户分组</th> -->
@@ -176,7 +169,7 @@
 
                         </tr>
                     </thead>
-                    <tbody style=" font-size:13px;">
+                    <tbody class="fayetbody" style=" font-size:13px;">
                     {%if t_projects%}
                         {%for item in t_projects%}
                         
@@ -340,7 +333,7 @@
                             </td>
 
                                           <td>
-                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-info " title="{{item.id}}">详细</a>
+                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-primary btn-sm" title="{{item.id}}">详细</a>
 
                             </td>
 
@@ -362,12 +355,12 @@
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=my&page={{ pagination.page - 1}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="?tag=my&page={{ pagination.page - 1}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["correlation_projects"]%}&correlation_projects={{params['correlation_projects']}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
         {% end %}
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["correlation_projects"]%}&correlation_projects={{params['correlation_projects']}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -379,19 +372,19 @@
           {%end %}
 
          {% if pagination.has_next %}
-         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["correlation_projects"]%}&correlation_projects={{params['correlation_projects']}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>
 
          </div>
-        </div>
+       
     
 <!-- Modal -->
 
 
 <!-- Modal -->
-<div class="modal fade" id="new_project_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+<div class="modal fade " data-target=".bd-example-modal-lg" id="new_project_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
 
   <div class="modal-dialog" role="document" >
     <div class="modal-content">
@@ -427,7 +420,7 @@
           <div class="form-group" id="div_is_expedited">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">加急业务: <small class="text-danger">（必选）</small></label>
             <input type="radio" name="is_expedited" value="1" />&nbsp;是
-            <input type="radio" name="is_expedited" value="0" checked/>&nbsp;否
+            <input type="radio" name="is_expedited" value="0" />&nbsp;否
         </div>
 
 
@@ -576,7 +569,7 @@
            {% end %}
           <small id="talk_typeHelpInline" class="text-danger"></small>
           </div>
-                 <div class="form-group">
+                 <div class="form-group" id='div_is_finance'>
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">是否记账: <small class="text-danger">（必填）</small></label>
 
             <input type="radio" name="is_finance"  value="1"
@@ -821,7 +814,8 @@ language: 'zh-CN',initialDate: new Date()});
 
 
 $("#lb_customer_company_msg").hide()
-$('input[name=is_same_company]').on("change",function () { 
+$('input[name=is_same_company]').on("change",function () {
+
     if($(this).val()=='1'){
             $("#t_customer_company").hide()
             $("#customer_company").attr('readonly','readonly')
@@ -833,10 +827,30 @@ $('input[name=is_same_company]').on("change",function () {
                   }
  })
           $(document).on("change", 'input[name=busniess_from]',function(){
+            $('#promo_id option:first').prop('selected','selected'); 
+            $('#kf_id option:first').prop('selected','selected');
                 $("#lb_customer_company_msg").hide()
                  $("#div_promo").hide()
                   bf_value = $(this).val().split('|')[0]
-              $("input[name='is_finance']:first").attr("checked", false);
+            
+              $('input[name=is_expedited][value=0]').prop("checked", true);
+              $('select[name=promo_id]').find('option[value=0]').prop('selected',true);
+              $('select[name=kf_id]').find('option[value=0]').prop('selected',true);
+              $('input[name=business_channel]').prop('checked',false);
+
+              $('input[name=talk_type]').prop('checked',false);
+              $('input[name=is_finance]').prop('checked',false);
+              $('input[name=new_contract_type_id]').prop('checked',false);
+              $('#recommend_staff').val('')
+              $('#from_word').val('')
+
+              $('#deal_day').val('')
+              $('#pre_income').val('')
+              $('#addr_type').val('')
+              $('#from_word').val('')
+              $('#from_word').val('')
+
+              $("#div_is_finance").show()
               if (bf_value=="2"){
                 $('#t_customer_company').hide()
                 $('#same_company').hide()
@@ -849,6 +863,7 @@ $('input[name=is_same_company]').on("change",function () {
                   $("#div_recommend_staff").hide()
                   $("#div_addr_type").show()
                   $("#div_promo").show()
+                  $('#div_is_expedited').show()
                   $("#customer_company").removeAttr('readonly')
               }else if(bf_value=="3"){
                 $('#t_customer_company').hide()
@@ -863,6 +878,7 @@ $('input[name=is_same_company]').on("change",function () {
                     $("#customer_company").removeAttr('readonly')
                       $("#div_pre_value").show()
                       $("#div_addr_type").show()
+                      $('#div_is_expedited').show()
                       $("#div_promo").show()
               }else if(bf_value=="4"){
                 $("#msg_inner_re").text("")
@@ -879,6 +895,7 @@ $('input[name=is_same_company]').on("change",function () {
                      $("#div_addr_type").show()
                      $("#div_promo").show()
                   $("#div_recommend_staff").show()
+                  $('#div_is_expedited').show()
 
               } else if(bf_value=="81"){
                 $('#t_customer_company').hide()
@@ -894,6 +911,7 @@ $('input[name=is_same_company]').on("change",function () {
                    $("#div_pre_value").show()
                    $("#div_addr_type").show()
                    $("#div_promo").show()
+                   $('#div_is_expedited').show()
 
               } else if(bf_value=="194"){
                 $('#t_customer_company').hide()
@@ -918,11 +936,12 @@ $('input[name=is_same_company]').on("change",function () {
                 $("#div_recommend_by").hide()
                 $("#div_recommend_staff").hide()
                 $("#div_acc").hide()
-                      $("#div_pre_value").hide()
-                      $("#div_addr_type").hide()
-                      $("#div_promo").hide()
-                  $("input[name='is_finance']:first").attr("checked", true);
-                                       $("#lb_customer_company_msg").show()
+                $("#div_pre_value").hide()
+                $("#div_addr_type").hide()
+                $("#div_promo").hide()
+                $('#div_is_expedited').show()
+                $("input[name='is_finance']:first").attr("checked", true);
+                $("#lb_customer_company_msg").show()
 
               }else if(bf_value == "203"){
                   $('#t_customer_company').hide()
@@ -941,6 +960,22 @@ $('input[name=is_same_company]').on("change",function () {
                  $("input[name='is_finance']:first").attr("checked", true);
               
 
+              }
+              else if(bf_value=='278'){
+                $('#t_customer_company').hide()
+                  $('#same_company').hide()
+                  $(".div_talk_type").hide()
+                  $("#div_from_word").hide()
+                  $("#div_building").hide()
+                  $("#div_recommend_by").hide()
+                  $("#div_recommend_staff").hide()
+                  $("#div_acc").hide()
+                  $("#div_pre_value").hide()
+                  $("#div_addr_type").hide()
+                  $("#div_promo").hide()
+                  $("#div_is_expedited").hide()
+                  $("#div_is_finance").hide()
+                  $("input[name='is_finance']:first").attr("checked", false);
               }
               else if(bf_value=="200"){
                 if($("input[name=is_same_company]:checked").val()=='1'){
@@ -1064,13 +1099,13 @@ $('input[name=is_same_company]').on("change",function () {
                    console.log("hi3")
                   return false;
                 }
-              else if ((talk_type=="0" || talk_type==undefined) && (bf_value!="200" &&  bf_value != "202" && bf_value != "203" && bf_value!="3" )){
+              else if ((talk_type=="0" || talk_type==undefined) && (bf_value!="200" &&  bf_value != "202" && bf_value != "203" && bf_value!="3" && bf_value!='278' )){
                   $("#talk_typeHelpInline").text("请选择来源方式哦。")
                    $("input[name=talk_type]:first").focus()
                   
                   return false;
                 }
-                else if ( is_finance.val()==undefined){
+                else if ( is_finance.val()==undefined && bf_value!='278'){
                   $("#is_financeHelpInline").text("请选择是否记账。")
                     console.log("hi5")
                  $("input[name=is_finance]:first").focus()
@@ -1084,20 +1119,20 @@ $('input[name=is_same_company]').on("change",function () {
                   return false;
                 }
 
-                else if (deal_day.val()==""  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3")){
+                else if (deal_day.val()==""  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3" && bf_value!='278')){
                    console.log("hi10")
                      $("#deal_dayHelpInline").text("成交周期不能为空哦！")
                      deal_day.focus()
                     return false
                 }
-                else if(b_deal_day==false  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3")){
+                else if(b_deal_day==false  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3" && bf_value!='278')){
                      console.log("hi11")
                     $("#deal_dayHelpInline").text("成交周期的天数必须是数值哦！")
                     deal_day.focus()
 
                     return false
                 }
-                else if(b==false  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3")){
+                else if(b==false  && (bf_value != "200" && bf_value != "202" && bf_value != "203" && bf_value != "3" && bf_value!='278')){
                    console.log("b")
                     //alert("预计合同定金必须是数值哦！")
                      $("#pre_incomeHelpInline").text("预计合同定金必须是数值哦！")
@@ -1182,6 +1217,11 @@ $('input[name=is_same_company]').on("change",function () {
             })
 
 
+          if("{{params['show_model']}}"=='1'){
+            $('input[name=busniess_from][value="202|会计"]').click()
+            $('#customer_company').val("{{params['customer_company']}}")
+            $("#new_project_modal").modal("show")
+          }
         })
  </script>
 

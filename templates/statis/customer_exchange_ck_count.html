@@ -46,21 +46,28 @@
 </style>
 
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         应收明细统计列表
-    <a class="faye-btn" href="/statis?tag=customer_exchange_count&show_tag=1" {%if params["show_tag"]=='1' %}style="background-color:beige;" {%end%}>会计应收</a>
-    <a class="faye-btn" href="/statis?tag=customer_exchange_count&show_tag=2" {%if params["show_tag"]=="2" %}style="background-color:beige;" {%end%}>销售应收</a>
-    <div class="dropdown">
-        <a href="javascript:void(0)" class="btn  {%if params['way']%}btn-danger{%else%}btn-info{%end%} btn-sm" style="font-size:10px;" id='project_btn'>查看统计
-        <span class="fa fa-caret-down"></span>  
-        </a>
-        
-        <div class="dropdown-content">
-          <a href="/statis?tag=customer_exchange_count&way=day&show_tag={{params['show_tag']}}" >按日统计 </a>
-          <a href="/statis?tag=customer_exchange_count&way=month&show_tag={{params['show_tag']}}">按月统计 </a>
-          <a href="/statis?tag=customer_exchange_count&way=week&show_tag={{params['show_tag']}}">按周统计</a>
-        </div>
-      </div>
+    </li>
+    <li class="g1 g1-left"><a  href="/statis?tag=customer_exchange_count&show_tag=1" {%if params["show_tag"]=='1' %} class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;"  {%end%}>会计应收</a></li>
+    <li class="g1 g1-left"> <a href="/statis?tag=customer_exchange_count&show_tag=2" {%if params["show_tag"]=="2" %} class="btn btn-primary btn-sm" {%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;"  {%end%}>销售应收</a></li>
+    <li class="g1 g1-left">
+        <div class="dropdown">
+            <a href="javascript:void(0)" class="btn  {%if params['way']%}btn-danger{%else%}btn-primary{%end%} btn-sm" style="font-size:10px;" id='project_btn'>查看统计
+            <span class="fa fa-caret-down"></span>  
+            </a>
+            
+            <div class="dropdown-content">
+              <a href="/statis?tag=customer_exchange_count&way=day&show_tag={{params['show_tag']}}" >按日统计 </a>
+              <a href="/statis?tag=customer_exchange_count&way=month&show_tag={{params['show_tag']}}">按月统计 </a>
+              <a href="/statis?tag=customer_exchange_count&way=week&show_tag={{params['show_tag']}}">按周统计</a>
+            </div>
+          </div>
+    </li>
+    <li class="g1 g1-left"></li>
+    
+   
+  
   
   </li>
 
@@ -69,7 +76,7 @@
 <div class="card mb-3">
   <div class="card-body">
     <div class="table-responsive">
-        <table class="table table-bordered" id="dataTable" style="font-size:12px;
+        <table class="table table-bordered fayetable" id="dataTable" style="font-size:12px;
         {%if params['way']%}
           {%if count.every_count%}
           {%if len(count.every_count.split(','))<4%}
@@ -80,7 +87,7 @@
           {%end%}
           {%end%}
         ">
-        <thead style="background-color:#000;color:#fff">
+        <thead class="table_class">
           {%if params['way']%}
           {%if count.every_count%}
           <th width='120'>日期</th>

@@ -1,0 +1,582 @@
+{% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+<style>
+.message-item {
+margin-bottom: 5px;
+margin-left: 40px;
+position: relative;
+}
+.message-item .message-inner {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 10px;
+position: relative;
+}
+.message-item .message-inner:before {
+border-right: 10px solid #ddd;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -20px;
+top: 6px;
+width: 0;
+}
+.message-item .message-inner:after {
+border-right: 10px solid #fff;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -18px;
+top: 6px;
+width: 0;
+}
+.message-item:before {
+background: #fff;
+border-radius: 2px;
+bottom: -30px;
+box-shadow: 0 0 3px rgba(0,0,0,0.2);
+content: "";
+height: 100%;
+left: -30px;
+position: absolute;
+width: 3px;
+}
+.message-item:after {
+background: #fff;
+border: 2px solid #ccc;
+border-radius: 50%;
+box-shadow: 0 0 5px rgba(0,0,0,0.1);
+content: "";
+height: 15px;
+left: -36px;
+position: absolute;
+top: 10px;
+width: 15px;
+}
+.clearfix:before, .clearfix:after {
+content: " ";
+display: table;
+}
+.message-item .message-head {
+border-bottom: 1px solid #eee;
+margin-bottom: 8px;
+padding-bottom: 8px;
+}
+.message-item .message-head .avatar {
+margin-right: 20px;
+}
+.message-item .message-head .user-detail {
+overflow: hidden;
+}
+.message-item .message-head .user-detail h5 {
+font-size: 16px;
+font-weight: bold;
+margin: 0;
+}
+.message-item .message-head .post-meta {
+float: left;
+padding: 0 15px 0 0;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item img {
+min-height: 25px;
+max-height: 25px;
+}
+
+.table tbody tr:hover td, .table-hover tbody tr:hover th {
+ background-color:blanchedalmond;
+}
+.box-dd {
+display: block;
+overflow:hidden;
+white-space:nowrap;
+text-overflow:ellipsis;}
+
+.box-dd2 {
+display: block;
+overflow:hidden;
+text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;}
+
+.daolud {
+   height: 34px; line-height: 34px; color: #333;
+
+}
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    z-index: 99;
+    width:100%;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+    color:#4aa8cc;
+    padding: 6px 8px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+</style>
+<div class="main">
+   <div class="main-inner">
+       <div class="container">
+           <div class="row">
+               <div class="span12">
+                   <div class="widget ">
+                       <div class="widget-header">
+                           <i class="icon-user"></i>
+                           <h3>坏账列表
+                       
+                           </h3>
+
+                       </div>
+
+
+                       <!-- /widget-header -->
+                       <div class="widget-content">
+                           <div class="tab-content">
+                               <div class="tab-pane active" id="formcontrols">
+<ul class="nav nav-tabs" id="myTab">
+
+  
+   <li  {%if not bad_debts%}class="active"{%end%}>
+    <a href="/payment?tag=bad_debts_list&other_tag={{params['other_tag']}}" id="tab_confirm">全部坏账
+     <span class="badge bg-danger">{%if not bad_debts%}{{count.count}}{%else%}{{count.a}}{%end%}</span>
+ </a>
+    
+</li>
+<li  {%if bad_debts=='1' %} class="active"{%end%}>
+        <a href="/payment?tag=bad_debts_list&bad_debts=1&other_tag={{params['other_tag']}}" id="tab_confirm">销售部审批
+         <span class="badge bg-danger">{%if bad_debts=='1' %}{{count.count}}{%else%}{{count.b}}{%end%}</span>
+     </a>
+        
+    </li>
+    <li  {%if bad_debts=='2' %} class="active"{%end%}>
+            <a href="/payment?tag=bad_debts_list&bad_debts=2&other_tag={{params['other_tag']}}" id="tab_confirm">会计意见
+             <span class="badge bg-danger">{%if bad_debts=='2' %}{{count.count}}{%else%}{{count.c}}{%end%}</span>
+         </a>
+            
+        </li>
+        <li  {%if bad_debts=='3' %} class="active"{%end%}>
+                <a href="/payment?tag=bad_debts_list&bad_debts=3&other_tag={{params['other_tag']}}" id="tab_confirm">财务审核
+                 <span class="badge bg-danger">{%if bad_debts=='3' %}{{count.count}}{%else%}{{count.d}}{%end%}</span>
+             </a>
+            </li>
+            <li  {%if bad_debts=='4' %} class="active"{%end%}>
+                    <a href="/payment?tag=bad_debts_list&bad_debts=4&other_tag={{params['other_tag']}}" id="tab_confirm">通过
+                     <span class="badge bg-danger">{%if bad_debts=='4' %}{{count.count}}{%else%}{{count.e}}{%end%}</span>
+                 </a>
+                </li>        
+            <li  {%if bad_debts=='5' %} class="active"{%end%}>
+                <a href="/payment?tag=bad_debts_list&bad_debts=5&other_tag={{params['other_tag']}}" id="tab_confirm">销售部驳回
+                 <span class="badge bg-danger">{%if bad_debts=='5' %}{{count.count}}{%else%}{{count.f}}{%end%}</span>
+             </a>
+            </li> 
+            <li  {%if bad_debts=='6' %} class="active"{%end%}>
+                    <a href="/payment?tag=bad_debts_list&bad_debts=6&other_tag={{params['other_tag']}}" id="tab_confirm">财务驳回
+                     <span class="badge bg-danger">{%if bad_debts=='6' %}{{count.count}}{%else%}{{count.g}}{%end%}</span>
+                 </a>
+                </li>
+                <li>
+                    <a href="/payment?tag={{other_tag}}">{%if other_tag=='assist_list'%}协助列表{%else%}记账列表{%end%}</a>
+                </li>
+</ul>
+<form class="form-search" id="query_form">
+   <input type="text" name="company_sql" id="company_sql" class="input-medium search-query" placeholder="公司名称" value="{{params['company_sql']}}" >
+    <select name="kf_kuaiji" id="" style="width: 100px;">
+        <option value="">客服会计</option>
+        {%for item in acc_uid_names%}
+        <option value="{{item.acc_uid_name}}" {%if params['kf_kuaiji']==item.acc_uid_name%}selected{%end%}>{{item.acc_uid_name}}</option>
+           {%end%}
+    </select>
+    <select name="sale_man" id="" style="width: 100px;">
+        <option value="">销售顾问</option>
+        {%for item in sale_mans%}
+        <option value="{{item.sale_man}}" {%if params['sale_man']==item.sale_man%}selected{%end%}>{{item.sale_man}}</option>
+           {%end%}
+    </select>
+    <select name="kf_man" id="" style="width: 100px;">
+        <option value="">客服顾问</option>
+        {%for item in kf_mans%}
+        <option value="{{item.kf_man}}" {%if params['kf_man']==item.kf_man%}selected{%end%}>{{item.kf_man}}</option>
+           {%end%}
+    </select>
+ 
+    <select name="genjin_man" id="" style="width: 100px;">
+        <option value="">跟进人</option>
+        {%for item in t_user_sales%}
+        <option value="{{item.name}}" {%if params['genjin_man']==item.name%}selected{%end%}>{{item.name}}</option>
+           {%end%}
+    </select>
+    <input type="hidden" name="tag" value="{{tag}}">
+    <button type="submit" class="btn">检 索</button>
+</form>
+
+                                   <fieldset>
+                        
+                                       {%if customers%}
+                            
+                                    <table class="table" style="margin:1px;">
+                                           <thead>
+                                               <tr style="background-color: black; color:#fff;">
+ 
+                                               <th style="width:13px; ">公司名称</th>
+                                             
+                                               <th style="width: 80px;">销售</th>
+                                               <th style="width: 80px;">客服</th>
+                                    
+                                               <th style="width:110px;">跟进人</th>
+
+                                               <th style="width:180px;">最新收款明细</th>
+                                               <th style="width:180px;">待收明细</th>
+                                               <th style="width:50px; ">待收金额</th>
+                                          
+                                               <th style="width: 150px;">最新动态</th>
+                                               <th style="width: 130px;">会计意见</th>
+                                                <th style="width:120px;"></th>
+                                               </tr>
+                                               </thead>
+                                           <tbody>
+
+                                               {%for item in customers%}
+                                               <tr>
+                                                    
+                                                   <td>
+   
+                                                       <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
+                                                    </td>
+                                             
+                                                  
+                                                   <td  style="font-size:11px;">{%if item.sale_man%}{{item.sale_man}}{%elif item.sale_man1%}{{item.sale_man1}}{%end%}</td>
+                                                   <td  style="font-size:11px;">{%if item.kf_man%}{{item.kf_man}}{%elif item.kf_man1%}{{item.kf_man1}}{%end%}</td>
+                                                   {%if '250' in role_list or role=='3' %}
+                                                   
+                                                   <td  style="font-size:11px;">{%if item.sale_name%}{{item.sale_name}}{%if item.tsm>=1 and item.is_check==1 and item.wj_day>14%}<p style="color: red;font-size:smaller;">(上次跟进人)</p>{%end%}{%end%}</td>
+                                            
+                                              
+                                                   {% else%}
+                                                   <td  style="font-size:11px;">{%if item.sale_name%}{{item.sale_name}}{%end%}</td>
+                                                   {%end%}
+                                                   <td 
+                                                   
+                                                   style="word-break: break-all;font-size:11px;width: 180px;" title="{%if item.al_remark%}{{item.al_remark}}{%end%}">
+
+        {%if item.al_remark%} {{item.al_remark[:45]}}{%if len(item.al_remark)>45%}...{%end%}{%end%}
+
+
+                                                   </td>
+                                                   <td style="width: 170px;word-break: break-all;font-size:11px;" title="{%if item.pb_remark%}{{item.pb_remark}}{%end%}">
+                                                       
+                                                       {%if item.pb_remark%}
+                                                       {{item.pb_remark[:45]}}{%if len(item.pb_remark)>45%}...{%end%}
+                                                       {%end%}
+                                                   </td>
+                                                   <td  style="width: 60px;  color: red;">{%if item.wait_pay_amount%}{{item.wait_pay_amount}}{%end%}</td>
+                                               
+                                                   <td id='{{item.customer_id}}'  style="width: 150px; " 
+                                                   title="{%if item.sale_cuikuan_id  and role!='8' %}{%if department_name=='销售部' and '250' not in role_list and item.sale_last_cuikuan_at%}{%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg}}{%end%}{%else%}{%if item.last_cuikuan_at%}{{item.last_cuikuan_msg}}{%end%}{%end%}{%else%}{%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}{%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}}{%else%}{{item.last_cuikuan_msg}}{%end%}{%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}}{%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}{{item.last_cuikuan_msg}}{%end%}{%end%}">
+                                                   {%if item.sale_cuikuan_id and role!='8' %}
+                                                   {%if department_name=='销售部' and '250' not in role_list and item.sale_last_cuikuan_at%}
+                                                   {%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}{%end%}
+                                                   {%else%}
+                                                   {%if item.last_cuikuan_at%}{{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}{%end%}
+                                                   {%end%}
+                                                   {%else%}
+                                            
+                                                    {%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+
+                                                   {%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}
+                                                   {{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                                    {%else%}
+                                                    {{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
+                                                   {%end%}
+                                                   {%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}
+                                                   {{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                                   {%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                                   {{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
+                                                    {%end%}
+                                                    {%end%}
+                                                </td>
+                                             <td title="{%if item.bad_debts_kj_option%}{{item.bad_debts_kj_option}}{%end%}">
+                                                    {%if item.bad_debts_kj_option%}
+                                                    {%if len(item.bad_debts_kj_option)>20%}
+                                                    {{item.bad_debts_kj_option[:20]}}...{%else%}{{item.bad_debts_kj_option}}{%end%}{%end%}
+                                             </td>
+                                                <td>
+                                                    {%if item.acc_uid_name==name and not item.bad_debts_kj_at and item.bad_debts_sale_checked_at %}
+                                                    <a href="javascript:void(0);" style="width: 60px; height: 24px; color: #4aa8cc;" assist_id="{{item.assist_id}}" 
+                                                    class="btn btn-sm write_option"
+                                                    >填写意见</a>
+                                                 
+                                                        {%elif ('285' in role_list and not item.bad_debts_sale_checked_at) or ('286' in role_list and item.bad_debts_sale_checked_status==1 and item.bad_debts_kj_uid  and not item.bad_debts_caiwu_checked_at) 
+                                                    %}
+                                                    <a href="javascript:void(0);"
+                                                    {%if not item.bad_debts_sale_checked_at  and item.bad_debts_sale_checked_status==0%}
+                                                    step='1'{%elif item.bad_debts_sale_checked_status==1 and item.bad_debts_kj_uid  and not item.bad_debts_caiwu_checked_at %}
+                                                    step='3'{%end%}
+                                                    class="btn btn-sm check_debts" customer_id="{{item.customer_id}}" assist_id="{{item.assist_id}}" style="width: 60px; height: 24px; color: #4aa8cc;">审核</a>
+                                                    {%elif not item.bad_debts_sale_checked_at  and  item.bad_debts_sale_checked_status==0%}
+                                                    待销售部审核
+                                                    {%elif item.bad_debts_sale_checked_status==1 and not item.bad_debts_kj_uid%}
+                                                    待会计填写意见
+                                                    {%elif item.bad_debts_sale_checked_status==1 and item.bad_debts_kj_uid  and not item.bad_debts_caiwu_checked_at %}
+                                                    待财务审核
+                                                    {%elif item.bad_debts_caiwu_checked_at and item.bad_debts_caiwu_checked_status==1%}
+                                                        通过
+                                                    {%elif item.bad_debts_sale_checked_at and item.bad_debts_sale_checked_status==2%}
+                                                    销售部驳回
+                                                    {%elif  item.bad_debts_caiwu_checked_at and item.bad_debts_caiwu_checked_status==2 %}
+                                                    财务驳回
+                                                    {%end%}
+                                                </td>
+
+
+                                                
+                                           
+
+                                                           
+
+                                               </tr>
+<tr style="font-size:11px;">
+
+
+<td colspan="15" style="text-align:right;border-top:1px solid #fff; ">
+    会计:{{item.acc_uid_name}}&nbsp;
+{{item.pay_pay_typeid_name}}
+&nbsp; 总费{{item.pay_service_amount}}
+&nbsp; 月费:{{item.pay_service_amount_month}}
+
+&nbsp; 账册费{{item.pay_book_amount}}
+
+</td>
+</tr>
+
+
+                                               {%end%}
+
+
+
+                                           </tbody>
+                                       </table>
+
+                                       {%else%} 还没有客户哦。 {%end%}
+                                
+                                       
+                                   </fieldset>
+                                   <div class="col-sm-12 col-md-7">
+                                    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                                        <ul class="pagination">
+                                            {% if pagination.has_prev %}
+                                            <li class="paginate_button page-item previous " id="dataTable_previous">
+                                            <a href="payment?tag=bad_debts_list&page={{ pagination.page - 1}}
+                                            {%if params%}{%for key,value in params.items()%}&{{key}}={{value}}{%end%}{%end%}
+                                            " aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                            <li class="paginate_button page-item ">
+                                                <a href="payment?tag=bad_debts_list&page={{ page }}{%if params%}{%for key,value in params.items()%}&{{key}}={{value}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                            {% else %}
+                                            <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                            {% end %} {% else %}
+                                            <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
+                                            {% end %} {%end %} {% if pagination.has_next %}
+                                            <li class="paginate_button page-item next" id="dataTable_next"><a href="payment?tag=bad_debts_list&page={{pagination.page+1}}{%if params%}{%for key,value in params.items()%}&{{key}}={{value}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                                            {% end %}
+                                        </ul>
+                                    </div>
+                                </div>
+                               </div>
+
+
+
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               <!-- /widget-content -->
+           </div>
+           <!-- /widget -->
+       </div>
+       <!-- /span8 -->
+   </div>
+   <!-- /row -->
+</div>
+<!-- /container -->
+</div>
+
+
+
+
+<div id="check_debts_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel_account">审核坏账
+             
+             
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <div class="control-group">
+                        <div class="controls">
+                            <label for="">审核:</label>
+                            &nbsp;&nbsp;
+                             <input type="radio" value="1" id="check_status" name="check_status">通过
+                             &nbsp;&nbsp;
+                             <input type="radio" value="2" id="check_status" name="check_status">不通过
+                        </div>
+                    </div>
+                    <!-- <div class="control-group">
+                        <label class="control-label" for="lastname">备注</label>
+             
+                        <div class="controls">
+                           <textarea  id="check_remark" style="margin: 0px 0px 9px; width: 491px; height: 61px;"></textarea>
+                        </div>
+                    </div> -->
+                
+             
+             </div>
+             
+             
+                <div class="modal-footer">
+                        
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    <button class="btn btn-primary" id="btn_save_check">保存</button>
+                </div>
+             </div>
+       
+<div id="write_option_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel_account">填写意见
+             
+             
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <div class="control-group">
+                      
+                            <label for="">意见:</label>
+                            <div class="col-10">
+                            <textarea id="kj_option" style="margin: 0px 0px 9px; width: 491px; height: 61px;"  class="form-control" placeholder="会计意见"></textarea>
+                        </div>
+                    </div>
+             
+             </div>
+             
+             
+                <div class="modal-footer">
+                        
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    <button class="btn btn-primary" id="btn_save_option">保存</button>
+                </div>
+             </div>
+
+{%end%} {%block js%}
+
+
+<script>
+
+    $(function () {
+        _xsrf = getCookie("_xsrf")
+
+        
+        laydate.render({
+                   elem: '#txt_time' //指定元素
+          });
+   $(".check_debts").click(function () { 
+       $('#check_debts_modal').modal('show');
+       $('#btn_save_check').attr('step',$(this).attr('step'))
+       $("#btn_save_check").attr('assist_id',$(this).attr('assist_id'))
+       $("#btn_save_check").attr('customer_id',$(this).attr('customer_id'))
+       
+    })
+    $("#btn_save_check").click(function () { 
+        check_status=$("#check_status:checked").val()
+        step=$(this).attr('step')
+        assist_id=$(this).attr('assist_id')
+        customer_id=$(this).attr('customer_id')
+        if(check_status==undefined){
+            alert('请选择')
+        }else{
+            $.post('payment?tag=bad_debts_milepost',{
+                '_xsrf':_xsrf,
+                'check_status':check_status,
+                'assist_id':assist_id,
+                'step':step,
+                'customer_id':customer_id
+            },function (data) { 
+                location.reload()
+             })
+        }
+     })
+     $(".write_option").click(function () {
+         $("#write_option_modal").modal('show') 
+        $("#btn_save_option").attr('assist_id',$(this).attr('assist_id'))
+      })
+      $("#btn_save_option").click(function () { 
+        kj_option=$('#kj_option').val()
+        assist_id=$(this).attr('assist_id')
+        $.post('payment?tag=bad_debts_milepost',{
+                '_xsrf':_xsrf,
+                'assist_id':assist_id,
+                'kj_option':kj_option,
+                'step':'2'
+            },function (data) { 
+                location.reload()
+             })
+       })
+   })
+</script> {%end%}

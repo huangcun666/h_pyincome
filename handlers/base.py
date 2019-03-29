@@ -31,6 +31,7 @@ class BaseHandler(tornado.web.RequestHandler):
         kwargs['sh_manage']=self.get_secure_cookie('sh_manage')
         kwargs['express_manage']=self.get_secure_cookie('express_manage')
         kwargs['show_statis_kf']=self.get_secure_cookie('show_statis_kf')
+        kwargs['is_hr']=self.get_secure_cookie('is_hr')
         if self.get_secure_cookie('role_list'):
             kwargs['role_list']=self.get_secure_cookie('role_list').split(',')
         else:
@@ -44,16 +45,34 @@ class BaseHandler(tornado.web.RequestHandler):
             today_exchange_ids.append(item.id)
         kwargs['today_exchange_ids']=today_exchange_ids
         liuzhuan_reject_count=''
+        banli_reminder=''
         if self.get_secure_cookie("department_name")=='工商部':
             liuzhuan_reject=self.db.get('''
           select count(*) count from t_projects a inner join 
                 t_projects_transfile b on a.id=b.project_id and b.is_ok=1 and mtype=1 and fback_remark is not null
-                inner join t_projects_milepost c on a.id=c.project_id and order_int=4 and confirm_at is null 
-                where c.uid_name=%s
+                inner join t_projects_milepost c on a.id=c.project_id and order_int=4 and confirm_at is null  and b.pm_id=c.member_id 
+                where c.uid_name=%s and b.cq_uid_at is null
         ''',self.get_secure_cookie("name"))
             if liuzhuan_reject:
                 liuzhuan_reject_count=liuzhuan_reject.count
+            banli_reminder=self.db.query('''
+            select c.id,c.guid,datediff(now(),b.created_at) msg_day,datediff(now(),a.created_at) member_day   from t_projects_member a
+                left join t_projects_state_msg b on a.project_id=b.project_id and b.uid=a.member_id
+                and b.id=(select max(id) from t_projects_state_msg where a.project_id=project_id and uid=a.member_id)
+                inner join t_projects c on a.project_id=c.id and (c.busniess_from_id!=4 or c.busniess_from_id=4 and a.btype_id!=155 )
+                where team_id=38 and a.member_id=%s and (a.last_milepost_id=167 or a.last_milepost_id=162) and a.is_cancel_confirm_at is null
+                 limit 1
+            ''',self.get_secure_cookie("uid"))
+            if banli_reminder:
+                
+                if banli_reminder[0].msg_day>7 or (banli_reminder[0].msg_day==None and banli_reminder[0].member_day>7):
+                    pass
+
+                else:
+                    banli_reminder=''
+        kwargs['banli_reminder']=banli_reminder
         kwargs['liuzhuan_reject_count']=liuzhuan_reject_count
+        
 
         
         x_real_ip = self.request.headers.get("X-Real-IP")

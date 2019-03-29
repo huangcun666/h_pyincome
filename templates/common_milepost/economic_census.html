@@ -1,0 +1,490 @@
+{%extends "base.html"%}{%block title%}经济普查{%end%}
+
+{%block table_width%}min-width:1200px;{%end%}
+{%block nav%}
+<div class="nav nav-tabs" id="myTab">
+
+
+     <a class="btn btn-light nav_padding {%if not params['step']%} active{%end%}" href="company?tag=economic_census" id="tab_confirm">全部
+      <span class="badge bg-danger"></span>
+  </a>
+  <a class="btn btn-light nav_padding {%if params['step']=='1'%} active{%end%}" href="company?tag=economic_census&step=1" id="tab_confirm">待接单
+    <span class="badge bg-danger"></span>
+</a>
+<a class="btn btn-light nav_padding {%if params['step']=='2'%} active{%end%}" href="company?tag=economic_census&step=2" id="tab_confirm">处理中
+    <span class="badge bg-danger"></span>
+</a>
+<a class="btn btn-light nav_padding {%if params['step']=='3'%} active{%end%}" href="company?tag=economic_census&step=3" id="tab_confirm">办结待审核
+    <span class="badge bg-danger"></span>
+</a>
+<a class="btn btn-light nav_padding {%if params['step']=='4'%} active{%end%}" href="company?tag=economic_census&step=4" id="tab_confirm">通过
+    <span class="badge bg-danger"></span>
+</a>
+<a class="btn btn-light nav_padding {%if  params['step']=='5'%} active{%end%}" href="company?tag=economic_census&step=5" id="tab_confirm">驳回
+    <span class="badge bg-danger"></span>
+</a>
+</div>
+{%end%}
+{%block form_tags%}
+
+
+<td>
+    <input type="text" name="company" placeholder="公司名称" class="form-control">
+          <td>
+{%end%}
+
+{%block reminder%}
+{%if params['ok']%}
+<div  style="display: inline-block;width: 150px;margin:0px;height:40px;font-size:15px;" class="alert alert-success">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  添加成功
+</div>
+{%end%}
+{%end%}
+{%block ths%}
+<th width="120">日期</th>
+<th width="70">编号</th>
+
+            <th width="100">客户姓名</th>
+            <th width="100">联系方式</th>
+ <th width="200">公司名称</th>
+       <th width="300">业务内容</th>
+     <th width="60">记账</th>
+
+<th width="100">合同金额</th>
+
+
+
+<th width="100">合同定金</th>
+
+<th width="100">客服顾问</th>
+<th width="100">销售顾问</th>
+<th width="100">客服会计</th>
+<th width='130'></th>
+{%end%}
+{%block data%}
+                        
+<tr >
+<td>
+ {{item.created_at.strftime("%Y-%m-%d")}}
+    </td>
+ <td>
+<a  href="/project?tag=show&guid={{item.guid}}&id={{item.project_id}}"  title="{{item.project_id}}">{{item.project_id}}</a>
+    </td>
+
+                 
+         <td>
+  {{item.customer_name}}
+    </td>
+
+          <td>
+  {{item.customer_tel}}
+    </td>
+<td>	<div style="display: inline-block; line-height: 18px;">
+ {{item.customer_company}}
+</div>
+    </td>
+<td  title=" {{item.project_name}}">
+<a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.project_id}}" title="{{item.project_name}}"
+>
+
+{%if len(item.project_name) > 35%} {{item.project_name[:35]}}....... {%else%} {{item.project_name}} {%end%}
+
+</a>
+
+
+</td>
+
+
+
+ <td>
+ {%if item.is_finance%}
+ 是
+{%else%}
+否
+{%end%}
+    </td>
+     <td>
+            {{item.all_income}}
+    </td>
+
+
+
+<td>
+            {{item.pre_income}}
+    </td>
+
+     <td>      {%if item.team_list%}
+{%for s in item.team_list.split(",")%}
+{%if s%}
+
+{%if "36" ==s.split("|")[1]%}
+{{s.split("|")[0]}}
+{%end%}
+{%end%}
+{%end%}{%end%}
+    </td>
+        <td>
+              {%if item.team_list%}
+{%for s in item.team_list.split(",")%}
+{%if s%}
+{%if "34" ==s.split("|")[1]%}
+{{s.split("|")[0]}}
+{%end%}  {%end%}
+{%end%}{%end%}
+    </td>
+    <td>
+        {{item.acc_uid_name}}
+    </td>
+    <td>
+        {%if not item.economic_census_id and item.acc_uid==int(uid)%}
+        <a href="javascript:void(0)" project_id="{{item.project_id}}" class="btn btn-primary btn-sm handler" step="1">接单</a>
+        {%elif item.economic_census_id  %}
+                   
+                          <div class="dropdown">
+                                <a href="javascript:void(0)" class="btn btn-primary btn-sm"  id="project_btn">
+                                    {%if not item.banjie_at%}待处理{%elif item.banjie_at  and not item.kj_check_at%}已办结
+                                    {%elif item.banjie_at and item.kj_check_at and item.kj_check_status!=0%}已审核
+                                    {%end%}
+                                <span class="fa fa-caret-down"></span>
+                                </a>
+                                <div class="dropdown-content">
+                                        <a href="javascript:void(0)" project_id="{{item.project_id}}"  class="handler" step="2">跟进记录</a>
+                                        {%if not item.banjie_at and item.acc_uid==int(uid)%}
+                                    <a href="javascript:void(0)" project_id="{{item.project_id}}"  class="handler" step="3">办结</a>
+                                    {%elif item.banjie_at and '288' in role_list and not item.kj_check_at %}
+                                    <a href="javascript:void(0)" project_id="{{item.project_id}}"  class="handler" step="4" banjie_remark="{{item.banjie_remark}}" file_path="{{item.file_path}}">审核</a>
+                                    {%elif item.banjie_at and item.acc_uid==int(uid) and not item.kj_check_at%}
+                                    <a href="javascript:void(0)" project_id="{{item.project_id}}" banjie_remark="{{item.banjie_remark}}" jiedan_id="{{item.jiedan_id}}" file_path="{{item.file_path}}"  kj_check_at="{%if item.kj_check_at%}{{item.kj_check_at}}{%end%}" class="filepath_detail" economic_census_id="{{item.economic_census_id}}">查看办结</a>
+                                    {%elif item.banjie_at and item.kj_check_at and item.kj_check_status!=0%}
+                                    <a href="javascript:void(0)" project_id="{{item.project_id}}" banjie_remark="{{item.banjie_remark}}" file_path="{{item.file_path}}" kj_check_at="{%if item.kj_check_at%}{{item.kj_check_at}}{%end%}" kj_check_name="{{item.kj_check_name}}" kj_check_status="{{item.kj_check_status}}"  class="filepath_detail" step="6">查看审核</a>
+                                    {%end%}
+                                </div>
+                                </div>
+
+        {%elif item.economic_census_id and  item.banjie_at and not item.kj_check_at and '288' in role_list %}
+        <a href="javascript:void(0)" project_id="{{item.project_id}}" class="btn btn-primary btn-sm handler" step="4">审核</a>
+        {%elif not item.economic_census_id and item.acc_uid!=int(uid) %}
+            待{{item.acc_uid_name}}接单
+        {%elif item.economic_census_id and not item.banjie_at and item.acc_uid!=int(uid)%}
+        待{{item.acc_uid_name}}办结
+        {%elif item.kj_check_status==1%}
+        审核通过
+        {%elif item.kj_check_status==2%}
+        审核不通过
+        {%end%}
+    </td>
+{%end%}
+{%block page_params%}
+{%for k,v in params.items()%}{%if v!=''%}&{{k}}={{v}}{%end%}
+{%end%}
+{%end%}
+
+{%block modal%}
+<div id="a_handler_modal1" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" >
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <spam class="modal-title">跟进记录</h5>
+                    <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+            
+            <div class="modal-body form-horizontal" id="site_mod">
+                    <label class="control-label" for="lastname">跟进记录</label>
+    
+                    <div class="controls" id="show_msg_add" >
+                            <textarea class="form-control" id="txt_msg">
+                                </textarea>
+                                <br>
+                                <button id="btn_save_msg" class="btn btn-primary btn-sm">确定添加</button>
+                                
+                                <!-- <input type="file"  value="上传附件" style=margin-top:10px;" name="record_file" id="record_file" class="form-control "/> -->
+                    </div>
+                    <div class="control-group" id="txt_msg_box" style="margin-top:10px;">
+           
+                        </div>
+            </div>
+            <div class="modal-footer">
+                   
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            
+                </div>
+</div>
+
+    </div>
+    </div>
+    <div id="a_handler_banjie" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle_license">办结</h5>
+                        <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                
+                <div class="modal-body form-horizontal" id="site_mod">
+                        <div class="form-group">
+                                <label class="control-label file_label" for="lastname" >上传附件</label>
+                                <div class="controls">
+                                    <a href="javascript:void(0);" class="file">选择文件
+                                  <input type="file" accept="image/*" multiple=""  id="uploaderInput">
+                                  </a>
+                                  <div class="alert alert-danger" id='er_uploaderInput' style="display:none;">请选择上传附件</div>
+                                  <textarea class="form-control" name="banjie_remark" id="banjie_remark" placeholder="备注"></textarea>
+                                  <ul id="uploaderFiles"></ul>
+                                  <hr class="my-0 file_label">
+                                  <label class="control-label" for="lastname">已上传附件</label>
+                                  <ul id="showFiles"></ul>
+                                </div>
+                                
+                            </div>
+                </div>
+                <div class="modal-footer">
+                       <div class="alert alert-info" id="check_result" style="margin-right:50px;" ></div>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal" >关闭</button>
+                      <button style="display: none;" class="btn btn-danger" target="_blank" id="btn_express_reject" step="5">驳回</button>
+                      <button class="btn btn-primary" target="_blank" id="btn_express_filepath">确定</button>
+                    </div>
+    </div>
+    
+        </div>
+        </div>
+{%end%}
+
+{%block js%}
+<script>
+$(function () { 
+    _xsrf = getCookie("_xsrf")
+    var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); background-size:15px 10px;display:block;">#url1#</li>',
+    all_files=[]
+    $gallery = $("#gallery"),
+    $galleryImg = $("#galleryImg"),
+    $uploaderInput = $("#uploaderInput"),
+    $uploaderFiles = $("#uploaderFiles");
+    $uploaderInput.on("change", function(e) {
+                var src, url = window.URL || window.webkitURL || window.mozURL,
+                files = e.target.files;
+                for(var i = 0, len = files.length; i < len; ++i) {
+                    var file = files[i];
+                    if(url) {
+                        // src = url.createObjectURL(file);
+                        src=file.name;
+                    } else {
+                        src = e.target.result;
+                    }
+
+                    $uploaderFiles.append($(tmpl.replace('#url1#', src)));
+                    all_files.push(file)
+                }
+
+            });
+
+    $(".handler").click(function () { 
+        step=$(this).attr('step')
+        project_id=$(this).attr('project_id')
+        $("#banjie_remark").removeAttr('disabled')
+        $("#btn_express_reject").hide()
+        $('#check_result').hide()
+        if(step=='1'){
+            if(confirm('确认接单?')){
+                $.post('/company?tag=economic_census',{
+                    '_xsrf':_xsrf,
+                    'step':step,
+                    'project_id':project_id
+                },function (data) { 
+                    location.reload()
+                 })
+            }
+        
+        }else if(step=='2'){
+            $("#btn_save_msg").attr('project_id',project_id)
+            $.get('/customer?tag=show_customer_exchange',
+               {"project_id":project_id},function (result) { 
+                   $('#txt_msg_box').html(result)
+                })
+            $("#a_handler_modal1").modal("show")
+        }
+        else if(step=='3'){
+            $('.file_label').show()
+            $('.file').show()
+            $('#btn_express_filepath').show()
+            $("#exampleModalLongTitle_license").text('办结')
+  $("#er_uploaderInput").hide()
+  showFiles=$('#showFiles')
+    showFiles.children().remove()
+            $("#btn_express_filepath").attr('project_id',project_id)
+            $("#btn_express_filepath").attr('step',step)
+            $("#a_handler_banjie").modal("show")
+        }  else if(step=='4'){
+            banjie_remark=$(this).attr('banjie_remark')
+            $("#banjie_remark").val(banjie_remark)
+            $('.file_label').hide()
+            $('.file').hide()
+            $('#btn_express_filepath').show()
+            $("#exampleModalLongTitle_license").text('审核')
+            $('#banjie_remark').val(banjie_remark)
+            $("#banjie_remark").attr('disabled','disabled')
+  $("#er_uploaderInput").hide()
+    file_path=$(this).attr('file_path')
+    file_path=file_path.split('|')
+    showFiles=$('#showFiles')
+    showFiles.children().remove()
+    if(file_path!=''){
+    for(var i=0;i<file_path.length-1;i++){
+      f=file_path[i].split('/')
+
+      text='<br><li><a href="'+file_path[i]+'" download="'+f[f.length-1]+'">'+f[f.length-1].split('.')[0]+
+      '</a><a href="'+file_path[i]+'" class="btn" target="_blank">查看</a>'
+    text+='</li>'
+      showFiles.append(text)
+      
+    }
+    }
+    else{
+      showFiles.append('<p>还没有上传附件哦~</p>')
+    }
+    $("#btn_express_reject").attr('project_id',project_id)
+    $("#btn_express_filepath").attr('step',step)
+    $("#btn_express_filepath").attr('project_id',project_id)
+    $("#btn_express_reject").show()
+    $("#a_handler_banjie").modal("show")
+        }
+
+     })
+     $("#btn_save_msg").on("click", function () {
+                project_id=$(this).attr('project_id')
+                sale_end_at=$(this).attr('sale_end_at')
+                msg = $("#txt_msg").val()
+                if (msg == "") {
+                    alert("交流记录不能为空哦.")
+                    return false
+                } else {
+                    var formData = new FormData();
+                    formData.append('_xsrf', _xsrf)
+                    formData.append('msg', msg)
+                    formData.append('project_id',project_id)
+                    formData.append('msg_time',$('#txt_time').val())
+
+                    $.ajax({
+                        url: '/customer?tag=customer_exchange',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,  // tell jQuery not to set contentType
+                        success: function (data) {
+                            $('#txt_msg_box').html(data)
+                        }
+                    })
+                }
+            })
+
+    $("#btn_express_filepath").on('click',function () { 
+    var formData = new FormData();
+    for(var i=0,len=all_files.length;i<len;i++){
+      formData.append('file'+i,all_files[i])
+    }
+    formData.append('len',all_files.length)
+    formData.append('project_id',$(this).attr('project_id'))
+    formData.append('step',$(this).attr('step'))
+    formData.append('banjie_remark',$("#banjie_remark").val())
+    formData.append('_xsrf',_xsrf)
+    if(all_files!='' || step=='4'){
+      $(this).text('保存中')
+      $(this).attr('disabled','disabled')
+      $.ajax({
+                url: '/company?tag=economic_census',
+                type: 'POST',
+                data: formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success: function (data) {
+                  location.reload()
+
+                }
+              });
+    }
+    else{
+      $("#er_uploaderInput").show()
+    }
+
+ })
+
+ $('.filepath_detail').on('click',function () {
+    $('#check_result').hide()
+    $("#btn_express_reject").hide()
+    banjie_remark=$(this).attr('banjie_remark')
+    $("#banjie_remark").val(banjie_remark)
+    $("#banjie_remark").attr('disabled','disabled')
+    $('.file_label').hide()
+    $('.file').hide()
+    $('#btn_express_filepath').hide()
+    $("#exampleModalLongTitle_license").text('查看办结')
+    step=$(this).attr('step')
+    kj_check_name=$(this).attr('kj_check_name')
+    kj_check_status=$(this).attr('kj_check_status')
+  $("#er_uploaderInput").hide()
+    file_path=$(this).attr('file_path')
+    file_path=file_path.split('|')
+    showFiles=$('#showFiles')
+    showFiles.children().remove()
+    if(file_path!=''){
+    for(var i=0;i<file_path.length-1;i++){
+      f=file_path[i].split('/')
+
+      text='<br><li><a href="'+file_path[i]+'" download="'+f[f.length-1]+'">'+f[f.length-1].split('.')[0]+
+      '</a><a href="'+file_path[i]+'" class="btn" target="_blank">查看</a>'
+      if($(this).attr('jiedan_id')=='{{uid}}' && $(this).attr('kj_check_at')==''){
+        text+='<a style="color:red;" file_path="'+file_path[i]+'" class="btn delete_file" economic_census_id="'+$(this).attr('economic_census_id')+'" >删除</a>'
+      }
+      
+    text+='</li>'
+      showFiles.append(text)
+      
+    }
+    }
+    else{
+      showFiles.append('<p>还没有上传附件哦~</p>')
+    }
+    if(step=='6'){
+        if(kj_check_status=='1'){
+            $('#check_result').text(kj_check_name+'审核通过')
+        }else if(kj_check_status=='2'){
+            $('#check_result').text(kj_check_name+'驳回')
+        }
+        $('#check_result').show()
+    }
+    $("#a_handler_banjie").modal("show")
+ })
+ $('#btn_express_reject').click(function () { 
+     project_id=$(this).attr('project_id')
+     step=$(this).attr('step')
+     $.post('/company?tag=economic_census',{
+         '_xsrf':_xsrf,
+         'project_id':project_id,
+         'step':step
+     },function (data) { 
+         location.reload()
+      })
+  })
+  $('body').on('click','.delete_file',function () { 
+    economic_census_id=$(this).attr('economic_census_id')
+    file_path=$(this).attr('file_path')
+    if(confirm('确认删除?')){
+      $.post('/company?tag=economic_census',{
+         '_xsrf':_xsrf,
+         'economic_census_id':economic_census_id,
+         'file_path':file_path,
+         'step':7
+     },function (data) { 
+         location.reload()
+      })
+    }
+
+   })
+
+ })
+</script>
+{%end%}

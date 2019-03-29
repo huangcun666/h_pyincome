@@ -29,12 +29,12 @@
                 <input type="hidden" value="{{tag}}" name="tag"/>
                 <input type="hidden" value="{{state}}" name="state" />
 
-                 
-              
+
+
               </form>
 
                         {%if customers%}
-              <table class="table" style="margin:5px;">
+        <table class="table  table-bordered " style="font-size:12px;">
                      <thead>
                                 <tr style="background-color: black; color:#fff;">
 
@@ -48,7 +48,7 @@
                                 <th style="min-width:130px;">创建时间</th>
 
 
-                                 
+
                                 <th style="min-width:60px;"></th>
 
 
@@ -67,7 +67,7 @@
                 <td>{{item.service_money}}</td>
 
 
-                 
+
   <td>
     {%if item.created_at%}
     {{item.created_at.strftime("%Y-%m-%d")}}

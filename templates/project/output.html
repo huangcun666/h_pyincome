@@ -3,10 +3,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">数据导出</li>
+        <li class="breadcrumb-item g1">数据导出</li>
 
       </ol>
 
@@ -17,20 +17,8 @@
 
 
 
- <form>
+ <form class="pm2">
  <table>
-    <tr>
-      <td>业务类型</td>
-      <td>客服会计</td>
-            {%if role!='1'%}<td>销售顾问</td>{%end%}
-      <td>工商专员</td>
-      <td>在线客服</td>
-      <td>来源渠道</td>
-      <td>楼盘</td>
-          <td>
-时间段
-       </td>
-    </tr>
 
         <tr>
       <td>
@@ -98,10 +86,12 @@
       </td>
           <td>
 <input type="text" class="form-control" name="start" id="start" placeholder="开始时间" value="{%if params["start"]%}{{params["start"]}}{%end%}" />
-至
+          </td><td>至</td>
+          <td>
 <input type="text" class="form-control" name="end" id="end" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
+          </td><td>
 <input type="hidden" name="tag" value="{{tag}}"/>
-<input type="submit" value="检索" />
+<input type="submit" class="btn btn-primary btn-sm" value="检索" />
 
        </td>
     </tr>

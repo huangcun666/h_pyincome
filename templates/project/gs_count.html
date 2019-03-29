@@ -3,10 +3,10 @@
 
 
  <ol class="breadcrumb">
-   <li class="breadcrumb-item">
+   <li class="breadcrumb-item g1">
      主面板
    </li>
-   <li class="breadcrumb-item active">工商专员统计</li>
+   <li class="breadcrumb-item g1">工商专员统计</li>
  </ol>
 
 <div class="row" style="padding:10px;">
@@ -17,8 +17,8 @@
 <!-- /.col-lg-6 -->
 </div>
 
-<table id="right_table2" class="table table-bordered" >
-<thead class="thead-dark">
+<table id="right_table2" class="table table-bordered fayetable" >
+<thead class="table_class">
 <tr class="active">
 <th>日期</th>
 {%for item in gs_name%}
@@ -26,7 +26,7 @@
 {%end%}
 </tr>
 </thead>
-<tbody>
+<tbody class="fayetbody">
         {%for  data in datas%}
         <tr>
             {%for item in data%}

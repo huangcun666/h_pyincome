@@ -2,10 +2,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">项目信息
+        <li class="breadcrumb-item g1">项目信息
         </li>
 
       </ol>
@@ -38,8 +38,8 @@
             </div>
             <hr class="my-0">
 
-                <table class="table table-striped">
-                  <thead>
+                <table class="table table-striped fayetable">
+                  <thead class="table_class">
                     <tr>
                       <th width="130">交接时间
                       </th>
@@ -65,7 +65,7 @@
                       <th width="10"></th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody class="fayetbody">
                     {%if t_project_transitions%} {%for item in t_project_transitions%}
                     <tr>
                       <td>
@@ -116,7 +116,7 @@
                       <td>
                           <a href="javascript:void(0)" 
                           rec_by ="{{item.rec_by}}" 
-                          class="btn btn-info btn-sm modify_transition" transition_id="{{item.id}}"
+                          class="btn btn-primary btn-sm modify_transition" transition_id="{{item.id}}"
                           tran_at="{{item.tran_at}}"
                           tran_by ="{{item.tran_by}}"
                           type_ids="{{item.type_ids}}"

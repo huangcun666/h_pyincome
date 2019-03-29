@@ -3,52 +3,82 @@
 
  {%block body%}
 
- <ol class="breadcrumb faye-ti">
-   <li class="breadcrumb-item">
+ <ol class="breadcrumb">
+   <li class="breadcrumb-item g1">
      主面板
    </li>
-   <li class="breadcrumb-item active">地址管理  
+   <li class="breadcrumb-item g1">地址管理  
    
    
    
-<!--
-   <a href="javascript:void(0)" style="background-color:#ccc;padding:8px;" id="a_add_modal">新增</a>
-   -->
+    {%if role=='9' or role=='7'%}
+   <a href="javascript:void(0)" class="btn btn-primary btn-sm" id="a_add_modal">新增</a>
+  {%end%}
    </li>
    
  </ol>
-<nav class="nav nav-pills flex-column flex-sm-row">
-  <a class=" btn btn-light flex-sm-fill text-sm-center nav-link {%if not ctype and not act_id%}active{%end%} " {%if not ctype%}active{%end%} href="addr?tag=all">全部
-     <span class="badge badge-secondary">{{all_count}}</span>
-  
-  </a>&nbsp;
-   <a class="btn btn-light  flex-sm-fill text-sm-center nav-link {%if  ctype=="expired" and not act_id%}active{%end%}" href="addr?tag=all&ctype=expired">地址到期
-     <span class="badge badge-secondary">{{expired_count}}</span>
+<nav class="nav nav-tabs">
+  <a class="btn btn-light  nav_padding {%if not ctype and not act_id and not newtype%}active{%end%} " href="addr?tag=all">全部
+     <span class="badge badge-danger">{{all_count}}</span>
+    </a>&nbsp;
+  {%if role=='9' or role=='7'%}
+    
+  <a class="btn btn-light  nav_padding {%if newtype=='addr_arrange' %}active{%end%} " href="addr?tag=all&newtype=addr_arrange">新待安排
+    <span class="badge badge-danger">{{new_addr_count.a}}</span>
+</a>&nbsp;
+<a class="btn btn-light  nav_padding {%if newtype=='addr_al_arrange' %}active{%end%} " href="addr?tag=all&newtype=addr_al_arrange">新已安排
+        <span class="badge badge-danger">{{new_addr_count.b}}</span>
+    </a>&nbsp;
+    <a class="btn btn-light  nav_padding {%if newtype=='addr_check'%}active{%end%} " href="addr?tag=all&newtype=addr_check">
+            新安排审核
+        <span class="badge badge-danger">{{new_addr_count.c}}</span>
+    </a>&nbsp;
+    <a class="btn btn-light  nav_padding {%if newtype=='addr_pass'%}active{%end%} " href="addr?tag=all&newtype=addr_pass">
+        新已审核
+    <span class="badge badge-danger">{{new_addr_count.d}}</span>
+</a>&nbsp;
+  {%end%}
+  {%if role!='9'%}
+   <a class="btn btn-light  nav_padding {%if  ctype=="expired" and not act_id%}active{%end%}" href="addr?tag=all&ctype=expired">地址到期
+     <span class="badge badge-danger">{{expired_count}}</span>
    </a>
 
 &nbsp;
     {%for item in project_type%}
-        <a class="btn flex-sm-fill text-sm-center nav-link {%if  str(item.order_int)==act_id%} btn-dark {%else%}btn-light {%end%}" href="addr?tag=all&act_id={{item.order_int}}">{{item.type_name}}
-  <span class="badge badge-secondary">{{item.cc}}</span>
+        <a class="btn btn-light  nav_padding {%if  str(item.order_int)==act_id%} active {%end%}" href="addr?tag=all&act_id={{item.order_int}}">{{item.type_name}}
+  <span class="badge badge-danger">{{item.cc}}</span>
         </a>&nbsp;
     {%end%}
-   <a class=" btn  btn-light flex-sm-fill text-sm-center nav-link  {%if  ctype=="expired_customer"%}active{%end%}" href="addr?tag=all&ctype=expired_customer">拖欠
-      <span class="badge badge-secondary">{{custoemr_expired_count}}</span>
+   <a class="btn btn-light  nav_padding  {%if  ctype=="expired_customer"%}active{%end%}" href="addr?tag=all&ctype=expired_customer">拖欠
+      <span class="badge badge-danger">{{custoemr_expired_count}}</span>
    
    </a>
+ <a class="btn btn-light  nav_padding
+{%if  ctype=="biangeng" and not act_id%}active{%end%}" href="addr?tag=all&ctype=biangeng">变更
+    <span class="badge badge-danger">{{biangeng_count.count}}</span>
+  </a>
+
+&nbsp;
+<a class="btn btn-light  nav_padding
+ {%if  ctype=="zhuxiao" and not act_id%}active{%end%}" href="addr?tag=all&ctype=zhuxiao">注销
+    <span class="badge badge-danger">{{zhuxiao_count.count}}</span>
+  </a>
+
+&nbsp;
+{%end%}
 
 </nav>
 
 <style>
 
-table {
+#addr_table {
   border: 0;
   padding: 0;
   margin: 0 0 20px 0;
   border-collapse: collapse;
 }
 
-th {
+#addr_table th {
   padding: 5px;
   /* NOTE: th padding must be set explicitly in order to support IE */
   text-align: center;
@@ -58,42 +88,55 @@ th {
   background-color: #555;
 }
 
-tbody td {
+#addr_table td {
   padding: 10px;
   line-height: 18px;
   border-top: 1px solid #E0E0E0;
 }
 
-tbody tr:nth-child(2n) {
+#addr_table tr:nth-child(2n) {
   background-color: #F7F7F7;
 }
 
-tbody tr:hover {
+#addr_table tr:hover {
   background-color: #EEEEEE;
 }
 
-td {
+#addr_table td {
   text-align: center;a_add_modal
 }
 
-td:first-child,
-th:first-child {
+#addr_table td:first-child,
+#addr_table th:first-child {
   text-align: left;
 }
 
 
 </style>
-<form class="search-box">
+<form class="search-box pm2">
 <table style="margin-bottom:1px;">
 <tbody>
 <tr>
 <td><input type="text" name="company" placeholder="公司名称" class="form-control" value="{{company}}"></td>
+{%if role!='9'%}
+<td>
+<select name="cq_uid" class="custom-select">
+    <option value="">选择工商专员</option>
+    {%for item in cq_names%}
+    <option value="{{item.id}}" {%if cq_uid==str(item.id)%}selected{%end%}>{{item.name}}</option>
+    {%end%}
+</select>
+</td>
+{%end%}
 <td>
 <input type="hidden" name="tag" value="all">
 <input type="hidden" name="ctype" value="{{ctype}}">
+<input type="hidden" name="act_id" value="{{act_id}}">
+<input type="hidden" name="newtype" value="{{newtype}}">
 
 
-<input type="submit" class="btn " value="检索">
+<input type="submit" class="btn btn-primary btn-sm" value="检索">
+<input type="button" name="" id="export_data" value="导出数据（Excel格式）" class="btn btn-primary btn-sm">
 </td>
 </tr>
 </tbody>
@@ -101,9 +144,27 @@ th:first-child {
 </form>
 
 <div class="table-responsive" style="margin-top:1px;">
-<table  style="width:2500px">
-  <thead id="header">
+<table {%if not newtype%} style="width:2500px"{%else%}style="width:100%"{%end%} 
+class="table faye-table table-bordered fayetable"
+>
+  <thead class="table_class">
                 <tr>
+                    {%if newtype%}
+                    <th width="150px">日期</th>
+                    <th>企业名称</th>
+                    <th>承租人</th>
+                    <th>地址性质</th>
+                    <th>跟单员</th>
+                    <th>安排时间</th>
+                    <th>物业安排</th>
+                    <th>租凭开始时间</th>
+                    <th>租凭结束时间</th>
+                    <th>地址性质类型</th>
+                    <th>原挂靠地址</th>
+                    {%if newtype=='addr_arrange' or newtype=='addr_al_arrange' or (role=='7' and newtype=='addr_check') or newtype=='addr_pass'  %}
+                    <th width='50px'></th>
+                    {%end%}
+                    {%else%}
                 {%if ctype=="expired" and role=='7'%}
                  <th>发起</th>
                  {%end%}
@@ -129,20 +190,44 @@ th:first-child {
                 <th >现执照地址</th>  
                 <th>联系电话</th>  
                 <th>客服顾问</th>  
-                <th>销售顾问</th>  
-             
-            
+                <th>销售顾问</th> 
+            {%end%}
                 </tr>
               </thead>
-               <tbody>
+               <tbody class="fayetbody">
                     {%if t_addr_manager%}
               {%for item in t_addr_manager%}
+              {%if newtype%}
+                <tr>
+                    <td>{{item.created_at}}</td>
+                    <td><a href="addr?tag=show&addr_id={{item.id}}&guid=dfsafdasfafafafafdaf34432343232dfssfdfsd&from_tag=all">{{item.company}}{%if item.is_inside==1%}(内部变更){%end%}</a></td>
+                    <td>{{item.rent_by}}</td>
+                    <td>{{item.addr_type}}</td>
+                    <td>{{item.a_follow_uid_name}}</td>
+                    <td>{{item.addr_arr}}</td>
+                    <td>{{item.addr_manager}}</td>
+                    <td>{{item.rent_start}}</td>
+                    <td>{{item.rent_end}}</td>
+                    <td>{{item.addr_con}}</td>
+                    <td>{{item.old_addr}}</td>
+                    {%if  newtype=='addr_arrange' or newtype=='addr_al_arrange' or (role=='7' and newtype=='addr_check') or newtype=='addr_pass'  %}
+                    <td><a href="javascript:void(0)" class="btn btn-info btn-sm check_detail" addr_id="{{item.id}}"
+                        company="{{item.company}}" rent_by="{%if item.rent_by%}{{item.rent_by}}{%end%}" addr_type="{%if item.addr_type%}{{item.addr_type}}{%end%}" 
+                        a_follow_uid_name="{{item.a_follow_uid_name}}" addr_con="{%if item.addr_con%}{{item.addr_con}}{%end%}"
+                        addr_arr="{%if item.addr_arr%}{{item.addr_arr}}{%end%}" addr_manager="{%if item.addr_manager%}{{item.addr_manager}}{%end%}" 
+                        rent_start="{%if item.rent_start%}{{item.rent_start}}{%end%}" rent_end="{%if item.rent_end%}{{item.rent_end}}{%end%}"
+                        old_addr="{%if item.old_addr%}{{item.old_addr}}{%end%}" newtype="{{newtype}}" a_follow_uid_name="{{item.a_follow_uid_name}}"
+                        >查看</a></td>
+                
+                    {%end%}
+                </tr>
+              {%else%}
                 <tr>   {%if ctype=="expired"  and role=='7' %}
                   <td>
                   
                
                   <a id="{{item.id}}" company_name="{{item.company}}" now_addr="{{item.now_addr}}" href="javascript:void(0)" class="a_from_cq"><img src="/static/ico/1.png" width="30"/></a>
-       
+                
               
 
 
@@ -155,14 +240,14 @@ th:first-child {
 
                     <td width="90">{%if item.a_follow_uid_name%}{{item.a_follow_uid_name}}{%else%}无{%end%}</td>
 
-                  <td><a href="addr?tag=show&addr_id={{item.id}}&guid=dfsafdasfafafafafdaf34432343232dfssfdfsd&from_tag=all">{{item.company}}</a></td>
+                  <td><a href="addr?tag=show&addr_id={{item.id}}&guid=dfsafdasfafafafafdaf34432343232dfssfdfsd&from_tag=all">{{item.company}}{%if item.is_inside==1%}(内部变更){%end%}</a></td>
                      
                   <td>{%if item.company_uid%}{{item.company_uid}}{%end%}</td>
                   <td>{{item.rent_by}}</td>
                   <td>{{item.addr_type}}</td>
                    <td>{{item.addr_con}}</td>
                    <td>{{item.cq_uid_name}}</td>      
-                   <td>{%if item.cq_uid_at%}{{item.cq_uid_at.strftime("%Y-%m-%d")}}{%end%}</td> 
+                   <td>{%if item.addr_arr%}{{item.addr_arr.strftime("%Y-%m-%d")}}{%end%}</td> 
                    <td>{%if item.rent_start%}{{item.rent_start.strftime("%Y-%m-%d")}}{%end%}</td> 
                    <td>{%if item.rent_end%}{{item.rent_end.strftime("%Y-%m-%d")}}{%end%}</td> 
                    <td>{{item.addr_manager}}</td> 
@@ -174,6 +259,7 @@ th:first-child {
                    <td>{{item.xs_uid_name}}</td> 
                   
                 </tr>
+            {%end%}
             {%end%}
                       {%else%}
 
@@ -187,12 +273,16 @@ th:first-child {
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=all&page={{ pagination.page - 1}}{%if ctype%}&ctype={{ctype}}{%end%}{%if act_id%}&act_id={{act_id}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="?tag=all&page={{ pagination.page - 1}}
+         {%if newtype%}&newtype={{newtype}}{%end%}{%if ctype%}&ctype={{ctype}}{%end%}
+         {%if act_id%}&act_id={{act_id}}{%end%}{%if cq_uid%}&cq_uid={{cq_uid}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
         {% end %}
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=all&page={{page}}{%if act_id%}&act_id={{act_id}}{%end%}{%if ctype%}&ctype={{ctype}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="?tag=all&page={{page}}
+            {%if newtype%}&newtype={{newtype}}{%end%}{%if act_id%}&act_id={{act_id}}{%end%}
+            {%if ctype%}&ctype={{ctype}}{%end%}{%if cq_uid%}&cq_uid={{cq_uid}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -204,7 +294,9 @@ th:first-child {
           {%end %}
 
          {% if pagination.has_next %}
-         <li class="paginate_button  page-item next" id="dataTable_next"><a href="?tag=all&page={{pagination.page+1}}{%if act_id%}&act_id={{act_id}}{%end%}{%if ctype%}&ctype={{ctype}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button  page-item next" id="dataTable_next">
+             <a href="?tag=all&page={{pagination.page+1}}{%if newtype%}&newtype={{newtype}}{%end%}
+             {%if act_id%}&act_id={{act_id}}{%end%}{%if ctype%}&ctype={{ctype}}{%end%}{%if cq_uid%}&cq_uid={{cq_uid}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>
@@ -336,43 +428,212 @@ th:first-child {
     </div>
 </div>
 
+<div id="add_new_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="myModalLabel_linkman_title_cq">添加新地址管理
+
+                    <a href="javascript:;" class="btn btn-danger btn-small " id="delete_new_addr" style="display: none;" >
+                      删除
+                    </a>
+
+                </h5>
+            </div>
+            <div class="modal-body form-horizontal" id="site_mod">
+
+
+           
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="username">企业名称</label>
+                    <input type="text" name="company" id="company" class="form-control" placeholder="企业名称">
+                    <div class="alert alert-danger" role="alert" id="req_company_msg" style="display:none;"></div>
+                </div>
+             
+            </div>
+            <!-- <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="username">统一社会信用代码</label>
+                    <input type="text" name="company_uid" id="company_uid" class="form-control" placeholder="统一社会信用代码" {%if role=='7'%}readonly="readonly"{%end%}>
+                    <div class="alert alert-danger" role="alert" id="req_company_uid_msg" style="display:none;"></div>
+                </div>
+              
+            </div> -->
+            
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="username">承租人</label>
+                    <input type="text" name="rent_by" id="rent_by" class="form-control" placeholder="承租人" >
+                    <div class="alert alert-danger" role="alert" id="req_rent_by_msg" style="display:none;"></div>
+                </div>
+             
+            </div>
+            <div class="other_box">
+            {%if newtype=='addr_check' or newtype=='addr_al_arrange' or newtype=='addr_pass'%}
+            <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="control-label" for="username">租凭开始时间</label>
+                        <input type="text" name="rent_start" id="rent_start" class="form-control" style="background-color:#FFF;" placeholder="租凭开始时间" readonly="readonly">
+                        <div class="alert alert-danger" role="alert" id="req_rent_start_msg" style="display:none;"></div>
+                    </div>
+               
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="control-label" for="username">租凭结束时间</label>
+                        <input type="text" name="rent_end" id="rent_end" class="form-control" style="background-color:#FFF" placeholder="租凭结束时间" readonly="readonly">
+                        <div class="alert alert-danger" role="alert" id="req_rent_end_msg" style="display:none;"></div>
+                    </div>
+                    
+                </div>
+                
+            
+            {%end%}
+     
+           
+            {%if newtype!='addr_arrange' or (newtype=='addr_arrange' and role=='7')%}
+            <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="control-label" for="username">安排时间</label>
+                        <input type="text" name="addr_arr" id="addr_arr" class="form-control" placeholder="安排时间" {%if role=='7' %} style="background-color:#FFF"{%end%}
+                        readonly="readonly">
+                        <div class="alert alert-danger" role="alert" id="req_addr_arr_msg" style="display:none;"></div>
+                    </div>
+                 
+                </div>
+                <div class="form-group">
+                        <div class="col-md-12">
+                            <label class="control-label" for="username">物业安排</label>
+                            <input type="text" name="addr_manager" id="addr_manager" class="form-control" placeholder="物业安排"{%if role=='9'%}readonly="readonly"{%end%}>
+                            <div class="alert alert-danger" role="alert" id="req_addr_manager_msg" style="display:none;"></div>
+                        </div>
+                     
+                    </div>
+            {%end%}
+            {%if newtype=='addr_check' or newtype=='addr_al_arrange' or newtype=='addr_pass'%}
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="username">原挂靠地址</label>
+                    <input type="text" name="old_addr" id="old_addr" class="form-control" placeholder="原挂靠地址">
+                    <div class="alert alert-danger" role="alert" id="req_old_addr_msg" style="display:none;"></div>
+                </div>
+            
+            </div>
+            {%end%}
+        </div>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="username">地址性质</label>
+                    <input type="text" name="addr_type" id="addr_type" class="form-control" placeholder="地址性质" >
+                    <div class="alert alert-danger" role="alert" id="req_addr_type_msg" style="display:none;"></div>
+                </div>
+          
+            </div>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="username">地址性质类型</label>
+                    <input type="text" name="addr_con" id="addr_con" class="form-control" placeholder="地址性质类型" >
+                    <div class="alert alert-danger" role="alert" id="req_addr_con_msg" style="display:none;"></div>
+                </div>
+          
+            </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <div class="alert alert-danger" id="alert_jd" style="display:none;"></div>
+            </div>
+        </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <button class="btn btn-primary" id="btn_save_addr_manager">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
 {%end%} 
 
 {%block js%}
 <script>
 $(function(){
         _xsrf = getCookie("_xsrf")
-       $(".a_add_modal").on("click",function(){
-        id = $(this).attr("id")
-         $("#btn_save_cq_addr").attr("addr_id",0)
-           gw_uid_name = $(this).attr("gw_uid_name")
-           xs_uid_name = $(this).attr("xs_uid_name")
-           req_addr_now=$(this).attr("req_addr_now")
-           req_remark = $(this).attr("req_remark")
-           created_by = $(this).attr("created_by")
-           bcreated_at = $(this).attr("bcreated_at")
+        {%if role=='7' and newtype!='addr_pass' %}
+$("#addr_arr").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+{%end%} 
+{%if newtype!='addr_pass' %}
+$("#rent_start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+    $("#rent_end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+    language: 'zh-CN',initialDate: new Date()});
+{%end%}
+    //    $("#a_add_modal").on("click",function(){
+    //     id = $(this).attr("id")
+    //      $("#btn_save_cq_addr").attr("addr_id",0)
+    //        gw_uid_name = $(this).attr("gw_uid_name")
+    //        xs_uid_name = $(this).attr("xs_uid_name")
+    //        req_addr_now=$(this).attr("req_addr_now")
+    //        req_remark = $(this).attr("req_remark")
+    //        created_by = $(this).attr("created_by")
+    //        bcreated_at = $(this).attr("bcreated_at")
            
-           if(gw_uid_name!=""){
-               gw_uid_name="<font color='red'>---原销售顾问:"+gw_uid_name+'</font>'
-           }
-            if(xs_uid_name!=""){
-               xs_uid_name="---原销售顾问:"+xs_uid_name
-           }
-            if(req_remark==""){
-                req_remark="无"
-            }
-           msg_cq = "发起人:<br/><font color='blue'><b>"+created_by+"---"+bcreated_at+"</b></font><br/>现执照地址:<br/><b>"+req_addr_now+"</b><br/>发起人备注:<br/><b>"+req_remark+"</b><br/>"
+    //        if(gw_uid_name!=""){
+    //            gw_uid_name="<font color='red'>---原销售顾问:"+gw_uid_name+'</font>'
+    //        }
+    //         if(xs_uid_name!=""){
+    //            xs_uid_name="---原销售顾问:"+xs_uid_name
+    //        }
+    //         if(req_remark==""){
+    //             req_remark="无"
+    //         }
+    //        msg_cq = "发起人:<br/><font color='blue'><b>"+created_by+"---"+bcreated_at+"</b></font><br/>现执照地址:<br/><b>"+req_addr_now+"</b><br/>发起人备注:<br/><b>"+req_remark+"</b><br/>"
 
 
-            $("#msg_cq").html(msg_cq)
-            $("#gw_name").text("客服顾问"+gw_uid_name)
-            $("#xs_name").text("销售顾问"+xs_uid_name)
-            $("#btn_save_set_member").attr("addr_id",id)
+    //         $("#msg_cq").html(msg_cq)
+    //         $("#gw_name").text("客服顾问"+gw_uid_name)
+    //         $("#xs_name").text("销售顾问"+xs_uid_name)
+    //         $("#btn_save_set_member").attr("addr_id",id)
 
-            $("#add_set_member").modal("show")
-        })
+    //         $("#add_set_member").modal("show")
+    //     })
+    $('#cq_uid_name').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
 
-
+$("#a_add_modal").on("click",function () {
+$("#alert_jd").hide()
+$('.other_box').hide() 
+$("#company").val('')
+$("#company").removeAttr('readonly')
+$("#rent_by").val('')
+$("#rent_by").removeAttr('readonly')
+$("#addr_type").val('')
+$("#addr_type").removeAttr('readonly')
+$("#addr_arr").val('')
+$('#addr_manager').val('')
+$("#rent_start").val('')
+$("#rent_end").val('')
+$("#old_addr").val('')
+$("#addr_con").val('')
+$("#addr_con").removeAttr('readonly')
+$("#req_company_msg").hide()
+$("#req_rent_by_msg").hide()
+$("#req_addr_type_msg").hide()
+$("#req_addr_con_msg").hide()
+$("#req_addr_arr_msg").hide()
+$("#btn_save_addr_manager").removeAttr('addr_id')
+$("#btn_save_addr_manager").removeAttr('newtype')
+$("#btn_save_addr_manager").removeAttr('a_follow_uid_name')
+$("#btn_save_addr_manager").text('保存')
+$("#btn_save_addr_manager").show()
+$("#delete_new_addr").hide()
+$("#delete_new_addr").removeAttr('delete_addr_id')
+$("#add_new_modal").modal('show')
+ })
 
 
        $(".a_from_cq").on("click",function(){
@@ -405,6 +666,188 @@ $(function(){
                     location.reload()
             })
         })
+        
+        $("#btn_save_addr_manager").click(function () { 
+            company=$("#company").val()
+            rent_by=$("#rent_by").val()
+            addr_type=$("#addr_type").val()
+            addr_arr=$("#addr_arr").val()
+            addr_manager=$('#addr_manager').val()
+            rent_start=$("#rent_start").val()
+            rent_end=$("#rent_end").val()
+            old_addr=$("#old_addr").val()
+            addr_con=$("#addr_con").val()
+            addr_id=$(this).attr('addr_id')
+            newtype=$(this).attr('newtype')
+            a_follow_uid_name=$(this).attr('a_follow_uid_name')
+        if(company==''){
+            $("#req_company_msg").text('企业名不能为空')
+            $("#req_company_msg").show()
+        }
+        else if (rent_by=='') {
+            $("#req_rent_by_msg").text('承租人不能为空')
+            $("#req_rent_by_msg").show()
+        }
+        else if (addr_type=='') {
+            $("#req_addr_type_msg").text('地址性质不能为空')
+            $("#req_addr_type_msg").show()
+        }
+        else if(addr_arr=='' && '{{role}}'=='7' && addr_id!=undefined){
+            $('#req_addr_arr_msg').text('请填写安排时间')
+            $('#req_addr_arr_msg').show()
+        }else if(a_follow_uid_name=="{{name}}" && addr_arr!='' && rent_start==''){
+            $("#req_rent_start_msg").text('请填写租凭开始时间')
+            $("#req_rent_start_msg").show()
+        }
+        else if(a_follow_uid_name=="{{name}}" && addr_arr!='' && rent_end==''){
+            $("#req_rent_end_msg").text('请填写租凭结束时间')
+            $("#req_rent_end_msg").show()
+        }
+        else{
+        if(newtype==undefined){
+            $.post('/addr?tag=is_exist_company',{
+                "_xsrf":_xsrf,
+                "company":company
+            },function (data) {
+            if(data['result']=='-1'){
+                $("#alert_jd").html(company+' 跟单人'+data['gendan']+'正在跟单，不能创建!<br>如有疑问 联系跟单人或上级主管')
+                $("#alert_jd").show()
+            }else if(data['result']=='-2'){
+                if(confirm('公司名已存在，需标记为内部变更！')){
+                    $.post('/addr?tag=new_addr_manage',{
+                        "addr_id":data['addr_id'],
+                        "_xsrf":_xsrf,"company":company,"is_inner":'1',"rent_by":rent_by,"addr_type":addr_type,
+                        "addr_arr":addr_arr,"addr_manager":addr_manager, "rent_start":rent_start,  "rent_end":rent_end,
+                        "old_addr":old_addr,"newtype":newtype,"addr_con":addr_con
+        },function (data) { 
+            if(data=='-1'){
+                alert('跟单人不存在')
+            }
+            else{
+                location.reload()
+            }
+           
+         })
+                    
+                }
+            }else{
+                $.post('/addr?tag=new_addr_manage',{
+                        "_xsrf":_xsrf,"company":company,"rent_by":rent_by,"addr_type":addr_type,
+                        "addr_arr":addr_arr,"addr_manager":addr_manager, "rent_start":rent_start,  "rent_end":rent_end,
+                        "old_addr":old_addr,"addr_id":addr_id,"newtype":newtype,"addr_con":addr_con
+        },function (data) { 
+            if(data=='-1'){
+                alert('跟单人不存在')
+            }
+            else{
+                location.reload()
+            }
+           
+         })
+            }
+        })
+    }       
+
+           else{
+            $.post('/addr?tag=new_addr_manage',{
+                        "_xsrf":_xsrf,"company":company,"rent_by":rent_by,"addr_type":addr_type,
+                        "addr_arr":addr_arr,"addr_manager":addr_manager, "rent_start":rent_start,  "rent_end":rent_end,
+                        "old_addr":old_addr,"addr_id":addr_id,"newtype":newtype,"addr_con":addr_con
+        },function (data) { 
+            if(data=='-1'){
+                alert('跟单人不存在')
+            }
+            else{
+                location.reload()
+            }
+           
+         })
+        }
+             
+
+        }
+   
+         })
+    $(".check_detail").on('click',function () { 
+        addr_id=$(this).attr('addr_id')
+        $("#req_company_msg").hide()
+        $("#req_rent_by_msg").hide()
+        $("#req_addr_type_msg").hide()
+        $("#req_addr_con_msg").hide()
+        $("#req_addr_arr_msg").hide()
+        $("#company").val($(this).attr('company'))
+        $("#rent_by").val($(this).attr('rent_by'))
+        $("#addr_type").val($(this).attr('addr_type'))
+        $("#addr_arr").val($(this).attr('addr_arr'))
+        $("#addr_manager").val($(this).attr('addr_manager'))
+        $("#rent_start").val($(this).attr('rent_start'))
+        $("#rent_end").val($(this).attr('rent_end'))
+        $("#old_addr").val($(this).attr('old_addr'))
+        $("#addr_con").val($(this).attr('addr_con'))
+        $("#btn_save_addr_manager").attr('addr_id',addr_id)
+        $("#delete_new_addr").hide()
+        $("#alert_jd").hide()
+        $("#btn_save_addr_manager").attr('a_follow_uid_name',$(this).attr('a_follow_uid_name'))
+        if(($(this).attr('newtype')=='addr_arrange' || $(this).attr('newtype')=='addr_al_arrange') && $(this).attr('a_follow_uid_name')=='{{name}}' ){
+            $("#delete_new_addr").show()
+            $("#delete_new_addr").attr('delete_addr_id',$(this).attr('addr_id'))
+        }
+        if('{{newtype}}'=='addr_check' && '{{role}}'=='7' ){
+        $("#btn_save_addr_manager").text('通过')
+        $("#delete_new_addr").show()
+            $("#delete_new_addr").attr('delete_addr_id',$(this).attr('addr_id'))
+        }
+        if($(this).attr('newtype')=='addr_pass'){
+            $("#company").attr('readonly','readonly')
+            $("#rent_by").attr('readonly','readonly')
+            $("#addr_type").attr('readonly','readonly')
+            $("#addr_arr").attr('readonly','readonly')
+            $("#addr_arr").css('background-color','')
+            $("#addr_manager").attr('readonly','readonly')
+            $("#rent_start").attr('readonly','readonly')
+            $("#rent_start").css('background-color','')
+            $("#rent_end").attr('readonly','readonly')
+            $("#rent_end").css('background-color','')
+            $("#old_addr").attr('readonly','readonly')
+            $("#addr_con").attr('readonly','readonly')
+            $("#btn_save_addr_manager").hide()
+            if("{{role}}"=='7'){
+            $("#delete_new_addr").show()
+            $("#delete_new_addr").attr('delete_addr_id',$(this).attr('addr_id'))
+            }
+        }
+    
+        $("#btn_save_addr_manager").attr('newtype',$(this).attr('newtype'))
+        $('.other_box').show()
+        $("#add_new_modal").modal('show')
+     })
+     $("#delete_new_addr").click(function () {
+
+         delete_addr_id=$(this).attr('delete_addr_id')
+         if(confirm('确定删除？')){
+            $.post('/addr?tag=new_addr_manage',{
+                "_xsrf":_xsrf,
+                "delete_addr_id":delete_addr_id
+            },function (data) { 
+                location.reload()
+             })
+         }
+      })
+    $('#export_data').click(function () { 
+        if(confirm('确定导出？')){
+            $.post('addr?tag=export_data',{
+                "_xsrf":_xsrf,
+                'ctype':"{{ctype}}",
+                "act_id":"{{act_id}}",
+                "newtype":"{{newtype}}",
+                "company":"{{company}}",
+                "cq_uid": "{{cq_uid}}"
+            },function (data) { 
+                location.href=data['output_path']
+             })
+        }
+     })
+
 })
 </script>
 

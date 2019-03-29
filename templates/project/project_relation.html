@@ -2,16 +2,21 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">我的业务 
-          <a href="javascript:void(0)" class="btn btn-info btn-sm" id="btn_add">新 建 </a>
+        <li class="breadcrumb-item g1">我的业务</li>
+        <li class="g1 g1-left">
+          <a href="javascript:void(0)" class="btn btn-primary btn-sm" id="btn_add">新 建 </a></li>
           {%if role=='8'%}
-          <a href="javascript:void()" class="btn btn-info btn-sm" id="btn_add1">新增客户分组 </a>
+          <li class="g1 g1-left">
+          <a href="javascript:void()" class="btn btn-primary btn-sm" id="btn_add1">新增客户分组 </a>
+          </li>
           {%end%}
          {% if role=='12'%}
-          <a href="/project?tag=project_relation" class="btn btn-info btn-sm">关联订单</a>
+         <li class="g1 g1-left">
+          <a href="/project?tag=project_relation" class="btn btn-primary btn-sm">关联订单</a>
+          </li>
           {%end%}
         </li>
 
@@ -23,8 +28,8 @@
                 <div class="table-responsive">
 
 
-                        <table class="table table-bordered" id="dataTable" style="width:2800px">
-                          <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                        <table class="table table-bordered fayetable" id="dataTable" style="width:2800px">
+                          <thead class="table_class">
                               <tr>
                               <th width="100">日期</th>
                                   <!-- <th width="100">客户分组</th> -->
@@ -77,7 +82,7 @@
       
                               </tr>
                           </thead>
-                          <tbody style=" font-size:13px;">
+                          <tbody class="fayetbody" style=" font-size:13px;">
                           {%if t_projects%}
                               {%for item in t_projects%}
                               
@@ -235,7 +240,7 @@
                                   </td>
       
                                                 <td>
-                                      <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-info " title="{{item.id}}">详细</a>
+                                      <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-primary btn-sm" title="{{item.id}}">详细</a>
       
                                   </td>
       

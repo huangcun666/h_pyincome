@@ -1440,9 +1440,11 @@ class StatisHandler(BaseHandler):
                 )
 
         elif tag=="customer_exchange":
+            show_tag=self.get_argument('show_tag','')
             page=int(self.get_argument('page',1))
             pre_page=20
-            count=self.db_customer.get('''
+            if not show_tag:
+                count=self.db_customer.get('''
                 select count(*) count,
                 (select concat(group_concat(uid_name,'|',count),',','总数','|',sum(count)) from ( select uid_name,count(*) count from 
                 (select uid_name,DATE_FORMAT(created_at,'%%Y-%%m-%%d')ct,customer_id from t_customer_exchange
@@ -1455,20 +1457,61 @@ class StatisHandler(BaseHandler):
                )a group by ct,uid_name)b group by ct)c 
             
             ''')
-            pagination=Pagination(page,pre_page,count.count,self.request)
-            start_page=(page-1)*pre_page
-            t_customer_exchange = self.db_customer.query("""
+                pagination=Pagination(page,pre_page,count.count,self.request)
+                start_page=(page-1)*pre_page
+                t_customer_exchange = self.db_customer.query("""
                 select ct,group_concat(c_uid_name,'|',count) gc,sum(count) sc from ( select ct,concat(uid_name) c_uid_name,count(*) count from 
                 (select uid_name,DATE_FORMAT(created_at,'%%Y-%%m-%%d')ct,customer_id from t_customer_exchange
                     where  etype=2 group by customer_id,ct,uid_name
                )a group by ct,uid_name)b group by ct order by ct desc limit %s,%s
             """,start_page,pre_page)
+            elif show_tag=='1':
+                count=self.db_customer.get('''
+                    select count(*) count from  t_customer_exchange a 
+                    inner join t_customer b on a.customer_id=b.id
+                     left JOIN t_customer_payment c
+                                ON a.id = c.customer_id
+                            INNER JOIN
+                            (
+                                SELECT `customer_id`, MAX(id) max_id
+                                FROM t_customer_payment
+                                GROUP BY customer_id
+                            ) b ON c.customer_id = b.customer_id AND
+                                    b.max_id = c.id
+                        left join '''+options.mysql_database+'''.t_projects_member f on
+                                    c.project_id=f.project_id and f.team_id=34 
+                            left join '''+options.mysql_database+'''.t_projects_member e on
+                                    c.project_id=e.project_id and e.team_id=36  
+                     where  etype=2 order by a.created_at desc
+                ''')
+                pagination=Pagination(page,pre_page,count.count,self.request)
+                start_page=(page-1)*pre_page
+                t_customer_exchange=self.db_customer.query('''
+                    select a.*,b.company,c.sale_man sale_man1,c.kf_man kf_man1,f.member_name sale_man,
+                    e.member_name kf_man from  t_customer_exchange a 
+                    inner join t_customer b on a.customer_id=b.id
+                     left JOIN t_customer_payment c
+                                ON a.id = c.customer_id
+                            INNER JOIN
+                            (
+                                SELECT `customer_id`, MAX(id) max_id
+                                FROM t_customer_payment
+                                GROUP BY customer_id
+                            ) b ON c.customer_id = b.customer_id AND
+                                    b.max_id = c.id
+                        left join '''+options.mysql_database+'''.t_projects_member f on
+                                    c.project_id=f.project_id and f.team_id=34 
+                            left join '''+options.mysql_database+'''.t_projects_member e on
+                                    c.project_id=e.project_id and e.team_id=36  
+                     where  etype=2 order by a.created_at desc limit %s,%s
+                ''',start_page,pre_page)
             self.render('statis/customer_exchange_count.html',
                 search_key="",
                 tag=tag,
                 count=count,
                 t_customer_exchange=t_customer_exchange,
-                pagination=pagination
+                pagination=pagination,
+                show_tag=show_tag
                 )
 
         elif tag=="payment_count":
@@ -1881,4 +1924,257 @@ class StatisHandler(BaseHandler):
             count=count,
             t_customer_exchange=t_customer_exchange,
             pagination=pagination
+            )
+
+        elif tag=="receive_remind_count":
+            show_tag=self.get_argument('show_tag','1')
+            page = int(self.get_argument("page", 1))
+            distribute_at_start=self.get_argument('distribute_at_start','')
+            distribute_at_end=self.get_argument('distribute_at_end','')
+            jd_at_start=self.get_argument('jd_at_start','')
+            jd_at_end=self.get_argument('jd_at_end','')
+            banjie_at_start=self.get_argument('banjie_at_start','')
+            banjie_at_end=self.get_argument('banjie_at_end','')
+            company=self.get_argument('company','')
+            sale=self.get_argument('sale','')
+            genjin_at_start=self.get_argument('genjin_at_start','')
+            genjin_at_end=self.get_argument('genjin_at_end','')
+            way=self.get_argument('way','day')
+            pre_page=20
+            sql=''
+            sel_sql=''
+            order_sql=' a.distribute_at '
+            params={
+                "show_tag":show_tag,
+                "distribute_at_start":distribute_at_start,
+                "distribute_at_end":distribute_at_end,
+                "jd_at_start":jd_at_start,
+                "jd_at_end":jd_at_end,
+                "banjie_at_start":banjie_at_start,
+                "banjie_at_end":banjie_at_end,
+                "company":company,
+                "sale":sale,
+                "genjin_at_start":genjin_at_start,
+                "genjin_at_end":genjin_at_end,
+                "way":way
+
+            }
+            t_user_sales=self.db.query('''
+                    select * from t_user where department_name='销售部'
+                ''')
+            if show_tag=='5':
+                if way=='day':
+                    df_format=' "%%Y-%%m-%%d" '
+                elif way=='month':
+                    df_format=' "%%Y-%%m" '
+                elif way=='week':
+                    df_format=' "%%Y-%%m-%%u" '
+                if sale:
+                    sql+=' and c.sale_id=%s '%sale
+                if banjie_at_start and banjie_at_end:
+                    sql+=' and c.check_at between "%s" and "%s" '%(banjie_at_start,banjie_at_end)
+                count=self.db_customer.get('''
+                select count(*) count ,sum(ssw) sssw,
+                (select group_concat(sale_name,'|',sw) from(
+                  select c.sale_name,sum(a.wait_pay_amount) sw
+                from t_customer_payment a 
+                INNER JOIN
+                (
+                    SELECT customer_id, MAX(id) max_id
+                    FROM t_customer_payment
+                    GROUP BY customer_id
+                ) b ON a.customer_id = b.customer_id AND
+                        b.max_id = a.id 
+                inner join t_customer_payment_assist c on a.customer_id=c.customer_id
+                and is_check=1 '''+sql+''' group by sale_name order by sw desc
+                 )aa)every_count
+                  from (
+                       select group_concat(sale_name,'|',sw),df,sum(sw) ssw from (
+                select c.sale_name,date_format(c.check_at,'''+df_format+''') df,sum(a.wait_pay_amount) sw
+                from t_customer_payment a 
+                INNER JOIN
+                (
+                    SELECT customer_id, MAX(id) max_id
+                    FROM t_customer_payment
+                    GROUP BY customer_id
+                ) b ON a.customer_id = b.customer_id AND
+                        b.max_id = a.id 
+                inner join t_customer_payment_assist c on a.customer_id=c.customer_id
+                and is_check=1 '''+sql+''' group by sale_name,df)aa group by df )aaa
+                ''')
+                pagination=Pagination(page,pre_page,count.count,self.request)
+                startpage=(page-1)*pre_page
+                wait_pay_amount_count=self.db_customer.query('''
+                select group_concat(sale_name,'|',sw) gc,df,sum(sw) ssw from (
+                select c.sale_name,date_format(c.check_at,'''+df_format+''') df,sum(a.wait_pay_amount) sw
+                from t_customer_payment a 
+                INNER JOIN
+                (
+                    SELECT customer_id, MAX(id) max_id
+                    FROM t_customer_payment
+                    GROUP BY customer_id
+                ) b ON a.customer_id = b.customer_id AND
+                        b.max_id = a.id 
+                inner join t_customer_payment_assist c on a.customer_id=c.customer_id
+                and is_check=1 '''+sql+''' group by sale_name,df)aa group by df order by df desc limit %s,%s
+                ''',startpage,pre_page)
+                self.render('statis/receive_remind_count.html',
+                search_key="",
+                t_user_sales=t_user_sales,
+                pagination=pagination,
+                params=params,
+                tag=tag,
+                count=count,
+                wait_pay_amount_count=wait_pay_amount_count
+                )
+            else:
+                if show_tag=='2':
+                    sql=' and a.is_check=1  '
+                elif show_tag=='3':
+                    order_sql=' c.created_at'
+                    sel_sql=' c.created_at new_genjin_at,c.msg,d.count genjin_count,  '
+                    sql="""
+                    inner join t_customer_exchange c on c.customer_id=a.customer_id and c.uid=a.sale_id and c.etype=2
+                    and c.id=(select max(id) from t_customer_exchange where a.customer_id=customer_id and a.sale_id=uid and etype=2)
+                    inner join (select count(*) count,customer_id,uid,etype from t_customer_exchange
+                    group by customer_id,uid,etype) d 
+                    on  d.customer_id=a.customer_id and d.uid=a.sale_id and d.etype=2
+                    """
+                elif show_tag=='4':
+                    order_sql=' c.created_at'
+                    sel_sql=' c.created_at  new_genjin_at,c.msg,'
+                    sql='''
+                        inner join t_customer_exchange c on c.customer_id=a.customer_id and c.uid=a.sale_id and c.etype=2
+                    '''
+                if distribute_at_start and distribute_at_end:
+                    sql+=' and  distribute_at between "%s" and "%s" '%(distribute_at_start,distribute_at_end)
+                if jd_at_start and jd_at_end:
+                    sql+=' and jd_at between "%s" and "%s" '%(jd_at_start,jd_at_end)
+                if banjie_at_start and banjie_at_end:
+                    sql+=' and check_at between "%s" and "%s" '%(banjie_at_start,banjie_at_end)
+                if company:
+                    sql+=' and b.company like "%%'+company+'%%" '
+                if sale:
+                    sql+=' and a.sale_id=%s '%sale
+                if genjin_at_start and genjin_at_end:
+                    sql+=' and  c.created_at between "%s" and "%s" '%(genjin_at_start,genjin_at_end)
+                count=self.db_customer.get('''
+                    select count(*) count
+                    from t_customer_payment_assist a 
+                    inner join t_customer b on a.customer_id=b.id  and  a.jd_at is not null
+                '''+sql)
+                pagination=Pagination(page,pre_page,count.count,self.request)
+                startpage=(page-1)*pre_page
+                t_customer_payment_assist=self.db_customer.query('''
+                    select a.*,b.company,b.id customer_id,'''+sel_sql+'''
+                    datediff(DATE_FORMAT(jd_at, '%%Y-%%m-%%d'),DATE_FORMAT(distribute_at,'%%Y-%%m-%%d')) jd_day,
+                    datediff(DATE_FORMAT(check_at, '%%Y-%%m-%%d'),DATE_FORMAT(distribute_at,'%%Y-%%m-%%d')) banjie_day
+                    from t_customer_payment_assist a 
+                    inner join t_customer b on a.customer_id=b.id
+                    and a.jd_at is not null '''+sql+'''
+                    order by '''+order_sql+''' desc limit %s,%s
+                ''',startpage,pre_page)
+               
+                self.render('statis/receive_remind_count.html',
+                search_key="",
+                t_user_sales=t_user_sales,
+                pagination=pagination,
+                params=params,
+                tag=tag,
+                t_customer_payment_assist=t_customer_payment_assist,
+                )
+
+        elif tag=="customer_clearly_count":
+            way=self.get_argument('way','')
+            show_tag=self.get_argument('show_tag','')
+            page = int(self.get_argument("page", 1))
+            sql=''
+            every_count=''
+            pre_page=20
+            params={
+                'way':way,
+                'show_tag':show_tag
+            }
+            if way:
+                if show_tag=='customer':
+                    if way=='day':
+                        df_format=' "%%Y-%%m-%%d" '
+                    elif way=='month':
+                        df_format=' "%%Y-%%m" '
+                    elif way=='week':
+                        df_format=' "%%Y-%%m-%%u" '
+
+                    every_count=self.db_customer.query('''
+                        select uid_name, count(*) count from
+                        (select date_format(uid_at,'''+df_format+''') df,uid_name 
+                        from t_customer_clearly_msg group by df,uid_name,clearly_id)aa
+                        group by uid_name order by  count desc
+                        ''')
+                    count=self.db_customer.get('''
+                    select count(*) count,sum(ssc) all_count
+                     from (
+                        select df,sum(sc)ssc from (select date_format(df1,'''+df_format+''') df,uid_name,count(*) sc from (
+                        select date_format(uid_at,'%%Y-%%m-%%d') df1,uid_name 
+                        from t_customer_clearly_msg group by df1,uid_name,clearly_id)aa 
+                        group by df,uid_name)bb group by df)cc   
+                    ''')
+                    pagination=Pagination(page,pre_page,count.count,self.request)
+                    startpage=(page-1)*pre_page                    
+                    t_customer_clearly=self.db_customer.query('''
+                        select df,group_concat(uid_name,'|',sc) gc,sum(sc) ssc from
+                        (select date_format(df1,'''+df_format+''') df,uid_name,count(*) sc from (
+                        select date_format(uid_at,'%%Y-%%m-%%d') df1,uid_name 
+                        from t_customer_clearly_msg group by df1,uid_name,clearly_id)aa 
+                        group by df,uid_name)bb group by df order by df desc limit %s,%s   
+                    ''',startpage,pre_page)
+
+
+                elif show_tag=='record':
+                    if way=='day':
+                        df_format=' "%%Y-%%m-%%d" '
+                    elif way=='month':
+                        df_format=' "%%Y-%%m" '
+                    elif way=='week':
+                        df_format=' "%%Y-%%m-%%u" '
+                        
+                    every_count=self.db_customer.query('''
+                        select uid_name,sum(sc) count from(
+                        select date_format(uid_at,'''+df_format+''') df,uid_name,count(*) sc
+                        from t_customer_clearly_msg group by df,uid_name)aa group by uid_name order by count desc
+                        ''')
+                    count=self.db_customer.get('''
+                    select count(*) count,sum(ssc) all_count from
+                        (select date_format(df1,'''+df_format+''') df,sum(sc) ssc from(
+                        select date_format(uid_at,'%%Y-%%m-%%d') df1,uid_name,count(*) sc
+                        from t_customer_clearly_msg group by df1,uid_name)aa group by df)bb 
+                    ''')
+                    pagination=Pagination(page,pre_page,count.count,self.request)
+                    startpage=(page-1)*pre_page                                            
+                    t_customer_clearly=self.db_customer.query('''
+                        select date_format(df1,'''+df_format+''') df,group_concat(uid_name,'|',sc) gc,sum(sc) ssc from(
+                        select date_format(uid_at,'%%Y-%%m-%%d') df1,uid_name,count(*) sc
+                        from t_customer_clearly_msg group by df1,uid_name)aa group by df order by df desc
+                        limit %s,%s''',startpage,pre_page)
+       
+            else:
+                count=self.db_customer.get('''
+                select count(*) count from t_customer_clearly_msg a 
+                inner join t_customer_clearly b on a.clearly_id=b.id
+                inner join t_customer c on b.customer_id=c.id 
+                ''')
+                pagination=Pagination(page,pre_page,count.count,self.request)
+                startpage=(page-1)*pre_page
+                t_customer_clearly=self.db_customer.query('''
+                select a.uid,a.uid_name,a.uid_at,a.ass_msg,c.company  from t_customer_clearly_msg a 
+                inner join t_customer_clearly b on a.clearly_id=b.id
+                inner join t_customer c on b.customer_id=c.id 
+                order by a.uid_at desc limit %s,%s
+                ''',startpage,pre_page)
+            self.render('statis/customer_clearly_count.html',
+             search_key="",
+             pagination=pagination,
+             t_customer_clearly=t_customer_clearly,
+             every_count=every_count,
+             params=params,
+             count=count
             )

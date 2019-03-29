@@ -30,17 +30,21 @@ padding: 5px;
 <!-- 发业源码结束 -->
 
  <ol class="breadcrumb faye-ti">
-   <li class="breadcrumb-item">
+   <li class="breadcrumb-item g1">
      主面板
    </li>
-   <li class="breadcrumb-item active">事项安排
-       {%if my%}
-       <a class=" faye-btn" href="/project?tag=todo_arrange" >全部事项</a>
+   <li class="breadcrumb-item g1">事项安排</li>
+   <li class="g1 g1-left">
+   {%if my%}
+       <a class="btn btn-primary btn-sm" href="/project?tag=todo_arrange" >全部事项</a>
         {%else%}
-        <a class=" faye-btn" href="/project?tag=todo_arrange&my=1">我的事项</a>
+        <a class="btn btn-primary btn-sm" href="/project?tag=todo_arrange&my=1">我的事项</a>
         {%end%}
-        <a class=" faye-btn show_todo" href="javascript:void(0)">创建事项</a>
-<span class="badge badge-info" style="padding:6px;">当前事项合计: {{pagination.total_count}} 件</span>
+   </li>
+   <li class="g1 g1-left">
+        <a class="btn btn-primary btn-sm show_todo" href="javascript:void(0)">创建事项</a>
+   </li><li class="g1 g1-left">
+<span class="badge badge-primary" style="padding:6px;">当前事项合计: {{pagination.total_count}} 件</span>
        
    </li>
 
@@ -105,7 +109,7 @@ padding: 5px;
 
 
 
-  <form class="search_box">
+  <form class="search_box pm2">
     <table style="font-size:80%;">
 
           <tr class="faye-selsect">
@@ -169,7 +173,7 @@ padding: 5px;
           
             
               <td> 
-                <input type="submit" value="检索" class="btn btn-info" />
+                <input type="submit" value="检索" class="btn btn-primary btn-sm" />
             </td>
           </tr>
     </table>
@@ -181,9 +185,9 @@ padding: 5px;
   .faye-table tbody tr td {text-align: center; padding: 0.3rem; height: 40px; box-sizing: border-box;}
 </style>
 <div class="table-responsive">
-  <table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:11px;width:1250px;">
+  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:11px;width:1250px;">
     
-               <thead style="background-color:#000;color:#fff ; ">
+               <thead class="table_class">
                    <tr>
                       <th width="70"  {%if params['order_bl']%}style="color: #007bff;"{%end%}>办理日期
                         <a title="按办理日期排序" href="project?tag=todo_arrange
@@ -246,7 +250,7 @@ padding: 5px;
                        {%end%}
                    </tr>
                </thead>
-               <tbody>
+               <tbody class="fayetbody">
                    {%if todo_arranges%}
                     {% for item in todo_arranges %}
                         <tr >
@@ -349,7 +353,7 @@ padding: 5px;
 
                             </td>
                             {%if my %}  
-                            <td><a class="btn btn-info the_detail_btn" href="javascript:void(0)"
+                            <td><a class="btn btn-primary btn-sm the_detail_btn" href="javascript:void(0)"
 
                             bl_date="{{item.bl_date.strftime("%Y-%m-%d")}}"
                                 company='{{item.company}}' bs_area='{{item.bs_area}}' bs_address='{{item.bs_address}}'

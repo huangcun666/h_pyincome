@@ -3,17 +3,17 @@
 
 
  <ol class="breadcrumb">
-   <li class="breadcrumb-item">
+   <li class="breadcrumb-item g1">
     主面板
    </li>
-   <li class="breadcrumb-item active">确认单信息变动</li>
+   <li class="breadcrumb-item g1">确认单信息变动</li>
 
  </ol>
 
  <div class="table-responsive">
-    <form>
-        <table class="table table-bordered" id="dataTable"  style="width:2000px">
-            <thead style="background-color:#000;color:#fff ; font-size:13px;">
+    <form class="pm2">
+        <table class="table table-bordered fayetable" id="dataTable"  style="width:2000px">
+            <thead class="table_class">
                 <tr>
                     <th width="80">编号</th>
                     <th width="200">公司名变动</th>
@@ -23,7 +23,7 @@
                     <th width="100">最新修改人</th>
                     <th width="100">最新修改时间</th>
                 </tr>
-                <tbody>
+                <tbody class="fayetbody">
                     {%if t_project_chuna_history%}
                     {%for item in t_project_chuna_history %}
                         <tr>

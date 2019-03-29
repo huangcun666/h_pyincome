@@ -56,7 +56,7 @@ class ApiHandler(BaseHandler):
 
                 for item in t_users:
                     response.append(item.name)
-                 
+
             self.write(tornado.escape.json_encode(response))
         elif tag == "userandid":
             response = []
@@ -79,15 +79,15 @@ class ApiHandler(BaseHandler):
 
         elif tag=='company':
             response = []
-            if len(query)>2:
-                t_users = self.db.query("select * from t_projects where customer_company like  '%%"+query+"%%' ")
+            if len(query)>0:
+                t_users = self.db.query("select * from t_projects where customer_company like  '%%"+query+"%%' limit 20")
                 for item in t_users:
                     response.append(item.customer_company)
             self.write(tornado.escape.json_encode(response))
         elif tag=='customer_company':
             response = []
-            if len(query)>2:
-                t_users = self.db_customer.query("select * from t_customer where company like  '%%"+query+"%%' ")
+            if len(query)>0:
+                t_users = self.db_customer.query("select * from t_customer where company like  '%%"+query+"%%' limit 20 ")
                 for item in t_users:
                     response.append(item.company)
             self.write(tornado.escape.json_encode(response))
@@ -96,20 +96,20 @@ class ApiHandler(BaseHandler):
 
             uid =self.get_secure_cookie("uid")
             response = []
-            if len(query) > 2:
+            if len(query) > 0:
                 t_users = self.db_customer.query(
                     "select * from t_customer where acc_uid =%s and company like  '%%"
-                    + query + "%%' ", uid)
+                    + query + "%%' limit 20 ", uid)
                 for item in t_users:
                     response.append(item.company)
             print response,"lllll"
             self.write(tornado.escape.json_encode(response))
-        
+
         elif tag=="department":
             department=self.get_argument('department')
             responsible_pers=self.db.query('''
                 select responsible_per  from t_todo_arrange a
-                inner join t_user b on a.responsible_per=b.name and department_name=%s group by department_name 
+                inner join t_user b on a.responsible_per=b.name and department_name=%s group by department_name
             ''',department)
             self.write({'responsible_pers':responsible_pers})
 

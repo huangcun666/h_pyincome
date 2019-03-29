@@ -1,6 +1,116 @@
 
  {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
-
+<style>
+.message-item {
+margin-bottom: 5px;
+margin-left: 40px;
+position: relative;
+}
+.message-item .message-inner {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 10px;
+position: relative;
+}
+.message-item .message-inner:before {
+border-right: 10px solid #ddd;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -20px;
+top: 6px;
+width: 0;
+}
+.message-item .message-inner:after {
+border-right: 10px solid #fff;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -18px;
+top: 6px;
+width: 0;
+}
+.message-item:before {
+background: #fff;
+border-radius: 2px;
+bottom: -30px;
+box-shadow: 0 0 3px rgba(0,0,0,0.2);
+content: "";
+height: 100%;
+left: -30px;
+position: absolute;
+width: 3px;
+}
+.message-item:after {
+background: #fff;
+border: 2px solid #ccc;
+border-radius: 50%;
+box-shadow: 0 0 5px rgba(0,0,0,0.1);
+content: "";
+height: 15px;
+left: -36px;
+position: absolute;
+top: 10px;
+width: 15px;
+}
+.clearfix:before, .clearfix:after {
+content: " ";
+display: table;
+}
+.message-item .message-head {
+border-bottom: 1px solid #eee;
+margin-bottom: 8px;
+padding-bottom: 8px;
+}
+.message-item .message-head .avatar {
+margin-right: 20px;
+}
+.message-item .message-head .user-detail {
+overflow: hidden;
+}
+.message-item .message-head .user-detail h5 {
+font-size: 16px;
+font-weight: bold;
+margin: 0;
+}
+.message-item .message-head .post-meta {
+float: left;
+padding: 0 15px 0 0;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item img {
+min-height: 25px;
+max-height: 25px;
+}
+</style><label for=""></label>
  <div class="main">
 <div class="main-inner">
 <div class="container">
@@ -12,7 +122,7 @@
 <h3>应收管理 
 
 {%if is_manager != "0"%}
-    {%if qtype=="my"%} <a href="/finance?tag=list&qtype=all"><span>所有列表1</span> </a> {%end%} 
+    {%if qtype=="my"%} <a href="/finance?tag=list&qtype=all"><span>所有列表</span> </a> {%end%} 
 {%end%}
 {%if qtype=="all"%} <a href="/finance?tag=list&qtype=my"><span>我的客户</span> </a> {%end%}</h3>
 </div> <!-- /widget-header -->
@@ -21,6 +131,20 @@
 <div class="tab-pane active" id="formcontrols">
 
 <fieldset>
+        <ul class="nav nav-tabs" id="myTab">
+                <li {%if not state%} class="active" {%end%}>
+                    <a href="/finance?tag=list&qtype={{qtype}}" id="customer_tab">全部</a>
+             
+                </li>
+                <li {%if state=='1'%} class="active" {%end%}>
+                        <a href="/finance?tag=list&qtype={{qtype}}&state=1" id="customer_tab" >已办结</a>
+                 
+                    </li>
+                    <li {%if state=='2'%} class="active" {%end%}>
+                            <a href="/finance?tag=list&qtype={{qtype}}&state=2" id="customer_tab">未办结</a>
+                     
+                        </li>
+            </ul>
 <!--
 <form class="form-search" id="query_form">
   <input type="text" value="{{keyword}}" name="keyword" class="input-medium search-query" placeholder="公司名称/电话/姓名">
@@ -36,18 +160,19 @@
   <input type="hidden" value="{{tag}}" name="tag"/>
 </form>
 -->
-{%if keyword%}
-<div class="alert fade in">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            <strong>  共找到 {{pagination.total_count}} 条记录</strong> 
-          </div>
 
-{%end%}
 
 
 
                         {%if customers%}
-              <table class="table" style="margin:5px;">
+                        <div class="alert fade in">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            数量:{{pagination.total_count}} 总欠款:{{count.sum_qk}}
+            <strong>  共找到 {{pagination.total_count}} 条记录</strong> 
+          </div>
+
+
+              <table class="table table-bordered" style="margin:5px;">
                      <thead>
                                 <tr style="background-color: black; color:#fff;">
                            
@@ -62,9 +187,11 @@
                           
                               
                                 <th>欠款</th>
+                                <th>销售顾问</th>
                                 <th>客服会计</th>
                                 <th></th>
-                                </tr>
+                            <th></th>                
+                                        </tr>
                             </thead>
                 <tbody>
     
@@ -76,10 +203,12 @@
                         <td>{{customer.dd}}</td>
              
                         <td>{{(customer.all_income-customer.dd)}}</td>
+                        <td>{{customer.sale_name}}</td>
   <td>{{(customer.acc_uid_name)}}</td>
                         
                         <td><a class="btn customer_detail btn-sm control"  type='button'
                          href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}&to_tag=finance_tab">查看</a></td>
+                         <td><a href="javascript:void(0);" class="btn btn-sm rec_record" id='{{customer.id}}' >应收记录</a></td>
 
                      
                     </tr>
@@ -97,20 +226,61 @@
                               <div class="pagination">
                         <ul>
                             {% if pagination.has_prev %}
-                            <li><a href="/finance?tag={{tag}}&page={{ pagination.page - 1}}{%if qtype%}&qtype={{qtype}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li><a href="/finance?tag={{tag}}&page={{ pagination.page - 1}}{%if qtype%}&qtype={{qtype}}{%end%}{%if state%}&state={{state}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li>
-                                <a href="/finance?tag={{tag}}&page={{ page }}{%if qtype%}&qtype={{qtype}}{%end%}">{{ page }}</a></li>
+                                <a href="/finance?tag={{tag}}&page={{ page }}{%if qtype%}&qtype={{qtype}}{%end%}{%if state%}&state={{state}}{%end%}">{{ page }}</a></li>
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
                             {% end %} {% else %}
                             <li><span class="active"><a href="#">....</a></span></li>
                             {% end %} {%end %} {% if pagination.has_next %}
-                            <li><a href="/finance?tag={{tag}}&page={{pagination.page+1}}{%if qtype%}&qtype={{qtype}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/finance?tag={{tag}}&page={{pagination.page+1}}{%if qtype%}&qtype={{qtype}}{%end%}{%if state%}&state={{state}}{%end%}">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>       
 </fieldset>
 
+<div id="a_handler_modal1" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel_account">应收记录
+
+
+        </h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group">
+
+
+        <div class="control-group">
+            <label class="control-label" for="lastname">应收记录</label>
+            <!-- <div class="controls">
+                <textarea type="text" class="span4" id="wait_pay_remark" name="wait_pay_remark" value="" style="height: 50px;"></textarea>
+            </div> -->
+            <!-- /controls -->
+
+            <div class="controls" id="show_msg_add" >
+                    <textarea class="span4" id="txt_msg" style="margin: 0px 0px 9px; width: 491px; height: 61px;">
+                        </textarea>
+              
+                        <br>
+                        <button id="btn_save_msg" class="btn">确定添加</button>&nbsp;&nbsp;&nbsp;
+                        <!-- <input type="file"  value="上传附件" style=margin-top:10px;" name="record_file" id="record_file" class="form-control "/> -->
+            </div>
+        </div>
+        <div class="control-group" id="txt_msg_box">
+       
+        </div>
+
+</div>
+
+    </div>
+    <div class="modal-footer">
+   
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <!-- <button class="btn btn-primary" id="btn_save_msg">保存</button> -->
+    </div>
+</div>
 </div>
    
 
@@ -133,8 +303,42 @@
 <script>
 
 $(function () {
+    _xsrf = getCookie("_xsrf")
+    $('.rec_record').click(function () { 
+        id=$(this).attr('id')
+        $("#btn_save_msg").attr('customer_id',id)
+        $.get('/finance?tag=show_customer_exchange',
+               {"customer_id":id},function (result) { 
+                   $('#txt_msg_box').html(result)
+                })
+        $("#a_handler_modal1").modal("show")
+     })
+     $("#btn_save_msg").on("click", function () {
+                customer_id=$(this).attr('customer_id')
+                msg = $("#txt_msg").val()
+                if (msg == "") {
+                    alert("交流记录不能为空哦.")
+                    return false
+                } else {
+                    var formData = new FormData();
+                    formData.append('_xsrf', _xsrf)
+                    formData.append('msg', msg)
+                    formData.append('customer_id', customer_id)
+                    formData.append('etype', 3)
 
-
+                    $.ajax({
+                        url: '/finance?tag=customer_exchange',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,  // tell jQuery not to set contentType
+                        success: function (data) {
+                            $('#txt_msg_box').html(data)
+                  
+                        }
+                    })
+                }
+            })
 });
 
 </script>

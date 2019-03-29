@@ -4,14 +4,14 @@
 
 
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         主面板
     </li>
-    <li class="breadcrumb-item active">商机开发
+    <li class="breadcrumb-item g1">商机开发
 
   
 
-    </li>    <li class="breadcrumb-item active">地址商机
+    </li>    <li class="breadcrumb-item g1">地址商机
 [<a href="/addr?tag={{from_tag}}">返回</a>]
   
 
@@ -380,7 +380,9 @@ background-color: #007bff;
 {%if role=="8"%}
 <button class="a_add_set_member" mtype="add" req_id="{{t_addr_manager.req_id}}" addr_id="{{t_addr_manager.id}}">分配跟进人</button>
 {%end%}
-
+{%if role=="8" or role=="7"%}
+<button class="back_arrange" mtype="add" req_id="{{t_addr_manager.req_id}}" addr_id="{{t_addr_manager.id}}">重置</button>
+{%end%}
 </li>
 
   <li class="list-group-item">发起人: {{t_addr_manager_req.created_by}}</li>
@@ -454,10 +456,9 @@ background-color: #007bff;
 
   <li class="list-group-item">跟进结果: <span style='color:{%if t_addr_manager_req.finish_type_id==11%}green{%elif t_addr_manager_req.finish_type_id==12%}red{%end%}'>{{t_addr_manager_req.finish_type_name}}</span>
   
-  
   {%if t_addr_manager_req.finish_type_name=="已续费"%}
     {%if  role=="7" or role=="8"%}
-    <button id="a_finish_modal_cq" class="a_modify" req_id="{{t_addr_manager.req_id}}" addr_id="{{t_addr_manager.id}}">确认及信息更新</button>
+    <button id="a_finish_modal_cq" class="a_modify" req_id="{{t_addr_manager.req_id}}" addr_id="{{t_addr_manager.id}}" act_id='6'>确认及信息更新</button>
     {%end%}
 {%elif t_addr_manager_req.finish_type_name=="不续费"%}
     {%if  role=="8"%}
@@ -505,7 +506,7 @@ background-color: #007bff;
 
 
 
-{%elif t_addr_manager_req.req_act_id==5%}
+{%elif t_addr_manager_req.req_act_id==5 or t_addr_manager_req.req_act_id==6%}
 <ul class="list-group">
 <li class="list-group-item">状态: {{t_addr_manager_req.req_act_id_name}}({{t_addr_manager_req.leader_type_id_name}})
 {%if t_addr_manager_req.leader_type_id==2%}
@@ -1090,7 +1091,17 @@ background-color: #007bff;
             </div>
 
 </div>
-
+        {%if role=='7' or role=='8'%}
+        <div class="form-group">
+            <div class="col-md-10">
+                <label class="control-label" for="username" >标签 </label><br>
+        <input type="radio" name="addr_tag" id="addr_tag"  value="1" {%if t_addr_manager.addr_tag==1%}checked{%end%} />变更 
+        <input type="radio" name="addr_tag" id="addr_tag"  value="2" {%if t_addr_manager.addr_tag==2%}checked{%end%} />注销
+ 
+                </div>
+        <!-- /controls -->
+        </div>
+        {%end%}
             <div class="form-group">
                 <div class="col-md-10">
                     <label class="control-label" for="username" >公司名称</label>
@@ -1640,7 +1651,8 @@ $("#list_company").click()
         $("#a_confirm_member").on("click",function(){
                 req_id = $(this).attr("req_id")
                 addr_id = $(this).attr("addr_id")
-                $.post("/addr?tag=confirm_follow",{ '_xsrf': _xsrf,"addr_id":addr_id,"req_id":req_id},function(result){
+                $.post("/addr?tag=confirm_follow",
+                { '_xsrf': _xsrf,"addr_id":addr_id,"req_id":req_id},function(result){
 
                             if (result==0){
                                 location.reload()
@@ -1658,11 +1670,14 @@ $("#list_company").click()
     $("#a_finish_modal_leader").on("click",function(){
             $('#btn_save_finish_leader').attr('req_id',$(this).attr('req_id'))
             $('#btn_save_finish_leader').attr('addr_id',$(this).attr('addr_id'))
+      
             $("#finish_modal_leader").modal("show")
         })
    $(".a_modify").on("click",function(){
+            $('#btn_save_finish_cq').removeAttr('act_id')
             $('#btn_save_finish_cq').attr('req_id',$(this).attr('req_id'))
             $('#btn_save_finish_cq').attr('addr_id',$(this).attr('addr_id'))
+            $('#btn_save_finish_cq').attr('act_id',$(this).attr('act_id'))
             $("#finish_modal_cq").modal("show")
         })
 
@@ -1712,6 +1727,7 @@ $("#list_company").click()
 
 
          $("#btn_save_finish_cq").on("click",function(){
+              addr_tag=$("input[name=addr_tag]:checked").val()
                company=$('#company').val()
                company_uid=$('#company_uid').val()
                 customer_tel=$('#customer_tel').val()
@@ -1730,12 +1746,12 @@ $("#list_company").click()
                 leader_type_id=$('input[name=ok_leader_type_id]:checked').val()
                 leader_type_id_name=$('input[name=ok_leader_type_id]:checked').attr("type_name")
                 leader_remark = $("#ok_leader_remark").val()
-       
+                act_id=$(this).attr('act_id')
 
-                $.post("/addr?tag=modify",{ 'company':company,'_xsrf': _xsrf,"company_uid":company_uid,"customer_tel":customer_tel,
+                $.post("/addr?tag=modify",{ "addr_tag":addr_tag,'company':company,'_xsrf': _xsrf,"company_uid":company_uid,"customer_tel":customer_tel,
                 "rent_by":rent_by,"addr_type":addr_type,"rent_by":rent_by,"addr_con":addr_con,"addr_arr":addr_arr,"rent_start":rent_start,"rent_end":rent_end,"addr_manager":addr_manager,"old_addr":old_addr,
                 "now_addr":now_addr,"customer_remark":customer_remark,"leader_type_id":leader_type_id,"leader_type_id_name":leader_type_id_name,"leader_remark":leader_remark,
-                "addr_id":addr_id,"req_id":req_id},function(result){
+                "addr_id":addr_id,"req_id":req_id,"act_id":act_id},function(result){
 
                             if (result==0){
                                 location.reload()
@@ -1817,5 +1833,20 @@ $("#list_company").click()
             }
         
         })
+    
+        $('.back_arrange').click(function () { 
+            req_id=$(this).attr('req_id')
+            addr_id=$(this).attr('addr_id')
+            if(confirm('确定撤回？')){
+                $.post("/addr?tag=back_addr",{
+                "_xsrf":_xsrf,
+                'req_id':req_id,
+                "addr_id":addr_id
+            },function (data) { 
+                location.reload()
+             })
+            }
+      
+         })
     })
 </script> {%end%}

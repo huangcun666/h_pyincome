@@ -55,10 +55,10 @@
 </style>
 
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         主面板
     </li>
-    <li class="breadcrumb-item active">{%if params["my"]=="1"%} 我的商机 {%elif params["my"]=="2"%} 已成交商机{%else%}传统商机开发
+    <li class="breadcrumb-item g1">{%if params["my"]=="1"%} 我的商机 {%elif params["my"]=="2"%} 已成交商机{%else%}传统商机开发
        
         
         {%end%}
@@ -70,21 +70,38 @@
 
 <div class="row" >
     <div class="col-lg-12">
-<form>
-<input type="text" id="keyword" name="keyword" placeholder="公司名/注册地址/电话/邮箱" style="width:300px; height:30px;" value="{%if  params["keyword"]%}{{params["keyword"]}}{%end%}" > 
-<input type="text" id="sales_uid_name" name="sales_uid_name" placeholder="销售顾问" style="width:100px; height:30px;" value="{%if  params["sales_uid_name"]%}{{params["sales_uid_name"]}}{%end%}">
-<input type="text" id="update_start" name="update_start" placeholder="更新时间(开始)" style="width:150px; height:30px;" value="{%if params["update_start"]%}{{params["update_start"]}}{%end%}">
-至 <input type="text" id="update_end" name="update_end" placeholder="更新时间(结束)" style="width:150px; height:30px;" value="{%if params["update_end"]%}{{params["update_end"]}}{%end%}">
+<form class="pm2">
+    <table>
+        <tr>
+            <td><input style="width:250px;" type="text" id="keyword" name="keyword" placeholder="公司名/注册地址/电话/邮箱" class="form-control" value="{%if  params["keyword"]%}{{params["keyword"]}}{%end%}" > 
+            </td>
+            <td>
+                    <input type="text" id="sales_uid_name" name="sales_uid_name" placeholder="销售顾问" class="form-control" value="{%if  params["sales_uid_name"]%}{{params["sales_uid_name"]}}{%end%}">
+            </td>
+            <td>
+                    <input type="text" id="update_start" name="update_start" placeholder="更新时间(开始)" class="form-control" value="{%if params["update_start"]%}{{params["update_start"]}}{%end%}">
+            </td>
+            <td>至</td>
+<td><input type="text" id="update_end" name="update_end" placeholder="更新时间(结束)" class="form-control" value="{%if params["update_end"]%}{{params["update_end"]}}{%end%}"></td>
+      <td>
+            <select name="rank" class="form-control">
+                    <option value="0">选择质量类型</option>
+                    <option value="A" {%if params["rank"]=="A"%} selected="true"{%end%}>A类</option>
+                    <option value="B" {%if params["rank"]=="B"%} selected="true"{%end%}>B类</option>
+                    </select>
+      </td> 
+      <td>
+            <input type="hidden" value="all" name="bystaff"/>
+            <input type="hidden" value="list_company" name="tag" />
+            
+            <button class="btn btn-primary btn-sm">检索</button>
+      </td>
+</tr>
+    </table>
 
-<select name="rank" style="height:30px;">
-<option value="0">选择质量类型</option>
-<option value="A" {%if params["rank"]=="A"%} selected="true"{%end%}>A类</option>
-<option value="B" {%if params["rank"]=="B"%} selected="true"{%end%}>B类</option>
-</select>
-<input type="hidden" value="all" name="bystaff"/>
-<input type="hidden" value="list_company" name="tag" />
 
-<button class="btn btn-primary btn-small">检索</button>
+
+
 
 </form>
 
@@ -100,10 +117,10 @@
 
 
         
-    <table class="table table-bordered" style="width: 100%;" >
-        <thead style="background-color:#000;color:#fff ; font-size:12px;">
+    <table class="table table-bordered fayetable" style="width: 100%;" >
+        <thead class="table_class">
             <tr>
-                <th width="50">
+                <th width="60">
                     <input type="checkbox" id="choose_all">全选
                 </th> 
                 <th width="50">级别</th>
@@ -122,7 +139,7 @@
 
             </tr>
         </thead>
-        <tbody style=" font-size:12px;">
+        <tbody class="fayetbody" style=" font-size:12px;">
             {%if t_company%} {%for item in t_company%}
 
             <tr>

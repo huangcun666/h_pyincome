@@ -132,7 +132,45 @@ display: -webkit-box;
    height: 34px; line-height: 34px; color: #333;
 
 }
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 10px;
+    border: none;
+    cursor: pointer;
+}
 
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    z-index: 99;
+    width:100%;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+    color:#4aa8cc;
+    padding: 6px 8px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
 </style>
 <div class="main">
    <div class="main-inner">
@@ -143,6 +181,7 @@ display: -webkit-box;
                        <div class="widget-header">
                            <i class="icon-user"></i>
                            <h3>应收协助
+                       
                            </h3>
 
                        </div>
@@ -153,78 +192,127 @@ display: -webkit-box;
                            <div class="tab-content">
                                <div class="tab-pane active" id="formcontrols">
 <ul class="nav nav-tabs" id="myTab">
-   <li  {%if not show_tag%}class="active" {%end%}>
-       <a href="/payment?tag=assist_list" id="tab_confirm">全部
-        <span class="badge bg-danger">{{count.aa}}</span>
-    </a>
-       
-   </li>
+
    {%if department_name=='销售部' and '250' not in role_list%}
+   <li  {%if not show_tag%}class="active" {%end%}>
+    <a href="/payment?tag=assist_list" id="tab_confirm">全部
+     <span class="badge bg-danger">{%if not show_tag%}{{count.count}}{%else%}{{count.aaa}}{%end%}</span>
+ </a>
+    
+</li>
    <li  {%if show_tag=='1'%}class="active" {%end%}>
         <a href="/payment?tag=assist_list&show_tag=1">待接单
-            <span class="badge bg-danger">{{count.cc}}</span></a>
+            <span class="badge bg-danger">{%if  show_tag=='1'%}{{count.count}}{%else%}{{count.cc}}{%end%}</span></a>
        
     </li>
     <li  {%if show_tag=='2'%}class="active" {%end%}>
         <a href="/payment?tag=assist_list&show_tag=2">已接单
-            <span class="badge bg-danger">{{count.dd}}</span></a>
+            <span class="badge bg-danger">{%if show_tag=='2'%}{{count.count}}{%else%}{{count.dd}}{%end%}</span></a>
     </li>
     <li {%if show_tag=='3'%}class="active" {%end%}>
      <a href="/payment?tag=assist_list&show_tag=3">待审核
-        <span class="badge bg-danger">{{count.ee}}</span></a>
+        <span class="badge bg-danger">{%if show_tag=='3'%}{{count.count}}{%else%}{{count.ee}}{%end%}</span></a>
     </li>
     <li  {%if show_tag=='4'%}class="active" {%end%}>
         <a href="/payment?tag=assist_list&show_tag=4">异常待处理
-            <span class="badge bg-danger">{{count.gg}}</span></a>
+            <span class="badge bg-danger">{%if show_tag=='4'%}{{count.count}}{%else%}{{count.gg}}{%end%}</span></a>
        </li>
     <li  {%if show_tag=='5'%}class="active" {%end%}>
         <a href="/payment?tag=assist_list&show_tag=5">已完结
-            <span class="badge bg-danger">{{count.hh}}</span></a>
+            <span class="badge bg-danger">{%if show_tag=='5'%}{{count.count}}{%else%}{{count.hh}}{%end%}</span></a>
        </li>
+       <li >
+            <a href="/payment?tag=bad_debts_list&other_tag={{tag}}">坏账
+                <span class="badge bg-danger">{{count.ii}}</span></a>
+           </li>
    {%else%}
+   <li  {%if not show_tag%}class="active" {%end%}>
+    <a href="/payment?tag=assist_list" id="tab_confirm">全部
+     <span class="badge bg-danger">{%if not show_tag%}{{count.count}}{%else%}{{count.aa}}{%end%}</span>
+ </a>
+    
+</li>
    <li  {%if show_tag=='1'%}class="active" {%end%}>
        <a href="/payment?tag=assist_list&show_tag=1">应收协助发起
-        <span class="badge bg-danger">{{count.bb}}</span></a>
+        <span class="badge bg-danger">{%if  show_tag=='1'%}{{count.count}}{%else%}{{count.bb}}{%end%}</span></a>
    </li>
+   <li {%if show_tag=='-2000'%}class="active" {%end%}>
+        <a href="/payment?tag=assist_list&show_tag=-2000" >未过期
+         <span class="badge badge-danger">{%if show_tag=='-2000'%}{{count.count}}{%else%}{{count.fff}}{%end%}</span> 
+     </a>
+    </li>
    <li {%if show_tag=='-1000'%}class="active" {%end%}>
        <a href="/payment?tag=assist_list&show_tag=-1000" >已过期
-        <span class="badge badge-danger">{{count.ff}}</span> 
+        <span class="badge badge-danger">{%if show_tag=='-1000'%}{{count.count}}{%else%}{{count.ff}}{%end%}</span> 
     </a>
    </li>
    <li  {%if show_tag=='2'%}class="active" {%end%}>
        <a href="/payment?tag=assist_list&show_tag=2">销售待接单
-        <span class="badge bg-danger">{{count.cc}}</span></a>
+        <span class="badge bg-danger">{%if  show_tag=='2'%}{{count.count}}{%else%}{{count.cc}}{%end%}</span></a>
    </li>
    <li {%if show_tag=='3'%}class="active" {%end%}>
     <a href="/payment?tag=assist_list&show_tag=3">销售处理中
-        <span class="badge bg-danger">{{count.dd}}</span></a>
+        <span class="badge bg-danger">{%if show_tag=='3'%}{{count.count}}{%else%}{{count.dd}}{%end%}</span></a>
    </li>
    <li  {%if show_tag=='4'%}class="active" {%end%}>
     <a href="/payment?tag=assist_list&show_tag=4">待审核
-        <span class="badge bg-danger">{{count.ee}}</span></a>
+        <span class="badge bg-danger">{%if show_tag=='4'%}{{count.count}}{%else%}{{count.ee}}{%end%}</span></a>
    </li>
    <li  {%if show_tag=='5'%}class="active" {%end%}>
     <a href="/payment?tag=assist_list&show_tag=5">未通过
-        <span class="badge bg-danger">{{count.gg}}</span></a>
+        <span class="badge bg-danger">{%if  show_tag=='5'%}{{count.count}}{%else%}{{count.gg}}{%end%}</span></a>
    </li>
 <li  {%if show_tag=='6'%}class="active" {%end%}>
     <a href="/payment?tag=assist_list&show_tag=6">已完结
-        <span class="badge bg-danger">{{count.hh}}</span></a>
+        <span class="badge bg-danger">{%if  show_tag=='6'%}{{count.count}}{%else%}{{count.hh}}{%end%}</span></a>
    </li>
- 
+   <li >
+        <a href="/payment?tag=bad_debts_list&other_tag={{tag}}">坏账
+            <span class="badge bg-danger">{{count.ii}}</span></a>
+       </li>
    {%end%}
 </ul>
 <form class="form-search" id="query_form">
    <input type="text" name="company_sql" id="company_sql" class="input-medium search-query" placeholder="公司名称" value="{{params['company_sql']}}" >
-    <input type="text" name="person_sql" id="" class="input-medium search-query" placeholder="人员名称" value="{{params['person_sql']}}">
-    <select name="role_sql" style="width: 100px;">
-        <option value="1" {%if params['role_sql']=='1'%}selected{%end%}>客服会计</option>
-        <option value="2" {%if params['role_sql']=='2'%}selected{%end%}>销售顾问</option>
-        <option value="3" {%if params['role_sql']=='3'%}selected{%end%}>客服顾问</option>
-        {%if show_tag!='-1000'%}
-        <option value="4" {%if params['role_sql']=='4'%}selected{%end%}>跟进人</option>
-        {%end%}
+    <select name="kf_kuaiji" id="" style="width: 100px;">
+        <option value="">客服会计</option>
+        {%for item in acc_uid_names%}
+        <option value="{{item.acc_uid_name}}" {%if params['kf_kuaiji']==item.acc_uid_name%}selected{%end%}>{{item.acc_uid_name}}</option>
+           {%end%}
     </select>
+    <select name="sale_man" id="" style="width: 100px;">
+        <option value="">销售顾问</option>
+        {%for item in sale_mans%}
+        <option value="{{item.sale_man}}" {%if params['sale_man']==item.sale_man%}selected{%end%}>{{item.sale_man}}</option>
+           {%end%}
+    </select>
+    <select name="kf_man" id="" style="width: 100px;">
+        <option value="">客服顾问</option>
+        {%for item in kf_mans%}
+        <option value="{{item.kf_man}}" {%if params['kf_man']==item.kf_man%}selected{%end%}>{{item.kf_man}}</option>
+           {%end%}
+    </select>
+    {%if show_tag!='-1000' and show_tag!='-2000' %}
+    <select name="genjin_man" id="" style="width: 100px;">
+        <option value="">跟进人</option>
+        {%for item in t_user_sales%}
+        <option value="{{item.name}}" {%if params['genjin_man']==item.name%}selected{%end%}>{{item.name}}</option>
+           {%end%}
+    </select>
+    {%end%}
+    {%if show_tag=='3' %}
+    <input type="text" name="ass_day" class="input-medium" style="width:80px;" placeholder="跟进天数起" value="{{params['ass_day']}}">
+    <input type="text" name="ass_day_end" class="input-medium" style="width:80px;" placeholder="跟进天数止" value="{{params['ass_day_end']}}">
+    <input type="text" name="ass_num" class="input-medium" style="width:80px;" placeholder="跟进次数起" value="{{params['ass_num']}}">
+    <input type="text" name="ass_num_end" class="input-medium" style="width:80px;" placeholder="跟进次数止" value="{{params['ass_num_end']}}">
+    {%end%}
+    {%if show_tag=='6'%}
+    <select name="status"  style="width: 100px;">
+        <option value="">选择收款</option>
+        <option value="1"  {%if params['status']=='1'%}selected{%end%} >已收款</option>
+        <option value="2" {%if params['status']=='2'%}selected{%end%}>未收款</option>
+    </select>
+    {%end%}
     <input type="hidden" name="tag" value="{{tag}}">
     {%if show_tag%}
     <input type="hidden" name="show_tag" value="{{show_tag}}">
@@ -235,15 +323,25 @@ display: -webkit-box;
                                    <fieldset>
                         
                                        {%if customers%}
-                                       <table class="table" style="margin:1px;">
+                                       {%if '250' in role_list and (show_tag=='-1000' or show_tag=='-2000' or show_tag=='2' or show_tag=='3') %}
+                                       <a class="btn btn-primary btn-sm allot_choose" href="javascript:void(0);" style="margin-bottom: 5px;">批量分配</a>
+                                   {%end%}
+                                    <div class="alert alert-info" style="font-size: 16px;">总待收金额:{{count.sw}}</div>
+                              
+                                    <table class="table" style="margin:1px;">
                                            <thead>
                                                <tr style="background-color: black; color:#fff;">
+                                                    {%if '250' in role_list and  (show_tag=='-1000' or show_tag=='-2000' or show_tag=='2' or show_tag=='3') %}
+                                                    <th> <input type="checkbox" id="choose_all"></th>
+                                                    {%end%}
                                                <th style="width:13px; ">公司名称</th>
                                              
-                                               <th style="width: 85px;">销售顾问</th>
-                                               <th style="width: 85px;">客服顾问</th>
-                                               {% if show_tag!='-1000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}
-                                               <th style="width:85px;">跟进人</th>
+                                               <th style="width: 80px;">销售</th>
+                                               <th style="width: 80px;">客服</th>
+                                               {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}
+                                               <th style="width:110px;">跟进人</th>
+                                               {%elif show_tag=='-1000'%}
+                                               <th style="width:100px;">上次跟进人</th>
                                                {%end%}
                                                <!-- <th style="width:75px; " >记账到期</th>
                                                <th style="width:75px; ">账册到期</th> -->
@@ -252,14 +350,14 @@ display: -webkit-box;
                                                <th style="width:50px; ">待收金额</th>
                                           
                                                <th style="width: 150px;">最新动态</th>
-                                               {% if show_tag!='-1000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}
-                                               <th style="width:150px;">协助原因</th>
+                                               {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}
+                                               <th style="width:150px;">跟进状态</th>
                                                 <th style="width:120px;"></th>
                                                 {%end%}
-                                                {%if role=='8' and show_tag=='-1000'%}
+                                                {%if role=='8' and (show_tag=='-1000' or show_tag=='-2000' )%}
                                                 <th></th>
                                                {%end%}
-                                               <th style="width:30px;"></th>
+                                               <th min-width='120px'></th>
                                                </tr>
                                                </thead>
                                                <!-- 11/22 -->
@@ -289,19 +387,26 @@ display: -webkit-box;
 
                                                {%for item in customers%}
                                                <tr>
-
+                                                    {%if '250' in role_list and (show_tag=='-1000' or show_tag=='-2000' or show_tag=='2' or show_tag=='3') %}
+                                                    <td ><input type="checkbox" name="check" value="{{item.customer_id}}" {%if show_tag!='-1000' and show_tag!='-2000'%}assist_id="{{item.assist_id}}" sale_id="{{item.assist_sale_id}}"{%end%} id="check"></td>
+                                                    {%end%}
                                                    <td>
                                                     {%if department_name=='销售部' and '250' not in role_list and item.jd_at==None %}
                                                     <span class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</span>
                                                     {%else%}
-                                                       <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
+                                                       <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or item.req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
                                                    {%end%}
                                                     </td>
                                              
                                                   
                                                    <td  style="font-size:11px;">{%if item.sale_man%}{{item.sale_man}}{%elif item.sale_man1%}{{item.sale_man1}}{%end%}</td>
                                                    <td  style="font-size:11px;">{%if item.kf_man%}{{item.kf_man}}{%elif item.kf_man1%}{{item.kf_man1}}{%end%}</td>
-                                                   {% if show_tag!='-1000' %}
+                                                   {%if not show_tag and ('250' in role_list or role=='3') %}
+                                                   
+                                                   <td  style="font-size:11px;">{%if item.sale_name%}{{item.sale_name}}{%if item.tsm>=1 and item.is_check==1 and item.wj_day>14%}<p style="color: red;font-size:smaller;">(上次跟进人)</p>{%end%}{%end%}</td>
+                                            
+                                              
+                                                   {% elif show_tag!='-2000'%}
                                                    <td  style="font-size:11px;">{%if item.sale_name%}{{item.sale_name}}{%end%}</td>
                                                    {%end%}
 
@@ -332,34 +437,36 @@ display: -webkit-box;
                                                    <td  style="width: 60px;  color: red;">{%if item.wait_pay_amount%}{{item.wait_pay_amount}}{%end%}</td>
                                                
                                                    <td id='{{item.customer_id}}'  style="width: 150px; " 
-                                                   title="{%if item.sale_cuikuan_id  and role!='8' %}{%if department_name=='销售部' and '250' not in role_list and item.sale_last_cuikuan_at%}{%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg}}{%end%}{%else%}{%if item.last_cuikuan_at%}{{item.last_cuikuan_msg}}{%end%}{%end%}{%else%}{%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}{%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}}{%else%}{{item.last_cuikuan_msg}}{%end%}{%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}}{%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}{{item.last_cuikuan_msg}}{%end%}{%end%}">
+                                                   title="{%if item.sale_cuikuan_id  and role!='8' %}{%if department_name=='销售部' and '250' not in role_list and item.sale_last_cuikuan_at%}{%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%else%}{%if item.last_cuikuan_at%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%end%}{%else%}{%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}{%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%else%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%end%}">
                                                    {%if item.sale_cuikuan_id and role!='8' %}
                                                    {%if department_name=='销售部' and '250' not in role_list and item.sale_last_cuikuan_at%}
-                                                   {%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}{%end%}
+                                                   {%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg[:20]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}{%end%}
                                                    {%else%}
-                                                   {%if item.last_cuikuan_at%}{{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}{%end%}
+                                                   {%if item.last_cuikuan_at%}{{item.last_cuikuan_msg[:20]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}{%end%}
                                                    {%end%}
                                                    {%else%}
                                             
                                                     {%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}
 
                                                    {%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}
-                                                   {{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                                   {{item.sale_last_cuikuan_msg[:20]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
                                                     {%else%}
-                                                    {{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
+                                                    {{item.last_cuikuan_msg[:20]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
                                                    {%end%}
                                                    {%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}
-                                                   {{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                                   {{item.sale_last_cuikuan_msg[:20]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
                                                    {%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}
-                                                   {{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
+                                                   {{item.last_cuikuan_msg[:20]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
                                                     {%end%}
                                                     {%end%}
                                                 </td>
                                              
-                                                   {% if show_tag!='-1000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}
+                                                   {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}
                                                        <td  style="font-size:11px;" title="{%if item.assist_msg%}{{item.assist_msg}}{%end%}">
-                                                           {%if item.assist_msg%}{{item.assist_msg[:25]}}{%if len(item.assist_msg)>25%}...{%end%}{%end%}
-                                                           
+                                                           <!-- {%if item.assist_msg%}{{item.assist_msg[:25]}}{%if len(item.assist_msg)>25%}...{%end%}{%end%} -->
+                                                           {%if item.jd_at%}
+                                                            跟进{{item.genjin_day}}天{{item.sale_genjin_count}}次
+                                                           {%end%}
                                                        </td>
                                         
 
@@ -381,6 +488,7 @@ display: -webkit-box;
                                                             总结:{{item.summary[:18]}}{%if len(item.summary)>18%}...{%end%}
                                                             {%end%}
                                                             {%else%}
+                                                            {%if  item.assist_id%}
                                                              {%if item.distribute_at==None%}                                                      
                                                             <a class="btn handler_detail btn-sm control" type='button'
                                                             assist_id="{{item.assist_id}}"
@@ -401,10 +509,19 @@ display: -webkit-box;
                                                             <br>
                                                             总结:{{item.summary[:15]}}{%if len(item.summary)>15%}...{%end%}
                                                             {%end%}
+                                                            {%else%}
+                                                            <a class="btn handler_detail btn-sm control" type='button'
+                                                            customer_id="{{item.customer_id}}"
+                                                            href="javascript:void(0)"
+                                                             step='4'
+                                                               style="width: 30px; height: 24px; color: #4aa8cc;"
+                                                               >
+                                                                分配</a>
+                                                            {%end%}
                                                             {%end%}
                                                             </td>
                                                             {%end%}
-                                                {%if role=='8' and show_tag=='-1000'%}
+                                                {%if role=='8' and (show_tag=='-1000' or show_tag=='-2000' )%}
                                                     <td>
                                                         <a class="btn handler_detail btn-sm control" type='button'
                                                         customer_id="{{item.customer_id}}"
@@ -417,53 +534,84 @@ display: -webkit-box;
                                                     </td>
                                                     {%end%}
                                                     <td>   
-                                                        {%if show_tag!='-1000'%}
-                                                        {%if    item.sale_end_at!=None %}
-                                                        {%if '250' in role_list and item.is_check==0%}
-                                                            <a class="btn  check_xiezhu btn-sm control" type='button'
-                                                            assist_id="{{item.assist_id}}"
-                                                            href="javascript:void(0)"
-                                                             
-                                                               style="width: 60px; height: 24px; color: #4aa8cc; margin-bottom:5px;" 
-                                                               >
-                                                                审 核</a>
-                                                                {%elif item.is_check==2 or item.is_check==1 %}
-                                                                
-                                                                <a class="btn  look_xiezhu btn-sm control" type='button'
-                                                                assist_id="{{item.assist_id}}"
-                                                                is_check="{{item.is_check}}"
-                                                                manager="{%if '250' in role_list%}1{%end%}"
-                                                                check_remark="{{item.check_remark}}"
-                                                                sale_name="{{item.sale_name}}"
-                             
-                                                                 customer_id="{{item.customer_id}}"
-                                                                href="javascript:void(0)"
-                                                                   style="width: 60px; height: 24px; color: #4aa8cc; margin-bottom:5px;" 
-                                                                   >
-                                                                    查 看</a>
-                                                                
-                                                                {%end%}
-                                                                {%end%}
-                                                                {%end%}
+                                                        
 
-                                                            <a class="btn handler_detail1 btn-sm control" type='button'
-                                                            customer_id="{{item.customer_id}}"
-                                                            item_id="{{item.id}}"
-                                                            wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})账册费:{{item.pay_book_amount}}元{%end%}"
-                                                            
-                                                                href="javascript:void(0)"
-                                                                 curr_expire_pay="{%if item.acc_end and item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
-                                                                {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
-                                                                href="javascript:void(0)"
-                                                                company_name="{{item.company}}"
-                                                                {% if show_tag!='-1000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}jd_at="{{item.jd_at}}"  sale_end_at="{{item.sale_end_at}}"{%end%}
-                                                               
-                                                                style="width: 60px; height: 24px; color: #4aa8cc;"
-                                                                >
-                                                                 催款记录</a>
+                                                                 <div class="dropdown">
+                                                                        <a href="javascript:void(0)" class="btn  btn-sm" style="width: 60px; height: 24px; color: #4aa8cc;">查 看 </a>
+                                                                        
+                                                                        <div class="dropdown-content">
+                                                                                {%if show_tag!='-1000' and show_tag!='-2000'%}
+                                                                                {%if    item.sale_end_at!=None %}
+                                                                                {%if '250' in role_list  and item.is_check==0%}
+                                                                                    <a class="check_xiezhu" type='button'
+                                                                                    assist_id="{{item.assist_id}}"
+                                                                                    href="javascript:void(0)"
+                                                                                       >
+                                                                                        审 核</a>
+                                                                                        {%elif  item.is_check==1  or (item.is_check==2 and ('250' in role_list or role=='3') ) %}
+                                                                                    
+                                                                                        <a class="look_xiezhu" type='button'
+                                                                                        assist_id="{{item.assist_id}}"
+                                                                                        is_check="{{item.is_check}}"
+                                                                                        manager="{%if '250' in role_list%}1{%end%}"
+                                                                                        check_remark="{{item.check_remark}}"
+                                                                                        sale_name="{{item.sale_name}}"
+                                    
+                                                                                         customer_id="{{item.customer_id}}"
+                                                                                        href="javascript:void(0)"
+                                                                                      
+                                                                                           >
+                                                                                            查看审核</a>
+                                                                                            {%elif item.is_check==2 and '250' not in role_list%}
+                                                                                           
+                                                                                                <a class="look_xiezhu" type='button'
+                                                                                                assist_id="{{item.assist_id}}"
+                                                                                                is_check="{{item.is_check}}"
+                                                                                                manager="{%if '250' in role_list %}1{%end%}"
+                                                                                                check_remark="{{item.check_remark}}"
+                                                                                                sale_name="{{item.sale_name}}"
+            
+                                                                                                 customer_id="{{item.customer_id}}"
+                                                                                                href="javascript:void(0)"
+                                                                                                   
+                                                                                                   >
+                                                                                                    查看审核</a>
+                                                                                            <a class="sale_finish" 
+                                                                                            assist_id="{{item.assist_id}}"   customer_id="{{item.customer_id}}"
+                                                                                         
+                                                                                             href="javascript:void(0);">重填办结</a>
+                                                                                            
+                                                                                         
+                                                                                            
+                                                                                        
+                                                                                        {%end%}
+                                                                                        {%end%}
+                                                                                        {%end%}
+                                                                                    <a href="javascript:void(0)"  class="linkman_detail"
+                                                                                    customer_id="{{item.customer_id}}"
+                                                                                 
+                                                                                    >查看联系人</a>
+                                                                                    <a class="handler_detail1" type='button'
+                                                                                    customer_id="{{item.customer_id}}"
+                                                                                    item_id="{{item.id}}" {%if show_tag!='-1000' and show_tag!='-2000'%} assist_id="{{item.assist_id}}"{%end%}
+                                                                                    wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})账册费:{{item.pay_book_amount}}元{%end%}"
+                                                                                    
+                                                                                        href="javascript:void(0)"
+                                                                                         curr_expire_pay="{%if item.acc_end and item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
+                                                                                        {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
+                                                                                        href="javascript:void(0)"
+                                                                                        company_name="{{item.company}}"
+                                                                                        {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}jd_at="{{item.jd_at}}"  sale_end_at="{{item.sale_end_at}}"{%end%}
+                                                                                       
+                                                                                    
+                                                                                        >
+                                                                                         催款记录</a>
+                                                                     
+                                                                        </div>
+                                                                      </div>
                                                             </td>                                            
 
-               
+                                                           
 
                                                </tr>
 <tr style="font-size:11px;">
@@ -495,15 +643,28 @@ display: -webkit-box;
                                                <li>
                                                    <a href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}
                                                    {%if params['company_sql']%}&company_sql={{params['company_sql']}}{%end%}
-                                                   {%if params['person_sql']%}&person_sql={{params['person_sql']}}{%end%}
-                                                   {%if params['role_sql']%}&role_sql={{params['role_sql']}}{%end%}
+                                                   {%if params['kf_kuaiji']%}&kf_kuaiji={{params['kf_kuaiji']}}{%end%}
+                                                   {%if params['sale_man']%}&sale_man={{params['sale_man']}}{%end%}
+                                                   {%if params['kf_man']%}&kf_man={{params['kf_man']}}{%end%}
+                                                   {%if params['genjin_man']%}&genjin_man={{params['genjin_man']}}{%end%}
+
+                                                   {%if params['ass_num']%}&ass_num={{params['ass_num']}}{%end%}
+                                                   {%if params['ass_num_end']%}&ass_num_end={{params['ass_num_end']}}{%end%}
+                                                   {%if params['ass_day']%}&ass_day={{params['ass_day']}}{%end%}
+                                                   {%if params['ass_day_end']%}&ass_day_end={{params['ass_day_end']}}{%end%}
                                                    &page={{ pagination.page - 1}}">&laquo; 上页</a>
                                                </li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                                                <li>
                                                    <a href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}
                                                    {%if params['company_sql']%}&company_sql={{params['company_sql']}}{%end%}
-                                                   {%if params['person_sql']%}&person_sql={{params['person_sql']}}{%end%}
-                                                   {%if params['role_sql']%}&role_sql={{params['role_sql']}}{%end%}
+                                                   {%if params['kf_kuaiji']%}&kf_kuaiji={{params['kf_kuaiji']}}{%end%}
+                                                   {%if params['sale_man']%}&sale_man={{params['sale_man']}}{%end%}
+                                                   {%if params['kf_man']%}&kf_man={{params['kf_man']}}{%end%}
+                                                   {%if params['genjin_man']%}&genjin_man={{params['genjin_man']}}{%end%}
+                                                   {%if params['ass_num']%}&ass_num={{params['ass_num']}}{%end%}
+                                                   {%if params['ass_num_end']%}&ass_num_end={{params['ass_num_end']}}{%end%}
+                                                   {%if params['ass_day']%}&ass_day={{params['ass_day']}}{%end%}
+                                                   {%if params['ass_day_end']%}&ass_day_end={{params['ass_day_end']}}{%end%}
                                                    &page={{ page }}">{{ page }}</a>
                                                </li>
                                                {% else %}
@@ -522,8 +683,14 @@ display: -webkit-box;
                                                <li>
                                                    <a href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}
                                                    {%if params['company_sql']%}&company_sql={{params['company_sql']}}{%end%}
-                                                   {%if params['person_sql']%}&person_sql={{params['person_sql']}}{%end%}
-                                                   {%if params['role_sql']%}&role_sql={{params['role_sql']}}{%end%}
+                                                   {%if params['kf_kuaiji']%}&kf_kuaiji={{params['kf_kuaiji']}}{%end%}
+                                                   {%if params['sale_man']%}&sale_man={{params['sale_man']}}{%end%}
+                                                   {%if params['kf_man']%}&kf_man={{params['kf_man']}}{%end%}
+                                                   {%if params['genjin_man']%}&genjin_man={{params['genjin_man']}}{%end%}
+                                                   {%if params['ass_num']%}&ass_num={{params['ass_num']}}{%end%}
+                                                   {%if params['ass_num_end']%}&ass_num_end={{params['ass_num_end']}}{%end%}
+                                                   {%if params['ass_day']%}&ass_day={{params['ass_day']}}{%end%}
+                                                   {%if params['ass_day_end']%}&ass_day_end={{params['ass_day_end']}}{%end%}
                                                    &page={{pagination.page+1}}">下页 &raquo;</a>
                                                </li>
                                                {% end %}
@@ -695,7 +862,7 @@ display: -webkit-box;
              
              
                 <div class="modal-footer">
-                        <a class="btn btn-primary sale_finish" id='re_sale_finish'  href="javascript:void(0);">重新填写</a>
+                        
                     <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
                     <button class="btn btn-primary" id="btn_save_check">保存</button>
                 </div>
@@ -714,6 +881,7 @@ display: -webkit-box;
                         <div class="controls">
                              <input type="radio" value="1" id="status" name="status">已收款
                              <input type="radio" value="2" id="status" name="status">未收款
+                             <input type="radio" value="3" id="status" name="status">坏账
                         </div>
                     </div>
                     <div class="control-group">
@@ -734,6 +902,45 @@ display: -webkit-box;
                     <button class="btn btn-primary" id="btn_save_summay">保存</button>
                 </div>
              </div>
+
+             <div id="linkman_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel_account">相关联系人
+                 
+                 
+                        </h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="control-group">
+                                <table class="table table-striped table-bordered">
+                                        <thead>
+                                        <tr>
+                                                <th style="width:80px;">名字/称呼</th>
+                                                <!-- <th style="width:30px;"> 性别 -->
+                                                <th style="width:120px;">电话</th>
+                                                <th>备注</th>
+                                                <th style="width:60px;">创建人</th>
+                                                <th style="width:100px;">创建时间</th>
+                                          
+                                        </tr>
+                                        </thead>
+                                        <tbody id="linkman_box">
+                                        </tbody>
+                                        </table>
+                        </div>
+           
+                    
+                 
+                 </div>
+                 
+                 
+                    <div class="modal-footer">
+                   
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            
+                    </div>
+                 </div>
 {%end%} {%block js%}
 
 
@@ -747,11 +954,18 @@ display: -webkit-box;
                    elem: '#txt_time' //指定元素
           });
         
-
+          $('#choose_all').on('change',function () { 
+         $('input[name=check]').not(this).prop('checked',this.checked);
+      })
+      $('.allot_choose').on('click',function () {
+          $("#btn_save_sale").attr('allot_type','all') 
+        $("#a_handler_modal").modal("show")
+       })
            $(".handler_detail").on("click", function () {
                 assist_id=$(this).attr('assist_id')
                 customer_id=$(this).attr('customer_id')
                 step=$(this).attr('step')
+                $("#btn_save_sale").removeAttr('allot_type')
                 $("#btn_save_sale").attr('customer_id',customer_id)
                 $("#btn_save_sale").attr('assist_id',assist_id)
                 $("#btn_save_sale").attr('step',step)
@@ -767,8 +981,10 @@ display: -webkit-box;
                customer_id = $(this).attr("customer_id")
                company_name = $(this).attr("company_name")
                sale_end_at=$(this).attr('sale_end_at')
+               assist_id=$(this).attr('assist_id')
                $('#btn_save_msg').attr('customer_id',customer_id)
                $('#btn_save_msg').attr('sale_end_at',sale_end_at)
+               $('#btn_save_msg').attr('assist_id',assist_id)
                $("#btn_save_wai_pay").attr("payment_id", "0")
                $("#curr_expire").text("")
                $("#last_payment").html("")
@@ -837,6 +1053,7 @@ display: -webkit-box;
             sale_id=$("#sale_name").val()
             assist_msg=$('#assist_msg').val()
             customer_id=$(this).attr('customer_id')
+            allot_type=$(this).attr('allot_type')
             step='1'
             if($(this).attr('step')=='4'){
                 step='4'
@@ -845,8 +1062,41 @@ display: -webkit-box;
                 $("#er_sale_name").show()
                 $("#er_sale_name").text('销售不能为空')
             }
-            else{
+            else if(allot_type=='all'){
+                customer_ids=[]
+                assist_ids_and_sales=[] 
                 
+        $('input[name=check]:checked').each(function () { 
+            customer_ids.push($(this).val())
+            if($(this).attr('assist_id')!=undefined && $(this).attr('sale_id')){
+                assist_ids_and_sales.push($(this).attr('assist_id')+'|'+$(this).attr('sale_id'))
+            }
+            
+         })
+         customer_ids=customer_ids.join(',')
+         assist_ids_and_sales=assist_ids_and_sales.join(',')
+            if(customer_ids.length<1){
+             alert('请选择')
+         }else{
+             $(this).attr('disabled','disabled')
+            $.post('/payment?tag=ask_assist',{
+                "_xsrf":_xsrf,
+                "sale_name":sale_name,
+                "assist_msg":assist_msg,
+                "customer_ids":customer_ids,
+                "assist_ids_and_sales":assist_ids_and_sales,
+                "sale_id":sale_id,
+                "step":6
+            },function (result) {
+                if(result=='-1'){
+                    alert('销售填写错误')
+                }else{location.reload()} 
+                
+             })
+         }
+            }
+            else{
+            $(this).attr('disabled','disabled')
             $.post('/payment?tag=ask_assist',{
                 "_xsrf":_xsrf,
                 "sale_name":sale_name,
@@ -867,6 +1117,7 @@ display: -webkit-box;
             $("#btn_save_msg").on("click", function () {
                 customer_id=$(this).attr('customer_id')
                 sale_end_at=$(this).attr('sale_end_at')
+                assist_id=$(this).attr('assist_id')
                 msg = $("#txt_msg").val()
                 if (msg == "") {
                     alert("交流记录不能为空哦.")
@@ -876,6 +1127,7 @@ display: -webkit-box;
                     formData.append('file', $('#record_file')[0].files[0])
                     formData.append('_xsrf', _xsrf)
                     formData.append('msg', msg)
+                    formData.append('assist_id', assist_id)
                     formData.append('customer_id', customer_id)
                     formData.append('sale_end_at', sale_end_at)
                     formData.append('msg_time',$('#txt_time').val())
@@ -935,7 +1187,7 @@ display: -webkit-box;
                 summary=$("#summary").val()
                 assist_id=$(this).attr('assist_id')
                 customer_id=$(this).attr('customer_id')
-                if(status==undefined || summary==''){
+                if(status==undefined || (summary=='' && status!='3')){
                     alert('未填写完全')
                 }else{
                     $.post('/payment?tag=ask_assist',
@@ -998,9 +1250,32 @@ display: -webkit-box;
                 }else{
                     $("#btn_save_check").attr('assist_id',$(this).attr('assist_id'))
                 }
-                $("#re_sale_finish").attr({'assist_id':$(this).attr('assist_id'),'customer_id':$(this).attr('customer_id')})
+            
                 $("#check_xiezhu_modal").modal('show')
 
              })
+             $('.linkman_detail').on('click',function () { 
+                 customer_id=$(this).attr('customer_id')
+                 $.post('/payment?tag=assist_linkman',
+                 {
+                     '_xsrf':_xsrf,
+                     'customer_id':customer_id
+                 }
+                 ,function (data) { 
+                    data=data['linkman']
+                    txt=''
+                    $("#linkman_box").children().remove()
+                 
+                    if(data!=''){
+                    for(var i=0;i<data.length;i++){
+                    txt+='<tr><td>'+data[i].name+'</td><td >'+data[i].tel+'</td><td>'+data[i].remark+'</td><td>'+data[i].acc_uid_name+'</td><td>'+data[i].df+'</td></tr>'
+                    }
+                    $("#linkman_box").append(txt)
+                    }else{
+                        $("#linkman_box").append('<tr><td colspan="5">还没有哦~</td></tr>')
+                    }
+                    $("#linkman_modal").modal('show')
+                  })
+              })
    })
 </script> {%end%}

@@ -2,7 +2,7 @@
 {% block body1 %}
 <div class="weui-navbar">
     <a class="weui-navbar__item {%if not todo%}weui-btn_disabled weui-btn_default{%end%}"  href="/mtransition?tag=list_todo">
-      全部
+      全部<span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">{{nums.count}}</span>
     </a>
   <a class="weui-navbar__item  {%if todo=='1'%}weui-btn_disabled weui-btn_default{%end%}" href="/mtransition?tag=list_todo&todo=1">
     待接单<span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">{{nums.a}}</span>
@@ -20,9 +20,11 @@
 
 <div class="weui-tab__bd">
 <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+
 {%if not  todo_arranges%}
 没有数据哦.
 {%else%}
+
 {%for item in todo_arranges%}
 <div class="weui-form-preview">
   <div class="weui-form-preview__hd">

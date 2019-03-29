@@ -1,0 +1,30 @@
+{%if t_customer_clearly_msg%}
+{%for item in t_customer_clearly_msg%}
+<li class="from_user left" > <a href="#" class="avatar"><img src="/static/images/avatar.jpeg" width="60"></a>
+                  <div class="message_wrap"> <span class="arrow"></span>
+                    <div class="info"> <a class="name">{{item.uid_name}} </a> <span class="time">{{item.uid_at}}</span>
+                      <div class="options_arrow">
+                        <div class="dropdown pull-right"> <a class="dropdown-toggle " id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="#"> <i class=" icon-caret-down"></i> </a>
+                          <ul class="dropdown-menu " role="menu" aria-labelledby="dLabel">
+                            <li><a href="#"><i class=" icon-trash icon-large"></i> Delete</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text" style="width:700px;"> {{item.ass_msg}}</div>
+                  </div>
+                </li>
+
+{%end%}
+
+<script>
+    $(function(){
+        
+            $("#msg_count").html("一共有"+{{t_customer_clearly_msg_count.c}}+"条记录")
+
+    })
+</script>
+{%else%}
+    还没有跟进记录 
+
+{%end%}

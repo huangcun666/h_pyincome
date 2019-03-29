@@ -3,10 +3,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">我的业务</li>
+        <li class="breadcrumb-item g1">我的业务</li>
       </ol>
    <div class="card mb-3">
         <div class="card-body">
@@ -14,8 +14,8 @@
                 <p>
                         <a href="/project?tag=new&form_tag={{form_tag}}" class="btn btn-primary" name="btn_add">新建</a>
                 </p>
-                  <table class="table table-bordered" id="dataTable" width="2000" style="width:5000px" cellspacing="0">
-                    <thead>
+                  <table class="table table-bordered fayetable" id="dataTable" width="2000" style="width:5000px" cellspacing="0">
+                    <thead class="table_class">
                         <tr>
                          <th width="60">序号</th>
 
@@ -43,7 +43,7 @@
       <th width="100"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                     {%if t_projects%}
                         {%for item in t_projects%}
                         <tr id="{{item.id}}">
@@ -112,7 +112,7 @@
                                    
                             </td>
                             <td>
-                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-info " title="{{item.id}}">详细</a>
+                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-primary btn-sm" title="{{item.id}}">详细</a>
 
                             </td>
                         </tr>

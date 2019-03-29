@@ -6,15 +6,18 @@
 
 </style>
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         主面板
     </li>
-    <li class="breadcrumb-item active">到款结算
+    <li class="breadcrumb-item g1">到款结算
       
             {%if  projects_income_title and ( params['project_id'] or (params['daokuan_start'] and params['daokuan_end']) 
             or params['sale'] or params['kf'])%}
+            <li class="g1 g1-left">
                 <a href="javascript:void(0);" id='income_output' params="{{params}}"  class="btn btn-primary btn-sm">点击下载数据（Excel格式）</a>
-            {%end%}
+            </li>
+          
+                {%end%}
     </li>
 </ol>
 <nav>
@@ -31,19 +34,8 @@
 </div>
 </nav>
 <br>
-<form>
+<form class="pm2">
     <table>
-        <thead>
-            <tr>
-                <th>订单号</th>
-                <th>到款日期</th>
-                <th></th>
-                <th></th>
-                <th>销售顾问</th>
-                <th>客服顾问</th>
-                <th></th>
-            </tr>
-        </thead>
         <tbody>
             <tr>
                 <td><input {%if params['project_id']%}value="{{params['project_id']}}"{%end%} type="text" placeholder="订单号" name="project_id" id="project_id" class="form-control"></td>
@@ -55,15 +47,15 @@
                 <td>
                     <input name="tag" value="{{tag}}" hidden>
                     <input name="step" value="{{params['step']}}" hidden>
-                    <input type="submit" value="检 索"></td>
+                    <input type="submit" class="btn btn-primary btn-sm" value="检 索"></td>
             </tr>
         </tbody>
     </table>
 </form>
 <div class="table-responsive">
 
-<table class="table table-bordered"  style="width:1500px">
-    <thead class="thead-dark">
+<table class="table table-bordered fayetable"  style="width:1500px">
+    <thead class="table_class">
         <tr class="active">
             <th width="50">订单号</th>
           <th width="150">业务内容</th>

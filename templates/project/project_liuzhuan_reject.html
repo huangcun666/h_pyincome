@@ -1,10 +1,10 @@
 {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">流转交接驳回列表 
+        <li class="breadcrumb-item g1">流转交接驳回列表 
      
         </li>
 
@@ -20,8 +20,8 @@
 <div class="table-responsive">
 
 
-                  <table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:11px;">
-                    <thead style="background-color:#000;color:#fff ; ">
+                  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:11px;">
+                    <thead class="table_class">
                         <tr>
                             <th width="80">编号</th>
                             <th  width="150">公司名称</th>
@@ -32,7 +32,7 @@
                             <th  width="40"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                         {%if  t_projects%}
                         {%for item in t_projects%}
                             <tr>
@@ -42,7 +42,7 @@
                                 <td>{{item.gs_name}}</td>
                                 <td>{{item.fback_remark}}</td>
                                 <td>{{item.btype_name}}</td>
-                                <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-info">查看</a></td>
+                                <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-primary btn-sm">查看</a></td>
                             </tr>
                         {%end%}
                         {%else%}

@@ -3,10 +3,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item active">我的订单流转动态</li>
+        <li class="breadcrumb-item g1">我的订单流转动态</li>
       </ol>
 
 
@@ -41,9 +41,8 @@
 </div>
         
     {%else%}
-                 <table class="table table-bordered" cellspacing="0" style="font-size:12px;">
-                    <thead>
-                         <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                 <table class="table table-bordered fayetable" cellspacing="0" style="font-size:12px;">
+                         <thead class="table_class">
 
                            <th width="20">
                             编号
@@ -67,7 +66,7 @@
 <th width="160">流转更新时间</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                         {%for item in t_projects%}
                         <tr id="{{item.id}}">
                                <td>

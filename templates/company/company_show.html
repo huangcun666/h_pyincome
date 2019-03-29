@@ -4,10 +4,10 @@
 
 
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         主面板
     </li>
-    <li class="breadcrumb-item active">商机开发
+    <li class="breadcrumb-item g1">商机开发
 
      {%if t_company.sales_uid%} <a href="/company?tag=list_company&my=1">返回</a> {%end%}
 
@@ -298,6 +298,14 @@ background-color: #007bff;
       <div class="fayet2">{{t_company.regCap}}</div>
       <div class="fayet">联系电话</div>
       <div class="fayet2">{{t_company.phone}}</div>
+      <div class="fayet">其他电话</div>
+      <div class="fayet2">{{t_company.phone1}}</div>
+    </li>
+        <li>
+      <div class="fayet">经营状态</div>
+      <div class="fayet2">{{t_company.reg_state}}</div>
+      <div class="fayet">注册资本</div>
+      <div class="fayet2">{{t_company.reg_money}}</div>
       <div class="fayet">成立日期</div>
       <div class="fayet2">{{t_company.creater}}</div>
     </li>
@@ -339,9 +347,15 @@ background-color: #007bff;
                                     <i class="fa fa-fw fa-comment"></i>标记为我的客户</a>
 
                                     {%else%}
+
   <a href="javascript:void(0)" id="free_to_me" class=" mr-3 d-inline-block a_project_state_modal" style="font-size:14px;" type_id="1">
                                     <i class="fa fa-fw fa-comment"></i>把客户放回公有池</a>
+
+                              
                                     {%end%}
+                                    
+  
+
             </h6>
 
         </div>
@@ -462,6 +476,9 @@ background-color: #007bff;
 
                                     </textarea>
                                     <button id="btn_save_msg">确定添加</button>
+<a href="javascript:void(0)" close="1" class=" mr-3 d-inline-block pick_to_close" style="font-size:14px;" ><i class="fa fa-fw fa-comment"></i>标记无需求</a>
+<a href="javascript:void(0)" close="2" class=" mr-3 d-inline-block pick_to_close" style="font-size:14px;" >
+                                   <i class="fa fa-fw fa-comment"></i>标记空号</a>
                                 </div>
                                 <hr class="my-0">
                             <div style="margin-top:10px;margin-bottom:40px">
@@ -725,6 +742,16 @@ background-color: #007bff;
         company_id = {{t_company.id}};
         company_guid = "{{t_company.company_guid}}"
 
+
+    $(".pick_to_close").on("click",function(){
+        close = $(this).attr("close")
+
+        $.post("company?tag=close",{"_xsrf":_xsrf,"company_id":company_id,"company_guid":company_guid,"close":close},function(result){
+
+            location.reload()
+        })
+        
+    })
     $("#reminder_at").datetimepicker({
         minView: 0, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd hh:ii:00',
         language: 'zh-CN', initialDate: new Date()

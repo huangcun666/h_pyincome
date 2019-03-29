@@ -3,10 +3,10 @@
 
 
  <ol class="breadcrumb">
-   <li class="breadcrumb-item">
+   <li class="breadcrumb-item g1">
     主面板
    </li>
-   <li class="breadcrumb-item active">查看业务类型 
+   <li class="breadcrumb-item g1">查看业务类型 
     </li>
 
  </ol>
@@ -17,22 +17,22 @@
   <div>
         {%if tag==None%}
         <a href="/checkprojectcategory" 
-        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
+        class="btn btn-primary btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
         所有类型</a>
         {%else%}
         <a href="/checkprojectcategory" 
-        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
+        class="btn btn-primary btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
         所有类型</a>
         {%end%}
       {%for category in categorys%}
       {%if category.category_name==tag%}
       <a href="/checkprojectcategory?tag={{category.category_name}}" 
-      class="btn btn-info btn-sm" id="btn_check" 
+      class="btn btn-primary btn-sm" id="btn_check" 
       style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
       {{category.category_name}}</a>
       {%else%}
       <a href="/checkprojectcategory?tag={{category.category_name}}" 
-      class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
+      class="btn btn-primary btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
       {{category.category_name}}</a>
       {%end%}
       {%end%}
@@ -40,8 +40,8 @@
 <div class="table-responsive">
 
 
-             <table class="table table-bordered" id="dataTable" width="2000"  cellspacing="0">
-               <thead style="background-color:#000;color:#fff">
+             <table class="table table-bordered fayetable" id="dataTable" width="2000"  cellspacing="0">
+               <thead class="table_class">
                    <tr>
                     <th width="60">业务</th>
                     <th width="60">创建人</th>
@@ -50,7 +50,7 @@
                     <th width="120">创建时间</th>
                    </tr>
                </thead>
-               <tbody>
+               <tbody class="fayetbody">
                    {%for projectcategory in allprojectcategorys%}
                    
                     <tr>

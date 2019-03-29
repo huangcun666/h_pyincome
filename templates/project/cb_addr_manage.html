@@ -1,0 +1,598 @@
+{% extends "../base.html" %} {%block title%}创邦地址管理{%end%} {% block body %}
+<style>
+.faye-btn {
+padding: 0.1rem 0.2rem;
+background-color: #9ec6ef;
+ margin-left: 20px; 
+ border-radius: 2px;}
+</style>
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item g1">
+         主面板
+        </li>
+        <li class="breadcrumb-item g1">创邦地址管理</li>
+        <li class="g1 g1-left">
+            {%if role=='15'%}
+            <a href="javascript:void(0);" class="btn btn-primary btn-sm" id="add_cb_addr">新增</a>
+            {%end%} 
+        </li>
+            <li class="g1 g1-left">
+            <a class="btn {%if show_tag=='cg'%}btn-primary{%else%}btn-default{%end%} btn-sm" style="{%if show_tag!='cg'%}background-color: #9ec6ef;{%end%} padding:5px;" href="/project?tag=cb_addr_manage&show_tag=cg">采购方付款管理</a>
+        </li><li class="g1 g1-left">
+            <a class="btn {%if show_tag=='gy'%}btn-primary{%else%}btn-default{%end%} btn-sm" style="{%if show_tag!='gy'%}background-color: #9ec6ef;{%end%} padding:5px;" href="/project?tag=cb_addr_manage&show_tag=gy&step=1">供应商结算管理</a>
+        </li>
+
+      </ol>
+      <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <!-- <a class="btn btn-light  nav_padding {%if not step%}active{%end%}" id="nav-home-tab"
+                href="/project?tag=cb_addr_manage" >全 部
+                <span class="badge badge-danger"></span>
+            </a> -->
+            {%if show_tag=='cg'%}
+              <!-- <a class="btn btn-light  nav_padding {%if step=='1'%}active{%end%}"
+                href="/project?tag=cb_addr_manage&step=1" style="font-size:13px;">待付款
+                <span class="badge badge-danger"></span>
+                </a> -->
+                
+                <a class="btn btn-light  nav_padding {%if step=='2'%}active{%end%}"
+                href="/project?tag=cb_addr_manage&step=2" style="font-size:13px;">出纳审核
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding {%if step=='3'%}active{%end%}"
+                href="/project?tag=cb_addr_manage&step=3" style="font-size:13px;">财务确认
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding {%if step=='4'%}active{%end%}"
+                href="/project?tag=cb_addr_manage&step=4" style="font-size:13px;">通过
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding {%if step=='5'%}active{%end%}"
+                href="/project?tag=cb_addr_manage&step=5" style="font-size:13px;">采购欠款
+                <span class="badge badge-danger"></span>
+                </a>
+                {%elif show_tag=='gy'%}
+                <a class="btn btn-light  nav_padding {%if step=='1'%}active{%end%}"
+                href="/project?tag=cb_addr_manage&step=1&show_tag=gy" style="font-size:13px;">待结算
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding {%if step=='2'%}active{%end%}"
+                href="/project?tag=cb_addr_manage&step=2&show_tag=gy" style="font-size:13px;">财务审核
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding {%if step=='3'%}active{%end%}"
+                href="/project?tag=cb_addr_manage&step=3&show_tag=gy" style="font-size:13px;">财务确认
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding {%if step=='4'%}active{%end%}"
+                href="/project?tag=cb_addr_manage&step=4&show_tag=gy" style="font-size:13px;">通过
+                <span class="badge badge-danger"></span>
+                </a>
+                <a class="btn btn-light  nav_padding {%if step=='5'%}active{%end%}"
+                href="/project?tag=cb_addr_manage&step=5&show_tag=gy" style="font-size:13px;">供应欠款
+                <span class="badge badge-danger"></span>
+                </a>
+                {%end%}
+               </div>
+        </nav>
+
+<div class="table-responsive">
+
+                  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:11px;width:2550px;">
+                    <thead class="table_class">
+                        <tr>
+                        <th width="200">出售地址明细</th>
+                        <th width="150">安排时间</th>
+                        <th width="100">公司名</th>
+                        <th width="100">法人</th>
+                        <th width="150">采购方</th>
+                        <th width="100">成本价</th>
+                        <th width="100">售价</th>
+
+                        <th width="150">采购方付款金额</th>
+                        <th width="150">采购方付款时间</th>
+                        <th width="200">出纳审核</th>
+                        <th width="100">采购欠款</th>
+                        <th width="100">供应欠款</th>
+                        <th width="150">供应方结算金额</th>
+
+                        <th width="150">供应方结算时间</th>
+                        <th width="150">财务结算审核</th>
+
+                        <th width="100">供应方</th>
+                        <th width="100">地址性质</th>
+                        <th width="100">地址类型</th>
+                        <th width="100">起租时间</th>
+                        <th width="100">到期时间</th>
+                        <th width="100">业务员</th>
+                        <!-- <th width='100'>状态</th> -->
+                        <th width="100"></th>
+                        {%if step=='3' and role=='3'%}
+                        <th width="100"></th>
+                        {%end%}
+                    </tr>
+                </thead>
+                    <tbody class="fayetbody">
+                        {%if t_cb_addr_manage%}
+                        {%for item in t_cb_addr_manage%}
+                            <tr>
+                                <td>{{item.sale_addr}}</td>
+                                <td>{%if item.arrange_date%}{{item.arrange_date.strftime('%Y-%m-%d')}}{%end%}</td>
+                                <td>{{item.company}}</td>
+                                <td>{{item.legal_peson}}</td>
+                                <td>{{item.purchaser}}</td>
+                                <td>{{item.cost_price}}</td>
+                                <td>{{item.sell_price}}</td>
+                                <td>{{item.purchaser_pay_money}}</td>
+                                <td>{%if item.purchaser_pay_date%}{{item.purchaser_pay_date.strftime('%Y-%m-%d')}}{%end%}</td>
+                                <td>
+                                    {%if item.chuna_check_date%}
+                                    {{item.chuna_check_name}}{{item.chuna_check_date.strftime('%Y-%m-%d')}}
+                                    {%else%}
+                                    未审核
+                                    {%end%}
+                                </td>
+                                <td>{{item.purchaser_qk}}</td>
+                                <td>{{item.supply_qk}}</td>
+                                <td>{{item.supply_js_money}}</td>
+                                <td>{%if item.supply_js_date%}{{item.supply_js_date.strftime('%Y-%m-%d')}}{%end%}</td>
+                                <td>
+                                    {%if item.caiwu_js_date%}
+                                    {{item.caiwu_js_name}}{{item.caiwu_js_date.strftime('%Y-%m-%d')}}
+                                    {%else%}
+                                    未审核
+                                    {%end%}
+                                </td>
+                                <td>{{item.supplier}}</td>
+                                <td>{{item.addr_xingzhi}}</td>
+                                <td>{{item.addr_type}}</td>
+                                <td>{%if item.rent_date%}{{item.rent_date.strftime('%Y-%m-%d')}}{%end%}</td>
+                                <td>{%if item.expire_date%}{{item.expire_date.strftime('%Y-%m-%d')}}{%end%}</td>
+                                <td>{{item.uid_name}}</td>
+                                <!-- <td>
+                                    {%if not item.chuna_check_date%}
+                                    待出纳审核
+                                    {%elif item.chuna_check_date and not item.purchaser_caiwu_confirm %}
+                                    待财务确认
+                                    {%elif item.chuna_check_date and item.purchaser_caiwu_confirm and not item.fq_date  %}
+                                    已通过
+                                    {%elif  item.chuna_check_date and item.purchaser_caiwu_confirm and not item.fq_date and not item.supply_js_date%}
+                                    待付款
+                                    {%elif  item.chuna_check_date and item.purchaser_caiwu_confirm and not item.fq_date  and item.supply_js_date and not item.caiwu_js_date%}
+                                    待财务审核
+                                    {%end%}
+                                </td> -->
+                                <td>
+                                    <a href='javascript:void(0);'
+                                    sale_addr='{{item.sale_addr}}'  arrange_date='{% if item.arrange_date%}{{item.arrange_date}}{%end%}'
+                                    company='{{item.company}}' legal_peson='{{item.legal_peson}}' purchaser='{{item.purchaser}}'
+                                    cost_price='{{item.cost_price}}' sell_price='{{item.sell_price}}' purchaser_pay_money='{{item.purchaser_pay_money}}'
+                                    purchaser_pay_date='{%if item.purchaser_pay_date%}{{item.purchaser_pay_date}}{%end%}' chuna_check_name='{{item.chuna_check_name}}'
+                                    chuna_check_date='{%if item.chuna_check_date%}{{item.chuna_check_date}}{%end%}' supply_js_money='{{item.supply_js_money}}' supply_js_date='{%if item.supply_js_date%}{{item.supply_js_date}}{%end%}'
+                                    caiwu_js_name='{{item.caiwu_js_name}}'  caiwu_js_date='{%if item.caiwu_js_date%}{{item.caiwu_js_date}}{%end%}' supplier='{{item.supplier}}'
+                                    addr_xingzhi='{{item.addr_xingzhi}}'  addr_type='{{item.addr_type}}'  rent_date='{%if item.rent_date%}{{item.rent_date}}{%end%}'
+                                    expire_date='{%if item.expire_date%}{{item.expire_date}}{%end%}' uid='{{item.uid}}' cb_addr_id='{{item.id}}' 
+                                    purchaser_qk='{{item.purchaser_qk}}' supply_qk='{{item.supply_qk}}' fq_date='{%if item.fq_date%}{{item.fq_date}}{%end%}'
+                                    purchaser_caiwu_confirm='{%if item.purchaser_caiwu_confirm%}{{item.purchaser_caiwu_confirm}}{%end%}'
+                                    supply_caiwu_confirm='{%if item.supply_caiwu_confirm%}{{item.supply_caiwu_confirm}}{%end%}'
+                                    class="btn btn-primary btn-sm cb_addr_detail">查看</a>
+                                  
+                                </td>
+                                {%if step=='3' and role=='3'%}
+                                <td>
+                                <a href='javascript:void(0);' class="btn btn-primary btn-sm caiwu_confirm" 
+                                 purchaser_caiwu_confirm="{%if item.purchaser_caiwu_confirm%}{{item.purchaser_caiwu_confirm}}{%end%}"
+                                 supply_caiwu_confirm="{%if item.supply_caiwu_confirm%}{{item.supply_caiwu_confirm}}{%end%}"
+                                 cb_addr_id='{{item.id}}'
+                                 >确认</a></td>
+                                {%end%}
+                            </tr>
+                        {%end%}
+                        {%else%}
+                        <tr>
+                            <td colspan="25" style="text-align:left;">还没有哦~</td>
+                        </tr>
+                        {%end%}
+                    </tbody>
+                </table>
+
+                <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                            <ul class="pagination">
+                                {% if pagination.has_prev %}
+                                <li class="paginate_button page-item previous " id="dataTable_previous">
+                                <a href="/project?tag=cb_addr_manage{%if step%}&step={{step}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                <li class="paginate_button page-item ">
+                                    <a href="/project?tag=cb_addr_manage{%if step%}&step={{step}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                {% else %}
+                                <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                {% end %} {% else %}
+                                <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
+                                {% end %} {%end %} {% if pagination.has_next %}
+                                <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=cb_addr_manage{%if step%}&step={{step}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                                {% end %}
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="modal fade" id="add_cb_addr_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                    <div class="modal-dialog" role="document" >
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="income_title_type">创邦地址
+                        <!-- <button class="btn btn-danger delete_recode">&times;</button> -->
+                
+                      </h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                
+                
+                        <div class="modal-body" id="site_mod">
+                        
+                            <div class="form-group">
+                            <div class="col-sm-10">
+                                <label for="sale_addr">出售地址明细</label>
+                                <input placeholder="出售地址明细" class="form-control" name="sale_addr" id="sale_addr" type="text">
+                  
+                            </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="arrange_date">安排时间</label>
+                                    <input placeholder="安排时间" class="form-control" name="arrange_date" id="arrange_date" type="text" readonly>
+                                    <div class="alert alert-danger" style="margin-top:0px;display:none;" role="alert"  id="er_arrange_date">
+                                        请填写安排时间
+                                    </div>
+                                </div>
+                            </div>
+                                <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="company">公司名</label>
+                                    <input placeholder="公司名" class="form-control" name="company" id="company" type="text">
+                                    <div class="alert alert-danger" style="margin-top:0px;display:none;" role="alert"  id="er_company">
+                                        请填写公司名
+                                    </div>
+                                </div>
+                                </div>
+                            
+                                <div class="form-group">
+                                        <div class="col-sm-10">
+                                            <label for="legal_peson">法人</label>
+                                            <input  placeholder="法人" class="form-control" name="legal_peson" id="legal_peson" type="text">
+                                            
+                                        </div>
+                                        </div>
+
+                                <div class="form-group">
+                                        <div class="col-sm-10">
+                                            <label for="purchaser">采购方</label>
+                                            <input placeholder="采购方" class="form-control" name="purchaser" id="purchaser" type="text">
+                                        </div>
+                                        </div>
+                                
+                                <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label for="cost_price">成本价</label>
+                                    <input placeholder="成本价" class="form-control" name="cost_price" id="cost_price" type="text">
+                                                
+                            </div>
+                            </div>
+                            <div class="form-group">
+                            <div class="col-sm-10">
+                                        <label for="sell_price">售价</label>
+                                        <input placeholder="售价" class="form-control" name="sell_price" id="sell_price" type="text">
+                                    </div>
+                                </div>
+                               
+                                <div class="form-group">
+                                        <div class="col-sm-10">
+                                            <label for="purchaser_pay_money">采购方付款金额</label>
+                                            <input placeholder="采购方付款金额" class="form-control" name="purchaser_pay_money" id="purchaser_pay_money" type="text">
+                                        </div>
+                                </div>
+                                <div class="form-group">
+                                        <div class="col-sm-10">
+                                                <label for="purchaser_pay_date">采购方付款时间</label>
+                                                <input placeholder="采购方付款时间" class="form-control" name="purchaser_pay_date" id="purchaser_pay_date" type="text" readonly>
+                                                <div class="alert alert-danger" style="margin-top:0px;display:none;" role="alert"  id="er_purchaser_pay_date">
+                                                        请填写采购方付款时间        
+                                                        </div>
+                                            </div>
+                                         
+                                        </div>
+                                <div class="form-group">
+                                    <div class="col-sm-10">
+                                        <label for="rent_date">起租时间</label>
+                                        <input placeholder="起租时间" class="form-control" name="rent_date" id="rent_date" type="text" readonly>
+                                    </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <label for="dingjin">到期时间</label>
+                                                <input placeholder="到期时间" class="form-control" name="expire_date" id="expire_date" type="text" readonly>
+                                            </div>
+                                            </div>
+                                <div class="form-group">
+                                    <div class="col-sm-10">
+                                        <label for="supplier">供应方</label>
+                                        <input placeholder="供应方" class="form-control" name="supplier" id="supplier" type="text">
+                                    </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <label for="addr_xingzhi">地址性质</label>
+                                                <input placeholder="地址性质" class="form-control" name="addr_xingzhi" id="addr_xingzhi" type="text">
+                                            </div>
+                                            </div>
+                                    <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <label for="addr_type">地址类型</label>
+                                                <input placeholder="地址性质" class="form-control" name="addr_type" id="addr_type" type="text">
+                                            </div>
+                                            </div>
+                                    <div class="form-group">
+                                                <div class="col-sm-10">
+                                                    <label for="purchaser_qk">采购欠款</label>
+                                                    <input placeholder="采购欠款" class="form-control" name="purchaser_qk" id="purchaser_qk" type="text">
+                                                </div>
+                                                </div> 
+                                          
+
+                                            <div id="supply_box">
+                                                <div class="form-group">
+                                                    <div class="col-sm-10">
+                                                        <label for="supply_qk">供应欠款</label>
+                                                        <input placeholder="供应欠款" class="form-control" name="supply_qk" id="supply_qk" type="text">
+                                                    </div>
+                                                </div> 
+                                            <div class="form-group">
+                                                <div class="col-sm-10">
+                                                    <label for="supply_js_date">供应方结算时间</label>
+                                                    <input placeholder="供应方结算时间" class="form-control" name="supply_js_date" id="supply_js_date" type="text" readonly>
+                                                    <div class="alert alert-danger" style="margin-top:0px;display:none;" role="alert"  id="er_supply_js_date">
+                                                        请填写供应方结算时间     
+                                                        </div>
+                                                </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-sm-10">
+                                                        <label for="supply_js_money">供应方结算金额</label>
+                                                        <input placeholder="供应方结算金额" class="form-control" name="supply_js_money" id="supply_js_money" type="text">
+                                                    </div>
+                                                    </div>
+                                                </div>
+                          
+                                     
+                        </div>
+                
+                
+                        <div class="modal-footer">
+                            <input type="hidden" value="0" id="is_other" name="is_other" />
+                                   <button class="btn btn-primary" target="_blank" id="btn_save_cb_addr" rel_id='0'>保 存</button>
+                
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+  {%end%}
+
+  {%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+$("#arrange_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+$("#purchaser_pay_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+$("#rent_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+$("#expire_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+$("#supply_js_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+    $('.caiwu_confirm').click(function () {
+        cb_addr_id=$(this).attr('cb_addr_id')
+        purchaser_caiwu_confirm=$(this).attr('purchaser_caiwu_confirm')
+        supply_caiwu_confirm=$(this).attr('supply_caiwu_confirm')
+        if(confirm('确定通过？')){
+            $.post('project?tag=cb_addr_confirm',
+        {
+            '_xsrf':_xsrf,
+            'purchaser_caiwu_confirm':purchaser_caiwu_confirm,
+            'supply_caiwu_confirm':supply_caiwu_confirm,
+            'cb_addr_id':cb_addr_id
+        },function (data) { 
+            location.reload()
+         })
+        }
+ 
+     })
+   $('#add_cb_addr').click(function () {
+    $('#sale_addr').val('')
+    $('#arrange_date').val('')
+    $('#company').val('') 
+    $('#legal_peson').val('')
+    $('#purchaser').val('')
+    $('#cost_price').val('')
+    $('#sell_price').val('')
+    $('#purchaser_pay_money').val('')
+    $('#purchaser_pay_date').val('')
+    $('#rent_date').val('')
+    $('#expire_date').val('')
+    $('#supplier').val('')
+    $('#addr_xingzhi').val('')
+    $('#addr_type').val('')
+    $('#supply_js_date').val('')
+    $('#supply_js_money').val('')
+    $('#purchaser_qk').val('')
+    $('#supply_qk').val('')
+    $('#supply_box').hide()
+    $('#btn_save_cb_addr').show()
+    $('#btn_save_cb_addr').removeAttr('cb_addr_id')
+    $('#btn_save_cb_addr').removeAttr('step')
+    $('#btn_save_cb_addr').text('保存')
+       $('#add_cb_addr_modal').modal('show')
+    })
+    $('#btn_save_cb_addr').click(function () {
+        cb_addr_id=$(this).attr('cb_addr_id')
+        step=$(this).attr('step') 
+        sale_addr=$('#sale_addr').val()
+        arrange_date=$('#arrange_date').val()
+        company=$('#company').val() 
+        legal_peson=$('#legal_peson').val()
+        purchaser=$('#purchaser').val()
+        cost_price=$('#cost_price').val()
+        sell_price=$('#sell_price').val()
+        purchaser_pay_money=$('#purchaser_pay_money').val()
+        purchaser_pay_date=$('#purchaser_pay_date').val()
+        rent_date=$('#rent_date').val()
+        expire_date=$('#expire_date').val()
+        supplier=$('#supplier').val()
+        addr_xingzhi=$('#addr_xingzhi').val()
+        addr_type=$('#addr_type').val()
+        supply_js_date=$('#supply_js_date').val()
+        supply_js_money=$('#supply_js_money').val()
+        purchaser_qk=$('#purchaser_qk').val()
+        supply_qk=$('#supply_qk').val()
+
+        if(arrange_date==''){
+            $('#er_arrange_date').show()
+        }else if (company=='') {
+            $('#er_company').show()
+        }else if(purchaser_pay_date==''){
+            $('#er_purchaser_pay_date').show()
+        }
+        else if(supply_js_date=='' && '{{uid}}'=='218' && step=='3' ){
+            $('#er_supply_js_date').show()
+        }
+        else{
+        $.post('project?tag=cb_addr_manage',{
+        '_xsrf':_xsrf,
+        'step':step,
+        'sale_addr':sale_addr,
+        'arrange_date':arrange_date,
+        'company':company,
+        'legal_peson':legal_peson,
+        'purchaser':purchaser,
+        'cost_price':cost_price,
+        'sell_price':sell_price,
+        'purchaser_pay_money':purchaser_pay_money,
+        'purchaser_pay_date':purchaser_pay_date,
+        'rent_date':rent_date,
+        'purchaser_qk':purchaser_qk,
+        'supply_qk':supply_qk,
+        'expire_date':expire_date,
+        'supplier':supplier,
+        'addr_xingzhi':addr_xingzhi,
+        'addr_type':addr_type,
+        'supply_js_date':supply_js_date,
+        'supply_js_money':supply_js_money,
+        'cb_addr_id':cb_addr_id
+    },function (data) {
+        location.reload()
+      })}
+     })
+    
+    $('.cb_addr_detail').click(function () { 
+        cb_addr_id=$(this).attr('cb_addr_id') 
+        sale_addr=$(this).attr('sale_addr')
+        arrange_date=$(this).attr('arrange_date')
+        company=$(this).attr('company')
+        legal_peson=$(this).attr('legal_peson')
+        purchaser=$(this).attr('purchaser')
+        cost_price=$(this).attr('cost_price')
+        sell_price=$(this).attr('sell_price')
+        purchaser_pay_money=$(this).attr('purchaser_pay_money')
+        purchaser_pay_date=$(this).attr('purchaser_pay_date')
+        rent_date=$(this).attr('rent_date')
+        expire_date=$(this).attr('expire_date')
+        supplier=$(this).attr('supplier')
+        addr_xingzhi=$(this).attr('addr_xingzhi')
+        addr_type=$(this).attr('addr_type')
+        supply_js_date=$(this).attr('supply_js_date')
+        supply_js_money=$(this).attr('supply_js_money')
+        chuna_check_date=$(this).attr('chuna_check_date')
+        caiwu_js_date=$(this).attr('caiwu_js_date')
+        purchaser_qk=$(this).attr('purchaser_qk')
+        purchaser_caiwu_confirm=$(this).attr('purchaser_caiwu_confirm')
+        fq_date=$(this).attr('fq_date')
+        supply_qk=$(this).attr('supply_qk')
+        uid=$(this).attr('uid')
+        step=''
+        $('#btn_save_cb_addr').show()
+        if(chuna_check_date!='' && fq_date!='' ){
+            $('#supply_box').show()
+            if('{{uid}}'!='218' || (caiwu_js_date!='' && '{{uid}}'=='218' ) ){
+                $('#btn_save_cb_addr').hide()
+            }
+            
+        }else{
+            $('#supply_box').hide()
+        }
+        if('{{role}}'=='2'){
+            if(chuna_check_date==''){
+            $('#btn_save_cb_addr').text('通过')
+            step='1'
+        }else{
+            $('#btn_save_cb_addr').hide()
+        }
+        }
+
+        else if('{{role}}'=='15' && uid=='{{uid}}' && chuna_check_date==''){
+            $('#btn_save_cb_addr').show()
+        }
+        else if('{{role}}'=='15' && '{{uid}}'=='218' && chuna_check_date!='' && purchaser_caiwu_confirm!='' &&  fq_date==''){
+            step='2'
+            $('#btn_save_cb_addr').text('发起结算')
+            $('#btn_save_cb_addr').show()
+        }
+        else if('{{role}}'=='15' && '{{uid}}'=='218' && chuna_check_date!='' && purchaser_caiwu_confirm!='' &&  fq_date!='' && supply_js_date=='' ){
+            step='3'
+            $('#btn_save_cb_addr').show()
+        }
+      else if('{{role}}'=='3'){
+            $('#btn_save_cb_addr').hide()
+            if(chuna_check_date!='' && supply_js_date!='' && caiwu_js_date==''){
+                step='4'
+                $('#btn_save_cb_addr').text('通过')
+                $('#btn_save_cb_addr').show()
+            }
+        }
+        // else if('{{step}}'=='3' || '{{step}}'=='4'){
+        //         $('#btn_save_cb_addr').hide()
+        // }
+        else{
+            $('#btn_save_cb_addr').hide()
+        }
+       
+        $('#btn_save_cb_addr').attr('cb_addr_id',cb_addr_id)
+        $('#btn_save_cb_addr').attr('step',step)
+        $('#sale_addr').val(sale_addr)
+        $('#arrange_date').val(arrange_date)
+        $('#company').val(company) 
+        $('#legal_peson').val(legal_peson)
+        $('#purchaser').val(purchaser)
+        $('#cost_price').val(cost_price)
+        $('#sell_price').val(sell_price)
+        $('#purchaser_pay_money').val(purchaser_pay_money)
+        $('#purchaser_pay_date').val(purchaser_pay_date)
+        $('#rent_date').val(rent_date)
+        $('#expire_date').val(expire_date)
+        $('#supplier').val(supplier)
+        $('#addr_xingzhi').val(addr_xingzhi)
+        $('#addr_type').val(addr_type)
+        $('#supply_js_date').val(supply_js_date)
+        $('#supply_js_money').val(supply_js_money)
+        $('#purchaser_qk').val(purchaser_qk)
+        $('#supply_qk').val(supply_qk)
+        $('#add_cb_addr_modal').modal('show')
+     })
+})
+</script>
+{%end%}

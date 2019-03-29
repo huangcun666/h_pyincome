@@ -3,21 +3,38 @@
 
 
  <ol class="breadcrumb">
-   <li class="breadcrumb-item">
+   <li class="breadcrumb-item g1">
     主面板
    </li>
-   <li class="breadcrumb-item active">用户管理</li>
-   {% if is_admin_user=='1'%}
-<a class="btn btn-info btn-sm" type='button' style="margin-left: 20px;" href="/insertuser">新增用户</a>
+   <li class="breadcrumb-item g1">用户管理
+   {% if is_admin_user=='1' or role=='14'%}
+<a class="btn btn-primary btn-sm"  style="margin-left: 20px;" href="/insertuser?member_page={{page1}}">新增用户</a>
+</li>
 {%end%}
  </ol>
 
-
+<form >
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <input style="height: calc(2rem + 0px);" type="text" name="user_name" placeholder="用户名" class="form-control" value="{{params['user_name']}}">
+        </td>
+        <td>
+          <input  style="height: calc(2rem + 0px);" type="text" name="phone" placeholder="电话" class="form-control" value="{{params['phone']}}">
+        </td>
+        <td>
+          
+          <input type="submit" class="btn btn-primary btn-sm"  value="检索"></td>
+      </tr>
+    </tbody>
+  </table>
+</form>
 <div class="card mb-3">
    <div class="card-body">
      <div class="table-responsive">
              <table class="table table-bordered" id="dataTable"  cellspacing="0">
-               <thead style="background-color:#000;color:#fff">
+               <thead class="table_class">
                    <tr>
                     <th width="60">用户名</th>
                      <th width="50">邮箱</th>
@@ -29,7 +46,7 @@
                             <th width="110">是否第一次登录</th>
                             <th width='60'>管理员</th>
                                 <th width="140">是否为跟单分配权限</th>
-                                {% if is_admin_user=='1'%}
+                                {% if is_admin_user=='1' or role=='14'%}
                                     <th width="50">操作</th>
                                     <th width="50">操作</th>
                                     <th width="50">操作</th>
@@ -41,7 +58,7 @@
                     <tr id={{user.id}}>
                         <td>{{user.name}}</td>
                         <td>{{user.email}}</td>
-                        <td>{{user.phone}}</td>
+                        <td>{%if user.phone%}{{user.phone}}{%end%}</td>
                         <td class="lock">
                             {%if user.is_lock==1%}
                             是
@@ -50,23 +67,7 @@
                           {%end%}
                           </td>
                         <td>
-                          {%if user.role==1%}
-                          业务
-                          {%elif user.role==2%}
-                          出纳
-                          {%elif user.role==3%}
-                          财政
-                          {%elif user.role==5%}
-                          合同确认
-                          {%elif user.role==6%}
-                          电销
-                          {%elif user.role==7%}
-                          跟单分配员
-                          {%elif user.role==8%}
-                          管理员
-                          {%elif user.role==9%}
-                          跟单员
-                          {%end%}
+                          {{user.role_name}}
                         </td>
 
                         <td>{{user.reg_time}}</td>
@@ -96,14 +97,14 @@
                             否
                           {%end%}
                          </td>
-                        {% if is_admin_user=='1'%}
+                        {% if is_admin_user=='1' or role=='14'%}
                          {% if user.is_lock==0%}
-                        <td><a  class="btn btn-info btn-sm l lock_user" style="color: #fff" type="button" id="{{user.id}}" >锁定用户</a></td>
+                        <td><a  class="btn btn-primary btn-sm l lock_user" style="color: #fff"  id="{{user.id}}" >锁定用户</a></td>
                         {%else%}
-                        <td><a  class="btn btn-info btn-sm l unlock_user" style="color: #000000;cursor: crosshair;" type="button" id="{{user.id}}" >解锁用户</a></td>
+                        <td><a  class="btn btn-primary btn-sm l unlock_user" style="color: #000000;cursor: crosshair;"  id="{{user.id}}" >解锁用户</a></td>
                         {%end%}
-                        <td><a class="btn btn-info btn-sm"  type="button"  id="change_user" href="/changeuser/{{user.id}}" >修改用户</a></td>
-                        <td><a class="btn btn-info btn-sm"  type="button"  id="admin_change_password" href="/adminchangepassword/{{user.id}}" >修改密码</a></td>
+                        <td><a class="btn btn-primary btn-sm"    id="change_user" href="/changeuser?user_id={{user.id}}&member_page={{page1}}" >修改用户</a></td>
+                        <td><a class="btn btn-primary btn-sm"   id="admin_change_password" href="/adminchangepassword/{{user.id}}" >修改密码</a></td>
                         {%end%}
                         </tr>
                     {%end%}
@@ -115,7 +116,7 @@
  <ul class="pagination"  style="float: left;" >
 {% if pagination.has_prev %}
     <li class="paginate_button page-item previous " id="dataTable_previous">
-    <a href="?tag=my&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+    <a href="?page={{ pagination.page - 1}}{%if params['user_name']%}&user_name={{params['user_name']}}{%end%}{%if params['phone']%}&phone={{params['phone']}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
 
 
@@ -123,7 +124,7 @@
    {%for page in pagination.iter_pages() %}
     {% if page %}
     {% if page != pagination.page %}
-    <li class="paginate_button page-item "><a href="?tag=my&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+    <li class="paginate_button page-item "><a href="?page={{page}}{%if params['user_name']%}&user_name={{params['user_name']}}{%end%}{%if params['phone']%}&phone={{params['phone']}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
     {% else %}
      <li class="paginate_button page-item active">
        <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -131,7 +132,7 @@
      {% end %} {%end %}
 
     {% if pagination.has_next %}
-    <li class="paginate_button page-item next" id="dataTable_next"><a href="/manageuser?tag=my&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+    <li class="paginate_button page-item next" id="dataTable_next"><a href="/manageuser?page={{pagination.page+1}}{%if params['user_name']%}&user_name={{params['user_name']}}{%end%}{%if params['phone']%}&phone={{params['phone']}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
 {% end %} </ul>
 </div>
 </div>

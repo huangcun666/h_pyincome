@@ -1,4 +1,4 @@
-{% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+{% extends "../base.html" %} {%block title%}{%end%} {% block body %}
 <style>
     .faye-table {
         font-size: 12px;
@@ -54,11 +54,17 @@
 </style>
 
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item g1">
         主面板
     </li>
-    <li class="breadcrumb-item active">{%if params["my"]=="1"%} 我的商机 {%elif params["my"]=="2"%} 已成交商机{%else%}传统商机开发
+    <li class="breadcrumb-item g1">
 
+    {%if params["my"]=="1"%} 我的商机 {%elif params["my"]=="2"%} 已成交商机{%else%}
+     {%if params["type_id"] ==1%}
+     同行
+     {%else%}
+    传统商机开发
+    {%end%}
 
         {%end%}
 
@@ -69,31 +75,57 @@
 
 <div class="row" >
     <div class="col-lg-12">
-<form>
-<input type="text" id="keyword" name="keyword" placeholder="公司名/注册地址/电话/邮箱" style="width:300px; height:30px;" value="{%if  params["keyword"]%}{{params["keyword"]}}{%end%}" >
-<!--<input type="text" id="start" name="start" placeholder="成立时间(开始)" style="width:150px; height:30px;" value="{%if params["start"]%}{{params["start"]}}{%end%}">
-<input type="text" id="end" name="end" placeholder="成立时间(结束)" style="width:150px; height:30px;" value="{%if params["end"]%}{{params["end"]}}{%end%}">-->
+<form class="pm2">
+<table>
+    <tr>
+        <td><input class="form-control" type="text" id="keyword" name="keyword" placeholder="公司名/注册地址/电话/邮箱" style="width:300px; height:30px;" value="{%if  params["keyword"]%}{{params["keyword"]}}{%end%}" >
+            <!--<input type="text" id="start" name="start" placeholder="成立时间(开始)" style="width:150px; height:30px;" value="{%if params["start"]%}{{params["start"]}}{%end%}">
+            <input type="text" id="end" name="end" placeholder="成立时间(结束)" style="width:150px; height:30px;" value="{%if params["end"]%}{{params["end"]}}{%end%}">--></td>
+       <td>
+            {%if params["type_id"] ==0%}
+            <select name="rank" class="form-control">
+            <option value="0">选择质量类型</option>
+            <option value="A" {%if params["rank"]=="A"%} selected="true"{%end%}>A类</option>
+            <option value="B" {%if params["rank"]=="B"%} selected="true"{%end%}>B类</option>
+            </select>
+            {%end%}
+       </td>
+       <td>
+            <button class="btn btn-primary btn-sm">检索</button>
+            {%if params["my"]%}
+           <a href="/company?tag=list_company&type_id={{params["type_id"]}}" class="btn btn-primary btn-sm">挖掘新商机</a> {%else%}
 
-<select name="rank" style="height:30px;">
-<option value="0">选择质量类型</option>
-<option value="A" {%if params["rank"]=="A"%} selected="true"{%end%}>A类</option>
-<option value="B" {%if params["rank"]=="B"%} selected="true"{%end%}>B类</option>
-</select>
+            {%if params["type_id"] ==1%}
+           <a href="/company?tag=list_company&rank=E&type_id={{params["type_id"]}}" class="btn btn-primary btn-sm">换一批</a>
 
-<button class="btn btn-primary btn-small">检索</button>
- {%if params["my"]%}
-<a href="/company?tag=list_company" class="btn btn-info">挖掘新商机</a> {%else%}
+           {%else%}
+           <a href="/company?tag=list_company&rank=A&type_id={{params["type_id"]}}" class="btn btn-primary btn-sm">换一批A类商机</a>
+           <a href="/company?tag=list_company&rank=B&type_id={{params["type_id"]}}" class="btn btn-primary btn-sm">换一批B类商机</a>
 
-<a href="/company?tag=list_company&rank=A" class="btn btn-info">换一批A类商机</a>
-<a href="/company?tag=list_company&rank=B" class="btn btn-info">换一批B类商机</a>
+           {%end%}
+           {%end%}
+           <input type="hidden" value="{{params["type_id"]}}" name="type_id"}}"/>
+       </td>
+    </tr>
+</table>
 
-{%end%}
+
+
+
 </form>
 
 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-    <a class="btn btn-light  nav_padding {%if  params["my"] != "1" and params["my"] != "2"%}active{%end%}"  href="/company?tag=list_company">全部商机</a>
-    <a class="btn btn-light  nav_padding {%if  params["my"]=="1"%}active{%end%}"  href="/company?tag=list_company&my=1">我的商机</a>
-    <a class="btn btn-light  nav_padding {%if  params["my"]=="2"%}active{%end%}" href="/company?tag=list_company&my=2">已成交商机 </a>
+    <a class="btn btn-light  nav_padding {%if  not  params["my"] %}active{%end%}"  href="/company?tag=list_company&type_id={{params["type_id"]}}">全部商机</a>
+    <a class="btn btn-light  nav_padding {%if  params["my"]=="1"%}active{%end%}"  href="/company?tag=list_company&my=1&type_id={{params["type_id"]}}">我的商机</a>
+
+    <a class="btn btn-light  nav_padding {%if  params["my"]=="2" %}active{%end%}" href="/company?tag=list_company&my=2&type_id={{params["type_id"]}}">已成交商机 </a>
+
+
+    <a class="btn btn-light  nav_padding {%if params["my"]=="3" and  params["close"]==-100%}active{%end%}" href="/company?tag=list_company&my=3&type_id={{params["type_id"]}}&close=-100">无效商机 </a>
+
+
+
+
 </div>
 {%if params["my"]=='1'%}
 <a class="btn btn-primary btn-sm change_batch" href="javascript:void(0);">批量放回公有池</a>
@@ -101,19 +133,24 @@
 </nav>
 
   <div class="table-responsive">
-    <table class="table table-bordered" style="width: 100%;" >
-        <thead style="background-color:#000;color:#fff ; font-size:12px;">
+    <table class="table table-bordered fayetable" style="width: 100%;" >
+        <thead  class="table_class">
             <tr>
                 {%if  params["my"]=="1"%}
-                <th width="50">
+                <th width="60">
                     <input type="checkbox" id="choose_all">全选
                 </th>
                 {%end%}
                 <th width="50">级别</th>
                 <th  width="200">公司名称</th>
+                {%if  params["my"]=="3"%}
+                <th  width="100">标记信息</th>{%end%}
+
                 <th width="100">法人代表</th>
 
                 <th width="120">联系电话</th>
+                <th width="120">联系电话2</th>
+
                 <th width="100">成立日期</th>
                 <th width="100">公司网站</th>
                 <th width="100">注册地址</th>
@@ -129,7 +166,7 @@
 
             </tr>
         </thead>
-        <tbody style=" font-size:12px;">
+        <tbody class="fayetbody" style=" font-size:12px;">
             {%if t_company%} {%for item in t_company%}
 
             <tr>
@@ -141,6 +178,10 @@
                 <td>
                     <a style=" font-size:12px;" href="/company?tag=show&guid={{item.company_guid}}&id={{item.id}}" title="{{item.entName}}" {%if not params["my"]%} target="_blank"{%end%}>{{item.entName}}</a>
                 </td>
+      {%if  params["my"]=="3"%}
+                <td>{%if item.is_close==1%}无需求{%elif item.is_close==2%}空号{%end%}<br/>{{item.close_at}}{{item.close_uid_name}}</td>{%end%}
+
+
                 <td>
                     {{item.regCap}}
                 </td>
@@ -148,6 +189,10 @@
 
                      {%if item.phone%} {%if len(item.phone) > 12%} {{item.phone[:12]}}....... {%else%} {{item.phone}} {%end%}{%end%}
                 </td>
+                                <td title="{{item.phone1}}">
+
+                                    {%if item.phone%} {%if len(item.phone1) > 12%} {{item.phone1[:12]}}....... {%else%} {{item.phone1}} {%end%}{%end%}
+                                </td>
                 <td>{{item.creater}}</td>
             <td title="{{item.urls}}">
                 {%if item.urls%} {%if len(item.urls) > 10%} {{item.urls[:10]}}....... {%else%} {{item.urls}} {%end%}{%end%}
@@ -197,14 +242,14 @@
             <ul class="pagination">
                 {% if pagination.has_prev %}
                 <li class="paginate_button page-item previous " id="dataTable_previous">
-                    <a href="?tag=list_company&page={{ pagination.page - 1}}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a>
+                    <a href="?tag=list_company&page={{ pagination.page - 1}}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["type_id"]%}&type_id={{params["type_id"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a>
                 </li>
 
 
 
                 {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                 <li class="paginate_button page-item ">
-                    <a href="?tag=list_company&page={{page}}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if  params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
+                    <a href="?tag=list_company&page={{page}}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["type_id"]%}&type_id={{params["type_id"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if  params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
                 </li>
                 {% else %}
                 <li class="paginate_button page-item active">
@@ -218,7 +263,7 @@
                 </li>
                 {% end %} {%end %} {% if pagination.has_next %}
                 <li class="paginate_button  page-item next" id="dataTable_next">
-                    <a href="?tag=list_company&page={{pagination.page+1}}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
+                    <a href="?tag=list_company&page={{pagination.page+1}}{%if params["my"]%}&my={{params["my"]}}{%end%}{%if params["type_id"]%}&type_id={{params["type_id"]}}{%end%}{%if params["keyword"]%}&keyword={{params["keyword"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
                 </li>
                 {% end %} </ul>
         </div>

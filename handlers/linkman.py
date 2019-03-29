@@ -29,17 +29,26 @@ class LinkmanHandler(BaseHandler):
             tel = self.get_argument("tel","")
             remark = self.get_argument("remark","")
             gender = self.get_argument("gender")
+            linkman_id=self.get_argument('linkman_id','')
+            is_first=self.get_argument('is_first','0')
             if not name:
                 self.write("联系人的名字不能为空")
             else:
-                result = self.db_customer.execute(
-                    """insert into t_linkman (name,tel,gender,remark,acc_uid,acc_uid_name,created_at,updated_at,guid,customer_id)
+                if linkman_id:
+                    self.db_customer.execute(
+                    """update t_linkman set is_first=%s, name=%s,tel=%s,gender=%s,remark=%s,acc_uid=%s,acc_uid_name=%s,updated_at=%s
+                    where id=%s
+                    """,is_first, name, tel,
+                    gender, remark, uid, uid_name,dt,linkman_id)
+                else:
+                    result = self.db_customer.execute(
+                    """insert into t_linkman (is_first,name,tel,gender,remark,acc_uid,acc_uid_name,created_at,updated_at,guid,customer_id)
                 
-                values(%s,%s,%s,%s,%s,%s,%s,%s,uuid(),%s)""", name, tel,
+                values(%s,%s,%s,%s,%s,%s,%s,%s,%s,uuid(),%s)""",is_first,name, tel,
                     gender, remark, uid, uid_name,dt,dt, customer_id)
 
 
-            self.write(str(result))
+                self.write(str(result))
 
         elif tag =="delete":
             id = self.get_argument("id")

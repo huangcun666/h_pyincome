@@ -1,5 +1,5 @@
 {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
-<!--<a class="btn btn-danger btn-sm delete  " id="customer_delete" type="button" title="{{customer.id}}">删除</a>-->
+<!--<a class="btn btn-danger btn-sm delete  " id="customer_delete" type="button" title="{{customer.customer_id}}">删除</a>-->
 <style>
 .faye-table {width: 100%; height: auto; /*background-color: purple;*/ margin: 0% auto; font-weight: bold;}
 .faye-table ul {overflow: hidden; margin: 0; padding: 0;}
@@ -195,29 +195,162 @@ margin: auto;
     color: #004974;
     text-decoration: none;
 }
+.es-nva {width: 1170px; height: 120px; background: #fff; margin:0 auto 10px; border-left:1px solid #ddd; border-right:1px solid #ddd; border-bottom: 1px solid #ddd; box-sizing: border-box; padding: 20px;}
+.es-portrait {width: 73px; height: 73px; border-radius: 3px; margin-right: 20px; float: left;}
+.es-nva-left {float: left; width: 500px;}
+.es-portrait-name {float: left; width: 560px;}
+.es-portrait-name p { display:block;overflow: hidden; height: 24px; line-height: 30px;}
+.es-portrait-name p span {margin-right: 15px;}
+.gsname {font-size: 18px; color: #5d5d5d; font-weight: bold;}
+.xindm {font-size: 14px;}
+.es-name {font-size: 18px; color: #4aaacc; }
+.es-portrait-name em {font-style:normal;}
+.xxnr {overflow: hidden;}
+.xxnr b {display: block;}
+.xxnr b em {font-weight: 100;}
+.xxnr-left {float: left; width: 225px;}
+.xxnr-right {float: right; width: 225px;}
+.es-nva-right {float: right; width: 500px;}
+.es-nva-right b {display: block; margin-top: 7px;}
+.es-nva-right b em {font-weight: 100; font-style: normal;}
+.es-nva-right b a {display: inline-block; padding: 2px 4px; color: #fff; background-color: #1fa0e0; margin-left: 4px; font-weight: 100;}
+.widget-header {height: 28px; line-height: 28px; font-size: 12px;}
+.widget-content {padding: 15px;}
 
+.es-fytable {width: 100%; height: auto; /*background-color: purple;*/ margin: 0% auto; font-weight: bold;}
+.es-fytable ul {overflow: hidden; margin: 0; padding: 0; border-right: 1px solid #dedede;}
+.es-fytable ul li {width: 100%; list-style: none; box-sizing: border-box; border-bottom: 1px solid #dedede; width: 100%; height:30px; overflow: hidden;}
+.es-fytable ul li div {float: left; height: 30px; line-height: 30px;  border-left: 1px solid #dedede; box-sizing: border-box; color: #272727;}
+.es-fytable ul li div.length1 {width: 12.7%; background-color: #eeeeee; text-align: center;}
+.es-fytable ul li div.length2 {width: 20%; padding-left: 25px;font-weight: 100;}
+.es-fytable ul li div.length3 {width: 87%; padding-left: 25px;font-weight: 100;}
+.es-fytable ul li div.length4 {width: 12.2%; padding-left: 10px;font-weight: 100;}
+.es-fytable ul li div.length5 {width: 52.7%; padding-left: 25px;font-weight: 100;}
+.es-fytable ul li div.length6 {width: 62.1%; padding-left: 25px;font-weight: 100;}
+.btn {padding: 2px 8px; line-height: 12px; font-size: 12px;}
+.widget {margin-bottom: 20px; }
+.widget-header h3 {font-size: 12px;}
+.widget-header h3 a {margin-left: 10px;}
+.table-bordered th {font-weight: 100;}
+.table th {padding: 6px;}
+.subnavbar{
+  margin:0px;
+}
+
+.es-progress {width: 1130px; height: 66px;  margin: 0 auto;}
+.esdt-box1 {width: 183px; height: 66px; background:url('/static/images/img/1.png') center center no-repeat; float: left; cursor:pointer; }
+.esdt-box2 {width: 193px; height: 66px; background:url('/static/images/img/2.png') center center no-repeat; float: left; z-index: 2; margin-left: -25px; cursor:pointer;}
+.esdt-box3 {width: 132px; height: 66px; background:url('/static/images/img/3.png') center center no-repeat; float: left; z-index: 2; margin-left: -25px; cursor:pointer;}
+.esdtcur1 {background:url('/static/images/img/1a.png') center center no-repeat; cursor:pointer;}
+.esdtcur2 {background:url('/static/images/img/2a.png') center center no-repeat; cursor:pointer;}
+.esdtcur3 {background:url('/static/images/img/3a.png') center center no-repeat; cursor:pointer;}
+.es-progress h3 {text-align: center;  margin-top: 10px; }
+.es-progress span {text-align: center;  display: block; }
+.es-progress .esdtcur1 h3 {color: #fff;}
+.es-progress .esdtcur1 span {color: #fff;}
+.es-progress .esdtcur2 h3 {color: #fff;}
+.es-progress .esdtcur2 span {color: #fff;}
+.es-progress .esdtcur3 h3 {color: #fff;}
+.es-progress .esdtcur3 span {color: #fff;}
+.eswenben {width: 1130px; height: 95px; margin: 20px auto 10px; border: 1px solid #dedede; box-sizing: border-box;}
+.estu { height: 14px; position: relative; float: left; padding-left: 20px;}
+.estu-f {float: left;color: #4bacce;}
+.estu-r {float: right; color: #4bacce;}
+.estu form {position: absolute; top: 0; left: 0;opacity:0; filter:alpha(opacity=0);}
+.estu form input {width: 100%; cursor: pointer;}
+.es-quren {float: right; width: 160px; height: 30px; padding-right: 15px;}
+.es-quren select{width: 92px; height: 26px; line-height: 26px; float: left;}
+.es-quren button {width: 52px; height: 26px; line-height: 26px; background-color: #4badce; color: #fff; float: right; border: none;}
+.eslb-top {width: 680px; height: 32px; margin: 20px auto 25px; overflow: hidden;}
+.eslb-top ul {list-style: none;}
+.eslb-top ul li{list-style: none; float: left; width: 113px; height: 29px; border: 1px solid #dedede; border-radius: 4px; margin-left: 15px; text-align: center; line-height: 29px;cursor: pointer;}
+.eslbcur {color: #fff; background-color: #4aa8c9; border: 1px solid #0078a1;}
+.eslao {overflow: hidden; width: 1130px; margin: 15px auto; height: 136px; position: relative; }
+.toux-l {float: left; width: 76px;}
+.toux-r {float: left; width: 1000px; height: 128px; border: 1px solid #dedede; margin-top: 3px; margin-left: 45px; box-shadow: 0px 0px 10px #ccc; padding: 15px; box-sizing: border-box; position: relative;}
+.toux-r h3 {font-size: 14px; height: 30px; line-height: 30px; color: #4bacce;}
+.toux-r .esneir {height: 42px; width: 900px; margin-bottom: 10px; line-height: 22px; overflow: hidden;}
+.xsj {position: absolute; top: 16px; left: 108px;}
+.esrname {position: absolute; right: 20px; top: 12px; font-weight: bold;}
+.esrname p {color: #ce4b4b;}
+.modal11 {width: 1240px; height: 290px; margin-left: -620px; margin-top: -145px;}
+.modal-header {padding: 0; border-bottom: none;}
+.modal22 {width: 1240px; height: 170px; margin-left: -620px; margin-top: -85px;}
+.modal33 {width: 1240px; height: 140px; margin-left: -620px; margin-top: -70px;}
+.modal44 {width: 1240px; height: 290px; margin-left: -620px; margin-top: -70px;}
+.es-fytable input {width: 100%; height: 100%; display:inline-block; outline: none; border: none;margin:0;padding:0;}
 </style>
-
+	<div class="es-nva">
+      <div class="es-portrait">
+        <img src="/static/images/avatar.jpeg" alt="" width="73" height="73px">
+      </div>
+      <div class="es-nva-left">
+        <div class="es-portrait-name">
+          <p>
+            <span class="gsname">{{customer.company[:16]}}</span> <span class="xindm">{%if customer.company_reguid%}{{customer.company_reguid}}{%end%}</span> <span class="es-name">{{customer.reg_person}}</span>
+          </p>
+          <div class="xxnr">
+            <div class="xxnr-left">
+              <b>注册资金：<em>-</em></b>
+              <b>纳税类型：<em>{%if customer.is_general%}一般纳税人{%else%}小规模{%end%}</em> </b>
+              <b style="width:500px;">合同约定：<em>{{customer.paytype_id_name}} 总费:{{int(customer.service_amount)}} 月费:{{int(customer.service_amount_month)}} 账册费:{{int(customer.book_amount)}}</em></b>
+            </div>
+            <div class="xxnr-right">
+              <b>执照成立日期：<em>{%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}}{%end%}</em></b>
+              <b>地址类型：<em>{%if customer.addr_type%}{{customer.addr_type}}{%end%}</em></b>
+              <b>账费到期：<em>{%if t_customer_payment%}{%if t_customer_payment.acc_end%}{{t_customer_payment.acc_end.strftime('%Y-%m-%d')}}{%end%}{%end%}</em></b>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="es-nva-right">
+        <b>标签：
+          {%if not old_tag%}
+            {%if customer.tag_parent_id_name!=customer.tag_id_name%}
+            <a href="#">{{customer.tag_parent_id_name}}</a> 
+           {%end%}
+            {%if customer.tag_id_name%}
+           <a href="#">{{customer.tag_id_name}}</a> 
+           {%end%}
+             {%if customer.is_building%}
+           <a href="#">楼盘</a> 
+           {%end%}
+             {%if customer.is_year%}
+           <a href="#">工商年检</a> 
+           {%end%}
+             {%if customer.is_clearly%}
+           <a href="#">汇算清缴</a> 
+           {%end%}
+        
+           {%else%}
+          {%if customer.customer_type_name%} {%for item in customer.customer_type_name.split(",")%}{%if item!=''%}<a href="#">{{item}}</a>{%end%}{%end%} {%end%}
+          {%end%}
+          <a  href="javascript:void(0);" id="customer_modify4" style="background-color:white"><img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
+        </b>
+        <b>电话：<em>{%if t_linkman%}{{t_linkman[0].name}}-{{t_linkman[0].tel}}{%end%}</em></b>
+        <b>注册地址：<em>{%if customer.zone%}{{customer.city}}{%end%}{%if customer.zone%}{{customer.zone}}{%end%}{%if customer.zone%}{{customer.reg_addr}}{%end%}</em></b>
+      </div>
+    </div>
 <div class="main">
 <div class="main-inner">
 <div class="container">
 <div class="row">
 <div class="span12">
 <div class="widget">
-<div class="widget-header">
-<i class="icon-user"></i>
-<h3>客户详情
-</h3>
-</div>
+
 <div class="widget-content">
 		<div class="tabbable">
 						<ul class="nav nav-tabs" id="myTab">
 						  <li>
 						    <a href="#customer_tab" id="a_customer_tab" data-toggle="tab">基础信息</a>
+              </li>
+              <li>
+						    <a href="#payment_tab" id="a_payment_tab" data-toggle="tab">动态跟进</a>
 						  </li>
               <li ><a href="#finance_tab" id="a_finance_tab" data-toggle="tab">财务信息</a></li>
               <li><a href="#exchange_tab" id="a_exchange_tab" data-toggle="tab">联系记录</a></li>
-                <li><a href="/payment?tag=customer&customer_id={{customer.id}}&to_tag=payment_tab" id="a_payment_tab" >应收记录</a></li>
+              <li><a href="#handle_tab" id="a_handle_tab" data-toggle="tab">操作记录</a></li>
+                <li><a href="/payment?tag=customer&customer_id={{customer.customer_id}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=payment_tab" id="a_payment_tab" >应收记录</a></li>
 
 						</ul>
 
@@ -227,10 +360,6 @@ margin: auto;
     <div class="tab-pane " id="exchange_tab">
 
         <div class="widget widget-table action-table">
-
-
-
-
                     <div class="widget-content">
                       <div style="width:80%; margin:10px 10px 10px 10%">
                         <textarea class="form-control" id="txt_msg" style="width:100%">
@@ -238,7 +367,9 @@ margin: auto;
 
                           <button id="btn_save_msg">确定添加</button>&nbsp;&nbsp;&nbsp;
                           <input type="file" value="上传附件" style=margin-top:10px;" name="record_file" id="record_file" class="form-control"/>
+                      
                           <hr class="my-0">
+                       
                           {%for item in t_customer_exchange%}
                           <div class="message-item" id="msg_{{item.id}}">
                               <div class="message-inner">
@@ -271,78 +402,87 @@ margin: auto;
 <div class="tab-pane " id="finance_tab">
 
 
-
 <div class="widget widget-table action-table">
-            <div class="widget-header"> <i class="icon-th-list"></i>
-              <h3>办理业务记录 </h3>
-            </div>
+  <div class="widget-header"> <i class="icon-th-list"></i>
+    <h3>办理业务记录 </h3>
+  </div>
 
 
 
 
-            <div class="widget-content">
-              <table class="table table-striped table-bordered">
-                <thead>
-                <tr>
-      <th width="40">业务编号</th>
-      <th>业务内容</th>
-      <th width="80">客户名称</th>
-        <th  width="40">联系方式</th>
-      <th  width="40">总服务费</th>
-<th  width="40">已收款</th>
-<th  width="40">欠款</th>
-                </tr>
-                </thead>
-                <tbody>
+  <div class="widget-content">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th width="40">业务编号</th>
+          <th>业务内容</th>
+          <th width="80">客户名称</th>
+          <th width="40">联系方式</th>
+          <th width="40">总服务费</th>
+          <th width="40">已收款</th>
+          <th width="40">欠款</th>
+        </tr>
+      </thead>
+      <tbody>
 
-                {%if t_projects_query%}
+        {%if t_projects_query%}
 
-                {%for item in t_projects_query%}
-                    <tr>
-                          <td>{{item.id}}</td>
-                          <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" style=" font-size:14px;">{{item.project_name}}</a>
-                          <br/>
-                          <b style="color:#777; font-size:12px;">{{item.team_view}}</b>
-                          </td>
-                          <td>{{item.customer_name}}</td>
+        {%for item in t_projects_query%}
+        {%if not item.sim%}
+        {%set item.sim=0%}
+        {%end%}
+        {%if  not item.dd %}
+        {%set item.dd=0%}
+        {%end%}
+        {%if not item.income_money3%}
+        {%set item.income_money3=0%}
+        {%end%}
+        <tr>
+          <td>{{item.id}}</td>
+          <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}"
+              style=" font-size:14px;">{{item.project_name}}</a>
+            <br />
+            <b style="color:#777; font-size:12px;">{{item.team_view}}</b>
+          </td>
+          <td>{{item.customer_name}}</td>
 
-                          <td>{{item.customer_tel}}</td>
-                          <td>{{item.all_income}}</td>
-                          <td>{{item.dd}}</td>
-                          <td  {%if  item.dd%} {%if (item.all_income - item.dd) > 0 %} style="background-color:red;" {%else%} style="background-color:green;"{%end%}{%end%}>
+          <td>{{item.customer_tel}}</td>
+          <td>{{item.all_income}}</td>
+          <td>{{item.dd}}</td>
+          <td {%if item.all_income-item.dd+item.sim-item.income_money3 > 0 %} style="background-color:red;" {%else%}
+            style="background-color:green;" {%end%}>
 
-                   {%if  item.dd%}
-                          {{(item.all_income - item.dd)}}{%end%}
-
-
-                       </td>
-
-                </tr>
-
-
-
-
-
-                {%end%}
-
+            {{item.all_income -item.dd+item.sim-item.income_money3}}
 
 
+          </td>
 
-                                 {%else%}
-                                <tr>
-                                  <td colspan="7">还没有合同哦。</td>
-
-                                </tr>
-                                {%end%}
-
-                </tbody>
-              </table>
-            </div>
-            <!-- /widget-content -->
+        </tr>
 
 
 
-          </div>
+
+
+        {%end%}
+
+
+
+
+        {%else%}
+        <tr>
+          <td colspan="7">还没有合同哦。</td>
+
+        </tr>
+        {%end%}
+
+      </tbody>
+    </table>
+  </div>
+  <!-- /widget-content -->
+
+
+
+</div>
 <div class="widget widget-table action-table">
   <div class="widget-header">
     <i class="icon-th-list"></i>
@@ -358,7 +498,7 @@ margin: auto;
     <table class="table table-striped table-bordered">
       <thead>
         <tr>
-         <th style="width:30px;"> 编号</th>
+         <th style="width:30px;"> 业务编号</th>
           <th >业务内容</th>
           <th style="width:150px;">到款日期</th>
           <th style="width:50px;"> 到款人</th>
@@ -372,7 +512,7 @@ margin: auto;
       <tbody>
       {%if t_project_income_title%} {%for item in t_project_income_title%}
         <tr>
-           <td> {{item.id}}
+           <td> {{item.project_id}}
              <td> {{item.project_name}}
           </td>
           <td> {{item.income_at}}
@@ -396,195 +536,289 @@ margin: auto;
     </table>
   </div>
   <!-- /widget-content -->
+
+
+
+
 </div>
-</div>
 
-<div class="tab-pane active" id="customer_tab">
+<div class="widget widget-table action-table">
+  <div class="widget-header"> <i class="icon-th-list"></i>
+    <h3>历史办理业务记录 </h3>
+  </div>
 
-<fieldset>
-<div class="card mb-3">
 
-<div class="faye-table">
-<ul>
 
-  <li>
-    <div class="fayet">公司名称</div>
-    <div class="fayet6">
-     {%if customer.company%}{{customer.company}}{%end%}
 
-         {%if role=="3" or role=="8" or role=='5' or  not from_tag%}
-        
-        <a class="btn btn-primary btn-sm modify  " href="customer?tag=edit&id={{customer.id}}&guid={{customer.guid}}"
-          id="customer_modify" type="button" title="{{customer.id}}">修改</a>
-        
+  <div class="widget-content">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th width="80">办理时间</th>
+            <th>公司</th>
+          <th>业务内容</th>
+          <th width="80">销售</th>
+          <th width="80">电商</th>
+          <th width="80">跟单</th>
+          <th width="80">收入汇总</th>
+          <th width="70">收入分类</th>
+           <th width="240">收款备注</th>
+
+        </tr>
+      </thead>
+      <tbody>
+
+        {%if t_customer_his_income%}
+
+        {%for item in t_customer_his_income%}
+
+        <tr>
+          <td>{%if item.income_at%}{{item.income_at.strftime("%Y-%m-%d")}} {%end%}</td>
+          <td>{{item.company}}
+          <td>{{item.project_name}}
+
+          </td>
+          <td>{{item.sale}}</td>
+
+          <td>{{item.dx}}</td>
+          <td>{{item.gd}}</td>
+          <td>{{item.income}}</td>
+                  <td>{{item.income_type}}</td>
+                  <td>{{item.income_remark}}</td>
+
+
+        </tr>
+
+
+
+
+
         {%end%}
 
-    </div>
-
-  </li>
-  {%if customer.promo_id_name%}
-  <li>
-    <div class="fayet" style="border-left: none;">优惠活动 </div>
-
-    <div style="width:80%; height: 180px; border-left: 1px solid #dedede;">
-      
-      {%if customer.promo_id_name and customer.promo_id_name!="0" %}
-      <code>{{customer.promo_id_name}}</code>
-      {%else%}
-      <code>无相关优惠活动</code>
-      {%end%}
-
-     </div>
-</li>
-{%end%}
-<li>
-<div class="fayet" style="border-left: none;">客户编号  </div>
-<div class="fayet1"> {{customer.id}}
- </div>
-
-<div class="fayet">统一社会信用代码</div>
-<div class="fayet1">  {%if customer.company_reguid%}
-{{customer.company_reguid}}{%end%}
-</div>
-
-<div class="fayet">法人</div>
-<div class="fayet1">
- {%if customer.reg_person%}{{customer.reg_person}}{%end%}
-</div>
-
-<div class="fayet">标签</div>
-<div class="fayet1" style="padding-left:5px;"> {%if customer.customer_type_name%} {%for item in customer.customer_type_name.split(",")%}
-
-<font style="background-color:blue; color:white; padding:8px;">{{item}}</font>
-{%end%} {%end%}</div>
-</li>
-
-<li>
-<div class="fayet" style="border-left: none;">行业性质
-</div>
-<div class="fayet1">{%if customer.industry_name%}{{customer.industry_name}}{%end%}</div>
-
-<div class="fayet">开户行</div>
-<div class="fayet1">  {%if customer.reg_bank%}{{customer.reg_bank}}{%end%}</div>
-<div class="fayet">银行账号</div>
-<div class="fayet1"> {%if customer.reg_bank_account%}{{customer.reg_bank_account}}{%end%}</div>
-<div class="fayet">供应商</div>
-<div class="fayet1"> {%if customer.addr_cp%} {{customer.addr_cp}}{%end%}</div>
-
-</li>
 
 
-<li>
-<div class="fayet" style="border-left: none;">一般纳税人
-</div>
-<div class="fayet1">{%if customer.is_general%}是{%else%}否{%end%}</div>
 
-<div class="fayet">信用等级</div>
-<div class="fayet1">  {%if customer.credit_rating_name%}{{customer.credit_rating_name}}{%end%}</div>
-<div class="fayet">客户等级</div>
-<div class="fayet1"> {%if customer.customer_rating_name%}{{customer.customer_rating_name}}{%end%}</div>
-<div class="fayet">注册地址</div>
-<div class="fayet1">
-{%if customer.zone%}{{customer.city}}{%end%}
-{%if customer.zone%}{{customer.zone}}{%end%}
-{%if customer.zone%}{{customer.reg_addr}}{%end%}
+        {%else%}
+        <tr>
+          <td colspan="7">还没有合同哦。</td>
+
+        </tr>
+        {%end%}
+
+      </tbody>
+    </table>
+  </div>
+  <!-- /widget-content -->
+
+
 
 </div>
 
-</li>
 
-
-<li>
-<div class="fayet" style="border-left: none;">地址类型</div>
-<div class="fayet1"> {%if customer.addr_type%} {{customer.addr_type}} {%end%}</div>
-<div class="fayet">地址期限</div>
-
-<div class="fayet1"> {%if customer.addr_cp%}{{customer.addr_cp}}{%end%}</div>
-  <div class="fayet" >成立日期
 </div>
-  <div class="fayet1"> {%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}} {%end%}</div>
-  <div class="fayet"  style="border-left: none;">执照期限</div>
-  <div class="fayet1"> {%if customer.end_date%}{{customer.end_date.strftime("%Y-%m-%d")}}{%end%}</div>
-</li>
 
-<li>
-
-  <div class="fayet" style="border-left: none;">工商分局
-</div>
-  <div class="fayet1">{%if customer.saic%}{{customer.saic}}{%end%}</div>
-    <div class="fayet">地税分局
-    </div>
-
-    <div class="fayet1">{%if customer.land_tax%}{{customer.land_tax}}{%end%}</div>
-      <div class="fayet">国税分局
+<div class="tab-pane " id="customer_tab">
+    <div class="widget-header">
+        <i class="icon-th-list"></i>
+        <h3>公司信息<a href="javascript:void(0);" id="customer_modify1"><img alt="[编辑]" width="25" src="/static/images/modify.png"></a></h3>
       </div>
-
-      <div class="fayet1">
-        {%if customer.national_tax%}
-    {{customer.national_tax}}
-    {%end%}
-
-    </div>
-      <div class="fayet">注册号</div>
-<div class="fayet1">  {%if customer.reg_number%}{{customer.reg_number}}{%end%} </div>
-</li>
-
-
-
-
-<li>
-  <div class="fayet" style="border-left: none;">创建时间</div>
-  <div class="fayet1">
-    {{customer.created_at}}
-  </div>
-
-  <div class="fayet">最后更新</div>
-  <div class="fayet1"> {%if customer.updated_at%} {{customer.updated_at}}{%end%}</div>
-
-  <div class="fayet">客服会计</div>
-
-  <div class="fayet1">
-    {%if customer.acc_uid_name%} {{customer.acc_uid_name}} {%end%}
-  </div>
-
-
-  <div class="fayet">客户入库员</div>
-
-  <div class="fayet1">
-    {%if customer.uid_name%} {{customer.uid_name}} {%else%} 系统 {%end%}
-  </div>
-
-</li>
-
-
-
-
-<li>
-<div class="fayet">备注</div>
-<div class="fayet6">
-{%if customer.remark%}
-  {{customer.remark}}
-  {%end%}
-</div>
-
-</li>
-
-
-
-
-</ul>
-</div>
-
-
+    <div class="es-fytable">
+        <ul>
+          <li>
+            <div class="length1">公司名称</div>
+            <div class="length5">{%if customer.company%}{{customer.company}}{%end%} 
+            {%if role=="3"%}
+            {%if not visible_other and not visible_other_relation %}
+          <a class="btn btn-primary btn-sm modify  " href="customer?tag=edit&id={{customer.customer_id}}&guid={{customer.guid}}"
+            id="customer_modify" type="button" title="{{customer.customer_id}}">修改</a>
+            {%end%}
+          {%end%}
+          </div>
+            <div class="length1">客服会计</div>
+            <div class="length2"> {%if customer.acc_uid_name%}{{customer.acc_uid_name}}{%end%}</div>
+          </li>
+          <!-- <li>
+            <div class="length1">优惠套餐</div>
+            <div class="length3"></div>
+          </li> -->
+          <li>
+            <div class="length1">客户编号</div>
+            <div class="length2">{{customer.customer_id}}</div>
+            <div class="length1">所属行业</div>
+            <div class="length2">{%if customer.hangye%}{{customer.hangye}}{%end%}</div>
+            <div class="length1">开户行</div>
+            <div class="length2">{%if customer.reg_bank%}{{customer.reg_bank}}{%end%}</div>
+          </li>
+          <li>
+            <div class="length1">工商分局</div>
+            <div class="length2">{%if customer.saic%}{{customer.saic}}{%end%}</div>
+            <div class="length1">地址类型</div>
+            <div class="length2">{%if customer.addr_type%}{{customer.addr_type}}{%end%}</div>
+            <div class="length1">银行账号</div>
+            <div class="length2">{%if customer.reg_bank_account%}{{customer.reg_bank_account}}{%end%}</div>
+          </li>
+          <li>
+            <div class="length1">国/地所属分局</div>
+            <div class="length2">{%if customer.national_tax%}{{customer.national_tax}}/{%end%}{%if customer.land_tax%}{{customer.land_tax}}{%end%}</div>
+            <div class="length1">专管员姓名</div>
+            <div class="length2">{%if customer.zg_name%}{{customer.zg_name}}{%end%}</div>
+            <div class="length1">专管员联系方式</div>
+            <div class="length2">{%if customer.zg_tel%}{{customer.zg_tel}}{%end%}</div>
+          </li>
+          <li>
+            <div class="length1">经营范围</div>
+            <div class="length3">{%if customer.business_scope%}{{customer.business_scope}}{%end%}</div>
+          </li>
+          <li>
+            <div class="length1">情况和注意事项</div>
+            <div class="length3">{%if customer.attention%}{{customer.attention}}{%end%}</div>
+          </li>
+          <li>
+            <div class="length1">主管意见</div>
+            <div class="length3">{%if customer.zg_option%}{{customer.zg_option}}{%end%}</div>
+          </li>
+        </ul>
+      </div>
 
 <br/>
 <div class="widget widget-table action-table">
     <div class="widget-header">
       <i class="icon-th-list"></i>
+      <h3>税务信息<a id="customer_modify2"  href="javascript:void(0);"><img alt="[编辑]" width="25" src="/static/images/modify.png"></a></h3>
+    </div>
+    
+    <div class="es-fytable">
+      <ul style="border-top:none;">
+        <li>
+          <div class="length1">纳税类型</div>
+          <div class="length4">{%if customer.is_general%}一般纳税人{%else%}小规模{%end%}</div>
+          <div class="length1">税务概况</div>
+          <div class="length6">{%if customer.survey%}{{customer.survey}}{%end%}</div>
+        </li>
+        <li>
+          <div class="length1">有无税种</div>
+          <div class="length4"> {%if customer.is_check%}是    ({%if customer.btype_id%}<font color='blue'>核定</font> {%else%}<font color='red'>查账</font> {%end%}){%else%}否 {%end%} 
+          </div>
+          <div class="length1">税种明细</div>
+          <div class="length6">{%if customer.shuizhong_detail%}{{customer.shuizhong_detail}}{%end%}</div>
+        </li>
+        <li>
+          <div class="length1">征收方式</div>
+          <div class="length4">{%if customer.zhengshou_way%}{{customer.zhengshou_way}}{%end%}</div>
+          <div class="length1">税控盘类别</div>
+          <div class="length4">{%if customer.shuikong_type%}{{customer.shuikong_type}}{%end%}</div>
+          <div class="length1">社保</div>
+          <div class="length4">{%if customer.ss_num%}{{customer.ss_num}}{%end%}</div>
+          <div class="length1">固定资产</div>
+          <div class="length4">{%if customer.fixed_assets%}{{customer.fixed_assets}}{%end%}</div>
+        </li>
+      </ul>
+    </div>
+    
+  </div>
+  
+  <div class="widget widget-table action-table">
+    <div class="widget-header">
+      <i class="icon-th-list"></i>
+      <h3>账号密码管理<a id="customer_modify3"  href="javascript:void(0);"><img alt="[编辑]" width="25" src="/static/images/modify.png"></a></h3>
+    </div>
+    
+    <div class="es-fytable">
+      <ul style="border-top:none;">
+        <li>
+          <div class="length1">法人身份证号</div>
+          <div class="length4">{%if customer.legal_id_card%}{{customer.legal_id_card}}{%end%}</div>
+          <div class="length1">实名采集账号</div>
+          <div class="length4">{%if customer.rel_name_collect_account%}{{customer.rel_name_collect_account}}{%end%}</div>
+          <div class="length1">实名采集密码</div>
+          <div class="length4">{%if customer.rel_name_collect_password%}{{customer.rel_name_collect_password}}{%end%}</div>
+          <div class="length1">税控盘密码</div>
+          <div class="length4">{%if customer.shuipan_password%}{{customer.shuipan_password}}{%end%}</div>
+        </li>
+  
+        <li>
+          <div class="length1">税控盘口令</div>
+          <div class="length4">{%if customer.shuipan_command%}{{customer.shuipan_command}}{%end%}</div>
+          <div class="length1">个税申报密码</div>
+          <div class="length4">{%if customer.per_income_apply_password%}{{customer.per_income_apply_password}}{%end%}</div>
+          <div class="length1">回单卡密码</div>
+          <div class="length4">{%if customer.receipt_card_password%}{{customer.receipt_card_password}}{%end%}</div>
+          <div class="length1">公积金证书密码</div>
+          <div class="length4">{%if customer.accumulation_fund_password%}{{customer.accumulation_fund_password}}{%end%}</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- 相关联系人 -->
+  <div class="widget widget-table action-table">
+    <div class="widget-header"> <i class="icon-th-list"></i>
+      <h3>相关联系人
+          {%if not from_tag%}<a class="btn btn-info btn-sm" type="button" title="{{customer.customer_id}}" id="a_add_linkman">增加</a> {%end%}
+      </h3>
+    </div>
+    <div class="widget-content">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th style="width:80px;">名字/称呼</th>
+            <th style="width:120px;">电话</th>
+            <th>备注</th>
+            <th style="width:60px;">创建人</th>
+            <th style="width:100px;">创建时间</th>
+            {%if not from_tag%} <th  width="40"></th>{%end%}
+          </tr>
+        </thead>
+        <tbody>
+            {%if t_linkman%}
+            {%for item in t_linkman%}
+                <tr>
+                            <td>{{item.name}}
+                            </td>
+                            <!-- <td> {%if item.gender==1%}男{%else%}女{%end%}
+                            </td> -->
+                            <td >{{item.tel}} </td>
+
+
+                            <td>{{item.remark}}</td>
+                               <td>{{item.acc_uid_name}}</td>
+                            <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+
+
+                {%if not from_tag%}    <td>
+                                          <a href="javascript:void(0)"
+                                           class="btn modify_linkman"
+                                            tel="{{item.tel}}"
+                                            remark="{{item.remark}}"
+                                            title="{{item.name}}"
+                                            gender="{{item.gender}}"
+                                            linkman_guid="{{item.guid}}"
+                                            is_first="{{item.is_first}}"
+                                            linkman_id="{{item.id}}">改</a>
+
+                      </td>{%end%}
+
+
+
+            </tr>
+                {%end%}
+            {%else%}
+            <tr>
+            <td colspan="7">还没有哦。</td>
+
+            </tr>
+            {%end%}
+
+            </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- 快递 -->
+  <div class="widget widget-table action-table">
+    <div class="widget-header">
+      <i class="icon-th-list"></i>
       <h3>快递
-          
           <div class="dropdown">
-              <a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="apply_express">增加</a>
+              <a class="btn btn-info btn-sm" type="button" title="{{customer.customer_id}}" id="apply_express">增加</a>
               <div class="dropdown-content">
                 <a href="javascript:void(0)"  id="btn_add_express" >新建寄件 </a>
                 <a href="javascript:void(0)"  id="btn_add_express_rec" >新建收件 </a>
@@ -592,677 +826,711 @@ margin: auto;
             </div>
       </h3>
     </div>
-    <!-- /widget-header -->
+  
     <div class="widget-content">
       <table class="table table-striped table-bordered">
         <thead>
           <tr>
             <th width="50">附件</th>
             <th width="100">申请时间</th>
-            <th width='100'>发件时间</th>
+            <th width="100">发件时间</th>
             <th style="width:100px;">快递单号</th>
             <th style="width:60px;">客户名称</th>
             <th style="width:200px;">资料明细</th>
             <th width="100">其他资料</th>
             <th width="100">寄件人/收件人</th>
-            <th width='50'>创建人</th>
+            <th width="50">创建人</th>
             <th width="100">状态</th>
-            <th width='50'>类型</th>
+            <th width="50">类型</th>
             <th width="60"></th>
           </tr>
         </thead>
         <tbody>
+
+            {%if t_express%} {%for item in t_express%}
+            <tr>
+                <td><a href="javascript:void(0);" class="filepath_detail" id="{{item.id}}"
+                  file_path="{{item.file_path}}" uid_name="{{item.uid_name}}" send_at_name="{{item.send_at_name}}">附件</a></td>
+                <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+                <td>{%if item.created_send_at %}{{item.created_send_at.strftime("%Y-%m-%d")}}{%end%}</td>
+                <td>{%if item.express_number%}{{item.express_number}}{%end%}</td>
+                <td>{{item.rec_name}}</td>
+                <td>{{item.rec_file}}</td>
+                <td>{{item.other_rec_file}}</td>
+                <td>{%if item.send_or_rec==0 %}{{item.send_at_name}}/{{item.rec_name}}{%else%}{{item.rec_name}}/{{item.send_at_name}}{%end%}</td>
+                <td>{{item.uid_name}}</td>
+                <td>
+                    {%if item.send_at%}
+                    {{item.send_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}确认发件
+                    {%elif not item.accept_at%}待审核
+                    {%elif item.accept_state==1%}
+                    {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核通过
+                    {%elif item.accept_state==2%}
+                    {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核不通过 备注:{{item.accept_uid_remark}}
+                    {%end%}</td>
+                    <td>{%if item.send_or_rec==1%}收件{%else%}寄件{%end%}</td>
+                    <td>
+                        {%if item.accept_state==1 and express_manage=='1' and not item.send_at %}
+                        <a class="btn btn-info confirm_send_express" id="{{item.id}}" href="javascript:void(0);">确认发件</a>
+                        {%elif not item.accept_at and express_manage=='1'%}
+                        <a class="btn btn-info check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
+                        {%else%}
+                        <a class="btn btn-info edit_express" href="javascript:void(0);"
+                        id="{{item.id}}" rec_name="{{item.rec_name}}" rec_tel="{{item.rec_tel}}" created_send_at="{%if item.created_send_at%}{{item.created_send_at}}{%end%}"
+                        rec_addr="{{item.rec_addr}}"  rec_file="{{item.rec_file}}" rec_company="{{item.rec_company}}"
+                        express_type_id="{{item.express_type_id}}" created_at="{{item.created_at}}" other_rec_file="{{item.other_rec_file}}"
+                        payment_type_id="{{item.payment_type_id}}" send_at_name="{{item.send_at_name}}" remark="{{item.remark}}" accept_at="{{item.accept_at}}"
+                        rec_file_ids="{{item.rec_file_ids}}" express_number="{{item.express_number}}" uid_name="{{item.uid_name}}" send_or_rec="{{item.send_or_rec}}"
+                      >查看</a>
+                        {%end%}
+                      </td>
+            </tr>
+            {%end%} {%else%}
+            <tr>
+              <td colspan="7">还没有曾用名哦。</td>
   
-          {%if t_express%} {%for item in t_express%}
-          <tr>
-              <td><a href="javascript:void(0);" class="filepath_detail" id="{{item.id}}" 
-                file_path="{{item.file_path}}" uid_name="{{item.uid_name}}" send_at_name="{{item.send_at_name}}">附件</a></td>
-              <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
-              <td>{%if item.created_send_at %}{{item.created_send_at.strftime("%Y-%m-%d")}}{%end%}</td>
-              <td>{%if item.express_number%}{{item.express_number}}{%end%}</td>
-              <td>{{item.rec_name}}</td>
-              <td>{{item.rec_file}}</td>
-              <td>{{item.other_rec_file}}</td>
-              <td>{%if item.send_or_rec==0 %}{{item.send_at_name}}/{{item.rec_name}}{%else%}{{item.rec_name}}/{{item.send_at_name}}{%end%}</td>
-              <td>{{item.uid_name}}</td>
-              <td>
-                  {%if item.send_at%}
-                  {{item.send_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}确认发件
-                  {%elif not item.accept_at%}待审核
-                  {%elif item.accept_state==1%}
-                  {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核通过
-                  {%elif item.accept_state==2%}
-                  {{item.accept_at.strftime("%Y-%m-%d")}} {{item.accept_uid_name}}审核不通过 备注:{{item.accept_uid_remark}}
-                  {%end%}</td>
-                  <td>{%if item.send_or_rec==1%}收件{%else%}寄件{%end%}</td>
-                  <td>
-                      {%if item.accept_state==1 and express_manage=='1' and not item.send_at %}
-                      <a class="btn btn-info confirm_send_express" id="{{item.id}}" href="javascript:void(0);">确认发件</a>
-                      {%elif not item.accept_at and express_manage=='1'%}
-                      <a class="btn btn-info check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
-                      {%else%}
-                      <a class="btn btn-info edit_express" href="javascript:void(0);"
-                      id="{{item.id}}" rec_name="{{item.rec_name}}" rec_tel="{{item.rec_tel}}" created_send_at="{%if item.created_send_at%}{{item.created_send_at}}{%end%}"
-                      rec_addr="{{item.rec_addr}}"  rec_file="{{item.rec_file}}" rec_company="{{item.rec_company}}"
-                      express_type_id="{{item.express_type_id}}" created_at="{{item.created_at}}" other_rec_file="{{item.other_rec_file}}"
-                      payment_type_id="{{item.payment_type_id}}" send_at_name="{{item.send_at_name}}" remark="{{item.remark}}" accept_at="{{item.accept_at}}"
-                      rec_file_ids="{{item.rec_file_ids}}" express_number="{{item.express_number}}" uid_name="{{item.uid_name}}" send_or_rec="{{item.send_or_rec}}"
-                    >查看</a>
-                      {%end%}
-                    </td>
-          </tr>
-          {%end%} {%else%}
-          <tr>
-            <td colspan="7">还没有曾用名哦。</td>
+            </tr>
+            {%end%}
   
-          </tr>
-          {%end%}
-  
-        </tbody>
+          </tbody>
       </table>
     </div>
-    <!-- /widget-content -->
   </div>
-
+  <!-- 资料交接 -->
   <div class="widget widget-table action-table">
-    <div class="widget-header">
-      <i class="icon-th-list"></i>
-              <h3 class="card-title mb-1">交代事项
-
-                 <a href="javascript:void(0)" id="a_add_note"
-                 class="btn btn-info btn-sm"> <i class="fa fa-fw fa-comment"></i>新增</a>
-                 {%if role!='6'%}
-                 <a href="javascript:void(0)" id="a_read_note"
-                 class="btn btn-info btn-sm"> <i class="fa fa-fw fa-align-justify"></i>查看</a>
-                 {%end%}
-</h3>
-
-</div>
-<div class="widget-content">
-  <table class="table table-striped table-bordered">
-    <tbody>
-           {%if project_note%}
-           {%for item in project_note%}
-           <tr>
-           <td>
-
-  {%if item.note_id%}
-      <a class="mr-3 d-inline-block cancel_note" href="javascript:void(0)" note_id='{{item.aid}}' is_cancel='{{item.is_cancel}}'>
-          {%if item.is_cancel==0%}作废{%else%}恢复{%end%}</a>
-  {%else%}
-   <a href="javascript:void(0)" class="a_change_note"  id="{{item.aid}}" note="{{item.msg}}">
-    <img  alt="修改该条记录" src="/static/images/modify.png" width="25" /></a>
-   <a href="javascript:void(0)" class="a_delete_note"  id="{{item.aid}}">
-     <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
-    {%end%}
-<b>{%if item.state_id==0%} <span class="badge badge-info">已通过</span>{%elif item.state_id==1%} <span class="badge badge-danger">未通过</span>{%elif item.is_check==1%}<span class="badge badge-dark">待审核</span>{%end%}{{item.uid_name}} ({{item.creatd_at}} )</b> :<span style="font-size:20px; color:red;">
- <b>{%if item.is_cancel==1%}<s>{{item.msg}}</s>{%else%}{{item.msg}}{%end%}{%if item.remark%} 备注：{{item.remark}}{%end%}</b>
- <!--
-{%if item.note_id%}<span class="bg-primary" style="color:#fff;font-size: 80%;padding:5px;">已读</span>{%else%}
-<span class="bg-danger" style="color:#fff;font-size: 80%;padding:5px;">未读</span>{%end%}
-         </span>-->
-
-{%if item.read_name%}
-{%for strs in item.read_name.split(",")%}
-  {%if strs%}
-<span class="badge badge-info">{{strs}}</span>
-  {%end%}
-{%end%}{%end%}
-
-         {%end%}
-           {%else%}
-          {%for item in project_note%}
-
-    <a href="javascript:void(0)" class="a_delete_note"  id="{{item.aid}}">
-      <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
-<b> {{item.creatd_at}} {{item.uid_name}}</b> :<span style="font-size:20px; color:red;"> <b>{{item.msg}}</b>
-
-
-          </span>
-
-{%if item.read_name%}
-{%for strs in item.read_name.split(",")%}
-<span class="badge badge-info">{{strs}}</span>
-{%end%}
-
-{%end%}
-
-
-           {%else%}
-           <tr>
-              <td colspan="7">还没有曾用名哦。</td>
+      <div class="widget-header">
+        <i class="icon-th-list"></i>
+        <h3>资料交接
+            {%if not from_tag%}
+          <a class="btn btn-primary btn-sm" type="button" title="{{customer.customer_id}}" id="a_add_trans">增加</a>
+          {%end%}
+        </h3>
+      </div>
+      <!-- /widget-header -->
+      <div class="widget-content">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th width="80">交接时间
+              </th>
+    
+              <th  width="60"> 移交方
+              </th>
+    
+              <th width="60"> 签收方
+              </th>
+         <th > 备注
+              </th>
+           <th style="width:60px;"> 附件
+              </th>
+              <th style="width:60px;">创建人</th>
+              <th style="width:80px;">创建时间</th>
+              <th width="10"></th>
             </tr>
-          {%end%}
-        </td>
-        </tr>
+          </thead>
+          <tbody>
+            {%if t_transition%} {%for item in t_transition%}
+            <tr>
+              <td>{{item.tran_at.strftime("%Y-%m-%d")}}
+    
+    
+              </td>
+               <td> {{item.tran_by}}
+              </td>
+               <td> {{item.rec_by}}
+              </td>
+              <td> {{item.remark}}
+              </td>
+    
+          <td>         {%if item.file_name%}
+                    <a href="{{item.file_name}}" class="btn" target="_blank">查看</a>
+              {%end%}</td>
+    
+              <td>{{item.uid_name}}</td>
+    
+              <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+    {%if not from_tag%}
+              <td>
+            <a href="javascript:void(0)" rec_by ="{{item.rec_by}}" class="btn modify_transition" transition_id="{{item.id}}"
+                                               tran_at="{{item.tran_at}}"
+                                               tran_by ="{{item.tran_by}}"
+                                               remark="{{item.remark}}">改</a>
+           <a href="javascript:void(0)" rec_by ="{{item.rec_by}}" class="btn modify_transition_mobile" transition_id="{{item.id}}"
+                                               tran_at="{{item.tran_at}}"
+                                               tran_by ="{{item.tran_by}}"
+                                               remark="{{item.remark}}">手机上传</a>
+              </td>
               {%end%}
-            </tbody>
-   </table>
-</div>
-  </div>
-<div class="widget widget-table action-table">
-  <div class="widget-header">
-    <i class="icon-th-list"></i>
-    <h3>公司曾用名
-        {%if not from_tag%}   <a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="a_add_company_name">增加</a>
-        {%end%}
-    </h3>
-  </div>
-  <!-- /widget-header -->
-  <div class="widget-content">
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th >曾用名</th>
-          <th style="width:280px;">备注</th>
-          <th style="width:60px;">记录人</th>
-          <th style="width:100px;">记录时间</th>
-          {%if not from_tag%}<th width="40"></th>{%end%}
-        </tr>
-      </thead>
-      <tbody>
-
-        {%if t_company_name%} {%for item in t_company_name%}
-        <tr>
-          <td> {{item.name}}
-          </td>
-
-
-          <td>{{item.remark}}</td>
-          <td>{{item.uid_name}}</td>
-          <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
-
-
-       {%if not from_tag%}   <td>
-            <a href="javascript:void(0)" class="btn company_modify"
-            company_name="{{item.name}}"
-              company_remark="{{item.remark}}" company_id="{{item.id}}">改</a>
-
-          </td>{%end%}
-
-
-
-        </tr>
-        {%end%} {%else%}
-        <tr>
-          <td colspan="7">还没有曾用名哦。</td>
-
-        </tr>
-        {%end%}
-
-      </tbody>
-    </table>
-  </div>
-  <!-- /widget-content -->
-</div>
-
-
-
-<div class="widget widget-table action-table">
-  <div class="widget-header">
-    <i class="icon-th-list"></i>
-    <h3>历史客服会计负责人
-    {%if not from_tag%}  <a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="a_add_acc">增加</a>{%end%}
-    </h3>
-  </div>
-  <!-- /widget-header -->
-  <div class="widget-content">
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th >姓名</th>
-          <th style="width:280px;">备注</th>
-          <th style="width:60px;">记录人</th>
-          <th style="width:100px;">记录时间</th>
-         {%if not from_tag%} <th width="40"></th> {%end%}
-        </tr>
-      </thead>
-      <tbody>
-
-        {%if t_acc%} {%for item in t_acc%}
-        <tr>
-          <td> {{item.name}}
-          </td>
-
-
-          <td>{{item.remark}}</td>
-          <td>{{item.uid_name}}</td>
-          <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
-
-{%if not from_tag%}
-          <td>
-            <a href="javascript:void(0)" class="btn acc_modify"
-            acc_name="{{item.name}}"
-              acc_remark="{{item.remark}}" acc_id="{{item.id}}">改</a>
-
-          </td>
-          {%end%}
-
-
-
-        </tr>
-        {%end%} {%else%}
-        <tr>
-          <td colspan="7">还没有数据哦。</td>
-
-        </tr>
-        {%end%}
-
-      </tbody>
-    </table>
-  </div>
-  <!-- /widget-content -->
-</div>
-
-{%if not from_tag%}
-<div class="widget widget-table action-table">
-  <div class="widget-header">
-    <i class="icon-th-list"></i>
-    <h3>相关帐号
-
-         {%if not from_tag%} <a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="a_add_account">增加</a>{%end%}
-    </h3>
-  </div>
-  <!-- /widget-header -->
-  <div class="widget-content">
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th style="width:80px;">类型</th>
-          <th style="width:120px;">用户名</th>
-          <th style="width:120px;">密码</th>
-          <th>备注</th>
-          <th style="width:60px;">更新人</th>
-          <th style="width:100px;">更新时间</th>
-        {%if not from_tag%}  <th width="40"></th>{%end%}
-        </tr>
-      </thead>
-      <tbody>
-
-        {%if t_customer_account%} {%for item in t_customer_account%}
-        <tr>
-          <td> {{item.type_id_name}}
-          </td>
-          <td>{{item.account}}
-          </td>
-
-          <td>{{item.psw}} </td>
+            </tr>
+            {%end%} {%else%}
+            <tr>
+              <td colspan="8">还没有哦。</td>
+    
+            </tr>
+            {%end%}
+    
+          </tbody>
+        </table>
+      </div>
+      <!-- /widget-content -->
+    
+    
+    
+    </div>
+  <!-- 公司曾用名 -->
+  <div class="widget widget-table action-table">
+      <div class="widget-header">
+        <i class="icon-th-list"></i>
+        <h3>公司曾用名
+            {%if not from_tag%}   <a class="btn btn-info btn-sm" type="button" title="{{customer.customer_id}}" id="a_add_company_name">增加</a>
+            {%end%}
+        </h3>
+      </div>
+      <!-- /widget-header -->
+      <div class="widget-content">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th >曾用名</th>
+              <th style="width:280px;">备注</th>
+              <th style="width:60px;">记录人</th>
+              <th style="width:100px;">记录时间</th>
+              {%if not from_tag%}<th width="40"></th>{%end%}
+            </tr>
+          </thead>
+          <tbody>
+    
+            {%if t_company_name%} {%for item in t_company_name%}
+            <tr>
+              <td> {{item.name}}
+              </td>
+    
+    
+              <td>{{item.remark}}</td>
+              <td>{{item.uid_name}}</td>
+              <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+    
+    
+           {%if not from_tag%}   <td>
+                <a href="javascript:void(0)" class="btn company_modify"
+                company_name="{{item.name}}"
+                  company_remark="{{item.remark}}" company_id="{{item.id}}">改</a>
+    
+              </td>{%end%}
+    
+    
+    
+            </tr>
+            {%end%} {%else%}
+            <tr>
+              <td colspan="7">还没有曾用名哦。</td>
+    
+            </tr>
+            {%end%}
+    
+          </tbody>
+        </table>
+      </div>
+      <!-- /widget-content -->
+    </div>
+    
+  <!-- 历史客服会计负责人 -->
+  <div class="widget widget-table action-table">
+      <div class="widget-header">
+        <i class="icon-th-list"></i>
+        <h3>历史客服会计负责人
+        {%if not from_tag%}  <a class="btn btn-info btn-sm" type="button" title="{{customer.customer_id}}" id="a_add_acc">增加</a>{%end%}
+        </h3>
+      </div>
+      <!-- /widget-header -->
+      <div class="widget-content">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th >姓名</th>
+              <th style="width:280px;">备注</th>
+              <th style="width:60px;">记录人</th>
+              <th style="width:100px;">记录时间</th>
+             {%if not from_tag%} <th width="40"></th> {%end%}
+            </tr>
+          </thead>
+          <tbody>
+    
+            {%if t_acc%} {%for item in t_acc%}
+            <tr>
+              <td> {{item.name}}
+              </td>
+    
+    
+              <td>{{item.remark}}</td>
+              <td>{{item.uid_name}}</td>
+              <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+    
+    {%if not from_tag%}
+              <td>
+                <a href="javascript:void(0)" class="btn acc_modify"
+                acc_name="{{item.name}}"
+                  acc_remark="{{item.remark}}" acc_id="{{item.id}}">改</a>
+    
+              </td>
+              {%end%}
+    
+    
+    
+            </tr>
+            {%end%} {%else%}
+            <tr>
+              <td colspan="7">还没有数据哦。</td>
+    
+            </tr>
+            {%end%}
+    
+          </tbody>
+        </table>
+      </div>
+      <!-- /widget-content -->
+    </div>
+  <!-- 业务到期管理 -->
+  <div class="widget widget-table action-table">
+      <div class="widget-header"> <i class="icon-th-list"></i>
+        <h3>业务到期管理     {%if not from_tag%}<a class="btn btn-info btn-sm "  id="a_add_contract"
 
 
-          <td>{{item.remark}}</td>
-          <td>{{item.updated_by}}</td>
-          <td>{{item.updated_at.strftime("%Y-%m-%d")}}</td>
-
-
-         {%if not from_tag%} <td>
-            <a href="javascript:void(0)" class="btn modify_account" type_id="{{item.type_id}}" account="{{item.account}}" psw="{{item.psw}}"
-              remark="{{item.remark}}" account_id="{{item.id}}">改</a>
-
-          </td>{%end%}
-
-
-
-        </tr>
-        {%end%} {%else%}
-        <tr>
-          <td colspan="7">还没有联系人哦。</td>
-
-        </tr>
-        {%end%}
-
-      </tbody>
-    </table>
-  </div>
-  <!-- /widget-content -->
-</div>
-
-
-{%end%}
-<div class="widget widget-table action-table">
-            <div class="widget-header"> <i class="icon-th-list"></i>
-              <h3>相关联系人
-
-                  {%if not from_tag%}<a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="a_add_linkman">增加</a> {%end%}</h3>
-            </div>
-            <!-- /widget-header -->
-            <div class="widget-content">
-              <table class="table table-striped table-bordered">
-                <thead>
-                <tr>
-                        <th style="width:80px;">名字/称呼</th>
-                        <!-- <th style="width:30px;"> 性别 -->
-                        <th style="width:120px;">电话</th>
-                        <th>备注</th>
-                        <th style="width:60px;">创建人</th>
-                        <th style="width:100px;">创建时间</th>
-                       {%if not from_tag%} <th  width="40"></th>{%end%}
-                </tr>
-                </thead>
-                <tbody>
-                {%if t_linkman%}
-                {%for item in t_linkman%}
-                    <tr>
-                                <td>{{item.name}}
-                                </td>
-                                <!-- <td> {%if item.gender==1%}男{%else%}女{%end%}
-                                </td> -->
-                                <td >{{item.tel}} </td>
-
-
-                                <td>{{item.remark}}</td>
-                                   <td>{{item.acc_uid_name}}</td>
-                                <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
-
-
-                    {%if not from_tag%}    <td>
-                                              <a href="javascript:void(0)"
-                                               class="btn modify_linkman"
-                                                tel="{{item.tel}}"
-                                                remark="{{item.remark}}"
-                                                title="{{item.name}}"
-                                                gender="{{item.gender}}"
-                                                linkman_guid="{{item.guid}}"
-                                                linkman_id="{{item.id}}">改</a>
-
-                          </td>{%end%}
-
-
-
-                </tr>
-                    {%end%}
-                {%else%}
-                <tr>
-                <td colspan="7">还没有哦。</td>
-
-                </tr>
-                {%end%}
-
-                </tbody>
-              </table>
-            </div>
-            <!-- /widget-content -->
-          </div>
-
-<div class="widget widget-table action-table">
-            <div class="widget-header"> <i class="icon-th-list"></i>
-              <h3>业务到期管理     {%if not from_tag%}<a class="btn btn-info btn-sm "  id="a_add_contract"
-
-
-              type="button" title="{{customer.id}}" data-toggle="modal"
-                >增加</a>{%end%}</h3>
-            </div>
-            <!-- /widget-header -->
-            <div class="widget-content">
-              <table class="table table-striped table-bordered">
-                <thead>
-                <tr>
-                        <th>合同内容
+        type="button" title="{{customer.customer_id}}" data-toggle="modal"
+          >增加</a>{%end%}</h3>
+      </div>
+      <!-- /widget-header -->
+      <div class="widget-content">
+        <table class="table table-striped table-bordered">
+          <thead>
+          <tr>
+                  <th>合同内容
 </th>
 
-                        <th style="width:120px;">合同开始时间
+                  <th style="width:120px;">合同开始时间
 </th>
-                        <th style="width:120px;">合同结束时间</th>
+                  <th style="width:120px;">合同结束时间</th>
 
 
-                        <th>最后更新时间</th>
-                        <th>创建人</th>
-                        <th>当前状态</th>
+                  <th>最后更新时间</th>
+                  <th>创建人</th>
+                  <th>当前状态</th>
 <th>合同期限状态</th>
 {%if not from_tag%}<th style="width:50px;"></th>{%end%}
 
 
-                </tr>
-                </thead>
-                <tbody>
-                {%if t_contract%}
-                {%for item in t_contract%}
-                    <tr>
-                                <td>{{item.title}}
-                                </td>
-                                <td style="width:100px;">{%if item.start_time%}{{item.start_time.strftime("%Y-%m-%d")}}{%end%}
-                                </td>
-                                <td style="width:100px;" >{%if item.end_time%}{{item.end_time.strftime("%Y-%m-%d")}}{%end%}
-                                </td>
+          </tr>
+          </thead>
+          <tbody>
+          {%if t_contract%}
+          {%for item in t_contract%}
+              <tr>
+                          <td>{{item.title}}
+                          </td>
+                          <td style="width:100px;">{%if item.start_time%}{{item.start_time.strftime("%Y-%m-%d")}}{%end%}
+                          </td>
+                          <td style="width:100px;" >{%if item.end_time%}{{item.end_time.strftime("%Y-%m-%d")}}{%end%}
+                          </td>
 
 
-                                <td style="width:100px;">{{item.updated_at.strftime("%Y-%m-%d")}}</td>
-                                   <td style="width:60px;">
+                          <td style="width:100px;">{{item.updated_at.strftime("%Y-%m-%d")}}</td>
+                             <td style="width:60px;">
 
 
 
-                                   {%if item.uid_name%}
-            {{item.uid_name}}
-            {%else%}系统导入
-                                   {%end%}
-                                   </td>
-                                <td style="width:60px;">
+                             {%if item.uid_name%}
+      {{item.uid_name}}
+      {%else%}系统导入
+                             {%end%}
+                             </td>
+                          <td style="width:60px;">
 
-                                {%if item.state_id==0%}
-                                <font color='green'>正常</font>
-                                {%end%}
+                          {%if item.state_id==0%}
+                          <font color='green'>正常</font>
+                          {%end%}
 
-                                    {%if item.state_id==1%}
-                                      <font color='red'>关闭</font>
-                                   {%end%}
-                                </td>
-                                    <td style="width:140px;">
-                                     {%if item.state_id==0%}
-                                      {%if  item.expire_day >= 0 %}
+                              {%if item.state_id==1%}
+                                <font color='red'>关闭</font>
+                             {%end%}
+                          </td>
+                              <td style="width:140px;">
+                               {%if item.state_id==0%}
+                                {%if  item.expire_day >= 0 %}
 
-                                         <span style='color:blue'>还有 {{item.expire_day}} 天就到期了。</span>
+                                   <span style='color:blue'>还有 {{item.expire_day}} 天就到期了。</span>
 
-                                      {%else%}
-                                          {%if item.expire_day%} <span style='color:red'>已经过期{{abs(item.expire_day)}} 天</span>
-     {%else%}
+                                {%else%}
+                                    {%if item.expire_day%} <span style='color:red'>已经过期{{abs(item.expire_day)}} 天</span>
+{%else%}
 合同日期异常/无合同
-                                          {%end %}
-                                      {%end %}
+                                    {%end %}
+                                {%end %}
 
 
-   {%else%}
-  该合同已经结束或新签
-  {%end %}
+{%else%}
+该合同已经结束或新签
+{%end %}
 
-                                    </td>
-                                {%if not from_tag%}    <td>
-                                          <a href="javascript:void(0)"
-                                           start_time="{%if item.start_time%}{{item.start_time.strftime("%Y-%m-%d")}}{%end%}"
-                                           end_time ="{%if item.end_time%}{{item.end_time.strftime("%Y-%m-%d")}}{%end%}"
-                                           title="{{item.title}}"
-                                           state_id="{{item.state_id}}"
-                                           contract_remark = "{{item.contract_remark}}"
-                                           class="btn modify_contract" contract_id="{{item.id}}">改</a>
+                              </td>
+                          {%if not from_tag%}    <td>
+                                    <a href="javascript:void(0)"
+                                     start_time="{%if item.start_time%}{{item.start_time.strftime("%Y-%m-%d")}}{%end%}"
+                                     end_time ="{%if item.end_time%}{{item.end_time.strftime("%Y-%m-%d")}}{%end%}"
+                                     title="{{item.title}}"
+                                     state_id="{{item.state_id}}"
+                                     contract_remark = "{{item.contract_remark}}"
+                                     class="btn modify_contract" contract_id="{{item.id}}">改</a>
 
-                                    </td>{%end%}
+                              </td>{%end%}
 
-                </tr>
+          </tr>
+          {%end%}
+               {%else%}
+              <tr>
+                <td colspan="7">还没有哦。</td>
+
+              </tr>
+              {%end%}
+          </tbody>
+        </table>
+      </div>
+      <!-- /widget-content -->
+
+
+
+
+</div>
+  <!-- 公司附件 -->
+  <div class="widget widget-table action-table">
+      <div class="widget-header">
+        <i class="icon-th-list"></i>
+        <h3>公司附件
+           {%if not from_tag%}  <a class="btn btn-info btn-sm" type="button" title="{{customer.customer_id}}" id="a_add_file">增加</a> {%end%}
+        </h3>
+      </div>
+      <!-- /widget-header -->
+      <div class="widget-content">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th >文件内容
+              </th>
+    
+              <th > 文件备注</th>
+    
+              <th style="width:80px;">创建人</th>
+              <th style="width:80px;">创建时间</th>
+              {%if not from_tag%}<th width="10"></th>{%end%}
+            </tr>
+          </thead>
+          <tbody>
+            {%if t_file%} {%for item in t_file%}
+            <tr>
+              <td>{{item.title}}
+    
+              {%if item.file_name%}
+                    <a href="{{item.file_name}}" class="btn" target="_blank">下载</a>
+              {%end%}
+              </td>
+              <td> {{item.file_remark}}
+              </td>
+    
+    
+    
+              <td>{{item.uid_name}}</td>
+    
+              <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
+    {%if not from_tag%}
+              <td>
+                {%if '249' in role_list %}
+                <a href="javascript:;" class="btn btn-danger btn-small delete_file" title="{{item.id}}" guid="{{item.guid}}">
+                  <i class="btn-icon-only icon-remove"></i>
+                  </i>
+                </a>
                 {%end%}
-                     {%else%}
-                    <tr>
-                      <td colspan="7">还没有哦。</td>
-
-                    </tr>
-                    {%end%}
-                </tbody>
-              </table>
-            </div>
-            <!-- /widget-content -->
-
-
-
-
-</div>
-</div>
-
-<div class="widget widget-table action-table">
-  <div class="widget-header">
-    <i class="icon-th-list"></i>
-    <h3>资料交接
-        {%if not from_tag%}
-      <a class="btn btn-primary btn-sm" type="button" title="{{customer.id}}" id="a_add_trans">增加</a>
-      {%end%}
-    </h3>
-  </div>
-  <!-- /widget-header -->
-  <div class="widget-content">
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th width="80">交接时间
-          </th>
-
-          <th  width="60"> 移交方
-          </th>
-
-          <th width="60"> 签收方
-          </th>
-     <th > 备注
-          </th>
-       <th style="width:60px;"> 附件
-          </th>
-          <th style="width:60px;">创建人</th>
-          <th style="width:80px;">创建时间</th>
-          <th width="10"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {%if t_transition%} {%for item in t_transition%}
-        <tr>
-          <td>{{item.tran_at.strftime("%Y-%m-%d")}}
-
-
-          </td>
-           <td> {{item.tran_by}}
-          </td>
-           <td> {{item.rec_by}}
-          </td>
-          <td> {{item.remark}}
-          </td>
-
-      <td>         {%if item.file_name%}
-                <a href="{{item.file_name}}" class="btn" target="_blank">查看</a>
-          {%end%}</td>
-
-          <td>{{item.uid_name}}</td>
-
-          <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
-{%if not from_tag%}
-          <td>
-        <a href="javascript:void(0)" rec_by ="{{item.rec_by}}" class="btn modify_transition" transition_id="{{item.id}}"
-                                           tran_at="{{item.tran_at}}"
-                                           tran_by ="{{item.tran_by}}"
-                                           remark="{{item.remark}}">改</a>
-       <a href="javascript:void(0)" rec_by ="{{item.rec_by}}" class="btn modify_transition_mobile" transition_id="{{item.id}}"
-                                           tran_at="{{item.tran_at}}"
-                                           tran_by ="{{item.tran_by}}"
-                                           remark="{{item.remark}}">手机上传</a>
-          </td>
-          {%end%}
-        </tr>
-        {%end%} {%else%}
-        <tr>
-          <td colspan="8">还没有哦。</td>
-
-        </tr>
-        {%end%}
-
-      </tbody>
-    </table>
-  </div>
-  <!-- /widget-content -->
-
-
-
-</div>
-
-
-
-
-<div class="widget widget-table action-table">
-  <div class="widget-header">
-    <i class="icon-th-list"></i>
-    <h3>公司附件
-       {%if not from_tag%}  <a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="a_add_file">增加</a> {%end%}
-    </h3>
-  </div>
-  <!-- /widget-header -->
-  <div class="widget-content">
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th >文件内容
-          </th>
-
-          <th > 文件备注</th>
-
-          <th style="width:80px;">创建人</th>
-          <th style="width:80px;">创建时间</th>
-          {%if not from_tag%}<th width="10"></th>{%end%}
-        </tr>
-      </thead>
-      <tbody>
-        {%if t_file%} {%for item in t_file%}
-        <tr>
-          <td>{{item.title}}
-
-          {%if item.file_name%}
-                <a href="{{item.file_name}}" class="btn" target="_blank">下载</a>
-          {%end%}
-          </td>
-          <td> {{item.file_remark}}
-          </td>
-
-
-
-          <td>{{item.uid_name}}</td>
-
-          <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
-{%if not from_tag%}
-          <td>
-            {%if '249' in role_list %}
-            <a href="javascript:;" class="btn btn-danger btn-small delete_file" title="{{item.id}}" guid="{{item.guid}}">
-              <i class="btn-icon-only icon-remove"></i>
-              </i>
-            </a>
+              </td>
+              {%end%}
+            </tr>
+            {%end%} {%else%}
+            <tr>
+              <td colspan="7">还没有哦。</td>
+    
+            </tr>
             {%end%}
-          </td>
+    
+          </tbody>
+        </table>
+      </div>
+      <!-- /widget-content -->
+    
+    
+    
+    
+    
+    </div>
+  
+    {%if not from_tag and role=="8" or role=="3" %}
+
+    <a class="btn btn-info btn-sm" type="button" title="{{customer.customer_id}}" id="delete_customer_btn">删除</a>
+    {%end%}
+
+  </div>
+
+<div class="tab-pane" id="payment_tab">
+  <div class="card mb-3">
+    <div class="es-progress">
+    
+        {%if t_customer_genjin_state%}
+        {%for idx,item in enumerate(t_customer_genjin_state)%}
+     
+        <div class="esdt-box{%if idx==0%}1{%elif idx==t_customer_genjin_state.index(t_customer_genjin_state[-1])%}3{%else%}2{%end%}
+         {%if customer.gc%}
+        {%for row in customer.gc.split(',')%}
+        {%if row.split('|')[0]==str(item.id)%}
+         esdtcur{%if idx==0%}1{%elif idx==t_customer_genjin_state.index(t_customer_genjin_state[-1])%}3{%else%}2{%end%}
+         {%end%}{%end%}{%end%}" state_id="{{item.id}}">
+      
+        <h3>{{item.state_name}}</h3>
+        <span class="estime"  {%if idx==t_customer_genjin_state.index(t_customer_genjin_state[-1]) %}style="margin-left:20px;"{%end%}>
+            {%if customer.gc%}
+            {%if idx>=len(customer.gc.split(','))%}
+            {%if idx==t_customer_genjin_state.index(t_customer_genjin_state[-1]) %}
+            已办结{%else%}未完成{%end%}
+            {%else%}
+            {%for idx1,row in enumerate(customer.gc.split(','))%}
+            {%if row.split('|')[0]==str(item.id)%}
+            {{row.split('|')[1]}}
+            {%end%}
+            {%end%}
           {%end%}
-        </tr>
-        {%end%} {%else%}
-        <tr>
-          <td colspan="7">还没有哦。</td>
+          {%elif idx==t_customer_genjin_state.index(t_customer_genjin_state[-1]) %}已办结{%else%}未完成{%end%}
+          
+        </span>
+     
+     </div>
+      {%end%}
+     
+      {%end%}
+    </div>
+    <div style="overflow: hidden;">
+        <textarea class="eswenben" name="" id="dongtai_msg">
 
-        </tr>
-        {%end%}
+        </textarea>
+    
+      <div>
+        <div class="estu">
+          <div class="estu-f">
+            <img src="static/images/img/photo_03.jpg" alt="" width="20" height="14"></div>
+          <p class="estu-r">上传图片 </p>
+          <form>
+                    <input type="file" id="uploaderInput1" />
+                    
+                </form>
+        </div>
+        <div class="estu">
+            <div class="estu-f" id="uploaderFiles1">
+              
+              </div>
+        </div>
+        <div class="es-quren">
+          <select name="" id="genjin_type">
+            <option value="">选择类别</option>
+            <option value="1">跟进动态</option>
+            <option value="2">定期跟进</option>
+            <option value="3">操作动态</option>
+            <option value="4">其他类别</option>
+          </select>
+          <button id="submit_msg">确认</button>
+        </div>
+      </div>
+    </div>
+    <div>
+     
+         
+        <div class="tabbable">
+            <div class="eslb-top">
+            <ul>
+                <li class="eslbcur" href="#all_msg" id="a_all_msg" data-toggle="tab">全部动态</li>
+                <li href="#genjin_msg" id="a_genjin_msg" data-toggle="tab">跟进动态</li>
+                <li href="#dingqi_msg" id="a_dingqi_msg" data-toggle="tab">定期跟进</li>
+                <li href="#c_msg" id="a_c_msg" data-toggle="tab">操作动态</li>
+                <li href="#other_msg" id="a_other_msg" data-toggle="tab">其他</li>
+            </ul>
+            </div>
+            <div class="tab-content">
+              <div class="tab-pane " id="all_msg">
+                {%if t_customer_genjin_msg%}
+                {%for item in  t_customer_genjin_msg%}
+            <div class="eslao">
+                <div class="toux-l">
+                  <img src="static/images/img/dta.png" alt="" width="76" height="76">
+                </div>
+                <div class="toux-r">
+                  <h3>{{item.uid_name}}</h3>
+                  <p class="esneir">{{item.msg}}</p>
+                  <span>{{item.created_at}}</span>
+                  <div class="esrname">
+                    <p>{%if item.file_path%}<a href="{{item.file_path}}"  target="blank">查看附件</a>{%end%}</p>
+                  </div>
+                </div>
+                <div class="xsj">
+                  <img src="static/images/img/xsj_07.jpg" alt="" width="14" height="16">
+                </div>
+              </div>
+              {%end%}
+              {%else%}
+              还没有哦~
+              {%end%}
+              </div>
+              <div class="tab-pane " id="genjin_msg">
+                  {%if t_customer_genjin_msg1%}
+                  {%for item in  t_customer_genjin_msg1%}
+              <div class="eslao">
+                  <div class="toux-l">
+                    <img src="static/images/img/dta.png" alt="" width="76" height="76">
+                  </div>
+                  <div class="toux-r">
+                    <h3>{{item.uid_name}}</h3>
+                    <p class="esneir">{{item.msg}}</p>
+                    <span>{{item.created_at}}</span>
+                    <div class="esrname">
+                      <p>{%if item.file_path%}<a href="{{item.file_path}}" target="blank">查看附件</a>{%end%}</p>
+                    </div>
+                  </div>
+                  <div class="xsj">
+                    <img src="static/images/img/xsj_07.jpg" alt="" width="14" height="16">
+                  </div>
+                </div>
+                {%end%}
+                {%else%}
+                还没有哦~
+                {%end%}
+                    </div>
+              <div class="tab-pane " id="dingqi_msg">
+                  {%if t_customer_genjin_msg2%}
+                  {%for item in  t_customer_genjin_msg2%}
+              <div class="eslao">
+                  <div class="toux-l">
+                    <img src="static/images/img/dta.png" alt="" width="76" height="76">
+                  </div>
+                  <div class="toux-r">
+                    <h3>{{item.uid_name}}</h3>
+                    <p class="esneir">{{item.msg}}</p>
+                    <span>{{item.created_at}}</span>
+                    <div class="esrname">
+                      <p>{%if item.file_path%}<a href="{{item.file_path}}"  target="blank">查看附件</a>{%end%}</p>
+                    </div>
+                  </div>
+                  <div class="xsj">
+                    <img src="static/images/img/xsj_07.jpg" alt="" width="14" height="16">
+                  </div>
+                </div>
+                {%end%}
+                {%else%}
+                还没有哦~
+                {%end%}
 
+              </div>
+              <div class="tab-pane " id="c_msg">
+                  {%if t_customer_genjin_msg3%}
+                  {%for item in  t_customer_genjin_msg3%}
+              <div class="eslao">
+                  <div class="toux-l">
+                    <img src="static/images/img/dta.png" alt="" width="76" height="76">
+                  </div>
+                  <div class="toux-r">
+                    <h3>{{item.uid_name}}</h3>
+                    <p class="esneir">{{item.msg}}</p>
+                    <span>{{item.created_at}}</span>
+                    <div class="esrname">
+                      <p>{%if item.file_path%}<a href="{{item.file_path}}"  target="blank">查看附件</a>{%end%}</p>
+                    </div>
+                  </div>
+                  <div class="xsj">
+                    <img src="static/images/img/xsj_07.jpg" alt="" width="14" height="16">
+                  </div>
+                </div>
+                {%end%}
+                {%else%}
+                还没有哦~
+                {%end%}
+
+              </div>
+              <div class="tab-pane " id="other_msg">
+                  {%if t_customer_genjin_msg4%}
+                  {%for item in  t_customer_genjin_msg4%}
+              <div class="eslao">
+                  <div class="toux-l">
+                    <img src="static/images/img/dta.png" alt="" width="76" height="76">
+                  </div>
+                  <div class="toux-r">
+                    <h3>{{item.uid_name}}</h3>
+                    <p class="esneir">{{item.msg}}</p>
+                    <span>{{item.created_at}}</span>
+                    <div class="esrname">
+                      <p>{%if item.file_path%}<a href="{{item.file_path}}"  target="blank">查看附件</a>{%end%}</p>
+                    </div>
+                  </div>
+                  <div class="xsj">
+                    <img src="static/images/img/xsj_07.jpg" alt="" width="14" height="16">
+                  </div>
+                </div>
+                {%end%}
+                {%else%}
+                还没有哦~
+                {%end%}
+              </div>
+              </div>
+
+        </div>
+     
+
+
+      <div>
+      
+       
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-pane" id="handle_tab">
+
+    {%if t_projects_events%}
+    <table class="table" style="margin:5px;">
+           <thead>
+                      <tr style="background-color: black; color:#fff;">
+                      <th style="min-width:60px;">操作类型</th>
+                      <th></th>
+                      <th style="min-width:60px;">时间</th>
+                      <th style="min-width:60px;">操作人</th>
+                      </tr>
+                  </thead>
+      <tbody>
+
+{%for item in t_projects_events%}
+              <tr>
+
+                  <td>{{item.event_type}}</td>
+                  <td>{{item.txt}}</td>
+                  <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
+                  <td>{{item.uid_name}}</td>
+              </tr>
+          {%end%}
+
+    
+      
       </tbody>
     </table>
-  </div>
-  <!-- /widget-content -->
 
-
-
-
-
+          {%else%}
+              还没有客户哦。
+                     
+          {%end%}    
 </div>
-{%if not from_tag%}
-
-<a class="btn btn-info btn-sm" type="button" title="{{customer.id}}" id="delete_customer_btn">删除</a>
-{%end%}
 
 
 
-</div> <!-- /widget-content -->
-
-
-
-
-
-
-
-</fieldset>
-
-</div>
 
 </div> <!-- /widget -->
 
@@ -1274,9 +1542,303 @@ margin: auto;
 
 </div> <!-- /container -->
 </div>
+</div>
+</div>
+</div>
+</div>
 
+<div id="add_test_modal1" class="modal hide fade modal11" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="es-fytable">
+        <ul style="border-top: 1px solid #dedede;">
+          <li>
+            <div class="length1">公司名称</div>
+            <div class="length5">
+           <input  {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="background-color:white;" type="text" name="" id="company" value="{%if customer.company%}{{customer.company}}{%end%}" placeholder="公司名称">
+  
+            </div>
+            <div class="length1">客服会计</div>
+            
+            <div class="length2"><input type="text" id="acc_uid_name" value="{%if customer.acc_uid_name%}{{customer.acc_uid_name}}{%end%}" placeholder="客服会计"></div>
+          </li>
+          <li>
+            <div class="length1">客户编号</div>
+            <div class="length2">{{customer.customer_id}}</div>
+            <div class="length1">所属行业</div>
+            <div class="length2"><input type="text" name="" id="hangye" placeholder="所属行业" value="{%if customer.hangye%}{{customer.hangye}}{%end%}"></div>
+            <div class="length1">开户行</div>
+            <div class="length2"><input type="text" name="" id="reg_bank" value="{%if customer.reg_bank%}{{customer.reg_bank}}{%end%}" placeholder="开户行"></div>
+          </li>
+          <li>
+            <div class="length1">工商分局</div>
+            <div class="length2"><input type="text" name="" id="saic" value="{%if customer.saic%}{{customer.saic}}{%end%}" placeholder="工商分局"></div>
+            <div class="length1">地址类型</div>
+            <div class="length2"><input type="text" name="" id="addr_type" value="{%if customer.addr_type%}{{customer.addr_type}}{%end%}" placeholder="地址类型"></div>
+            <div class="length1">银行账号</div>
+            <div class="length2"><input type="text" name="" id="reg_bank_account" value="{%if customer.reg_bank_account%}{{customer.reg_bank_account}}{%end%}" placeholder="银行账号"></div>
+          </li>
+          <li>
+            <div class="length1">国/地所属分局</div>
+            <div class="length2">
+              <input type="text" name="" style="width:40%;" id="national_tax" placeholder="国所属分局" value="{%if customer.national_tax%}{{customer.national_tax}}{%end%}"> <span style="font-size:20px;">/</span> <input type="text" id="land_tax" style="width:40%;" placeholder="地所属分局" value="{%if customer.land_tax%}{{customer.land_tax}}{%end%}"></div>
+            <div class="length1">专管员姓名</div>
+            <div class="length2"><input type="text" name="" id="zg_name" placeholder="专管员姓名" value="{%if customer.zg_name%}{{customer.zg_name}}{%end%}"></div>
+            <div class="length1">专管员联系方式</div>
+            <div class="length2"><input type="text" name="" id="zg_tel" placeholder="专管员联系方式" value="{%if customer.zg_tel%}{{customer.zg_tel}}{%end%}"></div>
+          </li>
+          <li>
+            <div class="length1">经营范围</div>
+            <div class="length3"><input type="text" name="" id="business_scope" placeholder="经营范围" value="{%if customer.business_scope%}{{customer.business_scope}}{%end%}"></div>
+          </li>
+          <li>
+            <div class="length1">情况和注意事项</div>
+            <div class="length3"><input type="text" name="" id="attention" placeholder="情况和注意事项" value="{%if customer.attention%}{{customer.attention}}{%end%}"></div>
+          </li>
+          <li>
+            <div class="length1">主管意见</div>
+            <div class="length3"><input type="text" name="" id="zg_option" placeholder="主管意见" value="{%if customer.zg_option%}{{customer.zg_option}}{%end%}"></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+      <button class="btn btn-primary" id="btn_test_save1">保存</button>
+    </div>
+  </div>
+  
+  <div id="add_test_modal2" class="modal hide fade modal22" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="es-fytable">
+        <ul style="border-top: 1px solid #dedede;">
+          <li>
+            <div class="length1">纳税类型</div>
+            <div class="length4">
+                一般纳税人:
+                <input type="radio" name="is_general" value="1" style="width:auto;height:auto;" {%if customer.is_general%}checked{%end%}>是
+                <input type="radio" name="is_general" value="0" style="width:auto;height:auto;" {%if not customer.is_general%}checked{%end%}>否
+              </div>
+            <div class="length1">税务概况</div>
+            <div class="length6"><input type="text" name="survey" id="survey" placeholder="税务概况" value="{%if customer.survey%}{{customer.survey}}{%end%}"></div>
+          </li>
+          <li>
+            <div class="length1">有无税种</div>
+            <div class="length4">
+                <input style="width:auto; height:auto;" type="radio" value="1" class="is_check" name="is_check"id="is_check" {%if customer.is_check%}checked{%end%}>是
+                <input style="width:auto; height:auto;" type="radio" value="0" class="is_check" name="is_check" id="is_check" {%if not customer.is_check%}checked{%end%}>否
+                <span style="background-color: rgb(217, 238, 249);" id="btype_name_box" hidden>
+                  <input style="width:auto; height:auto;" type="radio" name="btype_id" id="btype_id" btype_id_name="核定" value="1" {%if customer.btype_id%}checked{%end%}>核定 
+                  <input style="width:auto; height:auto;"  type="radio" name="btype_id" id="btype_id" btype_id_name="查账" value="0" {%if not customer.btype_id%}checked{%end%}>查账
+                </span>
+              
+            </div>
+            <div class="length1">税种明细</div>
+            <div class="length6"><input type="text" name="" id="shuizhong_detail" placeholder="税种明细" value="{%if customer.shuizhong_detail%}{{customer.shuizhong_detail}}{%end%}"></div>
+          </li>
+          <li>
+            <div class="length1">征收方式</div>
+            <div class="length4"><input type="text" name="" id="zhengshou_way" placeholder="征收方式" value="{%if customer.zhengshou_way%}{{customer.zhengshou_way}}{%end%}"></div>
+            <div class="length1">税控盘类别</div>
+            <div class="length4"><input type="text" name="" id="shuikong_type" placeholder="税控盘类别" value="{%if customer.shuikong_type%}{{customer.shuikong_type}}{%end%}"></div>
+            <div class="length1">社保</div>
+            <div class="length4"><input type="text" name="" id="ss_num" placeholder="社保" value="{%if customer.ss_num%}{{customer.ss_num}}{%end%}"></div>
+            <div class="length1">固定资产</div>
+            <div class="length4"><input type="text" name="" id="fixed_assets" placeholder="固定资产" value="{%if customer.fixed_assets%}{{customer.fixed_assets}}{%end%}"></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+      <button class="btn btn-primary" id="btn_test_save2">保存</button>
+    </div>
+  </div>
+  
+  <div id="add_test_modal3" class="modal hide fade modal33" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="es-fytable">
+        <ul style="border-top:1px solid #dedede;">
+          <li>
+            <div class="length1">法人身份证号</div>
+            <div class="length4"><input type="text" name="" id="legal_id_card" placeholder="法人身份证号" value="{%if customer.legal_id_card%}{{customer.legal_id_card}}{%end%}"></div>
+            <div class="length1">实名采集账号</div>
+            <div class="length4"><input type="text" name="rel_name_collect_account" id="rel_name_collect_account" placeholder="实名采集账号" value="{%if customer.rel_name_collect_account%}{{customer.rel_name_collect_account}}{%end%}"></div>
+            <div class="length1">实名采集密码</div>
+            <div class="length4"><input type="text" name="" id="rel_name_collect_password" placeholder="实名采集密码" value="{%if customer.rel_name_collect_password%}{{customer.rel_name_collect_password}}{%end%}"></div>
+            <div class="length1">税控盘密码</div>
+            <div class="length4"><input type="text" name="" id="shuipan_password" placeholder="税控盘密码" value="{%if customer.shuipan_password%}{{customer.shuipan_password}}{%end%}"></div>
+          </li>
+  
+          <li>
+            <div class="length1">税控盘口令</div>
+            <div class="length4"><input type="text" name="" id="shuipan_command" placeholder="税控盘口令" value="{%if customer.shuipan_command%}{{customer.shuipan_command}}{%end%}"></div>
+            <div class="length1">个税申报密码</div>
+            <div class="length4"><input type="text" name="" id="per_income_apply_password" placeholder="个税申报密码" value="{%if customer.per_income_apply_password%}{{customer.per_income_apply_password}}{%end%}"></div>
+            <div class="length1">回单卡密码</div>
+            <div class="length4"><input type="text" name="" id="receipt_card_password" placeholder="回单卡密码" value="{%if customer.receipt_card_password%}{{customer.receipt_card_password}}{%end%}"></div>
+            <div class="length1">公积金证书密码</div>
+            <div class="length4"><input type="text" name="" id="accumulation_fund_password" placeholder="公积金证书密码" value="{%if customer.accumulation_fund_password%}{{customer.accumulation_fund_password}}{%end%}"></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+      <button class="btn btn-primary" id="btn_test_save3">保存</button>
+    </div>
+  </div>
+  <div id="add_test_modal4" class="modal hide fade modal44" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="es-fytable">
+        <ul style="border-top: 1px solid #dedede;">
+          <li>
+            <div class="length1">公司名称</div>
+            <div class="length5"><input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="background-color:white;"  type="text" name="" id="company1" value="{%if customer.company%}{{customer.company}}{%end%}">
+            </div>
+            <div class="length1">法人</div>
+            
+            <div class="length2">
+                <input type="text" id="reg_person" value="{{customer.reg_person}}">
+            </div>
+          </li>
+          <li>
+            <div class="length1">信用代码</div>
+            <div class="length2">  <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="background-color:white;"  type="text" name="" id="company_reguid" value="{%if customer.company_reguid%}{{customer.company_reguid}}{%end%}"></div>
+            <div class="length1">执照成立日期</div>
+            <div class="length2"><input type="text" name="" id="reg_date" value="{%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}}{%end%}"></div>
+            <div class="length1">联系电话</div>
+            <div class="length2">
+                {%if t_linkman%}
+                <input type="hidden" id="link_id" value="{{t_linkman[0].id}}" >
+              <input style="width:30%" type="text" name="" id="link_name" placeholder="联系人" {%if t_linkman%}value="{{t_linkman[0].name}}"{%end%}>-
 
-
+              <input style="width: 45%;" type="text" name="" id="link_tel" placeholder="电话" {%if t_linkman%}value="{{t_linkman[0].tel}}"{%end%}>
+              <span id="msg_link_tag" style="color:red" ></span>
+              {%else%}
+              无
+              {%end%}
+            </div>
+          </li>
+          <li>
+            <div class="length1">纳税类型</div>
+            <div class="length2">
+              一般纳税人:
+              <input type="radio" name="is_general1" value="1" style="width:auto;height:auto;" {%if customer.is_general%}checked{%end%}>是
+              <input type="radio" name="is_general1" value="0" style="width:auto;height:auto;" {%if not customer.is_general%}checked{%end%}>否
+            </div>
+            <div class="length1">地址类型</div>
+            <div class="length2">
+              <input type="text" id="addr_type1" value="{%if customer.addr_type%}{{customer.addr_type}}{%end%}" placeholder="地址类型">
+            </div>
+            <div class="length1">注册资金</div>
+            <div class="length2"></div>
+          </li>
+          <li>
+            <div class="length1">合同约定</div>
+            <div class="length3">
+            {%if t_customer_payment%}
+           付款方式：{%for idx,item in enumerate(t_payment_type)%}
+                    <input style="width:auto;height:auto;" type="radio"
+                    {%if item.id==customer.paytype_id %} checked="true" {%end%} {%if role not in ['2','3','5','8'] or uid==161%}disabled="disabled"{%end%}
+                    name="pay_type_id" fee="{{item.fee}}" value="{{item.id}}" pay_typeid_name="{{item.name}}"/> {{item.name}} {%end%}
+                    &nbsp;&nbsp;总服务费：<input style="width:50px;" type="text"  id="service_amount" name="service_amount" value="{{int(customer.service_amount)}}">
+                    月服务费：<input style="width:50px;background-color:white;" type="text" disabled="true" id="service_amount_month" name="service_amount_month" value="{{int(customer.service_amount_month)}}">
+                    帐册费：<input style="width:50px;" type="text" id="book_amount" name="book_amount" value="{{int(customer.book_amount)}}">
+               {%else%}
+                无
+               {%end%}
+            </div>
+          
+          </li>
+          <li>
+            <div class="length1">账费到期</div>
+            <div class="length3">
+                {%if t_customer_payment%}
+                <input type="hidden" id="payment_id" value="{{t_customer_payment.id}}"> 
+              <input type="text" id="acc_end" value="{%if t_customer_payment%}{%if t_customer_payment.acc_end%}{{t_customer_payment.acc_end.strftime('%Y-%m-%d')}}{%end%}{%end%}">
+              {%else%}
+              无
+              {%end%}
+            </div>
+          </li>
+          <li>
+            <div class="length1">注册地址</div>
+            <div class="length3">
+              <select name="city" id="city">
+                <option value="">选择城市</option>
+{%for item in t_city%}
+<option value="{{item.name}}" {%if customer.city==item.name%}selected{%end%}>{{item.name}}</option>
+{%end%}
+</select>
+<select name="zone" id="zone">
+                    <option value="">选择区域</option>
+{%for item in t_zone%}
+<option value="{{item.name}}" {%if customer.zone==item.name%}selected{%end%}>{{item.name}}</option>
+{%end%}
+</select>
+<input type="text" style="width:50%;" id="reg_addr" name="reg_addr" value="{{customer.reg_addr}}">
+            </div>
+          </li>
+          <li>
+            <div class="length1">标签类型</div>
+            <div class="length3">
+              {%if not old_tag%}
+                <div style="border:none;">
+                {%for item in t_type_new_parents%}
+                <input  {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="radio" name="tag_parent_id" value="{{item.order}}" title="{{item.name}}" {%if customer.tag_parent_id==item.order%}checked{%end%}/>{{item.name}} 
+                {%end%}
+              </div>
+            
+                <div id='tag_box' style="border:none;" {%if customer.tag_parent_id!=1%}hidden{%end%}>
+                    &nbsp;&nbsp;(
+                {%for item in t_type_new%}
+                <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="{%if item.parent_id==2%}display:none;{%end%}width:auto;height:auto;" type="radio" name="tag_id" value="{{item.order_int}}" title="{{item.name}}" {%if customer.tag_id==item.order_int and customer.tag_id!=11%}checked{%end%}/>{%if item.parent_id==1%}{{item.name}}{%end%}
+                {%end%}
+                  )
+                  <span id="msg_tag" style="color:red"></span>
+            </div>
+           
+            &nbsp;&nbsp;
+              <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="checkbox" name='is_building' value="1" {%if customer.is_building%}checked{%end%}>楼盘
+              <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="checkbox" name='is_clearly' value="1" {%if customer.is_clearly%}checked{%end%}>汇算清缴
+              <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="checkbox" name='is_year' value="1" {%if customer.is_year%}checked{%end%}>工商年检
+              {%else%}
+              {%for item in t_customer_type%}
+              <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="checkbox" name="customer_type" {%if role not in ['2','3','5','8'] or uid==161%}disabled="disabled"{%end%}
+              {%if customer.customer_type%}
+              {%for s in customer.customer_type.split(",")%}
+                  {%if s==str(item.id)%}
+                  checked="true"
+                  {%break%}
+                  {%end%}
+              {%end%}
+               {%end%}
+              value="{{item.id}}" title="{{item.name}}"/> {{item.name}}
+          {%end%}
+              <p id="msg_t_customer_type" class="help-block" style="color:red"></p>
+              {%end%}
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+      <button class="btn btn-primary" id="btn_test_save4">保存</button>
+    </div>
+  </div>
 <div id="a_add_account_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -1398,6 +1960,14 @@ margin: auto;
                                           </div>
                                           <!-- /controls -->
                                       </div>
+                                      <div class="control-group">
+                                          
+                                          <div class="controls">
+                                              <label for="is_first"><input type="checkbox" id="is_first" style="display: inline;" value="1">添加为首要联系人</label>
+                                              
+                                          </div>
+                                          <!-- /controls -->
+                                      </div>
 
 
 
@@ -1407,6 +1977,22 @@ margin: auto;
     <button class="btn btn-primary" id="btn_save_linkman">保存</button>
   </div>
 </div>
+<div id="add_tag_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel_linkman">修改标签</h3>
+    </div>
+    <div class="modal-body">
+
+
+  
+                            
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+      <button class="btn btn-primary" id="btn_save_tag">保存</button>
+    </div>
+  </div>
 <div id="add_project_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -1706,7 +2292,7 @@ margin: auto;
   </div>
   <div class="modal-body">
                 <div class="control-group">
-                    <h3>确定要删除编号为{{customer.id}}的客户？</h3>
+                    <h3>确定要删除编号为{{customer.customer_id}}的客户？</h3>
                     <!-- /controls -->
                 </div>
 
@@ -1805,8 +2391,8 @@ margin: auto;
                 <a class="btn btn-info btn-sm" id="choose_cutomer_addr_msg" href="javascript:void(0);">选择收件人信息</a>
             </h3>
               </div>
-      
-      
+
+
               <div class="modal-body" id="site_mod">
                 <div class="control-group">
                   <label for="inputEmail3" class="col-sm-5 control-label" id="l_rec_name">收件人</label>
@@ -1853,7 +2439,7 @@ margin: auto;
               </div>
               <div class="control-group" >
                   <label for="inputEmail3" class="col-sm-5 control-label">其他资料</label>
-                 
+
                   <div class="controls">
                       <textarea type="text" style="width:100%;"  class="form-control" id="other_rec_file" name="other_rec_file" value="" style="height: 60px;"></textarea>
                       <div class="alert alert-danger" role="alert" style="display:none;" id="er_other_rec_file">
@@ -1862,7 +2448,7 @@ margin: auto;
                 </div>
                 <div class="control-group" >
                     <label for="inputEmail3" class="col-sm-5 control-label">公司名称</label>
-                   
+
                     <div class="controls">
                         <input class="form-control" name="rec_company" id="rec_company" type="text" placeholder="公司名称" value="{%if customer.company%}
                         {{customer.company}}{%else%}无{%end%}">
@@ -1872,7 +2458,7 @@ margin: auto;
                   </div>
                   <div class="control-group" >
                       <label for="inputEmail3" class="col-sm-5 control-label">快递单号</label>
-                     
+
                       <div class="controls">
                           <input class="form-control" id="express_number" placeholder="快递单号">
                           <div class="alert alert-danger" role="alert" style="display:none;" id="er_express_number">
@@ -1881,7 +2467,7 @@ margin: auto;
                     </div>
                     <div class="control-group" >
                         <label for="inputEmail3" class="col-sm-5 control-label">快递类型</label>
-                       
+
                         <div class="controls">
                             <select  name="express_type" class="form-control" id="express_type">
                                 {% for item in express_type%}
@@ -1892,7 +2478,7 @@ margin: auto;
                       </div>
                       <div class="control-group" >
                           <label for="inputEmail3" class="col-sm-5 control-label">快递付费</label>
-                         
+
                           <div class="controls">
                               <select  name="payment_type" class="form-control" id="payment_type">
                                   {% for item in payment_type%}
@@ -1906,12 +2492,12 @@ margin: auto;
                                 <label for="recode" id='l_created_send_at'>发件时间</label>
                                 <input class="form-control" name="created_send_at" id="created_send_at" type="text">
                                 <div class="alert alert-danger" role="alert" style="display:none;" id="er_created_send_at">
-                                  </div>  
+                                  </div>
                               </div>
                             </div>
                         <div class="control-group" >
                             <label for="inputEmail3" class="col-sm-5 control-label" id="l_send_name">发件人</label>
-                           
+
                             <div class="controls">
                                 <input class="form-control" name="send_name" id="send_name" type="text" placeholder="申请人" value="{{name}}" data-provide="typeahead">
                                 <div class="alert alert-danger" role="alert" style="display:none;" id="er_send_name">
@@ -1920,7 +2506,7 @@ margin: auto;
                           </div>
                           <div class="control-group" >
                               <label for="inputEmail3" class="col-sm-5 control-label">备注</label>
-                             
+
                               <div class="controls">
                                   <textarea class="form-control" name="express_remark" id="express_remark" type="text" placeholder="备注"></textarea>
                               </div>
@@ -1932,7 +2518,7 @@ margin: auto;
                     </div>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
                          <button class="btn btn-primary modal_note_btn" target="_blank" id="btn_save_express">保 存</button>
-      
+
               </div>
             </div>
 
@@ -1942,24 +2528,24 @@ margin: auto;
                         <h3 id="projects_note">选择 寄/收 件人信息
                         </h3>
                           </div>
-                  
+
                   <div class="modal-body" id="site_mod">
                     {% for item in t_cutomer_addr_msg%}
                     <div class="control-group">
-                     
-                        <input type="radio" name="choose_customer_addr" c_name="{{item.name}}" addr="{{item.addr}}" tel="{{item.tel}}">{{item.name}}<br> 
+
+                        <input type="radio" name="choose_customer_addr" c_name="{{item.name}}" addr="{{item.addr}}" tel="{{item.tel}}">{{item.name}}<br>
                         {{item.addr}} {{item.tel}}
-                      
+
                   </div>
                   {%end%}
                 </div>
                 <div class="modal-footer">
-      
+
                     <button class="btn btn-primary" target="_blank" id="btn__save_customer_addr_msg">填入</button>
-      
+
          </div>
                   </div>
-           
+
 
 <div class="modal hide fade" id="check_express_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-header" >
@@ -1967,11 +2553,11 @@ margin: auto;
                   <h3 id="projects_note">审核快递
                   </h3>
                     </div>
-            
-            
+
+
                     <div class="modal-body" id="site_mod">
                       <div class="control-group">
-                    
+
                   <div class="controls">
                       <input type="radio" id="accept_state" name="accept_state" value="1">通过
                   <input type="radio" id="accept_state" name="accept_state" value="2">不通过
@@ -1985,15 +2571,15 @@ margin: auto;
                       <textarea class="form-control" id="accept_uid_remark" placeholder="备注"></textarea>
                       <div class="alert alert-danger" role="alert" style="display:none;" id="er_accept_uid_remark">
                   </div>
-                </div>    
                 </div>
-                  </div>  
+                </div>
+                  </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
                                <button class="btn btn-primary modal_note_btn" target="_blank" id="btn_check_express">保 存</button>
-            
+
                     </div>
-                          
+
   </div>
   <div class="modal hide fade" id="express_filepath_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
       <div class="modal-header" >
@@ -2001,11 +2587,11 @@ margin: auto;
         <h3 id="projects_note">附件
         </h3>
           </div>
-  
-  
+
+
           <div class="modal-body" id="site_mod">
             <div class="control-group">
-          
+
                 <label class="control-label file_label" for="lastname" >上传附件</label>
                 <div class="controls">
                     <a href="javascript:;" class="file">选择文件
@@ -2017,27 +2603,51 @@ margin: auto;
                   <label class="control-label" for="lastname">已上传附件</label>
                   <ul id="showFiles"></ul>
         </div>
-    
-        </div> 
-        </div> 
+
+        </div>
+        </div>
           <div class="modal-footer">
               <input type="hidden" value="0" id="is_other" name="is_other" />
               <button class="btn btn-primary" target="_blank" id="btn_express_filepath">上传</button>
-  
+
           </div>
-                
+
 </div>
     {%end%}
 
     {% block  js %}
-    
+
     <script src="/static/bootstrap-typeahead.js"></script>
     <script>
         $(function(){
 
 
             $('#a_{{to_tag}}').tab('show');
+            $('#a_{{gen_tag}}').tab('show');
            _xsrf = getCookie("_xsrf")
+           var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); background-size:15px 10px;display:block;">#url1#</li>',
+    all_files=[]
+    $gallery = $("#gallery"),
+    $galleryImg = $("#galleryImg"),
+    $uploaderInput = $("#uploaderInput"),
+    $uploaderFiles = $("#uploaderFiles");
+    $uploaderInput.on("change", function(e) {
+                var src, url = window.URL || window.webkitURL || window.mozURL,
+                files = e.target.files;
+                for(var i = 0, len = files.length; i < len; ++i) {
+                    var file = files[i];
+                    if(url) {
+                        // src = url.createObjectURL(file);
+                        src=file.name;
+                    } else {
+                        src = e.target.result;
+                    }
+
+                    $uploaderFiles.append($(tmpl.replace('#url1#', src)));
+                    all_files.push(file)
+                }
+
+            });
 $('#send_name').typeahead({
 source: function (query, process) {
 return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
@@ -2045,7 +2655,19 @@ return process(JSON.parse(data));
 });
 }
 });
-           var customer_id = "{{ customer.id }}"
+laydate.render({
+                    elem: '#acc_end' //指定元素
+                   
+                  
+           });
+           laydate.render({
+                    elem: '#reg_date' //指定元素
+                   
+                  
+           });
+           
+
+           var customer_id = "{{ customer.customer_id }}"
            var customer_guid = "{{customer.guid}}"
            $("#customer_delete").on("click",function(){
 
@@ -2070,7 +2692,7 @@ return process(JSON.parse(data));
            }); laydate.render({
                     elem: '#created_send_at' //指定元素
            });
-           
+
       $(".modify_transition_mobile").on("click",function(){
           transition_id = $(this).attr("transition_id")
           $.get("customer?tag=qrcode",{"id":customer_id,"guid":customer_guid,"trans_id":transition_id,"qtag":"trans"},function(result){
@@ -2485,9 +3107,11 @@ $("#a_add_account_modal").modal('show')
             $("#a_add_linkman").on("click", function () {
               $("#delete_linkman").attr("id", 0)
               $("#delete_linkman").attr("guid", "")
-                $("#delete_linkman").hide()
+              $("#delete_linkman").hide()
+              $("#btn_save_linkman").removeAttr('linkman_id')
               $("#tel").val("")
               $("input[type=radio]").filter('[value="1"]').attr("checked",true)
+              $("#is_first").prop('checked',false)
               $("#name").val(name)
               $("#add_linkman_modal").modal('show')
             })
@@ -2502,15 +3126,19 @@ $("#a_add_account_modal").modal('show')
           var tel = $(this).attr('tel')
           var name = $(this).attr("title")
           var gender = $(this).attr('gender')
+          var is_first=$(this).attr('is_first')
           $("#delete_linkman").attr("linkman_id",linkman_id)
           $("#delete_linkman").attr("linkman_guid",linkman_guid)
           $("#delete_linkman").show()
-          $("#btn_save_linkman").attr("linkman_id",linkman_guid)
+          $("#btn_save_linkman").attr("linkman_id",linkman_id)
           $("#tel").val(tel)
           $("input[type=radio]").filter('[value="'+gender+'"]').attr("checked",true)
           $("#name").val(name)
           $("#linkman_remark").val(linkman_remark)
-
+          $("#is_first").prop('checked',false)
+          if(is_first=='1'){
+            $("#is_first").prop('checked',true)
+          }
 
 
           $("#add_linkman_modal").modal('show')
@@ -2523,6 +3151,8 @@ $("#a_add_account_modal").modal('show')
             var name = $("#name").val()
             var tel = $("#tel").val()
             var remark = $("#linkman_remark").val()
+            var is_first=$('#is_first:checked').val()
+            var linkman_id=$(this).attr('linkman_id')
             if (name==""){
               $("#msg_name").text("客户的名字必须要填写哦。")
                $("#name").focus()
@@ -2535,7 +3165,7 @@ $("#a_add_account_modal").modal('show')
             }
 
             else{
-                $.post("/linkman?tag=add",{"_xsrf":_xsrf,"customer_id":{{customer.id}},"tel":tel,"name":name,"remark":remark,"gender":gender},function(result){
+                $.post("/linkman?tag=add",{"_xsrf":_xsrf,"customer_id":{{customer.customer_id}},"tel":tel,"name":name,"remark":remark,"gender":gender,"is_first":is_first,"linkman_id":linkman_id},function(result){
 
                   location.reload()
 
@@ -2767,9 +3397,9 @@ $('input[name=rec_file]').not(this).prop('checked', this.checked);
 
 })
 $("#btn_add_express").on("click",function () {
-  $('#l_rec_name').text('收件人') 
-  $('#l_rec_tel').text('收件人电话') 
-  $('#l_rec_addr').text('收件人地址') 
+  $('#l_rec_name').text('收件人')
+  $('#l_rec_tel').text('收件人电话')
+  $('#l_rec_addr').text('收件人地址')
   $('#l_send_name').text('发件人')
   $("#express_title").text('发起快递寄件申请')
   $('#choose_cutomer_addr_msg').text('选择收件人信息')
@@ -2778,7 +3408,7 @@ $("#btn_add_express").on("click",function () {
   $("#l_created_send_at").text('发件时间')
     $("#created_send_at").val('')
   $('#btn_save_express').attr('send_or_rec','0')
-  
+
   $("#er_express").hide()
   $('#btn_save_express').show()
   $('#btn_save_express').removeAttr('express_id')
@@ -2796,9 +3426,9 @@ $("#btn_add_express").on("click",function () {
  })
 
 $("#btn_add_express_rec").on('click',function () {
-      $('#l_rec_name').text('寄件人') 
-      $('#l_rec_tel').text('寄件人电话') 
-      $('#l_rec_addr').text('寄件人地址') 
+      $('#l_rec_name').text('寄件人')
+      $('#l_rec_tel').text('寄件人电话')
+      $('#l_rec_addr').text('寄件人地址')
       $('#l_send_name').text('收件人')
       $("#express_title").text('发起快递收件申请')
       $('#choose_cutomer_addr_msg').text('选择寄件人信息')
@@ -2809,7 +3439,7 @@ $("#btn_add_express_rec").on('click',function () {
        $('#btn_save_express').attr('send_or_rec','1')
        $("#er_express").hide()
       $('#btn_save_express').show()
-      $('#btn_save_express').removeAttr('express_id') 
+      $('#btn_save_express').removeAttr('express_id')
       $('input[name=rec_file]').prop('checked', false)
       $('#other_rec_file').val('')
       $('#express_number').val('')
@@ -2892,7 +3522,7 @@ $("#btn_add_express_rec").on('click',function () {
       'express_type_id':express_type_id,
       'express_type_name':express_type_name,
       'send_name':send_name,
-      'project_id':"{{customer.id}}",
+      'project_id':"{{customer.customer_id}}",
       'company':'{{customer.company}}',
       'payment_type_id':payment_type_id,
       'payment_type_name':payment_type_name,
@@ -2907,7 +3537,7 @@ $("#btn_add_express_rec").on('click',function () {
       '_xsrf':_xsrf,
       'send_or_rec':send_or_rec,
       'created_send_at':created_send_at
-      },function (result) { 
+      },function (result) {
       if(result=='-3'){
           alert('寄/收 件人不存在系统中')
           this_btn.text('保存')
@@ -2915,7 +3545,7 @@ $("#btn_add_express_rec").on('click',function () {
         }else{
           location.reload()
         }
-       
+
        })
           }
  })
@@ -2929,24 +3559,24 @@ $("#btn_add_express_rec").on('click',function () {
     }
     $('#created_send_at').val($(this).attr('created_send_at'))
     if($(this).attr('send_or_rec')=='1'){
-      $('#l_rec_name').text('寄件人') 
-      $('#l_rec_tel').text('寄件人电话') 
-      $('#l_rec_addr').text('寄件人地址') 
+      $('#l_rec_name').text('寄件人')
+      $('#l_rec_tel').text('寄件人电话')
+      $('#l_rec_addr').text('寄件人地址')
       $('#l_send_name').text('收件人')
       $('#save_customer_add_msg').text('寄件人信息存入系统')
       $('#choose_cutomer_addr_msg').text('选择寄件人信息')
       $("#l_created_send_at").text('收件时间')
     }
     else if($(this).attr('send_or_rec')=='0'){
-      $('#l_rec_name').text('收件人') 
-      $('#l_rec_tel').text('收件人电话') 
-      $('#l_rec_addr').text('收件人地址') 
+      $('#l_rec_name').text('收件人')
+      $('#l_rec_tel').text('收件人电话')
+      $('#l_rec_addr').text('收件人地址')
       $('#l_send_name').text('发件人')
       $('#save_customer_add_msg').text('寄件人信息存入系统')
       $('#choose_cutomer_addr_msg').text('选择收件人信息')
       $("#l_created_send_at").text('发件时间')
-      
-    } 
+
+    }
   $("#other_rec_file").val($(this).attr('other_rec_file'))
   $("#express_number").val($(this).attr('express_number'))
   $("#rec_name").val($(this).attr('rec_name'))
@@ -2974,18 +3604,18 @@ $("#btn_add_express_rec").on('click',function () {
   $("#add_express_modal").modal("show")
  })
  $(".check_express").on('click',function () {
-        $("#btn_check_express").attr('express_id',$(this).attr('id')) 
+        $("#btn_check_express").attr('express_id',$(this).attr('id'))
         $("#check_express_modal").modal("show")
      })
 
-$('#btn_check_express').on('click',function () { 
+$('#btn_check_express').on('click',function () {
    var accept_state=$('#accept_state:checked').val()
    var accept_uid_remark=$('#accept_uid_remark').val()
    var express_id=$(this).attr('express_id')
   if(accept_state==undefined){
       $("#er_accept_state").text('请先选择')
       $("#er_accept_state").show()
-  }else if(accept_state=='2' && accept_uid_remark==''){    
+  }else if(accept_state=='2' && accept_uid_remark==''){
     $("#er_accept_uid_remark").text('不通过需要填写备注')
       $("#er_accept_uid_remark").show()
   }else{
@@ -2995,7 +3625,7 @@ $('#btn_check_express').on('click',function () {
       'accept_state':accept_state,
       'accept_uid_remark':accept_uid_remark,
       'express_id':express_id
-    },function (result) { 
+    },function (result) {
       location.reload()
      })
   }
@@ -3005,7 +3635,7 @@ $('#btn_check_express').on('click',function () {
   $.post('/project?tag=confirm_send_express',
     { '_xsrf':_xsrf,
       'express_id':$(this).attr('id')
-    },function (result) { 
+    },function (result) {
       location.reload()
      })
  })
@@ -3024,16 +3654,16 @@ $('#btn_check_express').on('click',function () {
    $('#choose_customer_addr_msg_modal').on('hidden.bs.modal', function () {
       document.getElementsByTagName('body')[0].className = 'modal-open';
 });
-var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); background-size:15px 10px;display:block;">#url1#</li>',
+var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); background-size:15px 10px;display:block;">#url1#</li>',
     all_files=[]
     $gallery = $("#gallery"),
     $galleryImg = $("#galleryImg"),
-    $uploaderInput = $("#uploaderInput"),
-    $uploaderFiles = $("#uploaderFiles");
+    $uploaderInput = $("#uploaderInput1"),
+    $uploaderFiles = $("#uploaderFiles1");
     $uploaderInput.on("change", function(e) {
                 var src, url = window.URL || window.webkitURL || window.mozURL,
                 files = e.target.files;
-                for(var i = 0, len = files.length; i < len; ++i) {
+                for(var i =files.length-1, len = files.length; i < len; ++i) {
                     var file = files[i];
                     if(url) {
                         // src = url.createObjectURL(file);
@@ -3042,7 +3672,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                         src = e.target.result;
                     }
 
-                    $uploaderFiles.append($(tmpl.replace('#url1#', src)));
+                    $uploaderFiles.text(src);
                     all_files.push(file)
                 }
 
@@ -3078,7 +3708,7 @@ $('.filepath_detail').on('click',function () {
     $("#btn_express_filepath").attr('express_id',$(this).attr('id'))
     $("#express_filepath_modal").modal("show")
  })
- $("#btn_express_filepath").on('click',function () { 
+ $("#btn_express_filepath").on('click',function () {
     var formData = new FormData();
     for(var i=0,len=all_files.length;i<len;i++){
       formData.append('file'+i,all_files[i])
@@ -3106,6 +3736,474 @@ $('.filepath_detail').on('click',function () {
     }
 
  })
+ $(window).scroll(function(){
+	if ($(window).scrollTop()>=60) {
+		$(".es-nva").css({
+			"position":"fixed",
+			"top":"0px",
+			"left":"50%",
+			"margin-left":"-585px",
+			"z-index":"99"
+			
+		})
+	} else{
+		$(".es-nva").removeAttr("style")
+	}
+})
+$(".esdt-box1").click(function(){
+  t_this=$(this)
+  if($(this).hasClass('esdtcur1')==false){
+  if(confirm('确认完成?')){
+    state_id=$(this).attr('state_id')
+   
+    $.post('customer?tag=add_customer_state',{
+      '_xsrf':_xsrf,
+      'state_id':state_id,
+      'customer_id':"{{customer.customer_id}}"
+    },function (data) { 
+      location.href="/customer?tag=show&id={{customer.customer_id}}&guid={{customer.guid}}&to_tag=payment_tab"
+     })
+  }
+}
+
+	});
+	$(".esdt-box2").click(function(){
+    t_this=$(this)
+    state_id=$(this).attr('state_id')
+    state_ids=[0]
+    update_state_ids=[]
+    {%if customer.gc%}
+    for(var i=0;i<'{{customer.gc}}'.split(',').length;i++){
+        state_ids.push('{{customer.gc}}'.split(',')[i][0])
+    }
+    {%end%}
+    genjin_state_ids=[]
+    if($(this).hasClass('esdtcur2')==false){
+      if(parseInt(state_ids[state_ids.length-1])+1!=parseInt(state_id) ){
+        
+        if(confirm('暂未完成之前的阶段，是否确认完成?')){
+          l=parseInt(state_id)-parseInt(state_ids[state_ids.length-1])
+          
+         for(var i=0;i<l;i++){
+          update_state_ids.push(parseInt(state_ids[state_ids.length-1])+1+i)
+         }
+        
+         update_state_ids=update_state_ids.join(',')
+         $.post('customer?tag=add_customer_state',{
+      '_xsrf':_xsrf,
+      'update_state_ids':update_state_ids,
+      'customer_id':"{{customer.customer_id}}"
+    },function (data) { 
+      location.href="/customer?tag=show&id={{customer.customer_id}}&guid={{customer.guid}}&to_tag=payment_tab"
+     })
+        }
+    }else{
+
+  if(confirm('确认完成?')){
+    $.post('customer?tag=add_customer_state',{
+      '_xsrf':_xsrf,
+      'state_id':state_id,
+      'customer_id':"{{customer.customer_id}}"
+    },function (data) { 
+      location.href="/customer?tag=show&id={{customer.customer_id}}&guid={{customer.guid}}&to_tag=payment_tab"
+     })
+  }
+}
+}
+	});
+
+	$(".esdt-box3").click(function(){
+    state_id=$(this).attr('state_id')
+    state_ids=[0]
+    update_state_ids=[]
+    {%if customer.gc%}
+    for(var i=0;i<'{{customer.gc}}'.split(',').length;i++){
+        state_ids.push('{{customer.gc}}'.split(',')[i][0])
+    }
+    {%end%}
+    genjin_state_ids=[]
+    if($(this).hasClass('esdtcur3')==false){
+      if(parseInt(state_ids[state_ids.length-1])+1!=parseInt(state_id) ){
+        
+        if(confirm('暂未完成之前的阶段，是否确认完成?')){
+          l=parseInt(state_id)-parseInt(state_ids[state_ids.length-1])
+          
+         for(var i=0;i<l;i++){
+          update_state_ids.push(parseInt(state_ids[state_ids.length-1])+1+i)
+         }
+        
+         update_state_ids=update_state_ids.join(',')
+         $.post('customer?tag=add_customer_state',{
+      '_xsrf':_xsrf,
+      'update_state_ids':update_state_ids,
+      'customer_id':"{{customer.customer_id}}"
+    },function (data) { 
+      location.href="/customer?tag=show&id={{customer.customer_id}}&guid={{customer.guid}}&to_tag=payment_tab"
+     })
+        }
+    }else{
+
+  if(confirm('确认完成?')){
+    $.post('customer?tag=add_customer_state',{
+      '_xsrf':_xsrf,
+      'state_id':state_id,
+      'customer_id':"{{customer.customer_id}}"
+    },function (data) { 
+      location.href="/customer?tag=show&id={{customer.customer_id}}&guid={{customer.guid}}&to_tag=payment_tab"
+     })
+  }
+}
+}
+	});
+  $(".eslb-top ul li").click(function(){
+		$(this).addClass("eslbcur").siblings().removeClass("eslbcur")
+	});
+
+  $("#customer_modify1").click(function () { 
+	$('#add_test_modal1').modal('show')
+ })
+$("#customer_modify2").click(function () { 
+	$('#add_test_modal2').modal('show')
+ })
+ $("#customer_modify3").click(function () { 
+	$('#add_test_modal3').modal('show')
+ })
+ $(document).on("click", ".is_check",function(){
+    is_check = $(this).val()
+    customer_id=$(this).attr("customer_id")
+
+    if(is_check==1){
+        $(this).parent().css('padding-left','1px')
+        $("#btype_name_box").show()
+
+    }else{
+      $(this).parent().css('padding-left','10px')
+        $("#btype_name_box").hide()
+    }
+})
+{%if customer.is_check%}
+$('.is_check').parent().css('padding-left','1px')
+  $("#btype_name_box").show()
+{%end%}
+
+$("#btn_test_save1").click(function () { 
+  company=$("#company").val()
+  acc_uid_name=$("#acc_uid_name").val()
+  hangye=$("#hangye").val()
+  reg_bank=$("#reg_bank").val()
+  reg_bank_account=$("#reg_bank_account").val()
+  saic=$("#saic").val()
+  addr_type=$("#addr_type").val()
+  national_tax=$("#national_tax").val()
+  land_tax=$("#land_tax").val()
+  zg_name=$('#zg_name').val()
+  zg_tel=$("#zg_tel").val()
+  business_scope=$("#business_scope").val()
+  attention=$("#attention").val()
+  zg_option=$("#zg_option").val()
+
+  if (company==""){
+    $("#company").focus()
+  }
+  else{
+  $.post('customer?tag=edit_customer_other',{
+    '_xsrf':_xsrf,
+    'company':company,
+    'reg_bank_account':reg_bank_account,
+    'acc_uid_name':acc_uid_name,
+    'current_acc_uid_name':"{{customer.acc_uid_name}}",
+    'hangye':hangye,
+    'reg_bank':reg_bank,
+    'saic':saic,
+    'addr_type':addr_type,
+    'national_tax':national_tax,
+    'land_tax':land_tax,
+    'zg_name':zg_name,
+    'zg_tel':zg_tel,
+    'business_scope':business_scope,
+    'attention':attention,
+    'zg_option':zg_option,
+    'customer_id':"{{customer.customer_id}}",
+    'customer_other_id':"{%if customer.customer_other_id%}{{customer.customer_other_id}}{%else%}{%end%}",
+    'step':'1'
+  },function (data) {
+    if(data['error_acc']!='' && data['error_acc']!=undefined){
+      alert(data['error_acc'])
+    }else{
+        location.reload()
+    }
+   })
+  }
+ })
+ $("#btn_test_save2").click(function () { 
+    is_general=$("input[name=is_general]:checked").val()
+    survey=$('#survey').val()
+    is_check=$('input[name=is_check]:checked').val()
+    btype_id=$('input[name=btype_id]:checked').val()
+    btype_id_name=$("input[name=btype_id]:checked").val()
+    shuizhong_detail=$("#shuizhong_detail").val()
+    zhengshou_way=$("#zhengshou_way").val()
+    shuikong_type=$("#shuikong_type").val()
+    ss_num=$("#ss_num").val()
+    fixed_assets=$("#fixed_assets").val()
+    $.post('customer?tag=edit_customer_other',{
+    '_xsrf':_xsrf,
+    'is_general':is_general,
+    'survey':survey,
+    'is_check':is_check,
+    'btype_id':btype_id,
+    'btype_id_name':btype_id_name,
+    'shuizhong_detail':shuizhong_detail,
+    'zhengshou_way':zhengshou_way,
+    'shuikong_type':shuikong_type,
+    'ss_num':ss_num,
+    'fixed_assets':fixed_assets,
+    'customer_id':"{{customer.customer_id}}",
+    'customer_other_id':"{%if customer.customer_other_id%}{{customer.customer_other_id}}{%else%}{%end%}",
+    'step':'2'
+  },function (data) {
+        location.reload()
+   })
+  })
+  $('#btn_test_save3').click(function () { 
+    legal_id_card=$("#legal_id_card").val()
+    rel_name_collect_account=$("#rel_name_collect_account").val()
+    rel_name_collect_password=$("#rel_name_collect_password").val()
+    shuipan_password=$("#shuipan_password").val()
+    shuipan_command=$("#shuipan_command").val()
+    per_income_apply_password=$("#per_income_apply_password").val()
+    receipt_card_password=$("#receipt_card_password").val()
+    accumulation_fund_password=$("#accumulation_fund_password").val()
+
+    $.post('customer?tag=edit_customer_other',{
+    '_xsrf':_xsrf,
+    'legal_id_card':legal_id_card,
+    'rel_name_collect_account':rel_name_collect_account,
+    'rel_name_collect_password':rel_name_collect_password,
+    'shuipan_password':shuipan_password,
+    'shuipan_command':shuipan_command,
+    'per_income_apply_password':per_income_apply_password,
+    'receipt_card_password':receipt_card_password,
+    'accumulation_fund_password':accumulation_fund_password,
+    'customer_id':"{{customer.customer_id}}",
+    'customer_other_id':"{%if customer.customer_other_id%}{{customer.customer_other_id}}{%else%}{%end%}",
+    'step':'3'
+  },function (data) {
+        location.reload()
+   })
+   })
+   $("#btn_test_save4").click(function () { 
+    company=$("#company1").val()
+    reg_person=$("#reg_person").val()
+    company_reguid=$("#company_reguid").val().replace(/\s+/g,"").toUpperCase()
+    reg_date=$("#reg_date").val()
+    link_name=$("#link_name").val()
+    link_tel=$("#link_tel").val()
+    link_id=$('#link_id').val()
+    is_general=$("input[name=is_general1]:checked").val()
+    addr_type=$("#addr_type1").val()
+    payment_id=$("#payment_id").val()
+    pay_type_id=$("input[name=pay_type_id]").val()
+    fee=$("input[name=pay_type_id]").attr('fee')
+    pay_typeid_name=$("input[name=pay_type_id]").attr('pay_typeid_name')
+    service_amount=$("#service_amount").val()
+    service_amount_month=$("#service_amount_month").val()
+    book_amount=$("#book_amount").val()
+    acc_end=$("#acc_end").val()
+    city=$("#city").val()
+    zone=$("#zone").val()
+    reg_addr=$("#reg_addr").val()
+    tag_parent_id=$('input[name=tag_parent_id]:checked').val()
+    tag_parent_name=$('input[name=tag_parent_id]:checked').attr('title')
+    tag_id=$("input[name=tag_id]:checked").val()
+    tag_name=$("input[name=tag_id]:checked").attr('title')
+    is_building=$('input[name=is_building]:checked').val()
+    is_clearly=$('input[name=is_clearly]:checked').val()
+    is_year=$('input[name=is_year]:checked').val()
+    customer_type_name=''
+    customer_type=''
+    
+   if("{{old_tag}}"!=''){
+    $("input[name=customer_type]").each(function(){
+                 if (this.checked) {
+                            customer_type_name= customer_type_name +$(this).attr("title")+","
+                            customer_type = customer_type+$(this).val()+","
+                    }
+
+            })
+           customer_type_name = customer_type_name.slice(0, -1);
+            customer_type = customer_type.slice(0, -1);
+          }
+    if(tag_parent_id=='2'){
+      tag_id=$("input[name=tag_id][value=11]").val()
+      tag_name=$("input[name=tag_id][value=11]").attr('title')
+    }
+    if(((tag_id==undefined && tag_parent_id=='1')  || tag_parent_id==undefined)&& "{{old_tag}}"=='') {
+
+      $("#msg_tag").text('未选择标签')
+    }
+    else if((link_name=='' || link_tel=='') && link_id!=''){
+        $("#msg_link_tag").text('未填')
+    }else if(company_reguid!='' && company_reguid.length!=18){
+      alert('信用代码长度需要为18位')
+    }
+    else{
+      $.post('customer?tag=edit_customer_head',{
+        '_xsrf':_xsrf,
+        'company':company,
+        'reg_person':reg_person,
+        'company_reguid':company_reguid,
+        'reg_date':reg_date,
+        'link_name':link_name,
+        'link_tel':link_tel,
+        'link_id':link_id,
+        'is_general':is_general,
+        'addr_type':addr_type,
+        'payment_id':payment_id,
+        'pay_type_id':pay_type_id,
+        'fee':fee,
+        'pay_typeid_name':pay_typeid_name,
+        'service_amount':service_amount,
+        'service_amount_month':service_amount_month,
+        'book_amount':book_amount,
+        'acc_end':acc_end,
+        'city':city,
+        'zone':zone,
+        'reg_addr':reg_addr,
+        'customer_type_name':customer_type_name,
+        'customer_type':customer_type,
+        'old_tag':"{{old_tag}}",
+        'tag_parent_id':tag_parent_id,
+        'tag_parent_name':tag_parent_name,
+        'tag_id':tag_id,
+        'tag_name':tag_name,
+        'is_building':is_building,
+        'is_clearly':is_clearly,
+        'is_year':is_year,
+        'customer_id':"{{customer.customer_id}}",
+        
+      },function (data) { 
+        location.reload()
+       })
+    }
+    })
+
+   $("#tag_modify").click(function () { 
+    $("#add_tag_modal").modal('show')
+    })
+
+  $('input[name=tag_parent_id]').on('change',function () { 
+    if($(this).val()=='1'){
+      $("#tag_box").show()
+    }else if($(this).val()=='2'){
+      $("#tag_box").hide()
+    }
+   })
+   $("#btn_save_tag").click(function () { 
+    tag_parent_id=$('input[name=tag_parent_id]:checked').val()
+    tag_parent_name=$('input[name=tag_parent_id]:checked').attr('title')
+    tag_id=$("input[name=tag_id]:checked").val()
+    tag_name=$("input[name=tag_id]:checked").attr('title')
+    is_building=$('input[name=is_building]:checked').val()
+    is_clearly=$('input[name=is_clearly]:checked').val()
+    is_year=$('input[name=is_year]:checked').val()
+    if(tag_parent_id=='2'){
+      tag_id=$("input[name=tag_id][value=11]").val()
+      tag_name=$("input[name=tag_id][value=11]").attr('title')
+    }
+    if((tag_id==undefined && tag_parent_id=='1')  || tag_parent_id==undefined){
+      $("#msg_tag").text('未选择标签')
+    }
+    else{
+      $.post('customer?tag=edit_customer_tag',{
+        '_xsrf':_xsrf,
+        'tag_parent_id':tag_parent_id,
+        'tag_parent_name':tag_parent_name,
+        'tag_id':tag_id,
+        'tag_name':tag_name,
+        'is_building':is_building,
+        'is_clearly':is_clearly,
+        'is_year':is_year,
+        'customer_id':"{{customer.customer_id}}",
+        
+      },function (data) { 
+        location.reload()
+       })
+    }
+    })
+
+    $("#customer_modify4").click(function () { 
+	$('#add_test_modal4').modal('show')
+ })
+ $('input[type="radio"][name="pay_type_id"]').click(function(){
+                   
+                   service_amount = $("#service_amount").val()
+                   if ($(this).is(':checked'))
+                   {
+                      if($(this).attr("fee")>0){
+                            $("#service_amount").removeAttr("readOnly")
+                          
+                       }else{
+                            $("#service_amount").val("0")
+                           all_total = 0
+                       }
+   
+   
+                       all_total =  service_amount / $(this).attr("fee");
+                       console.log(all_total)
+                       if (all_total==Infinity){
+                           all_total = 0
+   
+                       }
+                       $("#service_amount_month").val(intToFloat(all_total))
+                   }
+       });
+       $('#service_amount').keyup(function() {
+
+                           all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
+                             if (all_total==Infinity || all_total==NaN){
+                           all_total = 0
+                           
+                       }
+
+                           $("#service_amount_month").val(intToFloat(all_total))
+   
+   
+           })
+        function intToFloat(val){
+          return new Number(val).toFixed(2);
+   }
+   $("#submit_msg").click(function () { 
+    dongtai_msg=$("#dongtai_msg").val()
+    genjin_type=$("#genjin_type").val()
+    var formData = new FormData();
+    formData.append('file', $('#uploaderInput1')[0].files[0]);
+    formData.append('_xsrf', _xsrf)
+    formData.append("dongtai_msg", dongtai_msg)
+    formData.append("customer_id","{{customer.customer_id}}")
+    formData.append('genjin_type',genjin_type)
+    if(genjin_type==''){
+    
+      alert('未选择类别')
+    }else if (dongtai_msg==''){
+      alert('跟进内容不为空')
+    }
+    else{
+      $.ajax({
+                url: '/customer?tag=dongtai_genjin',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+
+                  location.href="/customer?tag=show&id={{customer.customer_id}}&guid={{customer.guid}}&to_tag=payment_tab"
+
+                }
+              });
+    }
+
+    })
       });
 
     </script>

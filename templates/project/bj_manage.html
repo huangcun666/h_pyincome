@@ -45,18 +45,22 @@
 </style>
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">报价管理
+        <li class="breadcrumb-item g1">报价管理
+        </li>
+        <li class="g1 g1-left">
                 {%if params['manage_type']=='1' and    is_gy_manage=='1'%}
-                <a href="javascript:void(0);" id="add_addr" class="btn btn-info btn-sm">新建</a>
+                <a href="javascript:void(0);" id="add_addr" class="btn btn-primary btn-sm">新建</a>
 
                 {%end%}
 
+        </li><li class="g1 g1-left">
+
 
                           {%if role=="8"%}
-                <a href="http://192.168.2.168:8000/admin" class="btn btn-info btn-sm">报价管理后台</a>
+                <a href="http://192.168.2.168:8000/admin" class="btn btn-primary btn-sm">报价管理后台</a>
                 
                 {%end%}
         </li>
@@ -76,8 +80,8 @@
             <div class="card-body">
             <div class="table-responsive">
             
-            <table class="table table-bordered" id="dataTable"  cellspacing="0" style="{%if params['manage_type']=='0'%}width:2000px;{%end%} ">
-            <thead style="background-color:#000;color:#fff">
+            <table class="table table-bordered fayetable" id="dataTable"  cellspacing="0" style="{%if params['manage_type']=='0'%}width:2000px;{%end%} ">
+            <thead class="table_class">
                 <tr>
                     {%if is_gy_manage=='1'%}<th width="80">排序</th>{%end%}
                     {%if params['manage_type']=='0'%}
@@ -109,7 +113,7 @@
                     {%end%}
                 </tr>
             </thead>
-                <tbody>
+                <tbody class="fayetbody">
                         {% if addr_provider_manage %}
                         {%if params['manage_type']=='0'%}
                        {% for idx,item in enumerate(addr_provider_manage)%} 
@@ -161,7 +165,7 @@
                             
                                 {%if is_gy_manage=='1'%}
                                 {%end%}
-                            <td><a class="btn btn-info change_addr" href="javascript:void(0);" id="{{item.id}}"
+                            <td><a class="btn btn-primary btn-sm change_addr" href="javascript:void(0);" id="{{item.id}}"
                                 provider="{{item.provider}}" area="{{item.area}}" type="{{item.type}}" addr_nature="{{item.addr_nature}}"
                                 cost_price="{{item.cost_price}}" register_price="{{item.register_price}}"  same_area_change_price="{{item.same_area_change_price}}"
                                 dif_area_change_price="{{item.dif_area_change_price}}"  address="{{item.address}}" business_scope_limit="{{item.business_scope_limit}}"  
@@ -200,7 +204,7 @@
                                 <td>{{item.register_price}}</td>
                                 <td>{{item.same_area_change_price}}</td>
                                 <td>{{item.dif_area_change_price}}</td>
-                                <td><a class="btn btn-info edit_addr" href="javascript:void(0);" id="{{item.id}}" area="{{item.area}}" register_price="{{item.register_price}}" 
+                                <td><a class="btn btn-primary btn-sm edit_addr" href="javascript:void(0);" id="{{item.id}}" area="{{item.area}}" register_price="{{item.register_price}}" 
                                 same_area_change_price="{{item.same_area_change_price}}" dif_area_change_price="{{item.dif_area_change_price}}">查看</a></td>
                         </tr>
                         {%end%}

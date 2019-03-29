@@ -5,14 +5,14 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item active">我的业务</li>
+        <li class="breadcrumb-item g1">我的业务</li>
       </ol>
 
      
- <form class="search_box">
+ <form class="search_box pm2">
  <table style="padding:3px;">
 
 
@@ -73,7 +73,7 @@
 
        <td><input type="text" name="end" id="end" class="form-control" placeholder="结束时间" value="{%if params["end"]%}{{params["end"]}}{%end%}" />
 </td>
-       <td><input type="submit" value="检索" class="btn btn-info"/>
+       <td><input type="submit" value="检索" class="btn btn-primary btn-sm"/>
 </td>
     </tr>
  </table>
@@ -96,23 +96,23 @@
     <div class="category_projects">
         {%if style==''%}
         <a href="/project?tag=projects_qc" 
-        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
+        class="btn btn-primary btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
         所有分组</a>
         {%else%}
         <a href="/project?tag=projects_qc" 
-        class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
+        class="btn btn-primary btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
         所有分组</a>
         {%end%}
       {%for category in categorys%}
       {%if category.category_name==style%}
 
       <a href="/project?tag=projects_qc&style={{category.category_name}}" 
-      class="btn btn-info btn-sm" id="btn_check" 
+      class="btn btn-primary btn-sm" id="btn_check" 
       style="margin-left: 5px;margin-bottom: 5px;background-color:#157381;">
       {{category.category_name}}</a>
       {%else%}
       <a href="/project?tag=projects_qc&style={{category.category_name}}" 
-      class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
+      class="btn btn-primary btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">
       {{category.category_name}}</a>
       {%end%}
       {%end%}
@@ -121,9 +121,9 @@
                 共 {{pagination.total_count}} 条记录
 
              </div>
-    <table class="table table-bordered" cellspacing="0" style="font-size:12px;width:100%;;">
+    <table class="table table-bordered fayetable" cellspacing="0" style="font-size:12px;width:100%;;">
     
-              <thead style="background-color:#000;color:#fff ; font-size:13px;">
+              <thead class="table_class">
                         <tr>
                             <!-- <th width="100">客户分组</th> -->
                             <th width="50">编号</th> 
@@ -144,7 +144,7 @@
                          
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                     {%if t_projects%}
                         {%for item in t_projects%}
                         <tr id="{{item.id}}">
@@ -355,7 +355,7 @@ language: 'zh-CN',initialDate: new Date()});
                         $('.group1').append('<div style="text-align: left; margin-left: 20%;"><input value="'+data['category_id']+'" '+
                         'id="category_id" style="margin-left:25%;" name="category_name" type="radio">'+name+'</div>');
                         $('.category_projects').append('<a href="/project?tag=my&style='+name+'"'+
-                        'class="btn btn-info btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">'+name+'</a>');
+                        'class="btn btn-primary btn-sm" id="btn_check" style="margin-left: 5px;margin-bottom: 5px;">'+name+'</a>');
                     }
                 )
            }else{

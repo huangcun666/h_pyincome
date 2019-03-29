@@ -2,20 +2,21 @@
 
 
       <ol class="breadcrumb" >
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item active">注销业务管理 
+        <li class="breadcrumb-item g1">注销业务管理 </li>
    
-</li>
- <li class="breadcrumb-item">
+            <li class="g1 g1-left">
+
+            
          
-     <div class="btn-group" style=" height:25px;">
-  <button type="button"   class="dropdown-toggle" data-toggle="dropdown" id="btn_group_action" aria-haspopup="true" aria-expanded="false">
+     <div class="btn-group">
+  <button type="button"   class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" id="btn_group_action" aria-haspopup="true" aria-expanded="false">
     选中操作(0)
   </button>
 
-  <div class="dropdown-menu" id="btnmenu_show">
+  <div class="dropdown-menu" id="btnmenu_show" style="min-width:100%;">
     <a class="dropdown-item" href="javascript:void(0)" id="btn_group_set_toMember">批量分配</a>
   </div>
 </div>
@@ -207,7 +208,7 @@
 
 
 
- <form class="search_box">
+ <form class="search_box pm2">
  <table >
         <tr>
       <!-- <td>
@@ -256,6 +257,17 @@
     {%end%}
 </select>
        </td>
+
+       <td>
+        <select name="kfgw" class="form-control">
+          <option  value="0">客服顾问</option>
+            {%for idx,item in enumerate(t_users)%}
+            {%if item.team_id==2%}
+                <option value="{{item.id}}"  {%if params["kfgw"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+         {%end%}
+            {%end%}
+        </select>
+               </td>
        <td>
 <select name="from_id" class="form-control">
   <option  value="0">来源渠道</option>
@@ -301,7 +313,7 @@
 
 
        <td>
-       <input type="submit" value="检索" class="btn btn-info"/>
+       <input type="submit" value="检索" class="btn btn-primary btn-sm"/>
        </td>
     </tr>
  </table>
@@ -325,8 +337,9 @@
 
 
 </div>
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0"  >
-                  <thead style="background-color:#000;color:#fff ;">
+<div class="table-responsive">
+                  <table class="table table-bordered fayetable" id="dataTable" style="min-width:1300px;" cellspacing="0"  >
+                  <thead class="table_class">
                         <tr>                       
                            <th width="20">
                             <input type="checkbox" name="checkall" id="checkall"/>
@@ -354,7 +367,7 @@
                             <th width="50"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                     {%if not t_projects%}
                         <tr>
                             <td colspan="9">没有相关记录</td>
@@ -439,18 +452,18 @@
                             {{item.created_at}}
                             </td>
                             <td>
-                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn  btn-sm btn-info " title="{{item.id}}">查看</a>
+                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn  btn-primary btn-sm" title="{{item.id}}">查看</a>
 
                             </td>
                         </tr>
                         {%end%}{%end%}
                     </tbody>
                 </table>
-
+            </div>
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=projects_state_type&page={{ pagination.page - 1}}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="?tag=projects_state_type&page={{ pagination.page - 1}}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
 
 
@@ -458,7 +471,7 @@
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=projects_state_type&page={{page}}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="?tag=projects_state_type&page={{page}}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -469,7 +482,7 @@
           {% end %} 
 
          {% if pagination.has_next %}
-         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_state_type&page={{pagination.page+1}}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_state_type&page={{pagination.page+1}}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>                

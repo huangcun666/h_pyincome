@@ -5,16 +5,16 @@
 
 
  <ol class="breadcrumb">
-   <li class="breadcrumb-item">
+   <li class="breadcrumb-item g1">
      主面板
    </li>
-   <li class="breadcrumb-item active">事项安排
+   <li class="breadcrumb-item g1">事项安排
        {%if my%}
-       <a class=" btn btn-info btn-sm" href="/project?tag=todo_arrange" >全部事项</a>
+       <a class=" btn btn-primary btn-sm" href="/project?tag=todo_arrange" >全部事项</a>
         {%else%}
-        <a class=" btn btn-info btn-sm" href="/project?tag=todo_arrange&my=1" >我的事项</a>
+        <a class=" btn btn-primary btn-sm" href="/project?tag=todo_arrange&my=1" >我的事项</a>
         {%end%}
-        <a class=" btn btn-info btn-sm show_todo" href="javascript:void(0)">创建事项</a>
+        <a class=" btn btn-primary btn-sm show_todo" href="javascript:void(0)">创建事项</a>
    </li>
  
  </ol>
@@ -67,7 +67,7 @@
 <br>
 
 
-  <form>
+  <form class="pm2">
     <table style="font-size:80%;">
       <thread>
         <tr>
@@ -126,7 +126,7 @@
           
             
               <td> 
-                <input type="submit" value="检索" class="btn btn-info" />
+                <input type="submit" value="检索" class="btn btn-primary btn-sm" />
             </td>
           </tr>
     </table>
@@ -138,9 +138,9 @@
   .faye-table tbody tr td {text-align: center; padding: 0.5rem; } 
 </style>
 <div class="table-responsive">
-  <table class="table faye-table table-bordered" id="dataTable" cellspacing="0" style="font-size:12px;width:1800px;">
+  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:12px;width:1800px;">
     
-               <thead style="background-color:#000;color:#fff ; font-size:13px;">
+               <thead class="table_class">
                    <tr>
                       <th width="180">公司名称</th>
                       <th width="90">办事区域</th>
@@ -198,7 +198,7 @@
 
                                 <span class="text-danger">待{{item.leader_name}}分配办事人</span>
                                   {%if item.leader_id==int(uid)%}
-                                  <button id="btn_set_per" class="btn btn-info btn-small the_detail_btn_set"  
+                                  <button id="btn_set_per" class="btn btn-primary btn-sm the_detail_btn_set"  
                                   todo_type="{{item.todo_type}}" bl_date="{{item.bl_date.strftime("%Y-%m-%d")}}" leader_id="{{item.leader_id}}"
                                   company='{{item.company}}' bs_area='{{item.bs_area}}' bs_address='{{item.bs_address}}' todoid='{{item.id}}'
                                    created_at="{{item.created_at.strftime("%Y-%m-%d")}}" leader_name="{{item.leader_name[:-6]}}"
@@ -247,7 +247,7 @@
                             
                             <td>{{item.remark}}</td>
                             {%if my%}  
-                            <td><a class="btn btn-info the_detail_btn" href="javascript:void(0)"
+                            <td><a class="btn btn-primary btn-sm the_detail_btn" href="javascript:void(0)"
 
                             bl_date="{{item.bl_date.strftime("%Y-%m-%d")}}"
                                 company='{{item.company}}' bs_area='{{item.bs_area}}' bs_address='{{item.bs_address}}'

@@ -2,10 +2,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item active">订单流转动态列表</li>
+        <li class="breadcrumb-item g1">订单流转动态列表</li>
       </ol>
 
 
@@ -33,7 +33,7 @@
 
 
 
- <form>
+ <form class="pm2">
  <table>
     <tr>
       <td>业务类型</td>
@@ -165,8 +165,8 @@
 <div class="alert alert-secondary" role="alert">
  共 {{pagination.total_count}} 条记录
 </div>
-                  <table class="table table-bordered" id="dataTable" >
-                    <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                  <table class="table table-bordered fayetable" id="dataTable" >
+                    <thead class="table_class">
                         <tr>
          <th width="20">
                             <input type="checkbox" name="checkall" id="checkall"/>
@@ -197,7 +197,7 @@
 <th width="160">流转更新时间</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fayetbody">
                         {%for item in t_projects%}
                          <td>
                            

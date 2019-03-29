@@ -1,5 +1,5 @@
 
- {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+ {% extends "../base.html" %} {%block title%}待创建客户{%end%} {% block body %}
 
  <div class="main">
 <div class="main-inner">
@@ -9,7 +9,7 @@
 <div class="widget ">
 <div class="widget-header">
 <i class="icon-user"></i>
-<h3>待创建客户 </h3>
+<h3>待创建客户 <a class="btn btn-info btn-sm  customer_new "  href="customer?tag=add" >新建客户</a> </h3>
 </div> <!-- /widget-header -->
 <div class="widget-content">
 <div class="tab-content">
@@ -20,47 +20,58 @@
         <input type="text" name="keyword1" class="input-medium search-query" placeholder="公司名称/电话/姓名">
 
         <select name="qtype">
-          
+           <option value="company" >公司名称</option>
               <option value="comfirm_id" >确认单系统编号</option>
-              <option value="company" >公司名称</option>
+             
         </select>
-        <button type="submit" class="btn">检 索</button>
+        <button type="submit" class="btn"><i class=" icon-search"></i> 检 索</button>
         <input value="company" name="tag" type="hidden">
-</form>
+        <input value="{{state}}" name="state" type="hidden">
+</form> 
               </form>
 <ul class="nav nav-tabs" id="myTab">
 
     <li {%if state==1%} class="active" {%end%}>
-        <a href="/customer?tag=company" id="customer_tab">已办结</a>
+        <a href="/customer?tag=company" id="customer_tab"><i class=" icon-flag"></i> 待入库</a>
     </li>
     <li {%if state==0%} class="active" {%end%}>
-        <a href="/customer?tag=company&state=0" id="tab_confirm">未办结</a>
+        <a href="/customer?tag=company&state=0" id="tab_confirm"><i class=" icon-flag"></i> 注册中</a>
+    </li>
+    <li {%if state==2%} class="active" {%end%}>
+        <a href="/customer?tag=company&state=2" id="tab_confirm"><i class=" icon-flag"></i> 全部</a>
     </li>
 
 
 
 
-</ul>            
-              <table class="table" style="margin:5px;">
+</ul>      
+<div class="alert">
+    <span style="font: 15px;"> 当前数量: {{pagination.total_count}} 个</span>
+    </div>     
+              <table class="table table-bordered " >
                      <thead>
-                                <tr style="background-color: black; color:#fff;">
-                                <th style="min-width:60px;">确认单系统编号</th>
+                                <tr>
+                                <th style="min-width:60px;">确认单编号</th>
                                 <th style="min-width:130px;">公司名称</th>
-        
-                                <th style="min-width:100px;">创建时间</th>
-                                {%if state==1%}<th></th> {%end%}
+        <th style="min-width:80px;">创建时间</th>
+                                <th style="min-width:100px;">业务名称</th>
+
+                                <th style="min-width:60px;">跟单业务</th>
+                                {%if state==1%}<th style="min-width:80px;"></th> {%end%}
                                 </tr>
                             </thead>
                 <tbody>
      {%for customer in customers%}
                     <tr>
                        <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}"  target="_blank">{{customer.id}}</a></td>
-                        <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}" target="_blank">{{customer.customer_company}}</a></td>
+                        <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}" target="_blank"><i class="   icon-th"></i> {{customer.customer_company}}</a></td>
                         
                     
                         <td>{{customer.created_at.strftime("%Y-%m-%d")}}</td>
-                      {%if state==1%}  <td><a class="btn customer_detail btn-sm control"  
-                         href="/customer?tag=add&company_id={{customer.id}}">加入客户管理系统</a></td>
+                          <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}" target="_blank"><i class="  icon-th-list"></i> {{customer.project_name}}</a></td>
+                        <td>{{customer.gc}}</td>
+                      {%if state==1%}  <td><a class="btn customer_detail btn-sm btn-info control"  
+                         href="/customer?tag=add&company_id={{customer.id}}"><i class=" icon-pencil"></i>创建</a></td>
                       {%end%}
                      
                     </tr>

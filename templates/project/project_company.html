@@ -2,10 +2,10 @@
 
 
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item active">资料交接
+        <li class="breadcrumb-item g1">资料交接
         </li>
 
       </ol>
@@ -28,8 +28,8 @@
         </div>
         <hr class="my-0">
 
-            <table class="table table-striped" style="padding:10px;">
-              <thead>
+            <table class="table table-striped fayetable" style="padding:10px;">
+              <thead class="table_class">
                 <tr>
                   <th width="130">交接时间
                   </th>
@@ -55,7 +55,7 @@
                   <th width="10"></th>
                 </tr>
               </thead>
-              <tbody>   
+              <tbody class="fayetbody">   
                 {%if t_company_transitions%} {%for item in t_company_transitions%}
                 <tr>
                   <td>
@@ -106,7 +106,7 @@
                       {%if item.uid==int(uid) %}
                       <a href="javascript:void(0)"
                        rec_by ="{{item.rec_by}}"
-                        class="btn btn-info btn-sm modify_transition"
+                        class="btn btn-primary btn-sm modify_transition"
                          transition_id="{{item.id}}"
                       project_id="{{item.project_id}}"
                       tran_at="{{item.tran_at}}"
@@ -119,7 +119,7 @@
                         style="margin-top:5px;"
                         href="javascript:void(0)" 
                         rec_by ="{{item.rec_by}}"
-                        class="btn btn-info btn-sm modify_transition_mobile" 
+                        class="btn btn-primary btn-sm modify_transition_mobile" 
                         transition_id="{{item.id}}"
                         tran_at="{{item.tran_at}}"
                         tran_by ="{{item.tran_by}}"
@@ -152,7 +152,7 @@
             </div>
             <hr class="my-0">
 
-                <table class="table table-striped" style="padding:10px;">
+                <table class="table table-striped fayetable" style="padding:10px;">
                   <thead>
                     <tr>
                       <th width="130">交接时间
@@ -230,7 +230,7 @@
                           {%if item.uid==int(uid) %}
                           <a href="javascript:void(0)"
                            rec_by ="{{item.rec_by}}"
-                            class="btn btn-info btn-sm modify_transition"
+                            class="btn btn-primary btn-sm modify_transition"
                              transition_id="{{item.id}}"
                           project_id="{{item.project_id}}"
                           tran_at="{{item.tran_at}}"
@@ -243,7 +243,7 @@
                             style="margin-top:5px;"
                             href="javascript:void(0)" 
                             rec_by ="{{item.rec_by}}"
-                            class="btn btn-info btn-sm modify_transition_mobile" 
+                            class="btn btn-primary btn-sm modify_transition_mobile" 
                             transition_id="{{item.id}}"
                             tran_at="{{item.tran_at}}"
                             tran_by ="{{item.tran_by}}"
