@@ -6,11 +6,49 @@
             </tr>
             </thead>
             <tbody>
+                <script>
+        $(function(){
+                $(".btn_edit_milepost").on("click",function(){
+                        detail_id = $(this).attr("detail_id")
+                        clearly_id=$(this).attr("clearly_id")
+                        btype_id = $(this).attr('btype_id')
+                        result_remark = $("#result_remark_"+btype_id).val()
+                        result_id = $("input[name=result_"+btype_id+"]:checked").val()
+                        result_id_name = $("input[name=result_"+btype_id+"]:checked").attr("title")
+                        amount = $("input[name=amount_"+btype_id+"]").val()
+                        
+                        project_id = $("input[name=project_id_"+btype_id+"]").val()
+                        $.post("/clearly?tag=mile_modify",{"clearly_id":clearly_id,"detail_id":detail_id,"btype_id":btype_id,"result_remark":result_remark,"_xsrf":_xsrf,
+                        "result_id":result_id,"result_id_name":result_id_name,"amount":amount,"project_id":project_id},function(data){
+                                if(data=="0"){
+                                    alert("保存成功")
+                                }
+
+                        })
+
+                })
+            
+        })
+    </script>
 {%for item in t_customer_clearly_milepost%}
 <tr>
-    <td>{{item.mbtype_id_name}}</td><td>      <div class="control-group">
+    <td>
+
+    
+    {{item.mbtype_id_name}}<br/>  
+    
+    {%if (role=="8" or role=="3") %}
+      <a href="javascript:void(0)" class="btn btn-primary btn-mini btn_edit_milepost"
+      btype_id="{{item.mbtype_id}}" btype_id_name="{{item.mbtype_id_name}}"
+      clearly_id="{{item.clearly_id}}" 
+      
+        detail_id="{{item.id}}">修改</a>
+    {%end%}
+
+    
+    </td><td>      <div class="control-group">
             <div class="controls">
-                    <input type="radio" value="1" {%if item.result_id==1%} checked="checked"{%end%}  name="result_{{item.mbtype_id}}" title="办结">办结
+                    <input type="radio" id="" value="1" {%if item.result_id==1%} checked="checked"{%end%}  name="result_{{item.mbtype_id}}" title="办结">办结
 
             <input type="radio" value="3" {%if item.result_id==3%} checked="checked"{%end%}  name="result_{{item.mbtype_id}}" title="无需处理">该无需处理
 
@@ -22,7 +60,7 @@
         <input type="text" value="{%if item.amount%}{{item.amount}}{%else%}0{%end%}"  name="amount_{{item.mbtype_id}}" placeholder="收款金额" style="width:100px;">
         </td>
                             <td>
-        <input type="text" value="{%if item.project_id%}{{item.project_id}}{%end%}" name="project_id_{{item.mbtype_id}}" placeholder="确认单编号"  style="width:60px;">
+        <input type="text" value="{%if item.project_id%}{{item.project_id}}{%else%}0{%end%}" name="project_id_{{item.mbtype_id}}" placeholder="确认单编号"  style="width:60px;">
 {%if item.project_id%}<a target="_blank" href="project?tag=show&id={{item.project_id}}&from_mod=clearly"><i class="icon-large icon-paper-clip
 "></i></a>{%end%}
 
@@ -46,6 +84,7 @@
         {%if  item.finance_uid_at%}
         3.财务审核({{item.finance_uid_name}}){{item.finance_uid_at}}<br/>
         {%end%}
+
 
 
 

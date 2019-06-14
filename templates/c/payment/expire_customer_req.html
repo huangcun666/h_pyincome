@@ -24,7 +24,9 @@
 
                                     <fieldset>
                                             <form class="form-search" id="query_form">
-                                                    <input type="text" value="{{company}}" name="company" class="input-medium seexpire_customer_reqarch-query" placeholder="公司名称">
+
+                                                                      <input type="text" value="{%if company%}{{company}}{%end%}" name="company"  placeholder="公司名称/姓名/信用代码/确认单编号">
+
                                             <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
                                             <input type="text" value="{%if req_uid_name%}{{req_uid_name}}{%end%}" id="req_uid_name" name="req_uid_name" class="input-medium search-query" placeholder="发起人">
                                                     <button type="submit" class="btn">检 索</button>
@@ -148,27 +150,71 @@
 
 
 
-                                                    <td>
-                                                        <a  target="_blank" href="/customer?tag=show&id={{item.customer_id}}&guid={{item.guid}}">{{item.company}}
+                                                  
+                        <td> <a target="_blank" href="/customer?tag=show&id={{item.customer_id}}&guid={{item.guid}}">{{item.company}}</a>
 
 
 
-                                                        </a>
-                                                            <a class="modify_customer_detail btn-sm  control" customer_id="{{item.customer_id}}"
-                                                                acc_end="{{item.acc_end.strftime('%Y-%m-%d')}}" promo_id="{{item.promo_id}}|{{item.promo_id_name}}"
-                                                                is_general="{{item.is_general}}" pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
-                                                                pay_service_amount="{{item.pay_service_amount}}" pay_service_amount_month="{{item.pay_service_amount_month}}"
-                                                                pay_book_amount="{{item.pay_book_amount}}" guid="{{item.guid}}" customer_type="{{item.customer_type}}"
-                                                                href="javascript:void(0)" customer_company="{{item.company}}">
-                                                                <img src="/static/images/modify.png" width="20" /></a>
+                                               {%if role=="3" or role=="8" or role=="5" %} <a 
+                           class="modify_customer_detail btn-sm control"
+         customer_id="{{item.customer_id}}"
+         promo_id="{{item.customer_promo_id}}|{{item.customer_promo_id_name}}"
+          is_general="{{item.customer_is_general}}"
+         pay_pay_typeid_name="{{item.customer_paytype_id_name}}"
+         pay_service_amount = "{{item.customer_service_amount}}"
+         pay_service_amount_month  = "{{item.customer_service_amount_month}}"
+         pay_book_amount ="{{item.customer_book_amount}}" guid="{{item.guid}}"
+         customer_type="{{item.customer_customer_type}}"  href="javascript:void(0)"
+         customer_company = "{{item.company}}" tag_id="{{item.customer_tag_id}}"
+         tag_id_name="{{item.customer_tag_id_name}}" 
+          tag_parent_id="{{item.customer_tag_parent_id}}"
+         tag_parent_id_name="{{item.customer_tag_parent_id_name}}" 
+         is_building="{{item.customer_is_building}}"
+         is_clearly="{{item.customer_is_clearly}}" is_year="{{item.customer_is_year}}"
+         adjusted_option="{% if  adjusted_option(item.customer_id)%}{%if adjusted_option(item.customer_id).adjusted_option%}{{adjusted_option(item.customer_id).adjusted_option}}{%end%}{%end%}"
+        >
+  
 
+    <img src="/static/images/modify.png" width="20"/></a>{%end%}   
                                                         {%if item.is_general%}<font color='red'><i class="icon-star"></i> 一般纳税人</font>{%end%}
-        {%if item.customer_type_name%}<br />
-        <span style="font-size:11px; color:blue;"><i class="icon-star"></i> {{item.customer_type_name}}
+      <br />
+      <span style="font-size:11px; color:blue;"><i class="icon-star"></i>
+        {%if item.tag_parent_id_name!=item.tag_id_name%}
 
-        </span>
+    {{item.tag_parent_id_name}}&nbsp;
+   {%end%}
+    {%if item.tag_id_name%}
+  {{item.tag_id_name}}&nbsp;
+   {%end%}
+     {%if item.is_building%}
+   楼盘&nbsp;
+   {%end%}
+     {%if item.is_year%}
+ 工商年检&nbsp;
+   {%end%}
+     {%if item.is_clearly%}
+  汇算清缴&nbsp;
+   {%end%}
 
-        {%end%}
+    </span>
+
+       <br/>
+    {%if item.company_reguid%}<font color='green'>{{item.company_reguid}}</font>{%end%}
+    {% if  adjusted_option(item.customer_id)%}
+    {%if adjusted_option(item.customer_id).adjusted_option%}
+        <br><font color='red' title="{{adjusted_option(item.customer_id).adjusted_option}}" >{{adjusted_option(item.customer_id).adjusted_option[:25]}}{%if len(adjusted_option(item.customer_id).adjusted_option)>25%}..{%end%}</font>
+    {%end%}
+    {%end%}  
+
+
+    <div class="alert alert-info">
+
+        付款方式:{{item.customer_paytype_id_name}}<br/>{{item.customer_service_amount}}（总）/{{item.customer_service_amount_month}}（月）<br/>
+        {{item.customer_book_amount}}(帐册费)
+    </div>
+             
+
+
                                                     </td>
                                                      <td>{{item.acc_uid_name}}</td>
                                                      <td>{{item.req_uid_name}}</td>
@@ -214,6 +260,7 @@
 company_name="{{item.company}}"
 customer_id="{{item.customer_id}}"
 item_id="{{item.id}}"
+fee="{{item.payment_fee}}"
 wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})账册费:{{item.pay_book_amount}}元{%end%}"
     href="javascript:void(0)"
 curr_expire_pay="{%if item.acc_end and item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
@@ -228,6 +275,9 @@ wait_pay_amount = "{{item.wait_pay_amount}}"
 pfi_confirm_state="{{item.pfi_confirm_state}}"
 pay_id1 = "{{item.pay_id1}}"
 pfi_confirm_remark ="{%if item.pfi_confirm_remark%}{{item.pfi_confirm_remark}}{%end%}"
+
+is_review = "1"
+
 >审核</a></td>
 
 {%end%}
@@ -242,6 +292,7 @@ pfi_confirm_remark ="{%if item.pfi_confirm_remark%}{{item.pfi_confirm_remark}}{%
         al_remark="{%if item.al_remark%}{{item.al_remark}}{%end%}" wait_pay_amount="{{item.wait_pay_amount}}"
         pfi_confirm_state="{{item.pfi_confirm_state}}"
           pay_id1="{{item.pay_id1}}"
+          is_review="1"
           pfi_confirm_remark="{{item.pfi_confirm_remark}}"
  customer_remark="{%if item.customer_remark%}{{item.customer_remark}}{%else%}无{%end%}"
 
@@ -436,11 +487,44 @@ pfi_confirm_remark ="{%if item.pfi_confirm_remark%}{{item.pfi_confirm_remark}}{%
                     <label class="control-label" for="is_general">客户类型
                     </label>
                     <div class="controls">
-                        {%for item in t_customer_type%}
+                        <!-- {%for item in t_customer_type%}
                         <input type="checkbox" name="customer_type" value="{{item.id}}" title="{{item.name}}"
                         /> {{item.name}} {%end%}
-                        <p id="msg_t_customer_type" class="help-block" style="color:red"></p>
-                    </div>
+                        <p id="msg_t_customer_type" class="help-block" style="color:red"></p> -->
+                                            
+                              <div style="border:none;">
+                                    {%for item in t_type_new_parents%}
+                                    <input  {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="radio" name="tag_parent_id" value="{{item.order}}" title="{{item.name}}"/>{{item.name}} 
+                                    {%end%}
+                                  </div>
+                                
+                                    <div id='tag_box' style="border:none;" >
+                                        &nbsp;&nbsp;(
+                                    {%for item in t_type_new%}
+                                    {%if item.parent_id==1%}
+                                    <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="radio" name="tag_id" value="{{item.order_int}}" title="{{item.name}}"/>{{item.name}}
+                                    {%end%}
+                                    {%end%}
+                                      )
+                                      <span id="msg_tag" style="color:red"></span>
+                                </div>
+                                <div id='tag_box1' style="border:none;" >
+                                    &nbsp;&nbsp;(
+                                {%for item in t_type_new%}
+                                {%if item.parent_id==2 and item.order_int!=11%}
+                                <input parent_id="{{item.parent_id}}" {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="radio" name="tag_id" value="{{item.order_int}}" title="{{item.name}}" />{{item.name}}
+                                {%end%}
+                                {%end%}
+                                  )
+                                  <span id="msg_tag1" style="color:red"></span>
+                            </div>
+                               
+                                &nbsp;&nbsp;
+                                  <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="checkbox" name='is_building' value="1">楼盘
+                                  <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="checkbox" name='is_clearly' value="1" >汇算清缴
+                                  <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="checkbox" name='is_year' value="1">工商年检
+                    
+                            </div>
                     <!-- /controls -->
                 </div>
 
@@ -457,6 +541,13 @@ pfi_confirm_remark ="{%if item.pfi_confirm_remark%}{{item.pfi_confirm_remark}}{%
                     </div>
                     <!-- /controls -->
                 </div>
+                <div class="control-group">
+                    <label class="control-label" for="lastname">待调整事项</label>
+                    <div class="controls">
+                    <input type="text" class="span6" id="adjusted_option" name="adjusted_option" value="">
+                    </div>
+                </div>
+
                 <div class="control-group">
                     <label class="control-label" for="lastname">总服务费</label>
                     <div class="controls">
@@ -724,13 +815,47 @@ pfi_confirm_remark ="{%if item.pfi_confirm_remark%}{{item.pfi_confirm_remark}}{%
                     pay_service_amount_month =$(this).attr("pay_service_amount_month")
                     pay_book_amount = $(this).attr("pay_book_amount")
                     customer_company  = $(this).attr("customer_company")
-
+                    tag_parent_id_name=$(this).attr('tag_parent_id_name')
+                    tag_parent_id=$(this).attr('tag_parent_id')
+                    tag_id_name=$(this).attr('tag_id_name')
+                    tag_id=$(this).attr('tag_id')
+                    
+                    is_building=$(this).attr('is_building')
+                    is_clearly=$(this).attr('is_clearly')
+                    is_year=$(this).attr('is_year')
                       $("#lb_customer_title").text(customer_company+"--修改基础信息")
                     $("#customer_id").val(customer_id)
                     $("#promo_id").val(promo_id)
                     $("input[name=is_general]").prop('checked',false)
                     $("input[name=is_general][value="+is_general+"]").prop('checked',true)
                     $('input[name=customer_type]').prop('checked',false)
+
+                    if(tag_parent_id!='1'){
+                        $("#tag_box").hide()
+                        $("#tag_box1").show()
+                    }else if(tag_parent_id!='2'){
+                        $("#tag_box1").hide()
+                        $("#tag_box").show()
+                    }
+                    $("input[name=tag_parent_id][value="+tag_parent_id+"]").prop('checked',true)
+                    if(tag_id!='11'){
+                        $("input[name=tag_id][value="+tag_id+"]").prop('checked',true)
+                    }
+                    if(is_building=='1'){
+                        $("input[name=is_building]").prop('checked',true)
+                    }else{
+                        $("input[name=is_building]").prop('checked',false)
+                    }
+                    if(is_clearly=='1'){
+                        $("input[name=is_clearly]").prop('checked',true)
+                    }   else{
+                        $("input[name=is_clearly]").prop('checked',false)
+                    } 
+                    if(is_year=='1'){
+                        $("input[name=is_year]").prop('checked',true)
+                    }else{
+                        $("input[name=is_year]").prop('checked',false)
+                    }
                     for(var i=0;i<customer_type.length;i++){
                         $('input[name=customer_type][value='+customer_type[i]+']').prop('checked',true)
                     }
@@ -741,9 +866,7 @@ pfi_confirm_remark ="{%if item.pfi_confirm_remark%}{{item.pfi_confirm_remark}}{%
                     $("#book_amount").val(pay_book_amount)
                     $("#btn_save_customer").attr("customer_id", customer_id)
                     $("#btn_save_customer").attr("guid", guid)
-
-
-
+                    $("#adjusted_option").val($(this).attr('adjusted_option'))
                     $("#a_customer_modal").modal("show")
 
 
@@ -768,8 +891,32 @@ pfi_confirm_remark ="{%if item.pfi_confirm_remark%}{{item.pfi_confirm_remark}}{%
                  service_amount = $("#service_amount").val()
                  service_amount_month = $("#service_amount_month").val()
                  book_amount = $("#book_amount").val()
-                 $.post('/payment?tag=edit_basic_data',{
+                 tag_parent_id=$('input[name=tag_parent_id]:checked').val()
+                tag_parent_name=$('input[name=tag_parent_id]:checked').attr('title')
+                tag_id=$("input[name=tag_id]:checked").val()
+                tag_id_parent=$("input[name=tag_id]:checked").attr('parent_id')
+                tag_name=$("input[name=tag_id]:checked").attr('title')
+                is_building=$('input[name=is_building]:checked').val()
+                is_clearly=$('input[name=is_clearly]:checked').val()
+                is_year=$('input[name=is_year]:checked').val()
+                adjusted_option=$("#adjusted_option").val()
+                if(tag_parent_id=='2'){
+                    if(tag_id!='12' && tag_id_parent!='2'){
+                        tag_id='11'
+                    tag_name='非记账'
+                    }}
+                if((tag_id==undefined && tag_parent_id=='1')  || tag_parent_id==undefined) {
+                    $("#msg_tag").text('未选择标签')
+                }else{
+                    $.post('/payment?tag=edit_basic_data',{
                      "_xsrf":_xsrf,
+                     'tag_parent_id':tag_parent_id,
+                     'tag_parent_name':tag_parent_name,
+                     'tag_id':tag_id,
+                     'tag_name':tag_name,
+                     'is_building':is_building,
+                     'is_clearly':is_clearly,
+                     'is_year':is_year,
                      'customer_id':customer_id,
                      'promo_id':promo_id,
                      'customer_type_name':customer_type_name,
@@ -781,11 +928,14 @@ pfi_confirm_remark ="{%if item.pfi_confirm_remark%}{{item.pfi_confirm_remark}}{%
                      'book_amount':book_amount,
                      'is_general':is_general,
                      'guid':guid,
-                     'fee':fee
+                     'fee':fee,
+                     'adjusted_option':adjusted_option
 
                  },function (res) {
                      location.reload()
                   })
+                }
+          
 
 
 
@@ -930,7 +1080,7 @@ wait_pay_amount = $(this).attr('wait_pay_amount')
 acc_book_end = $(this).attr("acc_book_end")
 
 acc_end= $(this).attr("acc_end")
-
+is_review= $(this).attr("is_review")
 $('#acc_book_end1').combodate("setValue", acc_book_end);
 $('#acc_end1').combodate("setValue", acc_end);
 $("#e_wait_pay_amount").val(wait_pay_amount)
@@ -946,16 +1096,17 @@ customer_id=$(this).attr('customer_id')
     customer_company = $(this).attr("company_name")
 
 
-$("#btn_save_wai_pay1").attr("pay_id", pay_id1)
-$("#curr_expire1").text("")
-$("#last_payment1").html("")
-$("#curr_last_payment").html("")
-$("#service_price1").html("")
-$("#account_remark").val("")
-$("#company_name1").text("")
-$("#btn_save_wai_pay1").attr('acc_end',$(this).attr('acc_end'))
-$("#btn_save_wai_pay1").attr('acc_book_end',$(this).attr('acc_book_end'))
-
+    $("#btn_save_wai_pay1").attr("pay_id", pay_id1)
+    $("#curr_expire1").text("")
+    $("#last_payment1").html("")
+    $("#curr_last_payment").html("")
+    $("#service_price1").html("")
+    $("#account_remark").val("")
+    $("#company_name1").text("")
+    $("#btn_save_wai_pay1").attr('acc_end',$(this).attr('acc_end'))
+    
+    $("#btn_save_wai_pay1").attr('acc_book_end',$(this).attr('acc_book_end'))
+    $("#btn_save_wai_pay1").attr('is_review', is_review)
     $("#btn_save_wai_pay1").attr('pay_id1', $(this).attr("pay_id1"))
     $("#customer_company").html(customer_company)
     $("#customer_remark").html(customer_remark)
@@ -1019,12 +1170,12 @@ $("#btn_save_wai_pay1").on("click",function () {
     al_remark=$("#al_remark1").val()
     pb_remark=$("#pb_remark1").val()
     pay_id=$(this).attr("pay_id1")
-
+    is_review=$(this).attr("is_review")
     e_wait_pay_amount = $("#e_wait_pay_amount").val()
     pfi_confirm_state = $("input[name=pfi_confirm_state]:checked").val()
 
     pfi_confirm_remark = $("#pfi_confirm_remark").val()
-   // alert(pay_id)
+
 
     {%if from_expire%}
         pfi_confirm_state = 0
@@ -1040,7 +1191,8 @@ $("#btn_save_wai_pay1").on("click",function () {
         "pay_id1":pay_id,
         "pfi_confirm_state": pfi_confirm_state,
         "pfi_confirm_remark": pfi_confirm_remark,
-        "wait_pay_amount": e_wait_pay_amount
+        "wait_pay_amount": e_wait_pay_amount,
+        "is_review":is_review
 
     },function (result) {
         if(result=="-100"){

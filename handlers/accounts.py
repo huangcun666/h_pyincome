@@ -17,8 +17,12 @@ logger = logging.getLogger('boilerplate.' + __name__)
 class LogoutHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
+        mobile = self.get_argument("mobile","")
         self.clear_all_cookies()
-        self.redirect('/login')
+        if mobile:
+            self.redirect("/login?mobile=1")
+        else:
+            self.redirect('/login')
 
 # class ApiHandler(BaseHandler):
 #     @tornado.web.authenticated
@@ -362,7 +366,9 @@ class ManageUserHandler(BaseHandler):
         page = int(self.get_argument("page", 1))
         user_name=self.get_argument('user_name','')
         phone=self.get_argument('phone','')
+        tag=self.get_argument('tag','')
         sql=''
+        department_names=''
         pre_page = 20
         params={
             'user_name':user_name,
@@ -374,31 +380,60 @@ class ManageUserHandler(BaseHandler):
             sql+=' and a.name="%s" '%user_name
         if phone:
             sql+=' and a.phone=%s '%phone
-        count = self.db.get(
-                '''SELECT count(*) count FROM t_user a  where  0=0
-                '''+sql)
-        pagination = Pagination(page, pre_page, count.count, self.request)
-        startpage = (page - 1) * pre_page
-        all_users =self.db.query('''SELECT a.*,b.name role_name FROM t_user a 
-         inner join t_user_group b on a.role=b.id  where 0=0 '''+sql+''' order by reg_time desc limit %s,%s''',startpage,pre_page)
-
+        if tag=='kj_manage':
+            count=self.db.get(' select count(*) count from t_user_relation')
+            pagination = Pagination(page, pre_page, count.count, self.request)
+            startpage = (page - 1) * pre_page
+            all_users=self.db.query(' select * from t_user_relation order by id desc ')
+            department_names=self.db.query(' select department_name,department_id from t_user_relation group by department_name,department_id ')
+        else:
+            count = self.db.get(
+                    '''SELECT count(*) count FROM t_user a  where  0=0
+                    '''+sql)
+            pagination = Pagination(page, pre_page, count.count, self.request)
+            startpage = (page - 1) * pre_page
+            all_users =self.db.query('''SELECT a.*,b.name role_name FROM t_user a 
+            inner join t_user_group b on a.role=b.id  where 0=0 '''+sql+''' order by reg_time desc limit %s,%s''',startpage,pre_page)
         self.render('accounts/manageuser.html',
-        search_key='',
-        t_income_type='',
-        t_company='',
-        t_building='',
-        t_users_kf='',
-        t_business_channel='',
-        t_sign_type='',
-        t_talk_type='',
-        t_rec_contarct_type='',
-        pagination=pagination,
-        all_users=all_users,
-        params=params,
-        page1=page,
-        is_admin_user=str(is_admin_user['is_admin'])
+            search_key='',
+            t_income_type='',
+            t_company='',
+            t_building='',
+            t_users_kf='',
+            t_business_channel='',
+            t_sign_type='',
+            t_talk_type='',
+            t_rec_contarct_type='',
+            pagination=pagination,
+            all_users=all_users,
+            params=params,
+            page1=page,
+            tag=tag,
+            department_names=department_names,
+            is_admin_user=str(is_admin_user['is_admin'])
         )
 
+    @tornado.web.authenticated
+    def post(self):
+        tag=self.get_argument('tag','')
+        if tag=='kj_manage':
+            kj_name=self.get_argument('kj_name','')
+            department_id=self.get_argument('department_id','')
+            department_name=self.get_argument('department_name','')
+            title_name=self.get_argument('title_name','')
+            relation_id=self.get_argument('relation_id','')
+            t_user=self.db.get(' select * from t_user where name=%s',kj_name)
+            print(t_user.id)
+            t_user_relation=self.db.get(' select * from t_user_relation where uid_name=%s ',kj_name)
+            if not t_user:
+                return self.write('-1')
+            elif t_user_relation:
+                return self.write('-2')
+            self.db.execute(''' 
+            insert into t_user_relation
+            (department_name,department_id,uid_name,uid,work_tel,per_tel,title_name)
+            values(%s,%s,%s,%s,%s,%s,%s)
+             ''',department_name,department_id,t_user.name,t_user.id,t_user.phone,t_user.person_phone,title_name)
 class LockUserhandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,id):

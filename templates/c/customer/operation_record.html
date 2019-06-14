@@ -16,6 +16,26 @@
 <div class="tab-pane active" id="formcontrols">
 
 <fieldset>
+        <form>
+     
+                <input  style="width:100px;" type="text" name="project_id" id="project_id"  placeholder="确认单编号" value="{{params['project_id']}}" >
+                <input  style="width:100px;" type="text" name="customer_id" id="customer_id"  placeholder="客户编号" value="{{params['customer_id']}}" >
+                <select style="width:200px;"  name="event_type" id="event_type">
+                    <option value="">选择操作类型</option>
+                    {%for item in t_projects_event_types%}
+                    <option value="{{item.event_type1}}" {%if params['event_type']==item.event_type1 %}selected{%end%}>{{item.event_type1}}</option>
+                    {%end%}
+                </select>
+                <input  style="widows: 150px;" type="text" name="txt" id="txt" placeholder="操作内容" value="{{params['txt']}}">
+                <input style="width:100px;"  type="text" name="start_time" id="start_time" placeholder="开始时间" value="{{params['start_time']}}">
+            <input style="width:100px;"  type="text" name="end_time" id="end_time"  placeholder="结束时间" value="{{params['end_time']}}">
+                <input  style="width:100px;" type="text" name="operator" id="operator" placeholder="操作人" value="{{params['operator']}}">
+                
+                 <input type="hidden" name="tag" value="{{tag}}" ><input type="submit">
+          
+             </form>
+
+
                         {%if t_projects_events%}
               <table class="table" style="margin:5px;">
                      <thead>
@@ -40,7 +60,7 @@
                                {{item.customer_id}}(客户)</a>{%end%}</td>
                             <td>{{item.event_type}}</td>
                             <td>{{item.txt}}</td>
-                            <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
+                            <td>{{item.created_at}}</td>
                             <td>{{item.uid_name}}</td>
                         </tr>
                     {%end%}
@@ -57,15 +77,15 @@
                               <div class="pagination">
                         <ul>
                             {% if pagination.has_prev %}
-                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%for k,v in params.items()%}{%if v!=''%}&{{k}}={{v}}{%end%}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li>
-                                <a href="/customer?tag={{tag}}&page={{ page }}">{{ page }}</a></li>
+                                <a href="/customer?tag={{tag}}&page={{ page }}{%for k,v in params.items()%}{%if v!=''%}&{{k}}={{v}}{%end%}{%end%}">{{ page }}</a></li>
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
                             {% end %} {% else %}
                             <li><span class="active"><a href="#">....</a></span></li>
                             {% end %} {%end %} {% if pagination.has_next %}
-                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}">下页 &raquo;</a></li>
+                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%for k,v in params.items()%}{%if v!=''%}&{{k}}={{v}}{%end%}{%end%}">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>       
@@ -94,6 +114,16 @@
 
 $(function () {
 	
+    laydate.render({
+                    elem: '#start_time' //指定元素
+                   
+                  
+           });
+    laydate.render({
+                    elem: '#end_time' //指定元素
+                   
+                  
+           });
 
 });
 

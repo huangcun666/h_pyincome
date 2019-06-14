@@ -17,15 +17,11 @@
 
 <fieldset>
 <form class="form-search" id="query_form" >
-        <input type="text" name="keyword1" class="input-medium search-query" placeholder="公司名称/电话/姓名">
+  <input type="text" value="{{keyword}}" name="keyword1"  placeholder="公司名称/姓名/信用代码/确认单编号">
 
-        <select name="qtype">
-           <option value="company" >公司名称</option>
-              <option value="comfirm_id" >确认单系统编号</option>
-             
-        </select>
         <button type="submit" class="btn"><i class=" icon-search"></i> 检 索</button>
         <input value="company" name="tag" type="hidden">
+        
         <input value="{{state}}" name="state" type="hidden">
 </form> 
               </form>
@@ -40,8 +36,9 @@
     <li {%if state==2%} class="active" {%end%}>
         <a href="/customer?tag=company&state=2" id="tab_confirm"><i class=" icon-flag"></i> 全部</a>
     </li>
-
-
+    <li {%if state==3%} class="active" {%end%}>
+        <a href="/customer?tag=company&state=3" id="tab_confirm"><i class=" icon-flag"></i> 无信用代码</a>
+    </li>
 
 
 </ul>      
@@ -53,6 +50,7 @@
                                 <tr>
                                 <th style="min-width:60px;">确认单编号</th>
                                 <th style="min-width:130px;">公司名称</th>
+                                   <th style="min-width:130px;">信用代码</th>
         <th style="min-width:80px;">创建时间</th>
                                 <th style="min-width:100px;">业务名称</th>
 
@@ -64,12 +62,13 @@
      {%for customer in customers%}
                     <tr>
                        <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}"  target="_blank">{{customer.id}}</a></td>
-                        <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}" target="_blank"><i class="   icon-th"></i> {{customer.customer_company}}</a></td>
+                        <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}" target="_blank">{{customer.customer_company}}</a></td>
                         
-                    
-                        <td>{{customer.created_at.strftime("%Y-%m-%d")}}</td>
+                                            <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}" target="_blank">{%if customer.company_uid%}{{customer.company_uid}}{%else%}无{%end%}</a></td>
+
+                        <td>{% if customer.created_at %}{{customer.created_at.strftime("%Y-%m-%d")}}{%end%}</td>
                           <td><a href="/project?tag=show&guid={{customer.guid}}&id={{customer.id}}" target="_blank"><i class="  icon-th-list"></i> {{customer.project_name}}</a></td>
-                        <td>{{customer.gc}}</td>
+                        <td>{%if customer.gc %}{{customer.gc}}{%end%}</td>
                       {%if state==1%}  <td><a class="btn customer_detail btn-sm btn-info control"  
                          href="/customer?tag=add&company_id={{customer.id}}"><i class=" icon-pencil"></i>创建</a></td>
                       {%end%}

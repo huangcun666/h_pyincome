@@ -176,7 +176,7 @@ min-height: 25px;
 max-height: 25px;
 }
 </style>
-
+{%block addstyle%}{%end%}
 <ol class="breadcrumb">
         <li class="breadcrumb-item g1">
          主面板
@@ -185,7 +185,7 @@ max-height: 25px;
           {%block title%}{%end%} 
  
         </li>
-
+        {%block li%}{%end%}
       </ol>
 
 {%block nav%}{%end%}
@@ -224,6 +224,7 @@ max-height: 25px;
                     </thead>
                     <tbody   class="fayetbody" style=" font-size:13px;">
                     {%if datas%}
+                        {%block sum_data%}{%end%}
                         {%for item in datas%}
                         {%block data%}{%end%}
 

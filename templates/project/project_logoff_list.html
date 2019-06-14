@@ -1,15 +1,87 @@
 {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
+<style>
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 10px;
+    border: none;
+    cursor: pointer;
+}
 
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    z-index:9999;
+    position: absolute;
+    background-color: #f9f9f9;
+    width: 100%;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 6px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+</style>
       <ol class="breadcrumb">
         <li class="breadcrumb-item g1">
          主面板
         </li>
         <li class="breadcrumb-item g1">注销部办结审核  <span class="badge badge-primary">当前: {{pagination.total_count}} 条记录</span>
 
-      
-     
         </li>
+        <li class="g1 g1-left">
+            <a class="btn {%if not params[ "count_way"] %} btn-primary{%else%}btn-default{%end%} btn-sm" href="?tag=project_logoff_list" {%if params["count_type"] %}style="background-color: #9ec6ef;" {%end%}>办结审核</a>
+            </li> 
+        <li class="g1 g1-left">
+            <div class="dropdown">
+                  <a href="javascript:void(0)" class="btn  {%if params['count_way']=='project'%}btn-primary{%else%}btn-default{%end%} btn-sm" {%if params['count_way']!='project'%}style="background-color: #9ec6ef;" {%end%} id='project_btn'>查看统计(办结业务)
+                  <span class="fa fa-caret-down"></span>  
+                  </a>
+                  
+                  <div class="dropdown-content">
+                    <a href="?tag=project_logoff_list&count_way=project&count_type=day" >按日统计 </a>
+                    <a href="?tag=project_logoff_list&count_way=project&count_type=month">按月统计 </a>
+                    <a href="?tag=project_logoff_list&count_way=project&count_type=week">按周统计</a>
+                  </div>
+                </div>
+                </li>
+                <li class="g1 g1-left">
+                    <div class="dropdown">
+                          <a href="javascript:void(0)" class="btn  {%if params['count_way']=='gs'%}btn-primary{%else%}btn-default{%end%} btn-sm" {%if params['count_way']!='gs'%}style="background-color: #9ec6ef;" {%end%} id='project_btn'>查看统计(工商专员)
+                          <span class="fa fa-caret-down"></span>  
+                          </a>
+                          
+                          <div class="dropdown-content">
+                            <a href="?tag=project_logoff_list&count_way=gs&count_type=day" >按日统计 </a>
+                            <a href="?tag=project_logoff_list&count_way=gs&count_type=month">按月统计 </a>
+                            <a href="?tag=project_logoff_list&count_way=gs&count_type=week">按周统计</a>
+                          </div>
+                        </div>
+                        </li>
 
+                        <li class="g1 g1-left">
+
+                          <a href="/project?tag={{tag}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}&output=1" class="btn btn-info">下载当前数据</a>
+                        </li>
       </ol>
 
 
@@ -28,9 +100,11 @@
 
 
         <tr>
+          {%if not params['count_type']%}
             <td >
                 <input value="{{params['key']}}" class="form-control" type="text" name="key" placeholder="编号/业务/客户/公司">
             </td>
+          {%end%}
       <td>
 <select name="member_id" class="form-control" >
   <option  value="">跟进人</option>
@@ -56,8 +130,15 @@
                  <td>
 <input type="hidden" name="tag" value="{{tag}}"/>
 <input type="hidden" name="state_id" value="{%if state_id%}{{state_id}}{%end%}"/>
-
-
+{%if params['count_type']%}
+<input type="hidden" name="count_type" value="{{params['count_type']}}" >
+{%end%}
+{%if params['type_id']%}
+<input type="hidden" name="type_id" value="{{params['type_id']}}" >
+{%end%}
+{%if params['count_way']%}
+<input type="hidden" name="count_way" value="{{params['count_way']}}" >
+{%end%}
        </td>   
             
 
@@ -67,20 +148,11 @@
     </tr>
  </table>
 
-
-
-
-
-
-
-
-
-
 </form>
 
 
 
-
+{%if not params['count_type']%}
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
     <a class="btn btn-light  nav_padding  " style="font-size:12px;" href="/project?tag=project_logoff_list">全部
         <span class="badge badge-danger"></span>
@@ -95,10 +167,27 @@
 
 
 </div>
-
+{%else%}
+<div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="btn btn-light  nav_padding {%if not params['type_id']%}active{%end%} " style="font-size:12px;" href="/project?tag=project_logoff_list&count_way={{params['count_way']}}&count_type={{params['count_type']}}">全部
+       
+    </a>
+    {%if params['count_way']=='project'%}
+    {%for item in t_logoff_type_gs%}
+    <a class="btn btn-light  nav_padding {%if  str(item.order_int)==params['type_id']%}active{%end%}" style="font-size:12px;" href="/project?tag=project_logoff_list&count_way={{params['count_way']}}&count_type={{params['count_type']}}&type_id={{item.order_int}}">{{item.income_name}}
+    </a>
+{%end%}
+    {%else%}
+    {%for item in t_logoff_type_gs%}
+    <a class="btn btn-light  nav_padding {%if  str(item.uid)==params['member_id']%}active{%end%}" style="font-size:12px;" href="/project?tag=project_logoff_list&count_way={{params['count_way']}}&count_type={{params['count_type']}}&member_id={{item.uid}}">{{item.uid_name}}
+    </a>
+{%end%}
+    {%end%}
+{%end%}
 
 
 </nav>
+{%if not params['count_type']%}
 <div class="table-responsive">
                   <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0"
                    style="font-size:13px;min-width:1200px;">
@@ -143,14 +232,18 @@
  
 
                                 {%elif item.state_id==1%}
+
+                                {%if role=="7" or role=="8"%}
                                     <a href="javascript:void(0)" msg="{{item.uid_name}}的{{item.type_id_name}}" class="btn btn-primary btn-sm btn_save_logoff_confirm" logoff_id="{%if item.id%}{{item.id}}{%else%}0{%end%}" type_id="{{item.type_id}}" mid="{{item.mid}}" project_id="{{item.project_id}}" >审核通过</a>
                                  
                                    <a href="javascript:void(0)" msg="{{item.uid_name}}的{{item.type_id_name}}" class="btn btn-danger btn-sm btn_save_reject" logoff_id="{%if item.id%}{{item.id}}{%else%}0{%end%}" type_id="{{item.type_id}}" mid="{{item.mid}}" project_id="{{item.project_id}}" >驳回</a>
                
 
-                              
+                              {%else%}
+                              <span class="badge badge-primary">待审核</span>
+                                
                             
-                                    
+                                       {%end%} 
                                     
 
                                  {%end%} 
@@ -166,17 +259,97 @@
               
                 </table>
             </div>
+{%else%}
+<div class="table-responsive">
+  <table class="table table-bordered fayetable" id="dataTable">
+    <thead class="table_class">
+      <tr>
+        {%if count.every_count%}
+        <th width='120'>日期</th>
+
+        <th width='50'>合计</th>
+        {%for item in count.every_count.split(',')%}
+          <th width='80'>
+            {{item.split('|')[0]}}
+          </th>
+        {%end%}
+        <th></th>
+        {%end%}
+      </tr>
+    </thead>
+    <tbody>
+        {%if count.every_count%}
+      <tr>
+       
+        <td>
+          合计
+        </td>
+        <td>
+            <a href="javascript:void(0);" class="logoff_detail"
+            {%for k,v in params.items()%}{%if v%} {{k}}="{{v}}"{%end%}{%end%}
+         >{{count.ssc}}
+         </a>
+          </td>
+        {%for item in count.every_count.split(',')%}
+        <td>
+            <a href="javascript:void(0);" class="logoff_detail"
+            name="{{item.split('|')[0]}}" {%for k,v in params.items()%}{%if v%} {{k}}="{{v}}"{%end%}{%end%}
+            >{{item.split('|')[1]}}</a>
+         
+        </td>
+      {%end%}
+      <td></td>
+    </tr>
+    {% for item in t_projects_logoff%}
+    <tr>
+      <td>{{item.df}}</td>
+      <td>
+          <a href="javascript:void(0);" class="logoff_detail"
+          df="{{item.df}}" {%for k,v in params.items()%}{%if v%} {{k}}="{{v}}"{%end%}{%end%}
+       >
+        {{item.sc}}
+       </a>
+        </td>
+      {%for r in count.every_count.split(',')%}
+      <td>
+      {%for row in item.gc.split(',')%}
+      {%if r.split('|')[0]==row.split('|')[0]%}
+        <a href="javascript:void(0);" class="logoff_detail"
+           df="{{item.df}}" name="{{row.split('|')[0]}}"
+           {%for k,v in params.items()%}{%if v%} {{k}}="{{v}}"{%end%}{%end%}
+        >
+            {{row.split('|')[1]}}
+        </a>
+   
+     
+      {%end%}
+      {%end%}
+    </td>
+      {%end%}
+      <td></td>
+    </tr>
+    {%end%}
+        {%else%}
+        <tr>
+            <td colspan="20">还没有哦~</td>
+        </tr>
+        {%end%}
+        
+    </tbody>
+  </table>
+</div>
+{%end%}
 <div class="col-sm-12 col-md-7">
    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=my&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="?tag={{tag}}&page={{ pagination.page - 1}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
         {% end %}
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="?tag={{tag}}&page={{page}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -188,7 +361,7 @@
           {%end %}
 
          {% if pagination.has_next %}
-         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag={{tag}}&page={{pagination.page+1}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>
@@ -225,8 +398,31 @@
           </div>
       </div>
     </div>
-
-
+</div>
+    <div class="modal fade" id="modal_bj" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document" >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="projects_note">办结</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+    
+      <div class="modal-body form-horizontal" id="site_mod_bj">
+    
+    
+          
+            </div>
+            <div class="modal-footer">
+            
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+  
+    
+            </div>
+          </div>
+        </div>
+        </div>
 {%end%}
 
 
@@ -297,7 +493,38 @@ language: 'zh-CN',initialDate: new Date()});
 
 
      })
-
+    $(".logoff_detail").click(function () { 
+      $.get('?tag=logoff_list',{
+        'df':$(this).attr('df'),
+        'name':$(this).attr('name'),
+        'type_id':$(this).attr('type_id'),
+        'member_id':$(this).attr('member_id'),
+        'start':$(this).attr('start'),
+        'end':$(this).attr('end'),
+        'count_type':$(this).attr('count_type'),
+        'count_way':$(this).attr('count_way')
+      },function (data) { 
+        $("#site_mod_bj").html(data)
+        $('#modal_bj').modal('show')
+       })
+    })
+  $('body').on('click','.page_btn',function () { 
+    
+  $.get('?tag=logoff_list',{
+    'df':$(this).attr('df'),
+      'name':$(this).attr('name'),
+      'type_id':$(this).attr('type_id'),
+      'member_id':$(this).attr('member_id'),
+      'start':$(this).attr('start'),
+      'end':$(this).attr('end'),
+      'count_type':$(this).attr('count_type'),
+      'count_way':$(this).attr('count_way'),
+     'page':$(this).attr('page')
+   },function (data) { 
+    $("#site_mod_bj").html(data)
+    $('#modal_bj').modal('show')
+    })
+ })
     })
  </script>
 

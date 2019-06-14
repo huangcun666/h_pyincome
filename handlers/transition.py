@@ -8,6 +8,7 @@ import urllib2
 import tornado.httpclient
 import sys, re,os,uuid
 import urllib,datetime
+import events
 reload(sys)
 from tornado.options import define, options
 sys.setdefaultencoding('utf8')
@@ -356,7 +357,7 @@ class CustomerTransitionHandler(BaseHandler):
             remark = self.get_argument("remark", "")
             tran_by = self.get_argument("tran_by")
             transition_id = int(self.get_argument("transition_id", 0))
-
+            txt=''
             file_path = None
             if not rec_by:
                 self.write("接收方的名字不能为空")
@@ -392,6 +393,7 @@ class CustomerTransitionHandler(BaseHandler):
                     output_file.write(file1["body"])
                     file_path = url_fname
                 if transition_id:
+                    t_transition=self.db_customer.get(' select * from t_transition where id=%s ',transition_id)
                     result = self.db_customer.execute("""
                         update t_transition set 
                             `remark`=%s,
@@ -403,6 +405,16 @@ class CustomerTransitionHandler(BaseHandler):
                             uid_name=%s where id=%s
                     """, remark, file_path, tran_by, rec_by, tran_at, uid,
                                              uid_name, transition_id)
+                    if t_transition.tran_by!=tran_by:
+                        txt+=',移交方:'+t_transition.tran_by+' 修改为 '+tran_by
+                    if t_transition.rec_by!=rec_by:
+                        txt+=',签收方:'+t_transition.rec_by+' 修改为 '+rec_by
+                    if str(t_transition.tran_at.strftime('%Y-%m-%d'))!=tran_at:
+                        txt+=',交接时间:'+str(t_transition.tran_at.strftime('%Y-%m-%d'))+' 修改为 '+tran_at
+                    if t_transition.remark!=remark:
+                        txt+=',备注:',t_transition.remark+' 修改为 '+remark
+                    if txt:
+                        events.add_project_event(self,'0','修改交接资料',txt[1:],uid,uid_name,customer_id)
                 else:
                     result = self.db_customer.execute("""
                             INSERT INTO `t_transition`
@@ -425,6 +437,9 @@ class CustomerTransitionHandler(BaseHandler):
                             %s,%s,%s);
                     """, customer_id, remark, file_path,dt, tran_by, rec_by,
                                              tran_at, uid, uid_name)
+                    if result>0:
+                        txt='移交方:'+tran_by+',签收方:'+rec_by+',交接时间:'+tran_at+',备注:'+remark
+                        events.add_project_event(self,'0','增加交接资料',txt,uid,uid_name,customer_id)
                 self.write(str(result))
 
         elif tag == "delete":
@@ -437,6 +452,7 @@ class CustomerTransitionHandler(BaseHandler):
                 result = self.db_customer.execute(
                     "delete from t_transition where id=%s and customer_id=%s",
                     id, customer_id)
+                events.add_project_event(self,'0','删除交接资料','删除id为'+id+'交接资料',uid,uid_name,customer_id)
                 self.write(str(result))
 
 

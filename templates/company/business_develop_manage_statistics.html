@@ -1,0 +1,168 @@
+{% extends "../common_milepost/base.html" %} {%block title%}{%if params['my']%}我的商机统计{%elif '314' in role_list and not params['my'] %}总商机统计{%end%}{%end%} 
+{%block addstyle%}
+<style>
+.g1-right1{
+    position:absolute;
+    right:32px;
+}
+.g1-right2{
+    position:absolute;
+    right:120px;
+}
+</style>
+{%end%}
+ {%block li%}
+ <li class="g1 g1-left">
+<a href="?tag=business_develop_manage_statistics&statistics_type=fankui{%if params['my']%}&my={{params['my']}}{%end%}" {%if params['statistics_type']=='fankui'%}class="btn btn-primary btn-sm"{%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%} >反馈商机统计</a> 
+</li>
+<li class="g1 g1-left">
+        <a href="?tag=business_develop_manage_statistics&statistics_type=tuiguang{%if params['my']%}&my={{params['my']}}{%end%}" {%if params['statistics_type']=='tuiguang'%}class="btn btn-primary btn-sm"{%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%} >推广商机统计</a> 
+        </li>
+        <li class="g1 g1-left">
+                <a href="?tag=business_develop_manage_statistics&statistics_type=fenpei{%if params['my']%}&my={{params['my']}}{%end%}" {%if params['statistics_type']=='fenpei'%}class="btn btn-primary btn-sm"{%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%} >商机分配统计</a> 
+                </li>
+ <li class="g1 g1-right1">
+        <a href="?tag=business_develop_manage" class="btn btn-primary btn-sm" >商机管理</a>
+   
+    </li>
+{%if params['my'] and '314' in role_list%}
+
+<li class="g1 g1-right2">
+
+        <a href="?tag=business_develop_manage_statistics{%if params['statistics_type']%}&statistics_type={{params['statistics_type']}}{%end%}{%if params['fenpei_type']%}&fenpei_type={{params['fenpei_type']}}{%end%}{%if params['invalid']%}&invalid={{params['invalid']}}{%end%}" class="btn btn-primary btn-sm">总商机统计</a>
+
+     
+    </li>
+{%elif not params['my']%}
+<li class="g1 g1-right2">
+<a href="?tag=business_develop_manage_statistics{%if params['statistics_type']%}&statistics_type={{params['statistics_type']}}{%end%}{%if params['fenpei_type']%}&fenpei_type={{params['fenpei_type']}}{%end%}{%if params['invalid']%}&invalid={{params['invalid']}}{%end%}&my=1" class="btn btn-primary btn-sm">我的商机统计</a>
+    </li>
+{%end%}
+ {%end%}
+
+      {%block nav%}
+      {%if params['statistics_type']=='tuiguang'%}
+      <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="btn btn-light  nav_padding {%if not params['invalid']%} active{%end%}"
+                    href="/company?tag=business_develop_manage_statistics&statistics_type=tuiguang{%if params['my']%}&my={{params['my']}}{%end%}" style="font-size:13px;">商机量
+                    <span class="badge badge-danger"></span>
+                    </a>
+                <a class="btn btn-light  nav_padding {%if params['invalid']=='1'%} active{%end%}"
+                href="/company?tag=business_develop_manage_statistics&statistics_type=tuiguang&invalid=1{%if params['my']%}&my={{params['my']}}{%end%}" style="font-size:13px;">无效商机量
+                <span class="badge badge-danger"></span>
+                </a>
+
+               </div>
+        </nav>
+        {%elif  params['statistics_type']=='fenpei'%}
+        <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="btn btn-light  nav_padding {%if params['fenpei_type']=='new_tuiguang'%} active{%end%}"
+                        href="/company?tag=business_develop_manage_statistics&statistics_type=fenpei&fenpei_type=new_tuiguang{%if params['my']%}&my={{params['my']}}{%end%}" style="font-size:13px;">新增推广量
+                        <span class="badge badge-danger"></span>
+                        </a>
+                    <a class="btn btn-light  nav_padding {%if params['fenpei_type']=='new_fankui'%} active{%end%}"
+                    href="/company?tag=business_develop_manage_statistics&statistics_type=fenpei&fenpei_type=new_fankui{%if params['my']%}&my={{params['my']}}{%end%}" style="font-size:13px;">新增反馈量
+                    <span class="badge badge-danger"></span>
+                    </a>
+                    <a class="btn btn-light  nav_padding {%if params['fenpei_type']=='fq_tuiguang'%} active{%end%}"
+                    href="/company?tag=business_develop_manage_statistics&statistics_type=fenpei&fenpei_type=fq_tuiguang{%if params['my']%}&my={{params['my']}}{%end%}" style="font-size:13px;">放弃推广量
+                    <span class="badge badge-danger"></span>
+                    </a>
+                    <a class="btn btn-light  nav_padding {%if params['fenpei_type']=='fq_fankui'%} active{%end%}"
+                    href="/company?tag=business_develop_manage_statistics&statistics_type=fenpei&fenpei_type=fq_fankui{%if params['my']%}&my={{params['my']}}{%end%}" style="font-size:13px;">放弃反馈量
+                    <span class="badge badge-danger"></span>
+                    </a>
+                    <a class="btn btn-light  nav_padding {%if params['fenpei_type']=='transfer_tuiguang'%} active{%end%}"
+                    href="/company?tag=business_develop_manage_statistics&statistics_type=fenpei&fenpei_type=transfer_tuiguang{%if params['my']%}&my={{params['my']}}{%end%}" style="font-size:13px;">转让推广量
+                    <span class="badge badge-danger"></span>
+                    </a>
+                    <a class="btn btn-light  nav_padding {%if params['fenpei_type']=='transfer_fankui'%} active{%end%}"
+                    href="/company?tag=business_develop_manage_statistics&statistics_type=fenpei&fenpei_type=transfer_fankui{%if params['my']%}&my={{params['my']}}{%end%}" style="font-size:13px;">转让反馈量
+                    <span class="badge badge-danger"></span>
+                    </a>
+                   </div>
+            </nav>
+        {%end%}
+        {%end%}
+        {%block form_search%}
+        <td>
+        <input placeholder="人员" type="text" class="form-control" name="search_referrer" value="{%if params['search_referrer']%}{{params['search_referrer']}}{%end%}" >           
+        </td>
+        {%end%}
+        {%block form_tags%}
+        {%if params['my']%}
+        <input type="hidden" name="my" value="{{params['my']}}">
+        {%end%}
+        {%if params['statistics_type']%}
+        <input type="hidden" name="statistics_type" value="{{params['statistics_type']}}">
+        {%end%}
+        {%if params['invalid']%}
+        <input type="hidden" name="invalid" value="{{params['invalid']}}">
+        {%end%}
+        {%if params['fenpei_type']%}
+        <input type="hidden" name="fenpei_type" value="{{params['fenpei_type']}}">
+        {%end%}
+        {%end%}
+        {%block ths%}
+       
+                <th width="100">日期</th>
+                <th  width="100">合计</th>
+                {%if count.every_count%}
+                {%for item in count.every_count.split(',')%}
+                <th  width="100">{{item.split('|')[0]}}</th>
+                {%end%}
+                {%end%}
+                <th></th>
+        {%end%}
+        {%block sum_data%}
+        <tr>
+                <td>合计</td>
+                <td>{{count.ssc}}</td>
+                {%for row in count.every_count.split(',')%}
+                  <td>{{row.split('|')[1]}}</td>
+                {%end%}
+                </tr>
+        {%end%}
+        {%block data%}
+                            
+        <tr>
+                <td>{{item.df}}</td>
+                <td>{{item.sc}}</td>
+                {%for row in count.every_count.split(',')%}
+                <td>
+                    {%for m in item.gc.split(',')%}
+                    {%if m.split('|')[0]==row.split('|')[0] %}
+                    {{m.split('|')[1]}}
+                    {%break%}
+                    {%end%}
+                    {%end%}
+                </td>
+                {%end%}
+              </tr>
+        {%end%}
+
+        {%block page_params%}
+        {%for k,v in params.items()%}{%if v!=''%}&{{k}}={{v}}{%end%}
+        {%end%}
+        {%end%}                  
+   
+
+
+
+  {%block js%}
+
+<script>
+ $(function () {
+    _xsrf =  getCookie("_xsrf")
+    $('input[name=search_referrer]').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
+ })
+</script>
+{%end%}

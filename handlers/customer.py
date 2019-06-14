@@ -99,6 +99,44 @@ class CustomerHandler(BaseHandler):
                 page_count=page_count,
                 keyword=keyword,lp=lp,jz=jz,qtype=qtype)
 
+        elif tag=="customer_his_income":
+            name = self.get_argument('name',"")
+            qtype = self.get_argument("qtype","")
+            keyword = self.get_argument("keyword","")
+            my = self.get_argument("my","1")
+            lp = self.get_argument("lp", "")
+            page_count=self.get_argument('page_count','')
+
+            sql=""            
+            if keyword:
+                sql = " and (company like '%%" + keyword + "%%' or project_name like '%%" + keyword + "%%' or income_remark like '%%" + keyword + "%%') "
+            if role=="1" or role=="9" or role=="10" or role=="12" :
+                my="1"
+            if my=="1":
+                sql+="  and (sale like '%%" + uid_name + "%%' or dx like '%%" + uid_name + "%%' or gd like '%%" + uid_name + "%%')      "
+            print(sql)
+            page = int(self.get_argument("page", 1))
+            pre_page = 20
+            if page_count:
+                pre_page=int(page_count)
+            count = self.db_customer.get(
+                '''SELECT count(*) count FROM t_customer_his_income   where 0=0
+            ''' +sql)
+            pagination = Pagination(page, pre_page, count.count, self.request)
+            startpage = (page - 1) * pre_page
+            customers = self.db_customer.query('''
+            select * from t_customer_his_income  where 0=0 ''' + sql + '''
+                                    order by created_at desc limit %s,%s
+                ''',  startpage, pre_page)
+
+            self.render(
+                'c/customer/customer_his_income.html',
+                my=my,
+                customers=customers,
+                pagination=pagination,
+                tag=tag,
+                page_count=page_count,
+                keyword=keyword,qtype=qtype)
 
         elif tag =="customer_list_rec":
             sql = ""
@@ -258,23 +296,60 @@ class CustomerHandler(BaseHandler):
             lp = self.get_argument("lp", "")
             kj=self.get_argument('kj','')
             my = self.get_argument("my",None)
+            mmtag= self.get_argument("mmtag",'')
+            show_tag = self.get_argument("show_tag","")
             t_user = self.db_customer.query("select * from "+  options.mysql_database + ".t_user where role=10 ")
             if keyword:
-                sql = " and (company like '%%" + keyword + "%%')"
+                sql += " and (company like '%%" + keyword + "%%')"
             if jz:
-                sql = sql + " and (customer_type_name like '%%" + jz + "%%')"
+                sql +=  " and (customer_type_name like '%%" + jz + "%%')"
             if lp:
-                sql = sql + " and (customer_type_name like '%%" + lp + "%%')"
+                sql +=  " and (customer_type_name like '%%" + lp + "%%')"
 
             if my:
-                sql = sql + " and acc_uid = " + uid
+                sql +=  " and acc_uid = " + uid
             if kj:
                 sql =  sql+" and acc_uid_name='"+kj+"' "
+            t_customer_some_group = None
+            if mmtag:
+                if mmtag=="1":
+                    sql+="""
+                    and  (company_reguid is null or company_reguid ='')
+                    """
+                elif mmtag=="2":
+                    sql+="""
+                    and  (length(company_reguid) <>18 and length(company_reguid) >5)
+                    """
+                elif mmtag=="3":
+                    t_customer_some_group = self.db_customer.query("""
+                            select  company_reguid,count(*) count from  t_customer where length(company_reguid) >5  group  by  company_reguid  having  count(company_reguid) > 1
+
+                    """)
+                    
+                elif mmtag=="4":
+                    sql+="""
+                    and  company_reguid='{}'
+                    """.format(show_tag)
+                elif mmtag=="5":
+                    t_customer_some_group = self.db_customer.query("""
+                            select  company,count(*) count from  t_customer where length(company) >5  group  by  company  having  count(company) > 1
+
+                    """)
+                elif mmtag=="6":
+                    sql+="""
+                    and  company='{}'
+                    """.format(show_tag)
+
+            else:
+                sql+="""
+                and is_get <> 0
+                    and company_reguid_new is not  null
+                """
             query_str = ""
             query_str_count =""
             customers = None
             tyctype_sql= ""
-            if tyctype:
+            if tyctype!="0":
                 tyctype_sql = " and is_get=%s" % (tyctype)
 
             page= int(self.get_argument("page",1))
@@ -310,18 +385,17 @@ class CustomerHandler(BaseHandler):
 
 
             else:
-                if my==None and is_manager=='1':
+                if not  my and is_manager=='1':
                     count = self.db_customer.get(
-                        '''SELECT count(*) count FROM t_customer where is_close=0 and is_get <> 0 and company_reguid_new is not  null'''
+                        '''SELECT count(*) count FROM t_customer where is_close=0'''
                         + sql + tyctype_sql)
                     pagination = Pagination(page, pre_page, count.count, self.request)
                     startpage = (page - 1) * pre_page
 
                     customers = self.db_customer.query(
-                        '''select * from t_customer  where is_close=0 and is_get <> 0
-                    and company_reguid_new is not  null ''' + sql +
+                        '''select * from t_customer  where is_close=0  ''' + sql +
                         tyctype_sql + '''
-                    order by is_get_at desc limit %s,%s''', startpage,
+                    order by id desc limit %s,%s''', startpage,
                         pre_page)
 
                 elif my:
@@ -332,9 +406,9 @@ class CustomerHandler(BaseHandler):
                     startpage = (page - 1) * pre_page
 
                     customers = self.db_customer.query(
-                        '''select * from t_customer  where is_close=0  and is_get <> 0 and company_guid_new <> null'''
+                        '''select * from t_customer  where is_close=0  '''
                         + sql  + tyctype_sql +
-                        ''' order by created_at desc limit %s,%s''', startpage,
+                        ''' order by id desc limit %s,%s''', startpage,
                         pre_page)
 
 
@@ -342,10 +416,13 @@ class CustomerHandler(BaseHandler):
         #  customers = self.db_customer.query(query_str, startpage, pre_page)
             self.render(
                 'c/customer/customer_list_uid.html',
+                t_customer_some_group=t_customer_some_group,
                 customers=customers,
                 pagination=pagination,
+                show_tag=show_tag,
                 tag=tag,
                 keyword=keyword,
+                mmtag=mmtag,
                 lp=lp,
                 jz=jz,
                 my=my,
@@ -361,39 +438,79 @@ class CustomerHandler(BaseHandler):
             qtype = self.get_argument("qtype","")
             by_tag = self.get_argument("by_tag","")
             tag_id = int(self.get_argument("tag_id",0))
+            tel = self.get_argument("tel","")
+            s_is_general = self.get_argument("s_is_general","")
             jz = self.get_argument("jz", "")
             lp = self.get_argument("lp", "")
             kj=self.get_argument('kj','')
+            s_is_check = self.get_argument("s_is_check","")
             my = self.get_argument("my",None)
             check_kj=self.get_argument('check_kj','')
             check_under=self.get_argument('check_under','')
             output = self.get_argument("output","")
             page_count=self.get_argument('page_count','')
             new_tag = self.get_argument("new_tag","1")
-            tag_parent_id = int(self.get_argument("tag_parent_id",1))
+            tag_parent_id = self.get_argument("tag_parent_id","")
+            s_is_building=self.get_argument('s_is_building','')
             acc_uids=[]
             t_user_relation=''
             t_user = self.db_customer.query("select * from "+  options.mysql_database + ".t_user where role=10 ")
+            params={
+                'keyword':keyword,
+                'tel':tel,
+                'kj':kj,
+                's_is_general':s_is_general,
+                's_is_check':s_is_check,
+                's_is_building':s_is_building,
+                'my':my,
+                'new_tag':new_tag,
+                'tag_id':tag_id,
+                'by_tag':by_tag,
+                'jz':jz,
+                'lp':lp,
+                'check_under':check_under,
+                'check_kj':check_kj,
+                'tag_parent_id':tag_parent_id,
+                'page_count':page_count,
+                'qtype':qtype
+            }
+            
             mysql=""
             if keyword:
-                sql = " and (a.company like '%%" + keyword + "%%')"
-            if jz:
-                sql = sql + " and (a.customer_type_name like '%%" + jz + "%%')"
-            if lp:
-                sql = sql + " and (a.customer_type_name like '%%" + lp + "%%')"
-            if by_tag:
-                sql = sql + " and (a.customer_type_name like '%%" + by_tag + "%%')"
+                id_sql=" "
+                if keyword.isdigit():
+                    id_sql    =" a.id = " + keyword +" or "
+
+                sql += """ 
+                        and ("""+id_sql+""" a.company like '%%""" + keyword + """%%' or a.company_reguid like '%%""" + keyword + """%%' )
+                
+                
+                """
+            if s_is_check:
+                if s_is_check=="1":
+                    sql+=" and bb.is_check=1 and bb.btype_id=1"
+                elif s_is_check=="2":
+                    sql+=" and bb.is_check=1 and bb.btype_id=0"
+                else:
+                    sql += " and bb.is_check=0 " 
+            if s_is_building:
+                sql+=' and a.is_building=%s '%s_is_building
+            if s_is_general:
+                sql+=" and a.is_general={} ".format(s_is_general)
+            mysql=""
             if my:
-                mysql =  " and a.acc_uid = " + uid
-            sql +=sql+mysql
+                sql +=  " and a.acc_uid = " + uid
+                mysql+=" and a.acc_uid = " + uid
+            if tel:
+                sql+="""  and (a.reg_tel like '%%"""+tel+"""%%' or  a.id in (select customer_id from t_linkman where tel like '%%"""+tel+"""%%'))"""
             if kj and not check_under:
 
                 if kj and  kj=="100000":
-                     sql =  sql+" and a.acc_uid=0 "
+                     sql +=  sql+" and a.acc_uid=0 "
                 else:
-                    sql =  sql+" and a.acc_uid_name='"+kj+"' "
+                    sql +=  sql+" and a.acc_uid_name='"+kj+"' "
             if check_kj and check_under and kj!="100000":
-                sql=sql+" and a.acc_uid_name='"+check_kj+"' "
+                sql+=" and a.acc_uid_name='"+check_kj+"' "
 
             query_str = ""
             query_str_count =""
@@ -415,121 +532,109 @@ class CustomerHandler(BaseHandler):
                 else:
                     sql+=" and tag_id={}  ".format(tag_id)
             tag_parent_id_sql=""
-            if tag_parent_id:
+            if tag_parent_id and new_tag:
                 tag_parent_id_sql=" and tag_parent_id={}".format(tag_parent_id)
                 sql+=tag_parent_id_sql
 
+            t_user_relation=self.db.query('''
+                select a.* from t_user_relation a
+                inner join t_user_relation b on
+                find_in_set(a.department_name,b.department_name)
+                and b.uid=%s and b.is_leader<>0
+                where a.uid!=b.uid and a.is_leader=0
+                ''',uid)
+            under_sql  = ""
+            if t_user_relation and check_under:
+                for item in t_user_relation:
+                    acc_uids.append(int(item.uid))
+                acc_uids=tuple(acc_uids)
+            
+                if str(acc_uids)[-2]==',':
+                    acc_uids=str(acc_uids)[:-2]+')'
+                else:
+                    acc_uids=str(acc_uids)
 
-            if qtype=="lname":
-                count = self.db_customer.get(
-                    '''SELECT count(*) count FROM t_customer a inner join (select customer_id,(concat(name,' '))
-                        customer_name from t_linkman )  b on a.id=b.customer_id
-
-                        where customer_name like  '%%''' + keyword +
-                    '''%%' ''' + sql)
-                pagination = Pagination(page, pre_page, count.count, self.request)
-                startpage = (page - 1) * pre_page
-                customers = self.db_customer.query('''SELECT a.*,
-                 bb.is_check,bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num
-                ,b.customer_name FROM t_customer a 
-                inner join (select customer_id,(concat(name,' '))
-                        customer_name from t_linkman )  b on a.id=b.customer_id
+                under_sql +=" and  a.acc_uid in  "+acc_uids
+                count = self.db_customer.get('''
+                    select count(*) count
+                from t_customer a
                     left join t_customer_clearly bb on a.id=bb.customer_id
-                    left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id  limit 1 )
-
-                        where customer_name like  '%%''' + keyword + '''%%' ''' + sql+''' limit %s,%s''', startpage, pre_page)
-
-            elif qtype=="tel":
-                count = self.db_customer.get( '''SELECT count(*) count FROM t_customer a inner join (select customer_id,(concat(tel,' '))
-                        ctel from t_linkman )  b on a.id=b.customer_id
-
-                        where ctel like  '%%''' + keyword + '''%%'  ''' + sql+''' order by id desc ''')
-                pagination = Pagination(page, pre_page, count.count, self.request)
-                startpage = (page - 1) * pre_page
-                customers = self.db_customer.query(
-                    '''SELECT a.*,
-                    bb.is_check,bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num,
-                    b.ctel FROM t_customer a inner join (select customer_id,(concat(tel,' '))
-                    ctel from t_linkman )  b on a.id=b.customer_id
-                    left join t_customer_clearly bb on a.id=bb.customer_id
-                    left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id  limit 1 )
-                 
-                        where ctel like  '%%''' + keyword + '''%%'   ''' +
-                    sql + ''' order by a.id desc limit %s,%s''', startpage, pre_page)
-
-
-            else:
-                t_user_relation=self.db.query('''
-                    select a.* from t_user_relation a
-                    inner join t_user_relation b on
-                    find_in_set(a.department_name,b.department_name)
-                    and b.uid=%s and b.is_leader<>0
-                    where a.uid!=b.uid and a.is_leader=0
-                    ''',uid)
-                if t_user_relation and check_under:
-                    for item in t_user_relation:
-                        acc_uids.append(int(item.uid))
-                    acc_uids=tuple(acc_uids)
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id  limit 1 )
                 
-                    if str(acc_uids)[-2]==',':
-                        acc_uids=str(acc_uids)[:-2]+')'
-                    else:
-                        acc_uids=str(acc_uids)
-                    count = self.db_customer.get(
-                    '''SELECT count(*) count FROM t_customer a  where a.acc_uid in '''+acc_uids+''' and a.is_close=0
-                ''' +sql)
+                where a.acc_uid in  '''+acc_uids+'''  and a.is_close=0 ''' + sql )
 
-                    pagination = Pagination(page, pre_page, count.count, self.request)
-                    startpage = (page - 1) * pre_page
-                    customers = self.db_customer.query('''
-                    select a.*,bb.is_check,bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num,c.name,c.tel
-                    from t_customer a
-                     left join t_customer_clearly bb on a.id=bb.customer_id
-                    left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id  limit 1 )
-                 
-                    where a.acc_uid in  '''+acc_uids+'''  and a.is_close=0 ''' + sql + '''
-                                            order by a.id desc limit %s,%s
-                        ''', startpage, pre_page)
-                if my==None and is_manager=='1':
-                    count = self.db_customer.get( '''SELECT count(*) count FROM t_customer a where a.is_close=0''' + sql)
-                    pagination = Pagination(page, pre_page, count.count, self.request)
-                    startpage = (page - 1) * pre_page
-                    customers = self.db_customer.query('''
-                    select a.*,bb.is_check,bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num,c.name,c.tel
-                    from t_customer a
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page - 1) * pre_page
+                customers = self.db_customer.query('''
+                select a.*,bb.is_check,bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num,c.name,c.tel,
+                cc.is_check is_check1,cc.btype_id btype_id_1,cc.btype_id_name btype_id_name1,cc.ss_num ss_num1
+                from t_customer a
                     left join t_customer_clearly bb on a.id=bb.customer_id
-                    left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
-       
-                     where is_close=0 ''' + sql + '''
-                    order by a.id desc limit %s,%s''', startpage, pre_page)
-                    print '''
-                    select a.*,bb.is_check,bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num,c.name,c.tel
-                    from t_customer a
-                    left join t_customer_clearly bb on a.id=bb.customer_id
-                    left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by id desc limit 1 )
-       
-                               
-
-                     where is_close=0 ''' + sql + '''
-                    order by a.id desc limit %s,%s''',(startpage, pre_page)
-
-                elif my:
-                    count = self.db_customer.get( '''SELECT count(*) count FROM t_customer a where a.is_close=0''' + sql)
-                    pagination = Pagination(page, pre_page, count.count, self.request)
-                    startpage = (page - 1) * pre_page
-
-                    customers = self.db_customer.query('''
-                    select  a.*,bb.is_check,bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num,c.name,c.tel
-                   FROM t_customer a
-                    left join t_customer_clearly bb on a.id=bb.customer_id
-                    left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
-                  
-                    where a.is_close=0 ''' + sql + '''
-                    order by a.id desc limit %s,%s''', startpage, pre_page)
+                       left join t_customer_other_data cc on a.id=cc.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id  limit 1 )
+                
+                where a.acc_uid in  '''+acc_uids+'''  and a.is_close=0 ''' + sql + '''
+                                        order by a.id desc limit %s,%s
+                    ''', startpage, pre_page)
 
 
+            elif not my and is_manager=='1':
+                count = self.db_customer.get( '''SELECT count(*) count   from t_customer a
+                left join t_customer_clearly bb on a.id=bb.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
 
-            t_count_all = self.db_customer.get("select count(*) c from t_customer a where   a.is_close=0  " +tag_parent_id_sql+mysql)  
+                    where is_close=0 ''' + sql)
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page - 1) * pre_page
+                customers = self.db_customer.query('''
+                select a.*,bb.is_check,bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num,c.name,c.tel,
+                 cc.is_check is_check1,cc.btype_id btype_id_1,cc.btype_id_name btype_id_name1,cc.ss_num ss_num1
+                from t_customer a
+                left join t_customer_clearly bb on a.id=bb.customer_id
+                left join t_customer_other_data cc on a.id=cc.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
+
+                    where is_close=0 ''' + sql + '''
+                order by a.id desc limit %s,%s''', startpage, pre_page)
+                # print '''
+                # select a.*,bb.is_check,bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num,c.name,c.tel
+                # from t_customer a
+                # left join t_customer_clearly bb on a.id=bb.customer_id
+                # left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by id desc limit 1 )
+
+                            
+
+                #     where is_close=0 ''' + sql + '''
+                # order by a.id desc limit %s,%s''',(startpage, pre_page)
+
+            else :
+                count = self.db_customer.get( '''
+                select count(*) count
+                from t_customer a
+                left join t_customer_clearly bb on a.id=bb.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
+
+                    where is_close=0 ''' + sql )
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page - 1) * pre_page
+
+                customers = self.db_customer.query('''
+                 select  a.*,bb.is_check,bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num,c.name,c.tel,
+                  cc.is_check is_check1,cc.btype_id btype_id_1,cc.btype_id_name btype_id_name1,cc.ss_num ss_num1
+                FROM t_customer a
+                left join t_customer_clearly bb on a.id=bb.customer_id
+                   left join t_customer_other_data cc on a.id=cc.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
+                
+                where a.is_close=0 ''' + sql + ''' order by a.id desc limit %s,%s''', startpage, pre_page)
+
+
+
+            t_count_all = self.db_customer.get("""select count(*) c  from t_customer a
+                left join t_customer_clearly bb on a.id=bb.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
+
+                    where is_close=0  """ +tag_parent_id_sql+mysql+under_sql)  
             type_count_map= {}
             type_count_map[0] = ("全部",t_count_all.c)              
             if new_tag:
@@ -537,31 +642,57 @@ class CustomerHandler(BaseHandler):
                 "select * from t_type where tag='客户标签' and is_show=1  order by `order` ")
                 for row in t_customer_type:
                     if row.order_int==9:
-                        t_count = self.db_customer.get("select count(*) c  from t_customer a where is_year=1" +tag_parent_id_sql+mysql)
+                        t_count = self.db_customer.get("""select count(*) c  from t_customer a
+                left join t_customer_clearly bb on a.id=bb.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
+
+                    where is_close=0 and  is_year=1""" +tag_parent_id_sql+mysql+under_sql)
                     elif row.order_int==10:
-                        t_count = self.db_customer.get("select count(*) c  from t_customer a where is_clearly=1" +tag_parent_id_sql+mysql)
+                        t_count = self.db_customer.get("""select count(*) c  from t_customer a
+                left join t_customer_clearly bb on a.id=bb.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
+
+                    where is_close=0 and  is_clearly=1""" +tag_parent_id_sql+mysql+under_sql)
                     elif row.order_int==5:
-                        t_count = self.db_customer.get("select count(*) c  from t_customer a where is_building=1" +tag_parent_id_sql+mysql)                
+                        t_count = self.db_customer.get("""select count(*) c  from t_customer a
+                left join t_customer_clearly bb on a.id=bb.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
+
+                    where is_close=0 and  is_building=1""" +tag_parent_id_sql+mysql+under_sql)                
                     elif row.order_int==11:
-                        t_count = self.db_customer.get("select count(*) c  from t_customer a where tag_id=0"  +tag_parent_id_sql+mysql)                
+                        t_count = self.db_customer.get("""select count(*) c  from t_customer a
+                left join t_customer_clearly bb on a.id=bb.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
+
+                    where is_close=0 and  tag_id=0"""  +tag_parent_id_sql+mysql+under_sql)                
 
                     else:
-                        t_count = self.db_customer.get("select count(*) c from t_customer a where   tag_id={} ".format(row.order_int)+tag_parent_id_sql+mysql)
+                        t_count = self.db_customer.get("""select count(*) c  from t_customer a
+                left join t_customer_clearly bb on a.id=bb.customer_id
+                left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
 
+                    where is_close=0 and    tag_id={} """.format(row.order_int)+tag_parent_id_sql+mysql+under_sql)
+                #         print """select count(*) c  from t_customer a
+                # left join t_customer_clearly bb on a.id=bb.customer_id
+                # left join t_linkman c on  c.customer_id=a.id and c.id=(select id from t_linkman where customer_id=a.id order by is_first desc,id   limit 1 )
+
+                #     where is_close=0 and    tag_id={} """.format(row.order_int)+tag_parent_id_sql+mysql+under_sql
                     type_count_map[row.order_int] = (row.name,t_count.c)
-                    print type_count_map
+
+                    # print type_count_map
             else:
                 t_customer_type = self.db_customer.query(
                 "select * from t_type where tag='客户类型'")
                 for row in t_customer_type:
                   
-                    t_count = self.db_customer.get("select count(*) c from t_customer a where    (customer_type_name like '%%" + row.name + "%%') "+mysql)
+                    t_count = self.db_customer.get("select count(*) c from t_customer a where    (customer_type_name like '%%" + row.name + "%%') "+sql)
                     type_count_map[row.id] = (row.name,t_count.c)
 
 
             t_customer_tags = self.db_customer.query("select * from t_type where tag='客户标签'  and is_show=1  ")
-
+            #导出文件
             if output:
+                # print "hell word"
                 if not  my and is_manager=='1' or (role=="3" or role=="8"):
                     customers = self.db_customer.query('''select * from t_customer a  where a.is_close=0 ''' + sql + '''
                     order by a.id desc ''')
@@ -571,6 +702,7 @@ class CustomerHandler(BaseHandler):
                     order by a.id''')
 
                 wb=xlwt.Workbook()
+
                 sh=wb.add_sheet(u'客户列表')
                 sh.write(0,0,u'编号')
                 sh.write(0,1,u'公司名称')
@@ -584,19 +716,35 @@ class CustomerHandler(BaseHandler):
                     idx=idx+1
                     sh.write(idx,0,row.id)
                     sh.write(idx,1,row.company)
-                    sh.write(idx,2,row.customer_type_name)
+                    tags=""
+                    if row.tag_parent_id_name!=row.tag_id_name:
+                        tags=row.tag_parent_id_name+","
+                    if row.tag_id_name:
+                        tags+=row.tag_id_name+","
+                    if row.is_building:
+                        tags+=u"楼盘,"
+                    if row.is_year:
+                        tags+=u"工商年检,"
+                    if row.is_clearly:
+                        tags+=u"汇算清缴,"
+
+                    sh.write(idx,2,tags)
+
                     sh.write(idx,3,row.addr_type)
                     sh.write(idx,4,row.zone)
                     sh.write(idx,5,row.company_reguid)
                     sh.write(idx,6,row.acc_uid_name)
                     sh.write(idx,7,row.created_at.strftime('%Y-%m-%d'))
-                    print row
-                wb.save('media/output/customer_-'+uid_name+'.xls')
-                self.write({'output_path':'static/output/customer_-'+uid_name+'.xls'})
+                   # print row
+                wb.save('media/output/customer11111.xls')
+                self.write('<a href="static/output/customer11111.xls">下载</a>')
+                print "lllllll"
 
             else:
                 self.render(
                     'c/customer/customer_list.html',
+                    tel=tel,
+                    params=params,
                     get_payment_info=self.get_payment_info,
                     customers=customers,
                     type_count_map=type_count_map,
@@ -612,8 +760,11 @@ class CustomerHandler(BaseHandler):
                     lp=lp,
                     jz=jz,
                     my=my,
+                    s_is_general=s_is_general,
+                    s_is_building=s_is_building,
                     new_tag=new_tag,
                     kj=kj,
+                    s_is_check=s_is_check,
                     by_tag=by_tag,
                     check_kj=check_kj,
                     t_customer_type=t_customer_type,
@@ -846,61 +997,86 @@ class CustomerHandler(BaseHandler):
                 sql = """ 
                 inner join (
                     select group_concat(btype_id_name) gc,project_id from """ + options.mysql_database + """.t_projects_member
-                    where team_id=38 group by project_id
-                ) c on c.project_id=a.id
+                    where  not_transition=0 group by project_id 
+
+                ) c on c.project_id=a.id 
                 """
                 where_sql=""" and a.id not in 
                 (
                 select project_id from """ + options.mysql_database + """.t_projects_member
-                where btype_id=155 and last_milepost_id  in ('167','162')
-                and is_cancel=0   group by project_id 
-                ) """
+                where btype_id=155 and last_milepost_id  in ('167','162')  
+                and is_cancel=0  group by project_id 
+                )  and customer_company not in (select name from t_company_name where name=customer_company )  """
             elif state==2:
                 sql="""  
            
                      inner join (
                     select group_concat(btype_id_name) gc,project_id from """ + options.mysql_database + """.t_projects_member
-                    where team_id=38 group by project_id
+                    where btype_id is not null and not_transition=0 group by project_id
                 ) c on c.project_id=a.id
               """
-            else:
+                where_sql=""" and customer_company not in (select name from t_company_name where name=customer_company )  """
+            elif state==0:
                 sql = """  
                    inner join (
                 select project_id from """ + options.mysql_database + """.t_projects_member
-                where btype_id=155 and last_milepost_id  in ('167','162')
+                where btype_id=155 and last_milepost_id  in ('167','162') and not_transition=0
                 and is_cancel=0   group by project_id 
                 ) b on  b.project_id=a.id
                      inner join (
                     select group_concat(btype_id_name) gc,project_id from """ + options.mysql_database + """.t_projects_member
-                    where team_id=38 group by project_id
-                ) c on c.project_id=a.id
+                    where btype_id is not null and btype_id_name="公司注册" group by project_id
+                ) c on c.project_id=a.id 
+                """
+            
+            if state==3:
+                sql="""
+                     left join (
+                    select group_concat(btype_id_name) gc,project_id from """ + options.mysql_database + """.t_projects_member
+                
+                 group by project_id
+                ) c on c.project_id=a.id 
+                """
+                where_sql=""" where  company_uid is  null """
+            else:
+                where_sql="""
+                where (customer_company <> "")
+                    """+where_sql+"""
+                and (customer_company <> "无")  and (customer_company IS NOT NULL)
+                    and customer_company not in (select company from t_customer where company=customer_company ) 
                 """
             pre_page = 20
             count = 0
 
             if keyword:
-                sql += " and (customer_company like '%%" + keyword + "%%')"
+                if state==3:
+                    where_sql+="""
+                        and (a.id = '""" + keyword + """'
+                         or a.customer_company like '%%""" + keyword + """%%' or a.company_uid like '%%""" + keyword + """%%' )
+                    """
+                else:
+                    sql += """ 
+                        and (a.id = '""" + keyword + """'
+                         or a.customer_company like '%%""" + keyword + """%%' or a.company_uid like '%%""" + keyword + """%%' )
+                """
+           
             count = self.db_customer.get(
-            """select count(*) count from """+options.mysql_database+""".t_projects a  """+sql+""" where 
-            (customer_company <> "")
-             """+where_sql+"""
-            and (customer_company <> "无")  and (customer_company IS NOT NULL)
-                and customer_company not in (select company from t_customer where company=customer_company )   order by a.created_at desc""" )
+            """select count(*) count from """+options.mysql_database+""".t_projects a  """+sql+where_sql )
             pagination=Pagination(page,pre_page,count.count,self.request)
             startpage = (page - 1) * pre_page
             customers = self.db_customer.query(
-            """select a.*,c.gc from """+options.mysql_database+""".t_projects a """+sql+"""
-                where (customer_company <> "")
-                """+where_sql+"""
-            and (customer_company <> "无")  and (customer_company IS NOT NULL)
-                and customer_company not in (select company from t_customer where company=customer_company )  order by a.created_at desc limit %s,%s""",startpage,pre_page)
+            """select a.*,c.gc from """+options.mysql_database+""".t_projects a """+sql+where_sql+"""
+                 order by a.customer_company,created_at desc limit %s,%s""",startpage,pre_page)
             
-            
-            print     """select * from """+options.mysql_database+""".t_projects a """+sql+"""
-                where (customer_company <> "")
-                          """+where_sql+"""
-            and (customer_company <> "无")  and (customer_company IS NOT NULL)
-                and customer_company not in (select company from t_customer where company=customer_company )  order by a.created_at desc limit %s,%s"""
+            print(
+            """select a.*,c.gc from """+options.mysql_database+""".t_projects a """+sql+where_sql+"""
+                 order by a.customer_company,created_at desc
+            """)
+            # print     """select a.*,c.gc from """+options.mysql_database+""".t_projects a """+sql+"""
+            #     where (customer_company <> "")
+            #     """+where_sql+"""
+            # and (customer_company <> "无")  and (customer_company IS NOT NULL)
+            #     and customer_company not in (select company from t_customer where company=customer_company )  order by customer_company desc  limit %s,%s"""
 
             self.render(
                 'c/customer/customer_company.html',
@@ -950,9 +1126,9 @@ class CustomerHandler(BaseHandler):
                 self.write("not guid")
             else:
                 t_customer = self.db_customer.get(
-                    """select a.*,c.*,a.id customer_id,c.id customer_other_id,bb.is_check,
-                    bb.btype_id,bb.btype_id_name,bb.income,bb.ss_num,
-                    d.gc
+                    """select a.*,c.*,a.id customer_id,c.id customer_other_id,c.is_check,
+                    c.btype_id,c.btype_id_name,c.ss_num,
+                    d.gc 
                     from  t_customer a 
                     left join t_customer_clearly bb on a.id=bb.customer_id
                     left join t_customer_other_data c on a.id=c.customer_id
@@ -991,14 +1167,14 @@ class CustomerHandler(BaseHandler):
             left join ( select ifnull(sum(income_money),0) sim,project_id from t_projects_income_other  group by project_id) cc on cc.project_id=b.id
 
 
-                            where b.customer_company='""" +
-                        t_customer.company + """'
+                            where (b.customer_company='""" +
+                        t_customer.company + """' or b.company_uid=%s)
                      and c.project_id=b.id
 
                      order by b.created_at desc
 
 
-                    """)
+                    """,t_customer.company_reguid)
                     t_linkman = self.db_customer.query(
                         "select * from t_linkman where customer_id=%s order by is_first desc,id ",
                         id)
@@ -1019,13 +1195,12 @@ class CustomerHandler(BaseHandler):
 
                     t_project_income_title = self.db.query(
                         """
-                                    select c.project_name, a.*,b.income_money income_money_total,b.income_title from t_projects_income_title a , (
+                                    select c.guid project_guid,c.customer_company,c.project_name, a.*,b.income_money income_money_total,b.income_title from t_projects_income_title a , (
                         select parent_id,sum(income_money) income_money,GROUP_CONCAT(concat(income_name,'|',income_money))  income_title
                         from t_projects_income group by parent_id) b ,t_projects c
-                        where a.id=b.parent_id and customer_company=%s and a.project_id=c.id
+                        where a.id=b.parent_id and (customer_company=%s or company_uid=%s ) and a.project_id=c.id
                         order by created_at desc
-
-                """, t_customer.company)
+                """, t_customer.company,t_customer.company_reguid)
                     t_company_name = self.db_customer.query("select * from t_company_name where customer_id=%s",id)
                     t_acc = self.db_customer.query(
                         "select * from t_acc_his where customer_id=%s", id)
@@ -1092,7 +1267,14 @@ class CustomerHandler(BaseHandler):
                 SELECT a.id  FROM t_projects a
                 inner join  t_user_visible_other d on  a.uid=d.be_checker_id and d.checker_id=%s and a.customer_company=%s
                     ''',uid,t_customer.company)
-                    t_customer_his_income = self.db_customer.query("select * from t_customer_his_income where company=%s",t_customer.company)
+                    t_customer_his_income = self.db_customer.query(
+                    """select * from t_customer_his_income where (company=%s
+                    or find_in_set(former_company,  
+                     if((select group_concat(name) gc from t_company_name where customer_id=%s group by customer_id ) is null ,'',
+                     (select group_concat(name) gc from t_company_name where customer_id=%s group by customer_id )
+                     ) ))
+                    """,t_customer.company,t_customer.customer_id,t_customer.customer_id)
+          
                     t_customer_genjin_state=self.db_customer.query('''
                         select * from t_customer_genjin_state order by order_int 
                     ''')
@@ -1130,9 +1312,7 @@ class CustomerHandler(BaseHandler):
                     t_customer_genjin_msg4=self.db_customer.query('''
                         select * from t_customer_genjin_msg where customer_id=%s and genjin_type=4 order by created_at desc
                         ''',t_customer.customer_id)
-                    
-
-              
+                
                     t_projects_events=self.db.query('''
                     select a.*,b.guid project_guid,c.guid customer_guid from t_projects_events a
                     left join t_projects b on a.project_id=b.id
@@ -1141,8 +1321,14 @@ class CustomerHandler(BaseHandler):
                     where a.customer_id=%s
                     order by created_at desc
                     ''',t_customer.customer_id)
+                    dt_today = datetime.datetime.now().strftime("%Y-%m-%d")
+                    t_customer_address=self.db_customer.query('''
+                    select * from t_customer_address where customer_id=%s order by arrange_at desc
+                    ''',id)
                     self.render(
                         "c/customer/customer_show.html",
+                        dt_today=dt_today,
+                        t_customer_address=t_customer_address,
                         t_customer_his_income=t_customer_his_income,
                         t_projects_events=t_projects_events,
                         t_acc=t_acc,
@@ -1202,6 +1388,7 @@ class CustomerHandler(BaseHandler):
                     search_sql + '''%" or customer_company like "%''' +
                     search_sql + '''%" limit 50''')
                 projects_order = self.db.query(
+                    
                     '''select * from t_projects where id=%s''',key)
                 self.render(
                     "c/customer/customer_query.html",
@@ -1239,25 +1426,84 @@ class CustomerHandler(BaseHandler):
 
         elif tag=='operation_record':
             page=int(self.get_argument('page','1'))
+            project_id=self.get_argument('project_id','')
+            customer_id=self.get_argument('customer_id','')
+            event_type=self.get_argument('event_type','')
+            txt=self.get_argument('txt','')
+            start_time=self.get_argument('start_time','')
+            end_time=self.get_argument('end_time','')
+            operator=self.get_argument('operator','')
+            sql=''
+            params={
+                'project_id':project_id,
+                'customer_id':customer_id,
+                'event_type':event_type,
+                'txt':txt,
+                'start_time':start_time,
+                'end_time':end_time,
+                'operator':operator
+            }
+            if project_id:
+                sql+=' and a.project_id=%s '%project_id
+            if customer_id:
+                sql+=' and a.customer_id=%s '%customer_id
+            if event_type:
+                sql+=' and a.event_type like "%%'+event_type+'%%" '
+            if txt:
+                sql+=' and a.txt like "%%'+txt+'%%" '
+            if start_time and end_time :
+                sql+=' and a.created_at betweent "%s" and "%s" '%(start_time,end_time)
+            if operator:
+                sql+=' and a.uid_name="%s" '%operator
+
+
             pre_page=20
             count=self.db.get('''
-            select count(*) count from t_projects_events
-            ''')
+            select count(*) count from t_projects_events a where 0=0 
+            '''+sql)
             pagination=Pagination(page,pre_page,count.count,self.request)
             startpage=(page-1)*pre_page
             t_projects_events=self.db.query('''
             select a.*,b.guid project_guid,c.guid customer_guid from t_projects_events a
             left join t_projects b on a.project_id=b.id
             left join '''+options.mysql_database_customer+'''.t_customer c 
-            on a.customer_id=c.id
+            on a.customer_id=c.id where 0=0 '''+sql+'''
              order by created_at desc limit %s,%s
             ''',startpage,pre_page)
+            t_projects_event_types=self.db.query('''
+            select  substring_index(event_type,'(',1) event_type1 from t_projects_events group by event_type1
+            ''')
             self.render('c/customer/operation_record.html',
             t_projects_events=t_projects_events,
+            t_projects_event_types=t_projects_event_types,
             pagination=pagination,
+            params=params,
             tag=tag
             )
 
+        elif tag=="customer_feedback":
+            sql=' where checked_at is null '
+            step=self.get_argument('step','')
+            page=int(self.get_argument('page','1'))
+            pre_page=20
+            if step=='1':
+                sql=' where checked_at is not null and checked_status=1 '
+            if step=='2':
+                sql=' where checked_at is not null and checked_status=2 '
+            if role!='3' and role!='8':
+                sql+=' and uid=%s '%uid
+            
+            
+            count=self.db_customer.get(' select count(*) count from t_customer_feedback '+sql)
+            pagination=Pagination(page,pre_page,count.count,self.request)
+            startpage=(page-1)*pre_page
+            feedbacks=self.db_customer.query(' select * from t_customer_feedback '+sql+' order by created_at desc limit %s,%s ',startpage,pre_page)
+            self.render('c/customer/customer_feedback.html',
+            feedbacks=feedbacks,
+            pagination=pagination,
+            tag=tag,
+            step=step
+            )
     # "company_reguid":company_reguid,
     # "industry_name":industry_name,
     # "is_general":is_general,
@@ -1294,6 +1540,23 @@ class CustomerHandler(BaseHandler):
                     insert into t_acc_his(uid,uid_name,created_at,customer_id)
                     values(%s,%s,%s,%s)
                 ''',uid,uid_name,dt,id)
+        elif tag=="modify_genjin_msg":
+            msg = self.get_argument("msg")
+            msg_id = self.get_argument("msg_id")
+            customer_id = self.get_argument("customer_id")
+            if not msg_id or not customer_id:
+                return self.write("not params msg_id or customer_id")
+            result = self.db_customer.execute("""
+                    update t_customer_genjin_msg set msg=%s where id=%s and customer_id=%s
+            """,msg,msg_id,customer_id)
+            self.write(str(result))
+        elif tag=="modify_genjin_delete":
+            msg_id = self.get_argument("msg_id")
+            customer_id = self.get_argument("customer_id")
+            result = self.db_customer.execute("""
+                    delete  from  t_customer_genjin_msg where   id=%s and customer_id=%s
+            """,msg_id,customer_id)
+            self.write(str(result))
         elif tag == "group_confirm_kj":
             idstr=self.get_argument('idstr')
             ids=re.split(',',idstr)
@@ -1385,7 +1648,7 @@ class CustomerHandler(BaseHandler):
             var_uuid = uuid.uuid4()
             t_customer = None
             t_customer_info= None
-
+            t_customer_reguid=None
             if customer_id:
 
                 t_customer_info = self.db_customer.get("select * from t_customer where id=%s and guid=%s",customer_id,customer_guid)
@@ -1395,14 +1658,23 @@ class CustomerHandler(BaseHandler):
                     if t_customer_info.company.strip() != company.strip():
                         t_customer = self.db_customer.get(
                             "select * from t_customer where company=%s", company)
+                    if not t_customer:
+                        if t_customer_info.company_reguid!=company_reguid and company_reguid:
+                            t_customer_reguid=self.db_customer.get(
+                        "select * from t_customer where company_reguid=%s",company_reguid)       
                 else:
                     t_customer = self.db_customer.get(
                             "select * from t_customer where company=%s", company)
+                    if not t_customer:
+                        t_customer_reguid=self.db_customer.get(
+                            "select * from t_customer where company_reguid=%s",company_reguid) 
 
             if not company:
                 self.write("公司名为空。")
             elif t_customer:
                 self.write({'status':'-100','id':t_customer.id,'guid':t_customer.guid})
+            elif t_customer_reguid:
+                self.write({'status':'-200','id':t_customer_reguid.id,'guid':t_customer_reguid.guid,'company_reguid':t_customer_reguid.company_reguid})
             else:
                 if customer_id:
                     #    print "customer_id", customer_id
@@ -1551,14 +1823,14 @@ class CustomerHandler(BaseHandler):
                                         `remark`)
                                         VALUES
                                 (%s,%s,%s,%s,%s,%s)""",customer_id, t_customer_info.company, uid, uid_name,dt,'')
-                            self.db.execute('''
-                                update t_projects set customer_company=%s,company_history=CONCAT(company_history,%s) where customer_company=%s
-                            ''',company,t_customer_info.company,t_customer_info.company)
-                            for t_project in t_projects:
-                                self.db.execute('''
-                            insert into t_projects_company_history(project_id,company,uid_name,uid,created_at)
-                            values(%s,%s,%s,%s,%s)
-                        ''',t_project.id,t_customer_info.company,uid_name,uid,dt)
+                        #     self.db.execute('''
+                        #         update t_projects set customer_company=%s,company_history=CONCAT(company_history,%s) where customer_company=%s
+                        #     ''',company,t_customer_info.company,t_customer_info.company)
+                        #     for t_project in t_projects:
+                        #         self.db.execute('''
+                        #     insert into t_projects_company_history(project_id,company,uid_name,uid,created_at)
+                        #     values(%s,%s,%s,%s,%s)
+                        # ''',t_project.id,t_customer_info.company,uid_name,uid,dt)
                     
                         self.write("/customer?tag=show&id=%s&guid=%s"%(customer_id, customer_guid))
                 else:
@@ -1610,7 +1882,72 @@ class CustomerHandler(BaseHandler):
                     values(%s,%s,%s,%s,%s,%s,%s,uuid(),%s)""", customer_name, customer_tel,'',
                             uid, uid_name,dt,dt, result)
                 if result > 0:
+                    txt=''
+                    if company:
+                        txt+='公司名称:'+company
+                    if reg_person:
+                        txt+=',法人:'+reg_person
+                    if company_reguid:
+                        txt+=',信用代码:'+company_reguid
+                    if industry_name:
+                        txt+=',行业性质:'+industry_name
+                    if reg_bank:
+                        txt+=',开户行:'+reg_bank
+                    if reg_bank_account:
+                        txt+=',银行帐号:'+reg_bank_account
+                    if addr_cp:
+                        txt+=',供应商:'+addr_cp
+                    if acc_uid_name:
+                        txt+=',客服会计:'+acc_uid_name
+                    if promo_id_name:
+                        txt+=',优惠活动:'+promo_id_name
+                    if is_general:
+                        txt+=',一般纳税人:'
+                        txt+='是' if is_general=='1' else '否'
+                    if city or zone or reg_addr:
+                        txt+=',注册地址:'+city+zone+reg_addr
+                    if credit_rating_name:
+                        txt+=',信用评级:'+credit_rating_name
+                    if customer_rating_name:
+                        txt+=',客户评级:'+customer_rating_name
+                    if tag_parent_name:
+                        txt+=',客户类型:'+tag_parent_name
+                        if tag_name and tag_name!='非记账':
+                            txt+=','+tag_name
+                        if is_building=='1':
+                            txt+=',楼盘'
+                        if is_clearly=='1':
+                            txt+=',汇算清缴'
+                        if is_year:
+                            txt+=',工商年检'
+                    if pay_typeid_name:
+                        txt+=',付款方式:'+pay_typeid_name
+                    if service_amount:
+                        txt+=',总服务费:'+service_amount
+                    if service_amount_month:
+                        txt+=',月服务费:'+service_amount_month
+                    if book_amount:
+                        txt+=',帐册费:'+book_amount
+                    if addr_type:
+                        txt+=',地址类型:'+addr_type
+                    if addr_expire:
+                        txt+=',地址期限:'+addr_expire
+                    if reg_date:
+                        txt+=',成立日期:'+reg_date
+                    if end_date:
+                        txt+='执照期限:'+end_date
+                    if reg_number:
+                        txt+=',注册号:'+reg_number
+                    if saic:
+                        txt+=',工商分局:'+saic
+                    if land_tax:
+                        txt+=',地税分局:'+land_tax
+                    if national_tax:
+                        txt+=',国税分局'+national_tax
 
+                    events.add_project_event(self,'0','创建客户',
+                    txt
+                    ,uid,uid_name,result)
                     self.write("/customer?tag=show&id=%s&guid=%s"%(result,
                                var_uuid))
 
@@ -1623,7 +1960,23 @@ class CustomerHandler(BaseHandler):
                 self.db_customer.execute('''
                 update t_customer set acc_uid=%s,acc_uid_name=%s where id=%s
                 ''',kj_id,kj_name,item)
-
+        elif tag=="modify_company_uid":
+            company_uid=self.get_argument('company_uid')
+            customer_id=self.get_argument('customer_id')
+            if not company_uid :
+                return self.write(" 信用代码为空")
+            elif len(company_uid)!=18:
+                return self.write("信用代码必须为18位")
+            else:
+                if company_uid:
+                    t_customer_company= self.db_customer.get("select * from t_customer where company_reguid=%s and id <> %s limit 1",company_uid,customer_id)
+                    if   t_customer_company :
+                        return self.write("信用代码已经存在,客户编号{} 公司名称:{}".format(t_customer_company.id,t_customer_company.company))
+                result = self.db_customer.execute('''
+                update t_customer set company_reguid=%s where id=%s
+                ''',company_uid,customer_id)
+                if result ==0:
+                    return self.write("保存成功!")
         elif tag =="del_relation_project":
             project_id = self.get_argument("project_id")
             customer_id = self.get_argument("customer_id")
@@ -1663,34 +2016,35 @@ class CustomerHandler(BaseHandler):
             elif not customer_id:
                 self.write("not customer_id")
             else:
-                is_upload = False
-                try:
-                    file1 = self.request.files['file'][0]
-                    is_upload = True
-                except:
-                    pass
-                if is_upload:
-                    ori_filename = file1["filename"]
-                    filename_full = options.upload_path + "/customer/%s/" % (
-                        customer_id)
-                    url_path = "/static/customer/%s/" % (customer_id)
+                for k,file1 in self.request.files.items():
+                    is_upload = False
                     try:
-                        os.makedirs(filename_full)
-                    except OSError:
-                        if not os.path.isdir(filename_full):
-                            raise
-                    extension = os.path.splitext(ori_filename)[1]
+                        file1 =file1[0]
+                        is_upload = True
+                    except:
+                        pass
+                    if is_upload:
+                        ori_filename = file1["filename"]
+                        filename_full = options.upload_path + "/customer/%s/" % (
+                            customer_id)
+                        url_path = "/static/customer/%s/" % (customer_id)
+                        try:
+                            os.makedirs(filename_full)
+                        except OSError:
+                            if not os.path.isdir(filename_full):
+                                raise
+                        extension = os.path.splitext(ori_filename)[1]
 
-                    uuid_str = ori_filename
-                    fname = "{0}_{1}{2}".format(uuid_str, customer_id,
-                                                extension)
+                        uuid_str = ori_filename
+                        fname = "{0}_{1}{2}".format(uuid_str, customer_id,
+                                                    extension)
 
-                    save_full_path = filename_full + fname
-                    url_fname = "{0}{1}".format(url_path, fname)
+                        save_full_path = filename_full + fname
+                        url_fname = "{0}{1}".format(url_path, fname)
 
-                    output_file = open(save_full_path, 'w')
-                    output_file.write(file1["body"])
-                    file_path = url_fname
+                        output_file = open(save_full_path, 'w')
+                        output_file.write(file1["body"])
+                        file_path = url_fname
                 result = self.db_customer.execute("""
                         INSERT INTO `t_file`
                         (
@@ -1705,6 +2059,11 @@ class CustomerHandler(BaseHandler):
                         VALUES
                         (%s, uuid(),  %s, %s, %s,%s,%s,%s);
                 """, customer_id, title, file_remark, file_path,dt, uid, uid_name)
+                if result>0:
+                    txt='文件内容:'+title+',文件备注:'+file_remark+'文件:'+uuid_str
+
+                    events.add_project_event(self,0, "公司附件", txt,
+                                         uid, uid_name,customer_id)
                 self.write(str(result))
         elif tag =="delete_customer":
             customer_id = self.get_argument("customer_id")
@@ -1721,7 +2080,9 @@ class CustomerHandler(BaseHandler):
                 self.db_customer.execute(""" delete from  t_transition where customer_id =%s""",customer_id)
                 self.db_customer.execute(""" delete from t_acc_his where customer_id =%s""",customer_id)
                 self.db_customer.execute(""" delete from t_customer_account where customer_id =%s""",customer_id)
-                self.db_customer.execute("delete from t_customer where guid=%s and  id =%s",guid,customer_id)
+                result=self.db_customer.execute("delete from t_customer where guid=%s and  id =%s",guid,customer_id)
+                if result==0:
+                    events.add_project_event(self,'0','删除客户','删除客户'+customer_id,uid,uid_name,customer_id)
                 self.write('1')
 
         elif tag == "relation_project":
@@ -1802,10 +2163,14 @@ class CustomerHandler(BaseHandler):
             elif not customer_id:
                 self.write("not customer_id")
             else:
+                t_company_name=self.db_customer.get(' select * from t_company_name where id=%s ',company_id)
                 result = self.db_customer.execute(
                     "delete from t_company_name where customer_id=%s and id=%s",
                     customer_id, company_id)
                 self.write(str(result))
+                
+                events.add_project_event(self,'0', "删除公司曾用名",t_company_name.name,
+                                         uid, uid_name,customer_id)
         elif tag == "add_company":
             company_name = self.get_argument("company_name")
             company_remark = self.get_argument("company_remark")
@@ -1817,6 +2182,7 @@ class CustomerHandler(BaseHandler):
                 self.write("not customer_id ")
             else:
                 if company_id :
+                    t_company_name=self.db_customer.get(' select * from t_company_name where id=%s',company_id)
                     result = self.db_customer.execute("""
                       update t_company_name set
                         `name`=%s,
@@ -1825,7 +2191,9 @@ class CustomerHandler(BaseHandler):
                         `created_at`=%s,
                         `remark`=%s where id=%s """, company_name, uid, uid_name,dt,
                                              company_remark,company_id)
-
+                    if t_company_name.name!=company_name:
+                        events.add_project_event(self,'0', "修改公司曾用名",t_company_name.name+' 修改为 '+company_name,
+                                         uid, uid_name,customer_id)
 
                 else:
                     result = self.db_customer.execute("""
@@ -1839,6 +2207,9 @@ class CustomerHandler(BaseHandler):
                         VALUES
                         (%s,%s,%s,%s,%s,%s)""",customer_id, company_name, uid, uid_name,dt,
                                              company_remark)
+                    if result>0:
+                        events.add_project_event(self,'0', "增加公司曾用名",company_name,
+                                         uid, uid_name,customer_id)
                 self.write(str(result))
         # elif tag == "delete_company":
         #     company_id = self.get_argument("company_id")
@@ -1863,6 +2234,7 @@ class CustomerHandler(BaseHandler):
                 self.write("not customer_id ")
             else:
                 if acc_id:
+                    t_acc_his=self.db_customer.get(' select * from t_acc_his where id=%s',acc_id)
                     result = self.db_customer.execute("""
                       update t_acc_his set
                         `name`=%s,
@@ -1870,7 +2242,10 @@ class CustomerHandler(BaseHandler):
                         `uid_name`=%s,
                         `created_at`=%s,
                         `remark`=%s where id=%s """, acc_name, uid, uid_name,dt,
-                                             acc_remark, acc_id)
+                                             acc_remark, acc_id)    
+                    if t_acc_his.name!=acc_name:
+                        events.add_project_event(self,0, "修改历史客服会计",'历史客服会计:'+t_acc_his.name+' 修改为 '+acc_name,
+                                         uid, uid_name,customer_id)
 
                 else:
                     result = self.db_customer.execute("""
@@ -1882,8 +2257,11 @@ class CustomerHandler(BaseHandler):
                         `created_at`,
                         `remark`)
                         VALUES
-                        (%s,%s,%s,%s,%s,%s)""", customer_id, acc_name, uid,dt,
-                                             uid_name, acc_remark)
+                        (%s,%s,%s,%s,%s,%s)""", customer_id, acc_name, uid,
+                                             uid_name,dt,acc_remark)
+                    if result>0:
+                        events.add_project_event(self,0, "增加历史客服会计",'历史客服会计:'+acc_name,
+                                         uid, uid_name,customer_id)
                 self.write(str(result))
 
         elif tag == "delete_acc":
@@ -1897,6 +2275,8 @@ class CustomerHandler(BaseHandler):
                 result = self.db_customer.execute(
                     "delete from t_acc_his where customer_id=%s and id=%s",
                     customer_id, acc_id)
+                events.add_project_event(self,0, "删除历史客服会计",'删除编号为'+acc_id+'的历史客服会计:',
+                                         uid, uid_name,customer_id)
                 self.write(str(result))
 
         elif tag== "customer_note":
@@ -2115,6 +2495,12 @@ class CustomerHandler(BaseHandler):
                 """select * from t_customer_exchange where customer_id=%s and etype=2 order by created_at desc limit 1""",
                 customer_id)
             self.write({'created_at':str(t_customer_exchange.created_at),'msg':t_customer_exchange.msg})
+        elif tag=='set_ok9':
+            customer_id=self.get_argument('customer_id')
+            t_customer_exchange = self.db_customer.execute(
+                """update  t_customer set is_get=9 where id=%s """,
+                customer_id)
+           
 
         elif tag=='more_projects':
             num=self.get_argument('num')
@@ -2137,6 +2523,26 @@ class CustomerHandler(BaseHandler):
             my = self.get_argument("my","")
             by_tag = self.get_argument("by_tag","")
             kj_tag = ""
+            new_tag = self.get_argument("new_tag","1")
+            tag_parent_id = self.get_argument("tag_parent_id","")     
+            tag_id = int(self.get_argument("tag_id",0))
+
+            if tag_id:
+                if tag_id==9:
+                    sql+=" and is_year=1"
+                elif tag_id==10:
+                    sql+=" and is_clearly=1"    
+                elif tag_id==5:
+                    sql+=" and is_building=1"                        
+                elif tag_id==11:
+                    sql+=" and tag_id =0 "   
+                else:
+                    sql+=" and tag_id={}  ".format(tag_id)
+            tag_parent_id_sql=""
+            if tag_parent_id and new_tag:
+                tag_parent_id_sql=" and tag_parent_id={}".format(tag_parent_id)
+                sql+=tag_parent_id_sql
+
             if kj:
                     sql =  sql+" and acc_uid_name='"+kj+"' "
                     kj_tag="- "+kj
@@ -2167,7 +2573,19 @@ class CustomerHandler(BaseHandler):
                 idx=idx+1
                 sh.write(idx,0,row.id)
                 sh.write(idx,1,row.company)
-                sh.write(idx,2,row.customer_type_name)
+                tags=""
+                if row.tag_parent_id_name!=row.tag_id_name:
+                    tags=row.tag_parent_id_name+","
+                if row.tag_id_name:
+                    tags+=row.tag_id_name+","
+                if row.is_building:
+                    tags+=u"楼盘,"
+                if row.is_year:
+                    tags+=u"工商年检"
+                if row.is_clearly:
+                    tags+=u"汇算清缴"
+
+                sh.write(idx,2,tags)
                 sh.write(idx,3,row.addr_type)
                 sh.write(idx,4,row.zone)
                 sh.write(idx,5,row.company_reguid)
@@ -2208,7 +2626,8 @@ class CustomerHandler(BaseHandler):
             shuizhong_detail=self.get_argument('shuizhong_detail','')
             zhengshou_way=self.get_argument('zhengshou_way','')
             shuikong_type=self.get_argument('shuikong_type','')
-            ss_num=self.get_argument('ss_num','')
+            ss_num=self.get_argument('ss_num','0')
+            adjusted_option=self.get_argument('adjusted_option','')
             fixed_assets=self.get_argument('fixed_assets','')
             legal_id_card=self.get_argument('legal_id_card','')
             rel_name_collect_account=self.get_argument('rel_name_collect_account','')
@@ -2219,11 +2638,19 @@ class CustomerHandler(BaseHandler):
             receipt_card_password=self.get_argument('receipt_card_password','')
             accumulation_fund_password=self.get_argument('accumulation_fund_password','')
             txt=''
+  
             t_customer=self.db_customer.get(' select * from t_customer where id=%s ',customer_id)
             t_customer_other_data=self.db_customer.get(' select * from t_customer_other_data where id=%s ',customer_other_id)
             t_customer_clearly=self.db_customer.get(' select * from t_customer_clearly where customer_id=%s '%customer_id)
+            t_customer_other_exit=self.db_customer.get(' select * from t_customer_other_data where customer_id=%s ',customer_id)
             if step=='1':
-                
+                if company.strip()!=t_customer.company.strip():
+                    t_customer_exit_company = self.db_customer.get(
+                            "select * from t_customer where company=%s", company)
+                else:
+                    t_customer_exit_company=None
+                if t_customer_exit_company:
+                    return self.write({'status':'-100','id':t_customer_exit_company.id,'guid':t_customer_exit_company.guid})
                 acc_user=''
                 acc_uid=0
                 if acc_uid_name:
@@ -2241,17 +2668,29 @@ class CustomerHandler(BaseHandler):
                     insert into t_acc_his(name,uid,uid_name,created_at,customer_id,remark)
                     values(%s,%s,%s,%s,%s,%s)
                     ''',current_acc_uid_name,uid,uid_name,dt,customer_id,'')
-                if not customer_other_id :
+                if not customer_other_id and not t_customer_other_exit:
+                    
                     result1=self.db_customer.execute('''
-                    insert into t_customer_other_data(hangye,zg_name,zg_tel,business_scope,attention,zg_option,customer_id,update_at)
-                    values(%s,%s,%s,%s,%s,%s,%s,%s)
-                    ''',hangye,zg_name,zg_tel,business_scope,attention,zg_option,customer_id,dt)
+                    insert into t_customer_other_data(adjusted_option,hangye,zg_name,zg_tel,business_scope,attention,zg_option,customer_id,update_at)
+                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    ''',adjusted_option,hangye,zg_name,zg_tel,business_scope,attention,zg_option,customer_id,dt)
                 else:
                     result1=self.db_customer.execute('''
-                    update t_customer_other_data set hangye=%s,zg_name=%s,zg_tel=%s,business_scope=%s,attention=%s,zg_option=%s,update_at=%s
+                    update t_customer_other_data set adjusted_option=%s,hangye=%s,zg_name=%s,zg_tel=%s,business_scope=%s,attention=%s,zg_option=%s,update_at=%s
                     where id=%s
-                    ''',hangye,zg_name,zg_tel,business_scope,attention,zg_option,dt,customer_other_id)
+                    ''',adjusted_option,hangye,zg_name,zg_tel,business_scope,attention,zg_option,dt,customer_other_id)
                 if result==0:
+                    if company.strip()!=t_customer.company.strip():
+                        self.db_customer.execute("""
+                                    INSERT INTO `t_company_name`
+                                        (customer_id,
+                                        `name`,
+                                        `uid`,
+                                        `uid_name`,
+                                        `created_at`,
+                                        `remark`)
+                                        VALUES
+                                (%s,%s,%s,%s,%s,%s)""",t_customer.id, t_customer.company, uid, uid_name,dt,'')
                     if t_customer.company!=company:
                         txt+=',公司名称:'+t_customer.company+' 修改为 '+company
                     
@@ -2260,14 +2699,24 @@ class CustomerHandler(BaseHandler):
                     if t_customer.reg_bank!=reg_bank:
                         txt+=',开户行:'+t_customer.reg_bank+' 修改为 '+reg_bank
                     if t_customer.saic!=saic:
+                        if not t_customer.saic:
+                            t_customer.saic=''
                         txt+=',工商分局:'+t_customer.saic+' 修改为 '+saic
                     if t_customer.addr_type!=addr_type:
+                        if not t_customer.addr_type:
+                            t_customer.addr_type=''
                         txt+=',地址类型:'+t_customer.addr_type+' 修改为 '+addr_type
                     if t_customer.reg_bank_account!=reg_bank_account:
+                        if not t_customer.reg_bank_account:
+                            t_customer.reg_bank_account=''
                         txt+=',银行账号:'+t_customer.reg_bank_account+' 修改为 '+reg_bank_account
                     if t_customer.national_tax!=national_tax:
+                        if not t_customer.national_tax:
+                            t_customer.national_tax=''
                         txt+=',国所属分局:'+t_customer.national_tax+' 修改为 '+national_tax
                     if t_customer.land_tax!=land_tax:
+                        if not t_customer.land_tax:
+                            t_customer.land_tax=''
                         txt+=',地所属分局:'+t_customer.land_tax+' 修改为 '+land_tax
 
                 if result1>0:
@@ -2283,20 +2732,42 @@ class CustomerHandler(BaseHandler):
                         txt+=',情况和注意事项:修改为 '+attention
                     if zg_option:
                         txt+=',主管意见:修改为 '+zg_option
-                if result1==0:
-                    if (t_customer_other_data.hangye if t_customer_other_data.hangye else '')!=hangye:
-                        txt+=',所属行业:'+t_customer_other_data.hangye+' 修改为 '+hangye
-                    if (t_customer_other_data.zg_name if t_customer_other_data.zg_name else '')!=zg_name:
-                        txt+=',专管员姓名:'+t_customer_other_data.zg_name+' 修改为 '+zg_name
-                    if (t_customer_other_data.zg_tel if t_customer_other_data.zg_tel else '')!=zg_tel:
-                        txt+=',专管员联系方式:'+t_customer_other_data.zg_tel+' 修改为 '+zg_tel
+                    if adjusted_option:
+                        txt+=',待调整事项:修改为 '+adjusted_option
+                elif result1==0:
+                    if t_customer_other_data:
+                        if not  t_customer_other_data.hangye:
+                            t_customer_other_data.hangye=''
 
-                    if (t_customer_other_data.business_scope if t_customer_other_data.business_scope else '')!=business_scope:
-                        txt+=',经营范围:'+t_customer_other_data.business_scope+' 修改为 '+business_scope
-                    if (t_customer_other_data.attention if t_customer_other_data.attention else '')!=attention:
-                        txt+=',情况和注意事项:'+t_customer_other_data.attention+' 修改为 '+attention
-                    if (t_customer_other_data.zg_option if t_customer_other_data.zg_option else '')!=zg_option:
-                        txt+=',主管意见:'+t_customer_other_data.zg_option+' 修改为 '+zg_option
+                        if not  t_customer_other_data.zg_name:
+                            t_customer_other_data.zg_name=''
+
+                        if not  t_customer_other_data.zg_tel:
+                            t_customer_other_data.zg_tel=''
+
+                        if not  t_customer_other_data.business_scope:
+                            t_customer_other_data.business_scope=''
+                        if not  t_customer_other_data.attention:
+                            t_customer_other_data.attention=''
+                        if not  t_customer_other_data.zg_option:
+                            t_customer_other_data.zg_option=''
+                        if not t_customer_other_data.adjusted_option:
+                            t_customer_other_data.adjusted_option=''
+                        if t_customer_other_data.hangye!=hangye:
+                            txt+=',所属行业:'+t_customer_other_data.hangye+' 修改为 '+hangye
+                        if t_customer_other_data.zg_name!=zg_name:
+                            txt+=',专管员姓名:'+t_customer_other_data.zg_name+' 修改为 '+zg_name
+                        if t_customer_other_data.zg_tel!=zg_tel:
+                            txt+=',专管员联系方式:'+t_customer_other_data.zg_tel+' 修改为 '+zg_tel
+
+                        if t_customer_other_data.business_scope!=business_scope:
+                            txt+=',经营范围:'+t_customer_other_data.business_scope+' 修改为 '+business_scope
+                        if t_customer_other_data.attention!=attention:
+                            txt+=',情况和注意事项:'+t_customer_other_data.attention+' 修改为 '+attention
+                        if t_customer_other_data.zg_option!=zg_option:
+                            txt+=',主管意见:'+t_customer_other_data.zg_option+' 修改为 '+zg_option
+                        if t_customer_other_data.adjusted_option!=adjusted_option:
+                            txt+=',待调整事项:'+t_customer_other_data.adjusted_option+' 修改为 '+adjusted_option
 
                 if txt:
                     events.add_project_event(self,0, "修改客户", txt[1:],
@@ -2307,35 +2778,39 @@ class CustomerHandler(BaseHandler):
                 result=self.db_customer.execute('''
                         update t_customer set is_general=%s where id=%s
                     ''',is_general,customer_id)
-                result1=self.db_customer.execute('''
-                        update t_customer_clearly set is_check=%s,btype_id=%s,
-                        btype_id_name=%s,ss_num=%s where customer_id=%s
-                ''',is_check,btype_id,btype_id_name,ss_num,customer_id)
-                if not customer_other_id :
+                # result1=self.db_customer.execute('''
+                #         update t_customer_clearly set is_check=%s,btype_id=%s,
+                #         btype_id_name=%s,ss_num=%s where customer_id=%s
+                # ''',is_check,btype_id,btype_id_name,ss_num,customer_id)
+                if not customer_other_id and not t_customer_other_exit :
                     result2=self.db_customer.execute('''
-                    insert into t_customer_other_data(survey,shuizhong_detail,zhengshou_way,shuikong_type,fixed_assets,customer_id,update_at)
-                    values(%s,%s,%s,%s,%s,%s,%s)
-                    ''',survey,shuizhong_detail,zhengshou_way,shuikong_type,fixed_assets,customer_id,dt)
+                    insert into t_customer_other_data(survey,shuizhong_detail,zhengshou_way,shuikong_type,fixed_assets,customer_id,update_at
+                    ,is_check,btype_id,
+                    btype_id_name,ss_num)
+                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    ''',survey,shuizhong_detail,zhengshou_way,shuikong_type,fixed_assets,customer_id,dt,is_check,btype_id,btype_id_name,ss_num)
                 else:
+     
                     result2=self.db_customer.execute('''
-                    update t_customer_other_data set survey=%s,shuizhong_detail=%s,zhengshou_way=%s,shuikong_type=%s,fixed_assets=%s,update_at=%s
+                    update t_customer_other_data set survey=%s,shuizhong_detail=%s,zhengshou_way=%s,shuikong_type=%s,fixed_assets=%s,update_at=%s,
+                    is_check=%s,btype_id=%s,
+                    btype_id_name=%s,ss_num=%s
                     where id=%s
-                    ''',survey,shuizhong_detail,zhengshou_way,shuikong_type,fixed_assets,dt,customer_other_id)
+                    ''',survey,shuizhong_detail,zhengshou_way,shuikong_type,fixed_assets,dt,is_check,btype_id,btype_id_name,ss_num,customer_other_id)
                 if result==0:
                     if t_customer.is_general!=int(is_general):
                         if is_general=='0':
                             txt+=',纳税类型:一般纳税人 修改为 小规模'
                         elif is_general=='1':
                             txt+=',纳税类型:小规模 修改为 一般纳税人'
-                if result1==0 and t_customer_clearly:
-                    if t_customer_clearly.is_check!=int(is_check):
-                        if is_check=='0':
-                            txt+=',税种:是('+t_customer_clearly.btype_id_name+') 修改为 否'
-                        elif is_check=='1':
-                            txt+=',税种:否 修改为 是('+btype_id_name+')'
-                    if t_customer_clearly.ss_num!=ss_num:
-                        txt+=',社保:'+t_customer_clearly.ss_num+' 修改为 '+ss_num
                 if result2>0:
+                    if is_check=='0':
+                        txt+=',税种: 修改为 否'
+                    elif is_check=='1':
+                        txt+=',税种:否 修改为 是('+btype_id_name+')'
+                    if ss_num:
+                        txt+=',社保: 修改为 '+ss_num
+
                     if survey:
                         txt+=',税务概况:修改为 '+survey
                     if shuizhong_detail:
@@ -2353,6 +2828,13 @@ class CustomerHandler(BaseHandler):
                     t_customer_other_data.zhengshou_way=t_customer_other_data.zhengshou_way if t_customer_other_data.zhengshou_way else ''
                     t_customer_other_data.shuikong_type=t_customer_other_data.shuikong_type if t_customer_other_data.shuikong_type else ''
                     t_customer_other_data.fixed_assets=t_customer_other_data.fixed_assets if t_customer_other_data.fixed_assets else ''
+                    if t_customer_other_data.is_check!=int(is_check):
+                        if is_check=='0':
+                            txt+=',税种:是('+t_customer_other_data.btype_id_name+') 修改为 否'
+                        elif is_check=='1':
+                            txt+=',税种:否 修改为 是('+btype_id_name+')'
+                    if t_customer_other_data.ss_num!=int(ss_num):
+                        txt+=',社保:'+str(t_customer_other_data.ss_num)+' 修改为 '+ss_num
                     if t_customer_other_data.survey!=survey:
                         txt+=',税务概况:'+t_customer_other_data.survey+' 修改为 '+survey
                     if t_customer_other_data.shuizhong_detail!=shuizhong_detail:
@@ -2370,7 +2852,7 @@ class CustomerHandler(BaseHandler):
                                          uid, uid_name,customer_id)
 
             elif step=='3':
-                if not customer_other_id :
+                if not customer_other_id and not t_customer_other_exit :
                     result=self.db_customer.execute('''
                     insert into t_customer_other_data(legal_id_card,rel_name_collect_account,
                     rel_name_collect_password,shuipan_password,
@@ -2451,9 +2933,9 @@ class CustomerHandler(BaseHandler):
             is_general=self.get_argument("is_general",'0')
             addr_type=self.get_argument("addr_type",'')
             payment_id=self.get_argument("payment_id",'')
-            pay_type_id=self.get_argument("pay_type_id",'')
-            fee=self.get_argument("fee",'')
-            pay_typeid_name=self.get_argument("pay_typeid_name",'')
+            pay_type_id=self.get_argument("pay_type_id",'0')
+            fee=self.get_argument("fee",'0')
+            pay_typeid_name=self.get_argument("pay_typeid_name",'无')
             service_amount=self.get_argument("service_amount",'0')
             service_amount_month=self.get_argument('service_amount_month','0')
             book_amount=self.get_argument("book_amount",'0')
@@ -2472,6 +2954,7 @@ class CustomerHandler(BaseHandler):
             is_building=self.get_argument('is_building','0')
             is_clearly=self.get_argument('is_clearly','0')
             is_year=self.get_argument('is_year','0')
+            reg_money=self.get_argument('reg_money','')
             t_customer=self.db_customer.get(''' select * from t_customer where id=%s ''',customer_id)
             t_linkman=self.db_customer.get(' select * from t_linkman where id=%s ',link_id)
             t_customer_payment=self.db_customer.get(' select * from t_customer_payment where id=%s ',payment_id)
@@ -2479,10 +2962,24 @@ class CustomerHandler(BaseHandler):
             result=None
             result1=None
             result2=None
+            t_customer_exit_company=None
+            t_customer_exit_reguid=None
             if not reg_date:
                 reg_date=None
             if not acc_end:
                 acc_end=None
+            if company.strip()!=t_customer.company.strip():
+                t_customer_exit_company = self.db_customer.get(
+                            "select * from t_customer where company=%s", company)
+            if not t_customer_exit_company:
+                if (t_customer.company_reguid if t_customer.company_reguid else '')!=company_reguid and company_reguid:
+                    t_customer_exit_reguid=self.db_customer.get(
+                        "select * from t_customer where company_reguid=%s",company_reguid)
+               
+            if t_customer_exit_company:
+                return self.write({'status':'-100','id':t_customer_exit_company.id,'guid':t_customer_exit_company.guid})
+            if t_customer_exit_reguid:
+                return self.write({'status':'-200','id':t_customer_exit_reguid.id,'guid':t_customer_exit_reguid.guid,'company_reguid':t_customer_exit_reguid.company_reguid})      
             if not old_tag:
                 sql=''',tag_id=%s,tag_id_name='%s',
                 tag_parent_id=%s,tag_parent_id_name='%s',is_building=%s,is_clearly=%s,is_year=%s
@@ -2491,40 +2988,36 @@ class CustomerHandler(BaseHandler):
                 result=self.db_customer.execute('''
                 update t_linkman set name=%s,tel=%s where id=%s
                 ''',link_name,link_tel,link_id)
-            if payment_id:
-                result1=self.db_customer.execute('''
-                    update t_customer_payment set fee=%s,pay_typeid=%s,pay_typeid_name=%s,service_month_amount=%s,
-                    service_amount=%s,book_amount=%s,acc_end=%s where id=%s
-                ''',fee,pay_type_id,pay_typeid_name,service_amount_month,service_amount,book_amount,acc_end,payment_id)
-                sql+='''
-                ,paytype_id=%s,paytype_id_name="%s",fee=%s,service_amount=%s,service_amount_month=%s,book_amount=%s
-                '''%(pay_type_id,pay_typeid_name,fee,service_amount,service_amount_month,book_amount)
+            # if payment_id:
+                # result1=self.db_customer.execute('''
+                #     update t_customer_payment set fee=%s,pay_typeid=%s,pay_typeid_name=%s,service_month_amount=%s,
+                #     service_amount=%s,book_amount=%s,acc_end=%s where id=%s
+                # ''',fee,pay_type_id,pay_typeid_name,service_amount_month,service_amount,book_amount,acc_end,payment_id)
+            sql+='''
+            ,paytype_id=%s,paytype_id_name="%s",fee=%s,service_amount=%s,service_amount_month=%s,book_amount=%s
+            '''%(pay_type_id,pay_typeid_name,fee,service_amount,service_amount_month,book_amount)
             result2=self.db_customer.execute('''
-            update t_customer set  company=%s,reg_person=%s,company_reguid=%s,reg_date=%s,is_general=%s,
+            update t_customer set  reg_money=%s,company=%s,reg_person=%s,company_reguid=%s,reg_date=%s,is_general=%s,
             addr_type=%s,city=%s,zone=%s,reg_addr=%s '''+sql+''' where id=%s
-            ''',company,reg_person,company_reguid,reg_date,is_general,addr_type,city,zone,reg_addr,customer_id)
+            ''',reg_money,company,reg_person,company_reguid,reg_date,is_general,addr_type,city,zone,reg_addr,customer_id)
             txt=''
             if result==0:
-                if t_linkman.name!=link_name:
+                if (t_linkman.name if t_linkman.name else '')!=link_name:
                     txt+=',首要联系人:'+t_linkman.name+' 修改为 '+link_name
-                if t_linkman.tel!=link_tel:
+                if (t_linkman.tel if t_linkman.tel else '') !=link_tel:
                     txt+=',首要联系电话:'+t_linkman.tel+' 修改为 '+link_tel
-            if result1==0:
-                if t_customer_payment.pay_typeid_name!=pay_typeid_name:
-                    txt+=',付费方式:'+t_customer_payment.pay_typeid_name+' 修改为 '+pay_typeid_name
-                if int(t_customer_payment.service_amount)!=int(service_amount):
-                    txt+=',总服务费:'+str(t_customer_payment.service_amount)+' 修改为 '+str(service_amount)
-                    txt+=',月服务费:'+str(t_customer_payment.service_month_amount)+' 修改为 '+str(service_amount_month)
-                if int(t_customer_payment.book_amount)!=int(book_amount):
-                    txt+=',账册费:'+str(t_customer_payment.book_amount)+' 修改为 '+str(book_amount)
-                if  not t_customer_payment.acc_end:
-                    t_customer_payment.acc_end=None
-                else:
-                    t_customer_payment.acc_end=str(t_customer_payment.acc_end.strftime("%Y-%m-%d"))
-                if t_customer_payment.acc_end!=acc_end:
-                    txt+=',账费到期:'+t_customer_payment.acc_end+' 修改为 '+str(acc_end)
-
             if result2==0:
+                if company.strip()!=t_customer.company.strip():
+                    self.db_customer.execute("""
+                                    INSERT INTO `t_company_name`
+                                        (customer_id,
+                                        `name`,
+                                        `uid`,
+                                        `uid_name`,
+                                        `created_at`,
+                                        `remark`)
+                                        VALUES
+                                (%s,%s,%s,%s,%s,%s)""",t_customer.id, t_customer.company, uid, uid_name,dt,'')
                 if t_customer.company!=company:
                     txt+=',公司名:'+t_customer.company+' 修改为 '+company
                 if t_customer.reg_person!=reg_person:
@@ -2532,20 +3025,39 @@ class CustomerHandler(BaseHandler):
                 if t_customer.company_reguid!=company_reguid:
                     txt+=',信用代码'+t_customer.company_reguid+' 修改为 '+company_reguid
                 if not t_customer.reg_date:
-                    t_customer.reg_date=str(None)
+                    t_customer.reg_date=None
                 else:
-                    t_customer.reg_date=str(t_customer.reg_date.strftime("%Y-%m-%d"))
+                    t_customer.reg_date=t_customer.reg_date.strftime("%Y-%m-%d")
                 if t_customer.reg_date!=reg_date:
-                    txt+=',执照成立日期:'+t_customer.reg_date+' 修改为 '+str(reg_date)
+                    txt+=',执照成立日期:'+str(t_customer.reg_date)+' 修改为 '+str(reg_date)
                 if t_customer.is_general!=int(is_general):
                     if is_general=='0':
                         txt+=',纳税类型:一般纳税人 修改为 小规模'
                     elif is_general=='1':
                          txt+=',纳税类型:小规模 修改为 一般纳税人'
+                
+                if t_customer.paytype_id_name!=pay_typeid_name:
+                    txt+=',付费方式:'+t_customer.paytype_id_name+' 修改为 '+pay_typeid_name
+                if int(t_customer.service_amount)!=int(service_amount):
+                    txt+=',总服务费:'+str(t_customer.service_amount)+' 修改为 '+str(service_amount)
+                    txt+=',月服务费:'+str(t_customer.service_amount_month)+' 修改为 '+str(service_amount_month)
+                if int(t_customer.book_amount)!=int(book_amount):
+                    txt+=',账册费:'+str(t_customer.book_amount)+' 修改为 '+str(book_amount)
+                # if  not t_customer_payment.acc_end:
+                #     t_customer_payment.acc_end=None
+                # else:
+                #     t_customer_payment.acc_end=t_customer_payment.acc_end.strftime("%Y-%m-%d")
+                # if t_customer_payment.acc_end!=acc_end:
+                #     txt+=',账费到期:'+str(t_customer_payment.acc_end)+' 修改为 '+str(acc_end)
+
                 if t_customer.addr_type!=addr_type:
                     txt+=',地址类型:'+t_customer.addr_type+' 修改为 '+addr_type
                 if t_customer.city!=city or t_customer.zone!=zone or t_customer.reg_addr!=reg_addr:
                     txt+=',注册地址:'+t_customer.city+t_customer.zone+t_customer.reg_addr+' 修改为 '+city+zone+reg_addr
+                if not t_customer.reg_money:
+                    t_customer.reg_money=''
+                if t_customer.reg_money!=reg_money:
+                    txt+=',注册资金:'+t_customer.reg_money+' 修改为 '+reg_money
                 if not old_tag:
                     if t_customer.tag_id_name!=tag_name or t_customer.tag_parent_id_name!=tag_parent_name or \
                     t_customer.is_building!=int(is_building) or t_customer.is_clearly!=int(is_clearly) or t_customer.is_year!=int(is_year):
@@ -2569,15 +3081,15 @@ class CustomerHandler(BaseHandler):
                             parent_is_year=',工商年检'
                         else:
                             parent_is_year=''
-                        if is_building:
+                        if is_building!='0':
                             childrent_is_building=',楼盘'
                         else:
                             childrent_is_building=''
-                        if is_clearly:
+                        if is_clearly!='0':
                             childrent_is_clearly=',汇算清缴'
                         else:
                             childrent_is_clearly=''
-                        if is_year:
+                        if is_year!='0':
                             childrent_is_year=',工商年检'
                         else:
                             childrent_is_year=''
@@ -2618,39 +3130,289 @@ class CustomerHandler(BaseHandler):
             customer_id=self.get_argument('customer_id')
             dongtai_msg=self.get_argument('dongtai_msg','')
             genjin_type=self.get_argument('genjin_type')
-            file_path = None
+            len1=int(self.get_argument('len1'))
+
+            file_path =''
             is_upload = False
-            try:
-                file1 = self.request.files['file'][0]
-                is_upload = True
-            except:
-                pass
-            if is_upload:
-                ori_filename = file1["filename"]
-                filename_full = options.upload_path + "/customer/genjin/%s/" % (
-                    customer_id)
-                url_path = "/static/customer/genjin/%s/" % (customer_id)
+            for i in range(len1):
                 try:
-                    os.makedirs(filename_full)
-                except OSError:
-                    if not os.path.isdir(filename_full):
-                        raise
-                extension = os.path.splitext(ori_filename)[1]
+                    file1 = self.request.files['file'+str(i)][0]
+                    is_upload = True
+                except:
+                    pass
+                if is_upload:
+                    ori_filename = file1["filename"]
+                    filename_full = options.upload_path + "/customer/genjin/%s/" % (
+                        customer_id)
+                    url_path = "/static/customer/genjin/%s/" % (customer_id)
+                    try:
+                        os.makedirs(filename_full)
+                    except OSError:
+                        if not os.path.isdir(filename_full):
+                            raise
+                    extension = os.path.splitext(ori_filename)[1]
 
-                uuid_str = ori_filename
-                fname = "{0}_{1}{2}".format(uuid_str, customer_id,
-                                            extension)
+                    uuid_str = ori_filename
+                    fname = "{0}_{1}{2}".format(uuid_str, customer_id,
+                                                extension)
 
-                save_full_path = filename_full + fname
-                url_fname = "{0}{1}".format(url_path, fname)
+                    save_full_path = filename_full + fname
+                    url_fname = "{0}{1}".format(url_path, fname)
 
-                output_file = open(save_full_path, 'w')
-                output_file.write(file1["body"])
-                file_path = url_fname
+                    output_file = open(save_full_path, 'w')
+                    output_file.write(file1["body"])
+                    file_path += url_fname+'|'
             self.db_customer.execute('''
             insert into t_customer_genjin_msg(customer_id,file_path,created_at,uid_name,uid,msg,genjin_type)
             values(%s,%s,%s,%s,%s,%s,%s)
             ''',customer_id,file_path,dt,uid_name,uid,dongtai_msg,genjin_type)
+        
+        elif tag=="customer_feedback":
+            feedback_msg=self.get_argument('feedback_msg','')
+            customer_id=self.get_argument('customer_id','')
+            guid=self.get_argument('guid','')
+            company=self.get_argument('company','')
+            check_status=self.get_argument('check_status','')
+            feedback_id=self.get_argument('feedback_id','')
+            is_deal=self.get_argument('is_deal','')
+            if is_deal:
+                self.db_customer.execute(' update t_customer_feedback set is_deal=1,is_deal_at=%s where id=%s ',dt,feedback_id)
+            elif feedback_id:
+                self.db_customer.execute(' update t_customer_feedback set checked_name=%s,checked_uid=%s,checked_at=%s,checked_status=%s where id=%s ',uid_name,uid,dt,check_status,feedback_id)
+            else:
+                self.db_customer.execute('''
+                    INSERT INTO t_customer_feedback(feedback_msg,uid_name,uid,customer_id,
+                    customer_company,customer_guid,created_at) values(%s,%s,%s,%s,%s,%s,%s)
+                ''',feedback_msg,uid_name,uid,customer_id,company,guid,dt)
+        
+        elif tag=="search_merege_customer":
+            merege_id=self.get_argument('merege_id')
+            t_customer=self.db_customer.get(
+                ' select id,company,guid,company_reguid from t_customer where id=%s  ',merege_id)
+            if t_customer:
+                self.write({'company_reguid':(t_customer.company_reguid if t_customer.company_reguid else ''),'merege_id':str(t_customer.id),'company':t_customer.company,'guid':t_customer.guid})
+            else:
+                self.write('-1')
+        elif tag=="merege_customer":
+            merege_with=self.get_argument('merege_with')
+            merege_id=self.get_argument('merege_id')
+            merege_guid=self.get_argument('merege_guid')
+            customer_id=self.get_argument('customer_id')
+            customer_guid=self.get_argument('customer_guid')
+            merege_company=self.get_argument('merege_company')
+            customer_company=self.get_argument('customer_company')
+            company_reguid=self.get_argument('company_reguid','')
+            merege_reguid=self.get_argument('merege_reguid','')
+            if merege_with=='1':
+                merege_id1=customer_id
+                merege_guid1=customer_guid
+                merege_company1=customer_company
+                merege_reguid1=company_reguid
+                merege_id2=merege_id
+                merege_guid2=merege_guid
+                merege_company2=merege_company
+                merege_reguid2=merege_reguid
+            elif merege_with=='2':
+                merege_id2=customer_id
+                merege_guid2=customer_guid
+                merege_company2=customer_company
+                merege_reguid2=company_reguid
+                merege_id1=merege_id
+                merege_guid1=merege_guid
+                merege_company1=merege_company
+                merege_reguid1=merege_reguid
+            t_customer_merege_record=self.db_customer.query(
+                ' select * from t_customer_merege_record where (id=%s and guid=%s) or (id=%s and guid=%s)',
+                merege_id1,merege_guid1,merege_id2,merege_guid2)
+            if t_customer_merege_record:
+                return self.write('-1')
+            self.db_customer.execute('''
+                insert into t_customer_merege_record
+                select *, %s from  t_customer  where (id=%s and guid=%s) or (id=%s and guid=%s) 
+            ''',merege_id1,merege_id1,merege_guid1,merege_id2,merege_guid2)                
+            self.db_customer.execute('''
+                insert into t_linkman_merege_record
+                select *,%s from t_linkman where (customer_id=%s or customer_id=%s)
+            ''',merege_id1,merege_id1,merege_id2)
+            self.db_customer.execute('''
+                insert into t_customer_other_data_merege_record
+                select *,%s from t_customer_other_data where (customer_id=%s or customer_id=%s)
+            ''',merege_id1,merege_id1,merege_id2)
+            self.db_customer.execute('''
+                insert into  t_express_merege_record 
+                select *,%s from '''+options.mysql_database+'''.t_express where 
+                ((project_id=%s and  guid=%s) or (project_id=%s and  guid=%s))
+            ''',merege_id1,merege_id1,merege_guid1,merege_id2,merege_guid2)
+            self.db_customer.execute('''
+            insert into t_transition_merege_record
+            select *,%s from t_transition where (customer_id=%s or customer_id=%s)
+        ''',merege_id1,merege_id1,merege_id2)
+            self.db_customer.execute('''
+            insert into t_company_name_merege_record
+            select *,%s from t_company_name where (customer_id=%s or customer_id=%s)
+        ''',merege_id1,merege_id1,merege_id2)
+            self.db_customer.execute('''
+            insert into t_acc_his_merege_record
+            select *,%s from t_acc_his where (customer_id=%s or customer_id=%s)
+        ''',merege_id1,merege_id1,merege_id2)
+            self.db_customer.execute('''
+            insert into t_contract_merege_record
+            select *,%s from t_contract where (customer_id=%s or customer_id=%s)
+        ''',merege_id1,merege_id1,merege_id2)
+            self.db_customer.execute('''
+            insert into t_file_merege_record
+            select *,%s from t_file where (customer_id=%s or customer_id=%s)
+        ''',merege_id1,merege_id1,merege_id2)
+        #     self.db_customer.execute('''
+        #     insert into t_customer_his_income_merege_record
+        #     select *,%s from  t_customer_his_income where (company=%s or company=%s)
+        # ''',merege_id1,merege_company1,merege_company2)        
+            self.db_customer.execute('''
+            insert into t_customer_exchange_merege_record
+            select *,%s from  t_customer_exchange where (customer_id=%s or customer_id=%s) and etype=1
+        ''',merege_id1,merege_id1,merege_id2)
+            self.db_customer.execute('''
+            insert into t_customer_payment_merege_record
+            select *,%s from  t_customer_payment where (customer_id=%s or customer_id=%s)
+        ''',merege_id1,merege_id1,merege_id2)                     
+            self.db_customer.execute('''
+                update t_customer a,t_customer b 
+                set  
+                a.be_merege_id=b.id,
+                a.be_merege_company=b.company,
+                a.reg_person=CASE WHEN a.reg_person is null or a.reg_person=''  THEN  b.reg_person else a.reg_person end,
+                a.reg_date=CASE WHEN a.reg_date is null  THEN  b.reg_date else a.reg_date end,
+                a.addr_type=CASE WHEN a.addr_type is null or a.addr_type='' THEN  b.addr_type else a.addr_type end,
+                a.zone=CASE WHEN a.zone is null or a.zone='' THEN  b.zone else a.zone end,
+                a.city=CASE WHEN a.city is null or a.city='' THEN  b.city else a.city end,
+                a.reg_addr=CASE WHEN a.reg_addr is null or a.reg_addr='' THEN  b.reg_addr else a.reg_addr end,
+                a.acc_uid_name=CASE WHEN a.acc_uid_name is null or a.acc_uid_name='' THEN  b.acc_uid_name else a.acc_uid_name end,
+                a.acc_uid=CASE WHEN a.acc_uid is null or a.acc_uid=0 THEN  b.acc_uid else a.acc_uid end,
+                a.reg_bank=CASE WHEN a.reg_bank is null or a.reg_bank='' THEN  b.reg_bank else a.reg_bank end,
+                a.saic=CASE WHEN a.saic is null or a.saic='' THEN  b.saic else a.saic end,
+                a.reg_bank_account=CASE WHEN a.reg_bank_account is null or a.reg_bank_account='' THEN  b.reg_bank_account else a.reg_bank_account end,
+                a.national_tax=CASE WHEN a.national_tax is null or a.national_tax='' THEN  b.national_tax else a.national_tax end,
+                a.land_tax=CASE WHEN a.land_tax is null or a.land_tax='' THEN  b.land_tax else a.land_tax end,
+                a.reg_number=CASE WHEN a.reg_person is null or a.reg_person='' THEN  b.reg_number else a.reg_number end
+            
+                where a.id=%s and a.guid=%s and b.id=%s and b.guid=%s
+            ''',merege_id1,merege_guid1,merege_id2,merege_guid2)
+            
+            t_customer_other_data=self.db_customer.get(
+                'select * from t_customer_other_data where customer_id=%s',merege_id1)
+            if  not t_customer_other_data:
+                self.db_customer.execute('''
+                insert into  t_customer_other_data(customer_id) 
+                 values(%s)
+                 ''',merege_id1)
+            self.db_customer.execute('''
+                update t_customer_other_data a,t_customer_other_data b
+                set  a.hangye=CASE WHEN a.hangye is null or a.hangye=''  THEN  b.hangye else a.hangye end,
+                a.zg_name=CASE WHEN a.zg_name is null or a.zg_name=''  THEN  b.zg_name else a.zg_name end,
+                a.zg_tel=CASE WHEN a.zg_tel is null or a.zg_tel=''  THEN  b.zg_tel else a.zg_tel end,
+                a.business_scope=CASE WHEN a.business_scope is null or a.business_scope=''  THEN  b.business_scope else a.business_scope end,
+                a.attention=CASE WHEN a.attention is null or a.attention=''  THEN  b.attention else a.attention end,
+                a.zg_option=CASE WHEN a.zg_option is null or a.zg_option=''  THEN  b.zg_option else a.zg_option end,
+                a.survey=CASE WHEN a.survey is null or a.survey=''  THEN  b.survey else a.survey end,
+                a.shuizhong_detail=CASE WHEN a.shuizhong_detail is null or a.shuizhong_detail=''  THEN  b.shuizhong_detail else a.shuizhong_detail end,
+                a.zhengshou_way=CASE WHEN a.zhengshou_way is null or a.zhengshou_way=''  THEN  b.zhengshou_way else a.zhengshou_way end,
+                a.shuikong_type=CASE WHEN a.shuikong_type is null or a.shuikong_type=''  THEN  b.shuikong_type else a.shuikong_type end,
+                a.fixed_assets=CASE WHEN a.fixed_assets is null or a.fixed_assets=''  THEN  b.fixed_assets else a.fixed_assets end,
+                a.legal_id_card=CASE WHEN a.legal_id_card is null or a.legal_id_card=''  THEN  b.legal_id_card else a.legal_id_card end,
+                 a.rel_name_collect_account=CASE WHEN a.rel_name_collect_account is null or a.rel_name_collect_account=''  THEN  b.rel_name_collect_account else a.rel_name_collect_account end,
+                a.rel_name_collect_password=CASE WHEN a.rel_name_collect_password is null or a.rel_name_collect_password=''  THEN  b.rel_name_collect_password else a.rel_name_collect_password end,
+                a.shuipan_password=CASE WHEN a.shuipan_password is null or a.shuipan_password=''  THEN  b.shuipan_password else a.shuipan_password end,
+                a.shuipan_command=CASE WHEN a.shuipan_command is null or a.shuipan_command=''  THEN  b.shuipan_command else a.shuipan_command end,
+                a.per_income_apply_password=CASE WHEN a.per_income_apply_password is null or a.per_income_apply_password=''  THEN  b.per_income_apply_password else a.per_income_apply_password end,
+                a.receipt_card_password=CASE WHEN a.receipt_card_password is null or a.receipt_card_password=''  THEN  b.receipt_card_password else a.receipt_card_password end,
+                a.accumulation_fund_password=CASE WHEN a.accumulation_fund_password is null or a.accumulation_fund_password=''  THEN  b.accumulation_fund_password else a.accumulation_fund_password end
+              where a.customer_id=%s and b.customer_id=%s
+            ''',merege_id1,merege_id2)
+            self.db_customer.execute('''
+            update t_customer_clearly a,t_customer_clearly b
+            set  a.ss_num=CASE WHEN a.ss_num is null or a.ss_num=''  THEN  b.ss_num else a.ss_num end
+            where a.customer_id=%s and b.customer_id=%s
+            ''',merege_id1,merege_id2)
+            self.db_customer.execute('''
+            update t_linkman
+             set customer_id=%s
+             where customer_id=%s  and  
+            not find_in_set(concat(name,tel),if(
+                (select b.gc from(SELECT group_concat(name,tel) gc FROM t_linkman where customer_id=%s group by customer_id) b) 
+            is null ,'',(select b.gc from(SELECT group_concat(name,tel) gc FROM t_linkman where customer_id=%s group by customer_id)b)  ))
+            ''',merege_id1,merege_id2,merege_id1,merege_id1)
+            self.db.execute('''
+                update t_express set project_id=%s,guid=%s where project_id=%s and guid=%s
+            ''',merege_id1,merege_guid1,merege_id2,merege_guid2)
+            self.db_customer.execute('''
+            update t_transition set customer_id=%s where customer_id=%s
+            ''',merege_id1,merege_id2)
+            self.db_customer.execute('''
+            update t_company_name set customer_id=%s where customer_id=%s
+            ''',merege_id1,merege_id2)
+            self.db_customer.execute('''
+            update t_acc_his set customer_id=%s where customer_id=%s
+            ''',merege_id1,merege_id2)
+            self.db_customer.execute('''
+            update t_contract set customer_id=%s where customer_id=%s
+            ''',merege_id1,merege_id2)
+            self.db_customer.execute('''
+            update t_file set customer_id=%s where customer_id=%s
+            ''',merege_id1,merege_id2)
+            # self.db_customer.execute('''
+            # update t_customer_his_income set company=%s where company=%s
+            # ''',merege_company1,merege_company2)
+
+            self.db_customer.execute('''
+            update t_customer_exchange set customer_id=%s where customer_id=%s and (etype=1 or etype=2 )
+            ''',merege_id1,merege_id2) 
+            self.db_customer.execute('''
+            update t_customer_payment set customer_id=%s where customer_id=%s
+            ''',merege_id1,merege_id2)
+            self.db.execute('''
+                update t_projects set customer_company=%s,company_uid=%s where customer_company=%s
+            ''',merege_company1,merege_reguid1,merege_company2)                   
+            # self.db_customer.execute(
+            #     'delete from t_customer where id=%s and guid=%s ',merege_id2,merege_guid2)    
+            events.add_project_event(self,'0','合并操作',merege_id2+'合并到'+merege_id1,uid,uid_name,merege_id1)
+            events.add_project_event(self,'0','合并操作',merege_id2+'合并到'+merege_id1,uid,uid_name,merege_id2)
+        elif tag=="merege_customer1":
+            merege_project_ids=self.get_argument('merege_project_ids','')
+            merege_his_ids=self.get_argument('merege_his_ids','')
+            merege_id=self.get_argument('merege_id')
+            merege_guid=self.get_argument('merege_guid','')
+            merege_company=self.get_argument('merege_company','')
+            merege_reguid=self.get_argument('merege_reguid','')
+            customer_id=self.get_argument('customer_id')
+            if merege_project_ids:
+                for project_id in merege_project_ids.split(','):
+                    self.db.execute(
+                        ' update t_projects set customer_company=%s where id=%s ',merege_company,project_id)
+                    events.add_project_event(self,'0','转移办理业务记录','业务'+project_id+'转移到客户'+merege_id,uid,uid_name,customer_id)
+                    events.add_project_event(self,'0','转移办理业务记录','业务'+project_id+'转移到客户'+merege_id,uid,uid_name,merege_id)
+            if merege_his_ids:
+                for his_id in merege_his_ids.split(','):
+                    self.db_customer.execute('''
+                    update t_customer_his_income set company=%s where id=%s
+                    ''',merege_company,his_id)
+                    events.add_project_event(self,'0','转移历史办理业务记录','历史办理业务记录转移到客户'+merege_id,uid,uid_name,customer_id)
+                    events.add_project_event(self,'0','转移历史办理业务记录','客户'+customer_id+'的历史办理业务记录转移到客户'+merege_id,uid,uid_name,merege_id)
+
+        elif tag=="merege_customer2":
+            merege_payment_ids=self.get_argument('merege_payment_ids','')
+            merege_his_ids=self.get_argument('merege_his_ids','')
+            merege_id=self.get_argument('merege_id')
+            merege_guid=self.get_argument('merege_guid','')
+            merege_company=self.get_argument('merege_company','')
+            merege_reguid=self.get_argument('merege_reguid','')
+            customer_id=self.get_argument('customer_id')
+            for payment_id in merege_payment_ids.split(','):
+                self.db_customer.execute('''
+                    update t_customer_payment set customer_id=%s where id=%s
+                ''',merege_id,payment_id)
+                events.add_project_event(self,'0','转移应收记录(应收编号'+payment_id+')','客户'+customer_id+'转移到客户'+merege_id,uid,uid_name,merege_id)
+                events.add_project_event(self,'0','转移应收记录(应收编号'+payment_id+')','转移到客户'+merege_id,uid,uid_name,customer_id)
+                
 
     @run_on_executor(executor="_thread_pool")
     def runSql(self):

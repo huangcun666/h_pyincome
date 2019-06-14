@@ -19,7 +19,8 @@
 <div class="tab-content">
 <div class="tab-pane active" id="formcontrols">
         <form class="form-search" id="query_form">
-                <input type="text" value="{%if company%}{{company}}{%end%}" name="company" id="company" class="input-medium search-query" placeholder="公司名称">
+       <input type="text" value="{{company}}" name="company"  placeholder="公司名称/姓名/信用代码/编号">
+
                     <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
 
                 <button type="submit" class="btn">检 索</button>
@@ -107,24 +108,58 @@
 
                             <a target="_blank" href="/payment?tag=customer&customer_id={{item.a_customer_id}}&to_tag=payment_tab">{{item.customer_company}}</a>
 
-                              <a class="modify_customer_detail btn-sm  control"
+                            {%if role=="3" or role=="8" or role=="5" %} <a 
+                           class="modify_customer_detail btn-sm control"
          customer_id="{{item.customer_id}}"
-         promo_id="{{item.promo_id}}|{{item.promo_id_name}}" is_general="{{item.is_general}}"
-         pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
-         pay_service_amount = "{{item.pay_service_amount}}"
-         pay_service_amount_month  = "{{item.pay_service_amount_month}}"
-         pay_book_amount ="{{item.pay_book_amount}}" guid="{{item.guid}}"
-         customer_type="{{item.customer_type}}"  href="javascript:void(0)"
-             customer_company = "{{item.customer_company}}"
-        >
+         promo_id="{{item.customer_promo_id}}|{{item.customer_promo_id_name}}"
+          is_general="{{item.customer_is_general}}"
+         pay_pay_typeid_name="{{item.customer_paytype_id_name}}"
+         pay_service_amount = "{{item.customer_service_amount}}"
+         pay_service_amount_month  = "{{item.customer_service_amount_month}}"
+         pay_book_amount ="{{item.customer_book_amount}}" guid="{{item.guid}}"
+         customer_type="{{item.customer_customer_type}}"  href="javascript:void(0)"
+         customer_company = "{{item.company}}" tag_id="{{item.customer_tag_id}}"
+         tag_id_name="{{item.customer_tag_id_name}}" 
+          tag_parent_id="{{item.customer_tag_parent_id}}"
+         tag_parent_id_name="{{item.customer_tag_parent_id_name}}" 
+         is_building="{{item.customer_is_building}}"
+         is_clearly="{{item.customer_is_clearly}}" is_year="{{item.customer_is_year}}"
+         adjusted_option="{% if  adjusted_option(item.customer_id)%}{%if adjusted_option(item.customer_id).adjusted_option%}{{adjusted_option(item.customer_id).adjusted_option}}{%end%}{%end%}"
+        >{%end%}
             <img src="/static/images/modify.png" width="20"/></a>
 {%if item.is_general%}<font color='red'><i class="icon-star"></i> 一般纳税人</font>{%end%}
-                                {%if item.customer_type_name%}<br />
-                                <span style="font-size:11px; color:blue;"><i class="icon-star"></i> {{item.customer_type_name}}
+                               <br />
+                                <span style="font-size:11px; color:blue;"><i class="icon-star"></i> 
+                                    {%if item.tag_parent_id_name!=item.tag_id_name%}
 
+                                    {{item.tag_parent_id_name}}&nbsp;
+                                   {%end%}
+                                    {%if item.tag_id_name%}
+                                  {{item.tag_id_name}}&nbsp;
+                                   {%end%}
+                                     {%if item.is_building%}
+                                   楼盘&nbsp;
+                                   {%end%}
+                                     {%if item.is_year%}
+                                 工商年检&nbsp;
+                                   {%end%}
+                                     {%if item.is_clearly%}
+                                  汇算清缴&nbsp;
+                                   {%end%}
                                 </span>
-
+                                {% if  adjusted_option(item.customer_id)%}
+                                {%if adjusted_option(item.customer_id).adjusted_option%}
+                                    <br><font color='red' title="{{adjusted_option(item.customer_id).adjusted_option}}" >{{adjusted_option(item.customer_id).adjusted_option[:35]}}{%if len(adjusted_option(item.customer_id).adjusted_option)>35%}..{%end%}</font>
                                 {%end%}
+                                {%end%}
+
+                                <div class="alert alert-info">
+
+                                    付款方式:{{item.customer_paytype_id_name}}<br/>{{item.customer_service_amount}}（总）/{{item.customer_service_amount_month}}（月）
+                                    {{item.customer_book_amount}}(帐册费)
+                                </div>
+                                         
+                               
 
                             </td>
                                         <td>{{item.acc_uid_name}}</td>
@@ -421,10 +456,10 @@
 
     $(function () {
         _xsrf = getCookie("_xsrf")
-
       //  moment().format('YYYY-MM'); // 十月 25日 2018, 12:28:24 中午
       //  moment.locale();         // zh-cn
 
+     
 
         $('#acc_book_end').combodate({
             format: "YYYY-MM",
@@ -568,11 +603,11 @@ customer_remark = $(this).attr("customer_remark")
 
                    $("#msg_acc_end").text("(上期记账费到期时间:" + result.customer.acc_end+")")
                    $("#msg_acc_book_end").text("(上期账册费到期时间:" + result.customer.acc_book_end+")")
-                    if(result.customer.old_al_remark==undefined || result.customer.old_al_remark == ""){
+                    if(result.customer.al_remark==undefined || result.customer.al_remark == ""){
                          $("#last_payment").html("<td colspan='8'>没有上期收款明细哦</td>")
 
                     }else{
-                        $("#last_payment").html("<td colspan='8'>" + result.customer.old_al_remark + "</td>")
+                        $("#last_payment").html("<td colspan='8'>" + result.customer.al_remark + "</td>")
                     }
                     if (result.customer.pb_remark == undefined || result.customer.pb_remark=="") {
                         $("#curr_last_payment").html("<td colspan='4'>没有本期待收款明细哦</td><td colspan='4'>0</td>")

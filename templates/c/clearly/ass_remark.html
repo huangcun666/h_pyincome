@@ -1,12 +1,12 @@
 {%if t_customer_clearly_msg%}
 {%for item in t_customer_clearly_msg%}
-<li class="from_user left" > <a href="#" class="avatar"><img src="/static/images/avatar.jpeg" width="60"></a>
+<li class="from_user left"  id="msg_{{item.id}}"> <a href="#" class="avatar"><img src="/static/images/avatar.jpeg" width="60"></a>
                   <div class="message_wrap"> <span class="arrow"></span>
                     <div class="info"> <a class="name">{{item.uid_name}} </a> <span class="time">{{item.uid_at}}</span>
                       <div class="options_arrow">
                         <div class="dropdown pull-right"> <a class="dropdown-toggle " id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="#"> <i class=" icon-caret-down"></i> </a>
                           <ul class="dropdown-menu " role="menu" aria-labelledby="dLabel">
-                            <li><a href="#"><i class=" icon-trash icon-large"></i> Delete</a></li>
+                            <li><a href="javascript:void(0)" msg_id="{{item.id}}" clearly_id="{{clearly_id}}" class="delete_ass_remark"><i class=" icon-trash icon-large"></i> 删除本条跟进</a></li>
                           </ul>
                         </div>
                       </div>
@@ -21,6 +21,28 @@
     $(function(){
         
             $("#msg_count").html("一共有"+{{t_customer_clearly_msg_count.c}}+"条记录")
+
+            $(".delete_ass_remark").on("click",function(){
+                if(confirm("确认删除吗?")){
+                  id= $(this).attr('msg_id')
+                  clearly_id = $(this).attr("clearly_id")
+                    $.post("clearly?tag=delete_msg",{ "_xsrf": _xsrf,"id":id,"clearly_id":clearly_id},function(result){
+                      if(result==0){
+                           $("#msg_"+id).hide()
+                          alert('删除成功.')
+                      }
+                      else{
+                     
+                        alert(result)
+                        
+                      }
+
+
+                    })
+
+                }
+
+            })
 
     })
 </script>

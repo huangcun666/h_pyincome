@@ -19,7 +19,7 @@
     <link href="/static/c/css/style.css" rel="stylesheet">
 
     <link href="/static/c/js/guidely/guidely.css" rel="stylesheet">
-
+   <link href="/static/notify.css" rel="stylesheet">
 <style>
   body{
         background-color:#f9f6f1;
@@ -45,15 +45,48 @@
       <div class="container">
       <ul class="mainnav">
 
-        <li id="my_customer"><a href="/customer?my=1"><i class="icon-dashboard"></i><span>我的客户</span> </a> </li>
-        {%if False%}
-        <li id="customer_list_rec">
-          <a href="/customer?my=1&tag=customer_list_rec">
+        <li id="my_customer"><a href="/customer?my=1&tag_id=1&tag_parent_id=1&new_tag=1"><i class="icon-dashboard"></i><span>我的客户</span> </a> </li>
+    
+ 
+
+                <li class="dropdown subnavbar-open-right">
+            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="  icon-magnet"></i>
+              <span>业务流转</span>
+              <b class="caret"></b>
+            </a>
+
+            <ul class="dropdown-menu">
+            {%if (role=="10" and  is_manager=="1") or role=="8" %}
+    <li id="customer_list_rec">
+          <a href="/project?tag=projects_state&ntag=wait_department&team_id=205&department_id=1&from_tag_where=1">
             <i class=" icon-fire"></i>
-            <span>接单管理</span>
+            <span>订单分配</span>
           </a>
         </li>
         {%end%}
+
+          <li id="customer_list_rec">
+          <a href="/project?tag=projects_qc_milepost">
+            <i class=" icon-fire"></i>
+            <span>我的订单流转</span>
+          </a>
+        </li>
+
+          {%if '231' in role_list or role=='9' or role=="10"%}
+ <li id="customer_list_rec">
+    <a class="nav-link" href="/project?tag=project_confirm_banjie{%if is_manager=="1" and role=="10"%}&team_id=205{%elif role=="7"%}&team_id=38{%end%}">
+ 
+         <i class=" icon-fire"></i>
+            <span>{%if is_manager=="1" and role=="10"%}会计业务办结确认{%elif role=="7"%}工商办结确认{%elif role=="8"%}办结确认管理{%else%}我的办结业务{%end%}
+        </span>
+    </a>
+  </li>
+  {%end%}
+
+            </ul>
+        </li>
+
 
     <li class="dropdown subnavbar-open-right">
       <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
@@ -77,6 +110,9 @@
           <a href="/project?tag=relation_projects&showtype=recommend" target="_blank"><i class="icon-list-alt"></i> 推荐业务</a>
         </li>
 
+       <li><a href="/customer?tag=customer_his_income&my=1" ><i class="icon-bar-chart"></i><span>我的历史业务(2018前)</span> </a> </li>
+
+
 {%if role=="10"%}
 <li>
   <a href="/project?income_bussniss=204" target="_blank"><i class="icon-list-alt"></i> 续帐业务</a>
@@ -86,7 +122,7 @@
 
       </ul>
     </li>
-        {%if is_manager=="1"%}
+        {%if is_manager=="1" %}
     <li class="dropdown subnavbar-open-right">
       <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
         <i class="  icon-magnet"></i>
@@ -96,7 +132,14 @@
 
       <ul class="dropdown-menu">
         <li>
-          <a href="/customer?tag=all&tag_id=1&tag_parent_id=1&new_tag=1" ><i class="icon-list-alt"></i>
+        {%if role=="2" or role=="3" or role=="5" or role=="8"%}
+   <a href="/customer?tag=all&new_tag=1">
+        {%else%}
+          <a href="/customer?tag=all&tag_id=1&tag_parent_id=1&new_tag=1" >
+          
+
+          {%end%}
+          <i class="icon-list-alt"></i>
             <span>客户列表</a>
         </li>
 
@@ -110,7 +153,7 @@
       </ul>
     </li>
 
-     
+
 
         {%end%}
           <li class="dropdown subnavbar-open-right">
@@ -122,7 +165,7 @@
 
           <ul class="dropdown-menu">
 
-            {%if role=="3" or role=="8" or role=="5" or name=="周萍"%}
+            {%if role=="3" or role=="8" or role=="5" or name=="周萍" or is_manager=="1"%}
             <li>
               <a href="/clearly"><i class=" icon-bar-chart"></i>汇算管理</a>
             </li> {%end%}
@@ -137,13 +180,12 @@
             </li>
 
             {%end%}
-    
                   {%if role=="8" or role=="3" %}
             <li>
               <a href="/clearly?state=3&my=2">
                 <i class="icon-list-alt"></i>汇算清缴(业务跟进)</a>
             </li>
-          
+
             {%end%}
 
                     {%if role=="8" or role=="7" %}
@@ -156,14 +198,23 @@
             {%end%}
 
 
-                    {%if role=="8" or  is_manager=="1"%}
+                    {%if role=="8" or  is_manager=="1" %}
             <li>
               <a href="/clearly?clearly_type=1&state=6">
                 <i class="icon-list-alt"></i>汇算清缴(汇算审核)</a>
             </li>
-     
 
+
+
+            {%elif is_manager=="2"%}
+        <li>
+              <a href="/clearly?clearly_type=1&state=6&check_under=1">
+                <i class="icon-list-alt"></i>汇算清缴(部门审核)</a>
+            </li>
             {%end%}
+
+
+                
           </ul>
         </li>
 
@@ -190,8 +241,15 @@
           <ul class="dropdown-menu">
             <li>
               <a href="/finance?tag=list&qtype=my"><i class="icon-list-alt"></i>
-              <span>收入确认单应收</a>
+              <span>公司应收</a>
             </li>
+                     {%if role=="8" or role=="3" or role=="2"%}
+      <li>
+              <a href="/finance?tag=finance_project_list&qtype=all&state=1">
+                <i class="icon-list-alt"></i>确认单应收</a>
+            </li>
+
+            {%end%}
             {%if role=="3" or role=="8" or role=="5" or is_manager%}
             <li>
               <a href="/payment?tag=list"><i class="icon-list-alt"></i>记账应收</a>
@@ -202,6 +260,8 @@
                 <i class="icon-list-alt"></i>记账应收</a>
             </li>
             {%end%}
+
+   
             {%if role=="8" or role=="3" or role=="5" or role=="2"%}
             <li>
               <a href="/payment?tag=reminders_plan"><i class="icon-list-alt"></i>催款记录/计划</a>
@@ -216,15 +276,33 @@
           </ul>
         </li>
         <li id="contract_expire"><a href="/customer?tag=contract_expire"><i class="icon-dashboard"></i><span>合同到期</span></a> </li>
-       
-        <li id="contract_expire"><a href="/customer?tag=operation_record"><i class="icon-dashboard"></i><span>操作记录</span></a> </li>
-      
-                  <li><a href="/changepassword" target="_blank" ><i class="icon-bar-chart"></i><span>修改密码</span> </a> </li>
 
-        <li><a href="/logout" class="dropdown-toggle" >
+        <li class="dropdown subnavbar-open-right">
+            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="  icon-magnet"></i>
+              <span>系统相关</span>
+              <b class="caret"></b>
+            </a>
+
+            <ul class="dropdown-menu">
+                <li id="contract_expire"><a href="/customer?tag=operation_record"><i class="icon-dashboard"></i><span>操作记录</span></a> </li>
+                {%if role!='5'%}
+               <li id="contract_expire"><a href="/customer?tag=customer_feedback"><i class="icon-dashboard"></i><span>{%if role=='3' or role=='8'%}意见反馈{%else%}我的反馈{%end%}</span></a> </li>
+        {%end%}
+
+                <li><a href="/changepassword" target="_blank" ><i class="icon-bar-chart"></i><span>修改密码</span> </a> </li>
+                   <li><a href="/logout" class="dropdown-toggle" >
          <i class="icon-long-arrow-down"></i><span>退出({{name}})</span> <b class="caret"></b></a>
 
         </li>
+            </ul>
+        </li>
+
+
+
+
+
+     
       </ul>
     </div>
     <!-- /container -->
@@ -260,12 +338,22 @@
 <script src="/static/c/laydate/laydate.js"></script> <!-- 改成你的路径 -->
 
 <script src="/static/c/js/base.js"></script>
+
+<script src="/static/bootstrap-notify.min.js"></script>
+<script src="/static/notify.js"></script>
 <script>
+
     function getCookie(name) {
         var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
         return r ? r[1] : undefined;
     }
+
+
     $(function () {
+
+ _xsrf =  getCookie("_xsrf")
+
+
 
       if("{{today_exchange_ids}}"!='[]'){
       $.messager.show("提示信息",'您今天共有'+"{{len(today_exchange_ids)}}"+'条催款记录，请尽早处理！',0);

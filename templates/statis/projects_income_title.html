@@ -9,28 +9,35 @@
     <li class="breadcrumb-item g1">
         主面板
     </li>
-    <li class="breadcrumb-item g1">到款结算
+    <li class="breadcrumb-item g1">到款明细
       
-            {%if  projects_income_title and ( params['project_id'] or (params['daokuan_start'] and params['daokuan_end']) 
-            or params['sale'] or params['kf'])%}
+
             <li class="g1 g1-left">
-                <a href="javascript:void(0);" id='income_output' params="{{params}}"  class="btn btn-primary btn-sm">点击下载数据（Excel格式）</a>
+                <a href="/statis?tag=projects_income_title&output=1{%if params['step']%}&step={{params['keyword']}}{%end%}{%if params['step']%}&step={{params['step']}}{%end%}{%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['daokuan_start']%}&daokuan_start={{params['daokuan_start']}}{%end%}{%if params['daokuan_end']%}&daokuan_end={{params['daokuan_end']}}{%end%}{%if params['sale']%}&sale={{params['sale']}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}"  class="btn btn-primary btn-sm">点击下载数据（Excel格式）</a>
             </li>
           
-                {%end%}
+          
     </li>
 </ol>
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link {%if not params['step']%}active{%end%}" id="nav-home-tab"
+        href="/statis?tag=projects_income_title" >全部到款
+        
+    </a>  
+    
         <a class="nav-item nav-link {%if params['step']=='1'%}active{%end%}" id="nav-home-tab"
         href="/statis?tag=projects_income_title&step=1" >业务到款
-        <span class="badge badge-danger"></span>
-    </a>
+        
+
       <a class="nav-item nav-link {%if params['step']=='2'%}active{%end%}"
     href="/statis?tag=projects_income_title&step=2" style="font-size:13px;">中转到款
-        <span class="badge badge-danger"></span>
+        
         </a>
-
+      <a class="nav-item nav-link {%if params['step']=='3'%}active{%end%}"
+    href="/statis?tag=projects_income_title&step=3" style="font-size:13px;">退款
+        
+        </a>
 </div>
 </nav>
 <br>
@@ -38,6 +45,8 @@
     <table>
         <tbody>
             <tr>
+             <td><input {%if params['keyword']%}value="{{params['keyword']}}"{%end%} type="text" placeholder="公司名称" name="keyword" id="keyword" class="form-control"></td>
+
                 <td><input {%if params['project_id']%}value="{{params['project_id']}}"{%end%} type="text" placeholder="订单号" name="project_id" id="project_id" class="form-control"></td>
                 <td><input {%if params['daokuan_start']%}value="{{params['daokuan_start']}}"{%end%} type="text" placeholder="到款开始日期" name="daokuan_start" id="daokuan_start" class="form-control"></td>
                 <td>至</td>
@@ -52,20 +61,23 @@
         </tbody>
     </table>
 </form>
+
 <div class="table-responsive">
 
-<table class="table table-bordered fayetable"  style="width:1500px">
-    <thead class="table_class">
-        <tr class="active">
-            <th width="50">订单号</th>
-          <th width="150">业务内容</th>
-          <th width="100">到款日期</th>
+    <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0”>
+      <thead class="table_class">
+        <tr >
+            <th width="80">订单号</th>
+          <th >业务内容</th>
+          <th width="100">到款笔数</th>
+          <th width="100">支付方式</th>
+          <th width="100">到款时间</th>
           <th width="180">公司名称</th>
           <th width="100">客户姓名</th>
           <th width="100">到款内容</th>
           <th width="100">到款金额</th>
-          <th width="80">销售顾问</th>
-          <th width="80">客服顾问</th>
+          <th width="100">销售顾问</th>
+          <th width="100">客服顾问</th>
         </tr>
 
 
@@ -74,14 +86,19 @@
             {%for item in projects_income_title%}
             <tr>
                 <td>{{item.id}}</td>
-                <td>{{item.project_name}}</td>
+                <td>  <a href="/project?tag=show&guid={{item.project_guid}}&id={{item.id}}" title="{{item.id}}">
+                    
+                    
+                    {%if len(item.project_name) > 40%} {{item.project_name[:39]}}....... {%else%} {{item.project_name}} {%end%}</a></td>
+                    <td>{{item.income_num}}</td>
+                    <td>{{item.company_id_name}}-{{item.pay_type_name}}</td>
                 <td>{{item.income_at.strftime('%Y-%m-%d')}}</td>
                 <td>{{item.customer_company}}</td>
                 <td>{{item.customer_name}}</td>
                 <td>{{item.income_name}}</td>
                 <td>{{item.income_money}}</td>
-                <td>{{item.sale_name}}</td>
-                <td>{{item.kf_name}}</td>
+                <td>{%if item.mbs%}{% raw get_member(item.mbs,"销售顾问")%}{%end%}</td>
+                <td>{%if item.mbs%}{% raw get_member(item.mbs,"客服顾问")%}{%end%}</td>
             </tr>
             {%end%}
     </tbody>
@@ -90,12 +107,12 @@
 <ul class="pagination">
     {% if pagination.has_prev %}
     <li class="paginate_button page-item previous " id="dataTable_previous">
-        <a href="/statis?tag=projects_income_title{%if params['step']%}&step={{params['step']}}{%end%}{%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['daokuan_start']%}&daokuan_start={{params['daokuan_start']}}{%end%}{%if params['daokuan_end']%}&daokuan_end={{params['daokuan_end']}}{%end%}{%if params['sale']%}&sale={{params['sale']}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}&page={{ pagination.page - 1}}"
+        <a href="/statis?tag=projects_income_title{%if params['step']%}&step={{params['keyword']}}{%end%}{%if params['step']%}&step={{params['step']}}{%end%}{%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['daokuan_start']%}&daokuan_start={{params['daokuan_start']}}{%end%}{%if params['daokuan_end']%}&daokuan_end={{params['daokuan_end']}}{%end%}{%if params['sale']%}&sale={{params['sale']}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}&page={{ pagination.page - 1}}"
             aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
     {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
     <li class="paginate_button page-item ">
-        <a href="/statis?tag=projects_income_title{%if params['step']%}&step={{params['step']}}{%end%}{%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['daokuan_start']%}&daokuan_start={{params['daokuan_start']}}{%end%}{%if params['daokuan_end']%}&daokuan_end={{params['daokuan_end']}}{%end%}{%if params['sale']%}&sale={{params['sale']}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}&page={{page}}" aria-controls="dataTable"
+        <a href="/statis?tag=projects_income_title{%if params['step']%}&step={{params['keyword']}}{%end%}{%if params['step']%}&step={{params['step']}}{%end%}{%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['daokuan_start']%}&daokuan_start={{params['daokuan_start']}}{%end%}{%if params['daokuan_end']%}&daokuan_end={{params['daokuan_end']}}{%end%}{%if params['sale']%}&sale={{params['sale']}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}&page={{page}}" aria-controls="dataTable"
             data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
     {% else %}
     <li class="paginate_button page-item active">
@@ -104,7 +121,7 @@
     <li class="paginate_button page-item "><span class="active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0"
                 class="page-link">....</a></span></li>
     {% end %} {% end %} {% if pagination.has_next %}
-    <li class="paginate_button page-item next" id="dataTable_next"><a href="statis?tag=projects_income_title{%if params['step']%}&step={{params['step']}}{%end%}{%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['daokuan_start']%}&daokuan_start={{params['daokuan_start']}}{%end%}{%if params['daokuan_end']%}&daokuan_end={{params['daokuan_end']}}{%end%}{%if params['sale']%}&sale={{params['sale']}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}&page={{pagination.page+1}}"
+    <li class="paginate_button page-item next" id="dataTable_next"><a href="statis?tag=projects_income_title{%if params['step']%}&step={{params['keyword']}}{%end%}{%if params['step']%}&step={{params['step']}}{%end%}{%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['daokuan_start']%}&daokuan_start={{params['daokuan_start']}}{%end%}{%if params['daokuan_end']%}&daokuan_end={{params['daokuan_end']}}{%end%}{%if params['sale']%}&sale={{params['sale']}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}&page={{pagination.page+1}}"
             aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
     {% end %}
 </ul>
@@ -118,8 +135,8 @@
 <script>
     _xsrf = getCookie("_xsrf");
     $(function () {
+        $("#m_statis").click()
 
-            $("#m_statis").click()
         $("#daokuan_start").datetimepicker({
             minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
             language: 'zh-CN', initialDate: new Date()
@@ -146,15 +163,6 @@ return process(JSON.parse(data));
     });
 
 
-$('#income_output').on('click',function () { 
-    var params=$(this).attr('params')
-    $.get('/statis?tag=income_output',
-    {
-        'params':params
-    },function (res) { 
-        location.href=res['output_path']
-     })
-})
     })
 
 

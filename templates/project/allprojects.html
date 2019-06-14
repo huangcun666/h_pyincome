@@ -8,6 +8,13 @@
         <li class="breadcrumb-item g1">我的业务</li>
         <li class="g1 g1-left">
           <a href="javascript:void(0)" class="btn btn-primary btn-sm" id="btn_add">新 建 </a>
+          {%if params['income_bussniss'] %}
+          {%if not params['show_tag']%}
+          <a  class="btn btn-primary btn-sm" href="/project?income_bussniss={{params['income_bussniss']}}&show_tag=history">客户历史续帐纪录</a>
+          {%else%}
+          <a  class="btn btn-primary btn-sm" href="/project?income_bussniss={{params['income_bussniss']}}">续帐业务</a>
+          {%end%}
+          {%end%}
         </li>
           <li class="g1 g1-left">
          {% if role=='12'%}
@@ -355,12 +362,12 @@
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=my&page={{ pagination.page - 1}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["correlation_projects"]%}&correlation_projects={{params['correlation_projects']}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="?tag=my&page={{ pagination.page - 1}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["correlation_projects"]%}&correlation_projects={{params['correlation_projects']}}{%end%}{%if params["show_tag"]%}&show_tag={{params['show_tag']}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
         {% end %}
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["correlation_projects"]%}&correlation_projects={{params['correlation_projects']}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="?tag=my&page={{page}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["correlation_projects"]%}&correlation_projects={{params['correlation_projects']}}{%end%}{%if params["show_tag"]%}&show_tag={{params['show_tag']}}{%end%}"" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -372,7 +379,7 @@
           {%end %}
 
          {% if pagination.has_next %}
-         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["correlation_projects"]%}&correlation_projects={{params['correlation_projects']}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=my&page={{pagination.page+1}}{%if params["kfgw"]%}&kfgw={{params["kfgw"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["correlation_projects"]%}&correlation_projects={{params['correlation_projects']}}{%end%}{%if params["show_tag"]%}&show_tag={{params['show_tag']}}{%end%}"" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>
@@ -636,8 +643,14 @@
                  value="{%if add_t_company%}{{add_t_company.entName}}{%end%}" readonly="readonly" style="display:none;">
                  <br>
             <input class="form-control"  type="text" name="customer_company" id="customer_company"  placeholder="企业名称">
-            <small id="customer_companyHelpInline" class="text-danger"></small>
+            <small id="customer_companyHelpInline" class="text-primary">新公司注册请留空,其他业务如发现异常,请先自行核实输入是否正确,如为系统信息错误请与财务经理联系修正</small>
           </div>
+            <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">信用代码:</label>
+            <input class="form-control"  type="text" name="company_uid" id="company_uid" placeholder="信用代码">
+               <small id="company_uidHelpInline" class="text-danger"></small>
+          </div>
+
           <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">联系方式:</label>
             <input class="form-control"  type="text" name="customer_tel" id="customer_tel" placeholder="手机号码">
@@ -675,6 +688,11 @@
 
 <script>
  $(function () {
+
+function fullChar2halfChar(result) {
+
+    return result.replace("（", "(").replace("）", ")") ;
+}
     _xsrf =  getCookie("_xsrf")
     $("#start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
 language: 'zh-CN',initialDate: new Date()});
@@ -696,11 +714,63 @@ language: 'zh-CN',initialDate: new Date()});
     });
     $('#customer_company').typeahead({
       source: function (query, process) {
-        return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"customer_company"}, function (data) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"customer_company_guid"}, function (data) {
             return process(JSON.parse(data));
         });
+    },
+     updater: function(item) {
+       // # myOwnFunction(item);
+       // # var $fld = $('#my-input-field');
+
+      $('#customer_company').val(item.split("-")[0])
+
+
+      if(item.split("-")[1]==""){
+        alert(item.split("-")[1])
+        $("#company_uidHelpInline").html("当公司名称不为空,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+item.split("-")[0]+"'>查询信用代码</a>")
+         
+      }
+    else{
+      $("#company_uid").val(item.split("-")[1])
+    }
+
+    
+        return item.split("-")[0];
     }
     });
+
+$("#company_uid").on('change keydown paste input keyup', function(){
+     val = $(this).val()
+   
+     if (val.length==18){
+        $("#company_uidHelpInline").text("")
+     }else{
+       $("#company_uidHelpInline").text("信用代码必须位18位,当前:"+val.length)
+     }
+});
+
+$("#customer_company").on('change', function(){
+    val = fullChar2halfChar($(this).val())
+
+    $.post('/api', { query: val ,"_xsrf":_xsrf,"tag":"customer_company_one"}, function (data) {
+            if(data!=""){
+
+             
+              if(data.length!=18){
+                  $("#company_uidHelpInline").html("当前信用代码位数不正确请与财务联系修改,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+$(this).val()+"'>查询信用代码</a>")
+                  $("#company_uid").val("")
+              }else{
+                 $("#company_uid").val(data)
+              }
+            }else{
+                $("#company_uid").val("")
+                $("#company_uidHelpInline").html("当公司名称不为空,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+val+"'>查询("+val+")信用代码</a>")
+            }
+        });
+
+
+});
+
 
      $("#div_building").hide()
     $("#div_recommend_by").hide()
@@ -1050,19 +1120,25 @@ $('input[name=is_same_company]').on("change",function () {
                 addr_type = $("#addr_type")
                 kf_id = $("#kf_id")
                 is_expedited=$('input[name=is_expedited]:checked').val()
-                console.log(bf_value)
-                console.log(recommend_staff.val())
-                console.log(talk_type)
+                company_uid= $("#company_uid")
                 // if (company.val()=="0" || company.val()==undefined){
                 //   $("#pcompanyHelpInline").text("请选择业务所属公司哦。")
                 //   $("#company").focus()
                 //    console.log("hi1")
                 //   return false;
                 // }
-                if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
+                if(customer_company.val()!="" && company_uid.val().length!=18){
+                  $("#company_uidHelpInline").html("当公司名称不为空,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+customer_company.val()+"'>查询信用代码</a>")
+         
+                  
+                  $("#company_uid").focus()
+                
+                  return false;
+                }
+                else if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
                   $("#business_channelHelpInline").text("请选择来源渠道哦。")
                   $("input[name=business_channel]:first").focus()
-                   console.log("hi2")
+                  
                   return false;
                 }
                 
@@ -1185,9 +1261,10 @@ $('input[name=is_same_company]').on("change",function () {
                         "deal_day":deal_day_val,
                         "promo_id": promo_id_val,
                         "business_channel":business_channel.val(),
-                        "customer_company":customer_company.val(),
+                        "customer_company":fullChar2halfChar(customer_company.val()),
+                        "company_uid":company_uid.val(),
                         "rel_company_id_name":"{%if add_t_company%}{{add_t_company.entName}}{%end%}",
-                        "rel_company_id":"{%if add_t_company%}{{add_t_company.id}}{%end%}",
+                        "rel_company_id":"{%if add_t_company%}{{add_t_company.id}}{%else%}0{%end%}",
                         "true_income":true_income.val(),
                         "customer_tel":customer_tel.val(),
                        // "remark":remark.val(),

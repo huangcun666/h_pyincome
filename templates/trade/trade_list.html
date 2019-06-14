@@ -1,0 +1,296 @@
+{% extends "../base.html" %} {%block title%}销售计划{%end%} {% block body %}
+
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item g1">
+        主面板
+    </li>
+    <li class="breadcrumb-item g1">商标管理
+
+<a href="javascript:void(0)" id="a_new">新建</a>
+
+    </li>
+
+</ol>
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="btn btn-light  nav_padding {%if not todo%}active{%end%}" id="nav-home-tab"
+        href="/trade?tag=list{%if my%}&my=1{%end%}" >全 部
+      </a>
+    <a class="btn btn-light  nav_padding {%if todo=='1'%}active{%end%}"
+      href="/trade?tag=list&todo=1{%if my%}&my=1{%end%}" style="font-size:13px;">待完成
+     </a>
+      <a class="btn btn-light  nav_padding {%if todo=='2'%}active{%end%}"
+      href="/trade?tag=list&todo=2{%if my%}&my=1{%end%}" style="font-size:13px;"> 已完成
+      </a>
+      <a class="btn btn-light  nav_padding {%if todo=='3'%}active{%end%}"
+      href="/trade?tag=list&todo=3{%if my%}&my=1{%end%}" style="font-size:13px;"> 已过期
+    </a>
+    </div>
+</nav>
+
+    <div class="table-responsive">   
+    <table class="table table-bordered fayetable" style="width: 100%;" >
+        <thead  class="table_class">
+            <tr>
+                    <th width="60">编号</th>
+                <th >申请人</th>
+
+                <th width="120" >申请时间                </th>
+                <th width="120">申请号                </th>
+                <th width="80">类别
+                </th>
+
+                <th width="160">商标名称
+                </th>
+                <th width="60">颜色</th>
+                <th width='120'>销售顾问
+                </th>
+                <th width='80'>客服顾问
+                </th>
+                <th width='80'>客户
+
+                </th>
+                <th width='180'>书文记录
+                </th>
+               <!-- <th width='80'>通知业务员时间
+
+                </th>
+-->
+                
+
+   
+            </tr>
+        </thead>
+        <tbody class="fayetbody" style=" font-size:12px;">
+            {%if t_trade%} {%for item in t_trade%}
+
+            <tr>
+                    <td>
+                           <a href="/trade?tag=show&id={{item.id}}" target="_blank">{{item.id}}</a> 
+                        </td>
+<td>
+        <a href="/trade?tag=show&id={{item.id}}"  target="_blank"> {{item.trade_by}}</a> 
+</td>
+                <td>
+                  {{item.trade_reg_at}}
+                </td>
+                <td>
+                    {{item.trade_number}}
+                </td>
+                <td>
+                    {{item.trade_regtype}}
+                </td>
+                <td>
+                    {{item.trade_name}}
+                </td>
+                <td>
+                    {{item.trade_color}}
+                </td>
+                <td>
+                        {%if item.mbs%} {%raw get_member(item.mbs,"销售顾问")%}{%end%}
+                    </td>            <td>
+                            {%if item.mbs%} {%raw get_member(item.mbs,"客服顾问")%}{%end%}
+                        </td>            <td>
+                                {{item.customer_name}}
+                            </td>            <td>
+                                </td>
+            </tr>
+            {%end%} {%else%}
+            <tr>
+                <td colspan="26">加油哦, 目前还没有没有数据哦。</td>
+            </tr>
+
+            {%end%}
+        </tbody>
+    </table>
+
+    <div class="col-sm-12 col-md-7">
+        <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+            <ul class="pagination">
+                {% if pagination.has_prev %}
+                <li class="paginate_button page-item previous " id="dataTable_previous">
+                    <a href="?tag=list_plan&page={{ pagination.page - 1}}{% if todo%}&todo={{todo}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a>
+                </li>
+
+
+
+                {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                <li class="paginate_button page-item ">
+                    <a href="?tag=list_plan&page={{page}}{% if todo%}&todo={{todo}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
+                </li>
+                {% else %}
+                <li class="paginate_button page-item active">
+                    <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a>
+                </li>
+                {% end %} {% else %}
+                <li class="paginate_button page-item ">
+                    <span class="active">
+                        <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">....</a>
+                    </span>
+                </li>
+                {% end %} {%end %} {% if pagination.has_next %}
+                <li class="paginate_button  page-item next" id="dataTable_next">
+                    <a href="?tag=list_plan&page={{pagination.page+1}}{% if todo%}&todo={{todo}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
+                </li>
+                {% end %} </ul>
+        </div>
+    </div>
+
+</div></div></div></div>
+
+<!-- Modal -->
+
+
+
+<div id="add_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="lb_title">新建
+                        <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                            <i class="btn-icon-only icon-remove">×</i>
+                            </i>
+                        </a>
+    
+                    </h5>
+                </div>
+                <div class="modal-body form-horizontal" id="site_mod">
+    
+    
+    
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="control-label" for="username">商标名称</label>
+                        <input type="text" class="form-control " id="trade_name" name="trade_name"  />
+                        <div class="alert alert-danger" role="alert" id="trade_name_msg" style="display:none;"></div>
+                    </div>
+                    <!-- /controls -->
+                </div>
+
+
+
+                <div class="form-group">
+                        <div class="col-md-12">
+                            <label class="control-label" for="username">商标申请号</label>
+                            <input type="text" class="form-control " id="trade_number" name="trade_number"  />
+                            <div class="alert alert-danger" role="alert" id="trade_number_msg" style="display:none;"></div>
+                        </div>
+                        <!-- /controls -->
+                    </div>
+     
+                        <div class="form-group">
+                                <div class="col-md-12">
+                                    <label class="control-label" for="username">商标申请人</label>
+                                    <input type="text" class="form-control " id="trade_by" name="trade_by"  />
+                                    <div class="alert alert-danger" role="alert" id="trade_by_msg" style="display:none;"></div>
+                                </div>
+                                <!-- /controls -->
+                            </div>
+                            <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label class="control-label" for="username">申请类别</label>
+                                        <input type="text" class="form-control " id="trade_regtype" name="trade_regtype"  />
+                                        <div class="alert alert-danger" role="alert" id="trade_regtype_msg" style="display:none;"></div>
+                                    </div>
+                                    <!-- /controls -->
+                                </div>                        <div class="form-group">
+                                        <div class="col-md-12">
+                                            <label class="control-label" for="username">申请颜色</label>
+                                            <input type="text" class="form-control " id="trade_color" name="trade_color"  />
+                                            <div class="alert alert-danger" role="alert" id="trade_color_msg" style="display:none;"></div>
+                                        </div>
+                                        <!-- /controls -->
+                                    </div>
+                                    <div class="form-group">
+                                            <div class="col-md-12">
+                                                <label class="control-label" for="username">业务订单号</label>
+                                                <input type="text" class="form-control " id="project_id" name="project_id"  />
+                                                <div class="alert alert-danger" role="alert" id="project_id_msg" style="display:none;"></div>
+                                            </div>
+                                            <!-- /controls -->
+                                        </div>
+    
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="control-label" for="username">备注</label>
+                        <textarea type="text" class="form-control " id="trade_remark" name="trade_remark" placeholder=""></textarea>
+                        <div class="alert alert-danger" role="alert" id="trade_remark_msg" style="display:none;"></div>
+                        <br>
+                    </div>
+              
+                    <!-- /controls -->
+                </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    <button class="btn btn-primary" id="btn_save_new">发起</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{%end%} {%block js%}
+
+<script>
+    $(function () {
+        _xsrf = getCookie("_xsrf")
+        $("#start").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+        $("#end").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+
+
+        $("#a_new").on("click",function(){
+                $("#add_modal").modal("show")
+
+        })
+
+
+        $("#btn_save_new").on("click",function(){
+          
+              var  trade_name =   $("#trade_name").val()
+              var trade_number = $("#trade_number").val()
+               var trade_by  = $("#trade_by").val()
+               var trade_regtype = $("#trade_regtype").val()
+               var trade_color = $("#trade_color").val()
+               var project_id = $("#project_id").val()
+               var trade_remark = $("#trade_remark").val()
+           
+              if(trade_name==""){
+                  $("#trade_name_msg").text("商标名称不能为空.")
+                  $("#trade_name_msg").show()
+              }              else if(project_id==""){
+                  $("#project_id_msg").text("商标申请人不能为空.")
+                  $("#project_id_msg").show()
+              }
+              else if(project_id==""){
+                  $("#project_id_msg").text("确认单编号不能为空.")
+                  $("#project_id_msg").show()
+              }
+              
+              
+              else{
+
+                $.post("/trade?tag=add",{"_xsrf":_xsrf,"trade_name":trade_name,"trade_number":trade_number,"trade_by":trade_by,"trade_regtype":trade_regtype,"trade_color":trade_color,"project_id":project_id,"trade_remark":trade_remark},function(result){
+
+                        if(result >0){
+                            location.reload()
+                        }else{
+                            alert(result)
+                        }
+                })
+
+              }
+
+
+        })
+
+
+
+    })
+</script> {%end%}

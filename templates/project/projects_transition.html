@@ -12,8 +12,13 @@
       </ol>
 <nav>
 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-<a class="btn btn-light  nav_padding {%if not launch%}active{%end%}" href="/project?tag=projects_transition">资料交接</a>
+<a class="btn btn-light  nav_padding {%if not launch and not params['status']%}active{%end%}" href="/project?tag=projects_transition">资料交接</a>
+
+<a class="btn btn-light  nav_padding {%if params['status']=='0'%}active{%end%}" href="/project?status=0&tag=projects_transition">资料交接(待确认)</a>
+
 <a class="btn btn-light  nav_padding {%if launch%}active{%end%}" id="a_add_trans" href="/project?tag=projects_transition&launch=1" >发起交接</a>
+
+
 
 </div>
 

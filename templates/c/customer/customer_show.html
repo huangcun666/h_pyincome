@@ -1,5 +1,8 @@
 {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
 <!--<a class="btn btn-danger btn-sm delete  " id="customer_delete" type="button" title="{{customer.customer_id}}">删除</a>-->
+{%block head%}
+<link href="/static/dropzone.css" rel="stylesheet">
+{%end%}
 <style>
 .faye-table {width: 100%; height: auto; /*background-color: purple;*/ margin: 0% auto; font-weight: bold;}
 .faye-table ul {overflow: hidden; margin: 0; padding: 0;}
@@ -273,12 +276,17 @@ margin: auto;
 .xsj {position: absolute; top: 16px; left: 108px;}
 .esrname {position: absolute; right: 20px; top: 12px; font-weight: bold;}
 .esrname p {color: #ce4b4b;}
-.modal11 {width: 1240px; height: 290px; margin-left: -620px; margin-top: -145px;}
+.modal11 {width: 1240px; height: 310px; margin-left: -620px; margin-top: -145px;}
 .modal-header {padding: 0; border-bottom: none;}
 .modal22 {width: 1240px; height: 170px; margin-left: -620px; margin-top: -85px;}
 .modal33 {width: 1240px; height: 140px; margin-left: -620px; margin-top: -70px;}
 .modal44 {width: 1240px; height: 290px; margin-left: -620px; margin-top: -70px;}
 .es-fytable input {width: 100%; height: 100%; display:inline-block; outline: none; border: none;margin:0;padding:0;}
+.esnava {
+  position: fixed; top:0;left: 50%; margin-left: -585px; z-index: 99; display: none;
+}
+.es-fytable ul li.lengthbox {height: 41px;}
+.es-fytable ul li.lengthbox div {height: 41px; line-height: 41px;}
 </style>
 	<div class="es-nva">
       <div class="es-portrait">
@@ -291,7 +299,7 @@ margin: auto;
           </p>
           <div class="xxnr">
             <div class="xxnr-left">
-              <b>注册资金：<em>-</em></b>
+              <b>注册资金：<em>{%if customer.reg_money%}{{customer.reg_money}}{%else%}-{%end%}</em></b>
               <b>纳税类型：<em>{%if customer.is_general%}一般纳税人{%else%}小规模{%end%}</em> </b>
               <b style="width:500px;">合同约定：<em>{{customer.paytype_id_name}} 总费:{{int(customer.service_amount)}} 月费:{{int(customer.service_amount_month)}} 账册费:{{int(customer.book_amount)}}</em></b>
             </div>
@@ -325,12 +333,63 @@ margin: auto;
            {%else%}
           {%if customer.customer_type_name%} {%for item in customer.customer_type_name.split(",")%}{%if item!=''%}<a href="#">{{item}}</a>{%end%}{%end%} {%end%}
           {%end%}
-          <a  href="javascript:void(0);" id="customer_modify4" style="background-color:white"><img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
+          <a  href="javascript:void(0);" class="customer_modify4" style="background-color:white"><img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
         </b>
         <b>电话：<em>{%if t_linkman%}{{t_linkman[0].name}}-{{t_linkman[0].tel}}{%end%}</em></b>
-        <b>注册地址：<em>{%if customer.zone%}{{customer.city}}{%end%}{%if customer.zone%}{{customer.zone}}{%end%}{%if customer.zone%}{{customer.reg_addr}}{%end%}</em></b>
+        <b>注册地址：<em>{%if customer.city and customer.city!='0'%}{{customer.city}}{%end%}{%if customer.zone and customer.zone!='0'%}{{customer.zone}}{%end%}{%if customer.reg_addr%}{{customer.reg_addr}}{%end%}</em></b>
       </div>
-    </div>
+  </div>
+  <div class="es-nva esnava">
+      <div class="es-portrait">
+        <img src="/static/images/avatar.jpeg" alt="" width="73" height="73px">
+      </div>
+      <div class="es-nva-left">
+        <div class="es-portrait-name">
+          <p>
+            <span class="gsname">{{customer.company[:16]}}</span> <span class="xindm">{%if customer.company_reguid%}{{customer.company_reguid}}{%end%}</span> <span class="es-name">{{customer.reg_person}}</span>
+          </p>
+          <div class="xxnr">
+            <div class="xxnr-left">
+              <b>注册资金：<em>{%if customer.reg_money%}{{customer.reg_money}}{%else%}-{%end%}</em></b>
+              <b>纳税类型：<em>{%if customer.is_general%}一般纳税人{%else%}小规模{%end%}</em> </b>
+              <b style="width:500px;">合同约定：<em>{{customer.paytype_id_name}} 总费:{{int(customer.service_amount)}} 月费:{{int(customer.service_amount_month)}} 账册费:{{int(customer.book_amount)}}</em></b>
+            </div>
+            <div class="xxnr-right">
+              <b>执照成立日期：<em>{%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}}{%end%}</em></b>
+              <b>地址类型：<em>{%if customer.addr_type%}{{customer.addr_type}}{%end%}</em></b>
+              <b>账费到期：<em>{%if t_customer_payment%}{%if t_customer_payment.acc_end%}{{t_customer_payment.acc_end.strftime('%Y-%m-%d')}}{%end%}{%end%}</em></b>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="es-nva-right">
+        <b>标签：
+          {%if not old_tag%}
+            {%if customer.tag_parent_id_name!=customer.tag_id_name%}
+            <a href="#">{{customer.tag_parent_id_name}}</a> 
+           {%end%}
+            {%if customer.tag_id_name%}
+           <a href="#">{{customer.tag_id_name}}</a> 
+           {%end%}
+             {%if customer.is_building%}
+           <a href="#">楼盘</a> 
+           {%end%}
+             {%if customer.is_year%}
+           <a href="#">工商年检</a> 
+           {%end%}
+             {%if customer.is_clearly%}
+           <a href="#">汇算清缴</a> 
+           {%end%}
+        
+           {%else%}
+          {%if customer.customer_type_name%} {%for item in customer.customer_type_name.split(",")%}{%if item!=''%}<a href="#">{{item}}</a>{%end%}{%end%} {%end%}
+          {%end%}
+          <a  href="javascript:void(0);" class="customer_modify4" style="background-color:white"><img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
+        </b>
+        <b>电话：<em>{%if t_linkman%}{{t_linkman[0].name}}-{{t_linkman[0].tel}}{%end%}</em></b>
+        <b>注册地址：<em>{%if customer.city and customer.city!='0'%}{{customer.city}}{%end%}{%if customer.zone and customer.zone!='0'%}{{customer.zone}}{%end%}{%if customer.reg_addr%}{{customer.reg_addr}}{%end%}</em></b>
+      </div>
+  </div>
 <div class="main">
 <div class="main-inner">
 <div class="container">
@@ -349,9 +408,7 @@ margin: auto;
 						  </li>
               <li ><a href="#finance_tab" id="a_finance_tab" data-toggle="tab">财务信息</a></li>
               <li><a href="#exchange_tab" id="a_exchange_tab" data-toggle="tab">联系记录</a></li>
-              <li><a href="#handle_tab" id="a_handle_tab" data-toggle="tab">操作记录</a></li>
                 <li><a href="/payment?tag=customer&customer_id={{customer.customer_id}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=payment_tab" id="a_payment_tab" >应收记录</a></li>
-
 						</ul>
 
 						<br>
@@ -405,6 +462,9 @@ margin: auto;
 <div class="widget widget-table action-table">
   <div class="widget-header"> <i class="icon-th-list"></i>
     <h3>办理业务记录 </h3>
+    {%if role=="3" or role=="8"%}
+    <a id="merege_cw" href="javascript:void(0);" class="btn btn-info btn-sm">转移</a>
+    {%end%}
   </div>
 
 
@@ -414,7 +474,8 @@ margin: auto;
     <table class="table table-striped table-bordered">
       <thead>
         <tr>
-          <th width="40">业务编号</th>
+          <th width="10"></th>
+          <th width="50">确认单编号</th> <th width="150">公司名称</th>
           <th>业务内容</th>
           <th width="80">客户名称</th>
           <th width="40">联系方式</th>
@@ -438,12 +499,14 @@ margin: auto;
         {%set item.income_money3=0%}
         {%end%}
         <tr>
-          <td>{{item.id}}</td>
-          <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}"
+          <td><input type="checkbox" name="merege_project" value="{{item.id}}"></td>
+          <td>{{item.id}}</td>   <td>{{item.customer_company}}</td>
+          <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}#daokuanjiesuan" target="_blank"
               style=" font-size:14px;">{{item.project_name}}</a>
             <br />
             <b style="color:#777; font-size:12px;">{{item.team_view}}</b>
           </td>
+              
           <td>{{item.customer_name}}</td>
 
           <td>{{item.customer_tel}}</td>
@@ -487,7 +550,6 @@ margin: auto;
   <div class="widget-header">
     <i class="icon-th-list"></i>
     <h3>到款信息
-
     </h3>
   </div>
   <!-- /widget-header -->
@@ -498,7 +560,8 @@ margin: auto;
     <table class="table table-striped table-bordered">
       <thead>
         <tr>
-         <th style="width:30px;"> 业务编号</th>
+         <th style="width:50px;">确认单编号</th>
+       <th width="150">公司名称</th>
           <th >业务内容</th>
           <th style="width:150px;">到款日期</th>
           <th style="width:50px;"> 到款人</th>
@@ -512,9 +575,12 @@ margin: auto;
       <tbody>
       {%if t_project_income_title%} {%for item in t_project_income_title%}
         <tr>
-           <td> {{item.project_id}}
-             <td> {{item.project_name}}
+           <td> {{item.project_id}}</td><td> {{item.customer_company}}
           </td>
+             <td>
+             <a href="/project?tag=show&guid={{item.project_guid}}&id={{item.project_id}}#daokuanjiesuan"  target="_blank"
+              style=" font-size:14px;">{{item.project_name}}</a>
+          </td> 
           <td> {{item.income_at}}
           </td>
           <td> {{item.uid_name}}
@@ -544,6 +610,77 @@ margin: auto;
 
 <div class="widget widget-table action-table">
   <div class="widget-header"> <i class="icon-th-list"></i>
+    <h3>历史挂靠地址纪录(经发业)</h3>
+  </div>
+
+
+
+
+  <div class="widget-content">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th width='100'>企业名称</th>
+          <th width="100">承租人</th>
+            <th width="90">地址性质</th>
+          <th width="70">开票与续期</th>
+
+          <th width="200">挂靠地址</th>
+
+          <th width="70">安排时间</th>
+          <th width="70">租赁开始</th>
+          <th width="70">租赁结束</th>
+
+          <th width="60">物业安排</th>
+           <th width="45">跟单人</th>
+           <th width="45">客服</th>
+           <th width="45">销售</th>
+           <th width="60">备注</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        {%if t_customer_address%}
+
+        {%for item in t_customer_address%}
+
+        <tr>
+         <td>{{item.company}}</td>
+         <td>{%if item.cz_name%}{{item.cz_name}}{%end%}</td>
+         <td>{%if item.address_nature%}{{item.address_nature}}{%end%}</td>
+         <td>{%if item.kp_and_xf%}{{item.kp_and_xf}}{%end%}</td>
+         <td>{%if item.gk_address%}{{item.gk_address}}{%end%}</td>
+         <td>{%if item.arrange_at%}{{item.arrange_at.strftime('%Y-%m-%d')}}{%end%}</td>
+         <td>{%if item.zp_start_at%}{{item.zp_start_at.strftime('%Y-%m-%d')}}{%end%}</td>
+         <td>{%if item.zp_end_at %}{{item.zp_end_at.strftime('%Y-%m-%d')}}{%end%}</td>
+         <td>{%if item.wy_arrange%}{{item.wy_arrange}}{%end%}</td>
+         <td>{%if item.gendan_name%}{{item.gendan_name}}{%end%}</td>
+         <td>{%if item.kf_guwen_name%}{{item.kf_guwen_name}}{%end%}</td>
+         <td>{%if item.sale_guwen_name%}{{item.sale_guwen_name}}{%end%}</td>
+         <td>{%if item.remark%}{{item.remark}}{%end%}</td>
+        </tr>
+        {%end%}
+
+
+
+
+        {%else%}
+        <tr>
+          <td colspan="20">还没有合同哦。</td>
+
+        </tr>
+        {%end%}
+
+      </tbody>
+    </table>
+  </div>
+  <!-- /widget-content -->
+
+
+
+</div>
+<div class="widget widget-table action-table">
+  <div class="widget-header"> <i class="icon-th-list"></i>
     <h3>历史办理业务记录 </h3>
   </div>
 
@@ -554,6 +691,7 @@ margin: auto;
     <table class="table table-striped table-bordered">
       <thead>
         <tr>
+          <th width=='20'></th>
           <th width="80">办理时间</th>
             <th>公司</th>
           <th>业务内容</th>
@@ -573,6 +711,9 @@ margin: auto;
         {%for item in t_customer_his_income%}
 
         <tr>
+          <td>
+            <input type="checkbox" name="merege_his" value="{{item.id}}">
+          </td>
           <td>{%if item.income_at%}{{item.income_at.strftime("%Y-%m-%d")}} {%end%}</td>
           <td>{{item.company}}
           <td>{{item.project_name}}
@@ -633,6 +774,7 @@ margin: auto;
             id="customer_modify" type="button" title="{{customer.customer_id}}">修改</a>
             {%end%}
           {%end%}
+          &nbsp;<a  style="text-decoration:none;" href="javascript:void(0);" id='feedback'> 问题反馈</a>
           </div>
             <div class="length1">客服会计</div>
             <div class="length2"> {%if customer.acc_uid_name%}{{customer.acc_uid_name}}{%end%}</div>
@@ -659,23 +801,39 @@ margin: auto;
           </li>
           <li>
             <div class="length1">国/地所属分局</div>
-            <div class="length2">{%if customer.national_tax%}{{customer.national_tax}}/{%end%}{%if customer.land_tax%}{{customer.land_tax}}{%end%}</div>
+            <div class="length2">{%if customer.national_tax%}{{customer.national_tax}}/{%end%}</div>
             <div class="length1">专管员姓名</div>
             <div class="length2">{%if customer.zg_name%}{{customer.zg_name}}{%end%}</div>
             <div class="length1">专管员联系方式</div>
             <div class="length2">{%if customer.zg_tel%}{{customer.zg_tel}}{%end%}</div>
           </li>
-          <li>
+          <li class="lengthbox">
             <div class="length1">经营范围</div>
-            <div class="length3">{%if customer.business_scope%}{{customer.business_scope}}{%end%}</div>
+            <div class="length3" title="{{customer.business_scope}}" 
+            {%if customer.business_scope%}{%if len(customer.business_scope)>80%}style="line-height: 20px;"{%end%}{%end%}>
+          {%if customer.business_scope%}
+          {{customer.business_scope}}
+          {%end%}</div>
           </li>
-          <li>
+          <li class="lengthbox">
             <div class="length1">情况和注意事项</div>
-            <div class="length3">{%if customer.attention%}{{customer.attention}}{%end%}</div>
+            <div class="length3" title="{{customer.attention}}"
+            {%if customer.attention%}{%if len(customer.attention)>80%}style="line-height: 20px;"{%end%}{%end%}
+            >
+              {%if customer.attention%}{{customer.attention}}{%end%}</div>
           </li>
-          <li>
+          <li class="lengthbox">
+              <div class="length1">待调整事项</div>
+              <div class="length3" title="{{customer.adjusted_option}}"
+              {%if customer.adjusted_option%}{%if len(customer.adjusted_option)>80%}style="line-height: 20px;"{%end%}{%end%}
+              >
+                {%if customer.adjusted_option%}{{customer.adjusted_option}}{%end%}</div>
+            </li>
+          <li class="lengthbox">
             <div class="length1">主管意见</div>
-            <div class="length3">{%if customer.zg_option%}{{customer.zg_option}}{%end%}</div>
+            <div class="length3" title="{{customer.zg_option}}"
+            {%if customer.zg_option%}{%if len(customer.zg_option)>80%}style="line-height: 20px;"{%end%}{%end%}
+            >{%if customer.zg_option%}{{customer.zg_option}}{%end%}</div>
           </li>
         </ul>
       </div>
@@ -707,8 +865,8 @@ margin: auto;
           <div class="length4">{%if customer.zhengshou_way%}{{customer.zhengshou_way}}{%end%}</div>
           <div class="length1">税控盘类别</div>
           <div class="length4">{%if customer.shuikong_type%}{{customer.shuikong_type}}{%end%}</div>
-          <div class="length1">社保</div>
-          <div class="length4">{%if customer.ss_num%}{{customer.ss_num}}{%end%}</div>
+          <div class="length1">参保人数</div>
+          <div class="length4">{%if customer.ss_num%}{{customer.ss_num}}{%else%}0{%end%}</div>
           <div class="length1">固定资产</div>
           <div class="length4">{%if customer.fixed_assets%}{{customer.fixed_assets}}{%end%}</div>
         </li>
@@ -876,7 +1034,7 @@ margin: auto;
                         <a class="btn btn-info check_express" id="{{item.id}}" href="javascript:void(0);">审核</a>
                         {%else%}
                         <a class="btn btn-info edit_express" href="javascript:void(0);"
-                        id="{{item.id}}" rec_name="{{item.rec_name}}" rec_tel="{{item.rec_tel}}" created_send_at="{%if item.created_send_at%}{{item.created_send_at}}{%end%}"
+                        id="{{item.id}}" rec_name="{{item.rec_name}}" rec_tel="{{item.rec_tel}}" created_send_at="{%if item.created_send_at%}{{item.created_send_at.strftime("%Y-%m-%d")}}{%end%}"
                         rec_addr="{{item.rec_addr}}"  rec_file="{{item.rec_file}}" rec_company="{{item.rec_company}}"
                         express_type_id="{{item.express_type_id}}" created_at="{{item.created_at}}" other_rec_file="{{item.other_rec_file}}"
                         payment_type_id="{{item.payment_type_id}}" send_at_name="{{item.send_at_name}}" remark="{{item.remark}}" accept_at="{{item.accept_at}}"
@@ -1145,11 +1303,11 @@ margin: auto;
                              </td>
                           <td style="width:60px;">
 
-                          {%if item.state_id==0%}
+                          {%if item.state_id==1%}
                           <font color='green'>正常</font>
                           {%end%}
 
-                              {%if item.state_id==1%}
+                              {%if item.state_id==0%}
                                 <font color='red'>关闭</font>
                              {%end%}
                           </td>
@@ -1269,9 +1427,12 @@ margin: auto;
     
     </div>
   
-    {%if not from_tag and role=="8" or role=="3" %}
+    {%if name==u"吴蔚亮" or name==u"陈太智" or name==u"庄华影"  %}
 
-    <a class="btn btn-info btn-sm" type="button" title="{{customer.customer_id}}" id="delete_customer_btn">删除</a>
+    <a class="btn btn-dangger btn-sm" type="button" title="{{customer.customer_id}}" id="delete_customer_btn">删除</a>
+      <a href="javascript:void(0);" class="btn btn-info btn-primary" id="merge_customer" >合并客户</a>
+
+  
     {%end%}
 
   </div>
@@ -1321,9 +1482,9 @@ margin: auto;
         <div class="estu">
           <div class="estu-f">
             <img src="static/images/img/photo_03.jpg" alt="" width="20" height="14"></div>
-          <p class="estu-r">上传图片 </p>
+          <p class="estu-r">上传文件 </p>
           <form>
-                    <input type="file" id="uploaderInput1" />
+                    <input type="file" id="uploaderInput1" multiple  />
                     
                 </form>
         </div>
@@ -1337,10 +1498,10 @@ margin: auto;
             <option value="">选择类别</option>
             <option value="1">跟进动态</option>
             <option value="2">定期跟进</option>
-            <option value="3">操作动态</option>
+        
             <option value="4">其他类别</option>
           </select>
-          <button id="submit_msg">确认</button>
+          <button class="submit_msg">确认</button>
         </div>
       </div>
     </div>
@@ -1361,22 +1522,75 @@ margin: auto;
               <div class="tab-pane " id="all_msg">
                 {%if t_customer_genjin_msg%}
                 {%for item in  t_customer_genjin_msg%}
-            <div class="eslao">
+            <!-- <div class="eslao" id="show_msg_gj_{{item.id}}">
                 <div class="toux-l">
                   <img src="static/images/img/dta.png" alt="" width="76" height="76">
                 </div>
                 <div class="toux-r">
-                  <h3>{{item.uid_name}}</h3>
-                  <p class="esneir">{{item.msg}}</p>
+          
+                  <h3>{{item.uid_name}} {%if dt_today==str(item.created_at.strftime("%Y-%m-%d"))%}
+                  <a href="javascript:void(0)" genjin_type="{{item.genjin_type}}" msg="{{item.msg}}"  customer_id ="{{item.customer_id}}"  class="btn btn-mini gj_msg" msg_id="{{item.id}}" >修改</a>
+                 <a href="javascript:void(0)" genjin_type="{{item.genjin_type}}" msg="{{item.msg}}"  customer_id ="{{item.customer_id}}"  class="btn btn-mini btn-danger gj_msg_delete" msg_id="{{item.id}}" >删除</a>{%end%}</h3>
+                
+                
+                  <p title="{{item.msg}}" class="esneir"  id="p_msg_{{item.id}}">{{item.msg}}</p>
+
+                   <p class="esneir" style="height:100px; display:none;" id="p_msg_edit_{{item.id}}">
+                      <textarea class="eswenben" name=""  style="height:40px;" id="genjin_msg_{{item.id}}">
+                  {{item.msg}}
+                          </textarea>
+                   
+                   </p>
                   <span>{{item.created_at}}</span>
                   <div class="esrname">
-                    <p>{%if item.file_path%}<a href="{{item.file_path}}"  target="blank">查看附件</a>{%end%}</p>
+                    <p>{%if item.file_path%}{%for idx,row in enumerate(item.file_path.split('|'))%}{%if row%}
+                      <a href="{{row}}"  target="blank">附件{{idx+1}}</a>{%end%}{%end%}{%end%}</p>
                   </div>
                 </div>
                 <div class="xsj">
                   <img src="static/images/img/xsj_07.jpg" alt="" width="14" height="16">
                 </div>
-              </div>
+              </div> -->
+
+              <ul class="messages_layout" style="width:100%;overflow: hidden;
+              box-sizing: border-box;">
+                  <li class="from_user left" style="width: 100%;overflow: hidden;box-sizing: border-box;"> <a href="#" class="avatar"><img src="static/images/img/message_avatar1.png"></a>
+                        <div class="message_wrap" style="width: 100%;
+                        box-sizing: border-box;"> <span class="arrow"></span>
+                          <div class="info"> <a class="name">{{item.uid_name}}</a> <span class="time">{{item.created_at}}</span>
+                            <div class="options_arrow">
+                                {%if dt_today==str(item.created_at.strftime("%Y-%m-%d")) or item.file_path%}
+                                <div class="dropdown pull-right"> <a class="dropdown-toggle " id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="https://www.egrappler.com/bootstrap-responsive-admin-template/index.html#"> <i class=" icon-caret-down"></i> 操作</a>
+                                 
+                                  <ul class="dropdown-menu " role="menu" aria-labelledby="dLabel">
+                                   
+                                        {%if dt_today==str(item.created_at.strftime("%Y-%m-%d"))%}
+                                        <li>
+                                        <a href="javascript:void(0)" genjin_type="{{item.genjin_type}}" msg="{{item.msg}}"  customer_id ="{{item.customer_id}}"  class="btn btn-mini gj_msg" msg_id="{{item.id}}" ><i class=" icon-share-alt icon-large"></i>修改</a></li>
+                                        <li><a href="javascript:void(0)" genjin_type="{{item.genjin_type}}" msg="{{item.msg}}"  customer_id ="{{item.customer_id}}"  class="btn btn-mini btn-danger gj_msg_delete" msg_id="{{item.id}}" ><i class=" icon-share-alt icon-large"></i>删除</a></li>{%end%}
+                                        {%if item.file_path%}{%for idx,row in enumerate(item.file_path.split('|'))%}{%if row%}
+                                        <li><a href="{{row}}" class="btn btn-mini" target="_blank"><i class=" icon-share icon-large"></i>附件{{idx+1}}</a></li>
+                                        {%end%}{%end%}{%end%}
+                                   
+                                  </ul>
+                              
+                                </div>
+                                {%end%}
+                             </div>
+                          </div>
+                          <p title="{{item.msg}}" style="min-height:100px;" class="esneir"  id="p_msg_{{item.id}}">{{item.msg}}</p>
+
+                          <p class="esneir" style="min-height:100px; display:none;" id="p_msg_edit_{{item.id}}">
+                             <textarea class="eswenben" name=""  style="min-height:100px;width:100%" id="genjin_msg_{{item.id}}">
+                         {{item.msg}}
+                                 </textarea>
+                          
+                          </p>
+                           
+                        </div>
+                      </li>
+                    </ul>
+              
               {%end%}
               {%else%}
               还没有哦~
@@ -1385,7 +1599,7 @@ margin: auto;
               <div class="tab-pane " id="genjin_msg">
                   {%if t_customer_genjin_msg1%}
                   {%for item in  t_customer_genjin_msg1%}
-              <div class="eslao">
+              <!-- <div class="eslao">
                   <div class="toux-l">
                     <img src="static/images/img/dta.png" alt="" width="76" height="76">
                   </div>
@@ -1400,7 +1614,42 @@ margin: auto;
                   <div class="xsj">
                     <img src="static/images/img/xsj_07.jpg" alt="" width="14" height="16">
                   </div>
-                </div>
+                </div> -->
+                <ul class="messages_layout" style="width:100%;overflow: hidden;box-sizing: border-box;">
+                    <li class="from_user left" style="width: 100%;overflow: hidden;box-sizing: border-box;"> <a href="#" class="avatar"><img src="static/images/img/message_avatar1.png"></a>
+                          <div class="message_wrap" style="width: 100%;
+                          box-sizing: border-box;"> <span class="arrow"></span>
+                            <div class="info"> <a class="name">{{item.uid_name}}</a> <span class="time">{{item.created_at}}</span>
+                              <div class="options_arrow">
+                                  {%if dt_today==str(item.created_at.strftime("%Y-%m-%d")) or item.file_path%}
+                                  <div class="dropdown pull-right"> <a class="dropdown-toggle " id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="https://www.egrappler.com/bootstrap-responsive-admin-template/index.html#"> <i class=" icon-caret-down"></i>操作</a>
+                                    <ul class="dropdown-menu " role="menu" aria-labelledby="dLabel">
+                                     
+                                          {%if dt_today==str(item.created_at.strftime("%Y-%m-%d"))%}
+                                          <li>
+                                          <a href="javascript:void(0)" genjin_type="{{item.genjin_type}}" msg="{{item.msg}}"  customer_id ="{{item.customer_id}}"  class="btn btn-mini gj_msg" msg_id="{{item.id}}" ><i class=" icon-share-alt icon-large"></i>修改</a></li>
+                                          <li><a href="javascript:void(0)" genjin_type="{{item.genjin_type}}" msg="{{item.msg}}"  customer_id ="{{item.customer_id}}"  class="btn btn-mini btn-danger gj_msg_delete" msg_id="{{item.id}}" ><i class=" icon-share-alt icon-large"></i>删除</a></li>{%end%}
+                                          {%if item.file_path%}{%for idx,row in enumerate(item.file_path.split('|'))%}{%if row%}
+                                          <li><a href="{{row}}" class="btn btn-mini" target="_blank"><i class=" icon-share icon-large"></i>附件{{idx+1}}</a></li>
+                                          {%end%}{%end%}{%end%}
+                                     
+                                    </ul>
+                                  </div>
+                                  {%end%}
+                               </div>
+                            </div>
+                            <p title="{{item.msg}}" style="min-height:100px;" class="esneir"  id="p_msg_{{item.id}}">{{item.msg}}</p>
+  
+                            <p class="esneir" style="min-height:100px; display:none;" id="p_msg_edit_{{item.id}}">
+                               <textarea class="eswenben" name=""  style="min-height:100px;width:100%" id="genjin_msg_{{item.id}}">
+                           {{item.msg}}
+                                   </textarea>
+                            
+                            </p>
+                             
+                          </div>
+                        </li>
+                      </ul>
                 {%end%}
                 {%else%}
                 还没有哦~
@@ -1409,7 +1658,7 @@ margin: auto;
               <div class="tab-pane " id="dingqi_msg">
                   {%if t_customer_genjin_msg2%}
                   {%for item in  t_customer_genjin_msg2%}
-              <div class="eslao">
+              <!-- <div class="eslao">
                   <div class="toux-l">
                     <img src="static/images/img/dta.png" alt="" width="76" height="76">
                   </div>
@@ -1424,7 +1673,43 @@ margin: auto;
                   <div class="xsj">
                     <img src="static/images/img/xsj_07.jpg" alt="" width="14" height="16">
                   </div>
-                </div>
+                </div> -->
+                <ul class="messages_layout" style="width:100%;overflow: hidden;box-sizing: border-box;">
+                    <li class="from_user left" style="width: 100%;overflow: hidden;box-sizing: border-box;"> <a href="#" class="avatar"><img src="static/images/img/message_avatar1.png"></a>
+                          <div class="message_wrap" style="width: 100%;
+                          box-sizing: border-box;"> <span class="arrow"></span>
+                            <div class="info"> <a class="name">{{item.uid_name}}</a> <span class="time">{{item.created_at}}</span>
+                              <div class="options_arrow">
+                                  {%if dt_today==str(item.created_at.strftime("%Y-%m-%d")) or item.file_path%}
+                                  <div class="dropdown pull-right"> <a class="dropdown-toggle " id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="https://www.egrappler.com/bootstrap-responsive-admin-template/index.html#"> <i class=" icon-caret-down"></i>操作</a>
+                                    <ul class="dropdown-menu " role="menu" aria-labelledby="dLabel">
+                                     
+                                          {%if dt_today==str(item.created_at.strftime("%Y-%m-%d"))%}
+                                          <li>
+                                          <a href="javascript:void(0)" genjin_type="{{item.genjin_type}}" msg="{{item.msg}}"  customer_id ="{{item.customer_id}}"  class="btn btn-mini gj_msg" msg_id="{{item.id}}" ><i class=" icon-share-alt icon-large"></i>修改</a></li>
+                                          <li><a href="javascript:void(0)" genjin_type="{{item.genjin_type}}" msg="{{item.msg}}"  customer_id ="{{item.customer_id}}"  class="btn btn-mini btn-danger gj_msg_delete" msg_id="{{item.id}}" ><i class=" icon-share-alt icon-large"></i>删除</a></li>{%end%}
+                                          {%if item.file_path%}{%for idx,row in enumerate(item.file_path.split('|'))%}{%if row%}
+                                          <li><a href="{{row}}" class="btn btn-mini" target="_blank"><i class=" icon-share icon-large"></i>附件{{idx+1}}</a></li>
+                                          {%end%}{%end%}{%end%}
+                                     
+                                    </ul>
+                                  </div>
+                                  {%end%}
+                               </div>
+                            </div>
+                            <p title="{{item.msg}}" style="min-height:100px;" class="esneir"  id="p_msg_{{item.id}}">{{item.msg}}</p>
+  
+                            <p class="esneir" style="min-height:100px; display:none;" id="p_msg_edit_{{item.id}}">
+                               <textarea class="eswenben" name=""  style="min-height:100px;width:100%" id="genjin_msg_{{item.id}}">
+                           {{item.msg}}
+                                   </textarea>
+                            
+                            </p>
+                             
+                          </div>
+                        </li>
+                      </ul>
+               
                 {%end%}
                 {%else%}
                 还没有哦~
@@ -1432,34 +1717,43 @@ margin: auto;
 
               </div>
               <div class="tab-pane " id="c_msg">
-                  {%if t_customer_genjin_msg3%}
-                  {%for item in  t_customer_genjin_msg3%}
-              <div class="eslao">
-                  <div class="toux-l">
-                    <img src="static/images/img/dta.png" alt="" width="76" height="76">
-                  </div>
-                  <div class="toux-r">
-                    <h3>{{item.uid_name}}</h3>
-                    <p class="esneir">{{item.msg}}</p>
-                    <span>{{item.created_at}}</span>
-                    <div class="esrname">
-                      <p>{%if item.file_path%}<a href="{{item.file_path}}"  target="blank">查看附件</a>{%end%}</p>
-                    </div>
-                  </div>
-                  <div class="xsj">
-                    <img src="static/images/img/xsj_07.jpg" alt="" width="14" height="16">
-                  </div>
-                </div>
-                {%end%}
-                {%else%}
-                还没有哦~
-                {%end%}
+                  {%if t_projects_events%}
+                  <table class="table" style="margin:5px;">
+                         <thead>
+                                    <tr style="background-color:#989898; color:#fff;">
+                                    <th style="min-width:60px;">操作类型</th>
+                                    <th></th>
+                                    <th style="min-width:60px;">时间</th>
+                                    <th style="min-width:60px;">操作人</th>
+                                    </tr>
+                                </thead>
+                    <tbody>
+              
+              {%for item in t_projects_events%}
+                            <tr>
+              
+                                <td>{{item.event_type}}</td>
+                                <td>{{item.txt}}</td>
+                                <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
+                                <td>{{item.uid_name}}</td>
+                            </tr>
+                        {%end%}
+              
+                  
+                    
+                    </tbody>
+                  </table>
+              
+                        {%else%}
+                            还没有客户哦。
+                                   
+                        {%end%}    
 
               </div>
               <div class="tab-pane " id="other_msg">
                   {%if t_customer_genjin_msg4%}
                   {%for item in  t_customer_genjin_msg4%}
-              <div class="eslao">
+              <!-- <div class="eslao">
                   <div class="toux-l">
                     <img src="static/images/img/dta.png" alt="" width="76" height="76">
                   </div>
@@ -1474,7 +1768,42 @@ margin: auto;
                   <div class="xsj">
                     <img src="static/images/img/xsj_07.jpg" alt="" width="14" height="16">
                   </div>
-                </div>
+                </div> -->
+                <ul class="messages_layout" style="width:100%;overflow: hidden;box-sizing: border-box;">
+                    <li class="from_user left" style="width: 100%;overflow: hidden;box-sizing: border-box;"> <a href="#" class="avatar"><img src="static/images/img/message_avatar1.png"></a>
+                          <div class="message_wrap" style="width: 100%;
+                          box-sizing: border-box;"> <span class="arrow"></span>
+                            <div class="info"> <a class="name">{{item.uid_name}}</a> <span class="time">{{item.created_at}}</span>
+                              <div class="options_arrow">
+                                  {%if dt_today==str(item.created_at.strftime("%Y-%m-%d")) or item.file_path%}
+                                  <div class="dropdown pull-right"> <a class="dropdown-toggle " id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="https://www.egrappler.com/bootstrap-responsive-admin-template/index.html#"> <i class=" icon-caret-down"></i>操作</a>
+                                    <ul class="dropdown-menu " role="menu" aria-labelledby="dLabel">
+                                     
+                                          {%if dt_today==str(item.created_at.strftime("%Y-%m-%d"))%}
+                                          <li>
+                                          <a href="javascript:void(0)" genjin_type="{{item.genjin_type}}" msg="{{item.msg}}"  customer_id ="{{item.customer_id}}"  class="btn btn-mini gj_msg" msg_id="{{item.id}}" ><i class=" icon-share-alt icon-large"></i>修改</a></li>
+                                          <li><a href="javascript:void(0)" genjin_type="{{item.genjin_type}}" msg="{{item.msg}}"  customer_id ="{{item.customer_id}}"  class="btn btn-mini btn-danger gj_msg_delete" msg_id="{{item.id}}" ><i class=" icon-share-alt icon-large"></i>删除</a></li>{%end%}
+                                          {%if item.file_path%}{%for idx,row in enumerate(item.file_path.split('|'))%}{%if row%}
+                                          <li><a href="{{row}}" class="btn btn-mini" target="_blank"><i class=" icon-share icon-large"></i>附件{{idx+1}}</a></li>
+                                          {%end%}{%end%}{%end%}
+                                     
+                                    </ul>
+                                  </div>
+                                  {%end%}
+                               </div>
+                            </div>
+                            <p title="{{item.msg}}" style="min-height:100px;" class="esneir"  id="p_msg_{{item.id}}">{{item.msg}}</p>
+  
+                            <p class="esneir" style="min-height:100px; display:none;" id="p_msg_edit_{{item.id}}">
+                               <textarea class="eswenben" name=""  style="min-height:100px;width:100%" id="genjin_msg_{{item.id}}">
+                           {{item.msg}}
+                                   </textarea>
+                            
+                            </p>
+                             
+                          </div>
+                        </li>
+                      </ul>
                 {%end%}
                 {%else%}
                 还没有哦~
@@ -1555,56 +1884,67 @@ margin: auto;
       <div class="es-fytable">
         <ul style="border-top: 1px solid #dedede;">
           <li>
-            <div class="length1">公司名称</div>
+            <div class="length1">{%if role!='3' and role!='8' and role!='5'%}<i style="color:red;">*</i>{%end%} 公司名称</div>
             <div class="length5">
-           <input  {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="background-color:white;" type="text" name="" id="company" value="{%if customer.company%}{{customer.company}}{%end%}" placeholder="公司名称">
-  
+           <input  {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="background-color:white;width:70%;" type="text" name="" id="company" value="{%if customer.company%}{{customer.company}}{%end%}">
+              <span id="exist_customer1"></span>
             </div>
             <div class="length1">客服会计</div>
             
-            <div class="length2"><input type="text" id="acc_uid_name" value="{%if customer.acc_uid_name%}{{customer.acc_uid_name}}{%end%}" placeholder="客服会计"></div>
+            <div class="length2"><input type="text" id="acc_uid_name" value="{%if customer.acc_uid_name%}{{customer.acc_uid_name}}{%end%}" ></div>
           </li>
           <li>
             <div class="length1">客户编号</div>
             <div class="length2">{{customer.customer_id}}</div>
             <div class="length1">所属行业</div>
-            <div class="length2"><input type="text" name="" id="hangye" placeholder="所属行业" value="{%if customer.hangye%}{{customer.hangye}}{%end%}"></div>
+            <div class="length2"><input type="text" name="" id="hangye"  value="{%if customer.hangye%}{{customer.hangye}}{%end%}"></div>
             <div class="length1">开户行</div>
-            <div class="length2"><input type="text" name="" id="reg_bank" value="{%if customer.reg_bank%}{{customer.reg_bank}}{%end%}" placeholder="开户行"></div>
+            <div class="length2"><input type="text" name="" id="reg_bank" value="{%if customer.reg_bank%}{{customer.reg_bank}}{%end%}" ></div>
           </li>
           <li>
             <div class="length1">工商分局</div>
-            <div class="length2"><input type="text" name="" id="saic" value="{%if customer.saic%}{{customer.saic}}{%end%}" placeholder="工商分局"></div>
+            <div class="length2"><input type="text" name="" id="saic" value="{%if customer.saic%}{{customer.saic}}{%end%}" ></div>
             <div class="length1">地址类型</div>
-            <div class="length2"><input type="text" name="" id="addr_type" value="{%if customer.addr_type%}{{customer.addr_type}}{%end%}" placeholder="地址类型"></div>
+            <div class="length2"><input type="text" name="" id="addr_type" value="{%if customer.addr_type%}{{customer.addr_type}}{%end%}" ></div>
             <div class="length1">银行账号</div>
-            <div class="length2"><input type="text" name="" id="reg_bank_account" value="{%if customer.reg_bank_account%}{{customer.reg_bank_account}}{%end%}" placeholder="银行账号"></div>
+            <div class="length2"><input type="text" name="" id="reg_bank_account" value="{%if customer.reg_bank_account%}{{customer.reg_bank_account}}{%end%}"  ></div>
           </li>
           <li>
             <div class="length1">国/地所属分局</div>
             <div class="length2">
-              <input type="text" name="" style="width:40%;" id="national_tax" placeholder="国所属分局" value="{%if customer.national_tax%}{{customer.national_tax}}{%end%}"> <span style="font-size:20px;">/</span> <input type="text" id="land_tax" style="width:40%;" placeholder="地所属分局" value="{%if customer.land_tax%}{{customer.land_tax}}{%end%}"></div>
+              <input type="text" name=""  id="national_tax"   value="{%if customer.national_tax%}{{customer.national_tax}}{%end%}"> <span style="font-size:20px;"></span> <input type="hidden" id="land_tax" style="width:40%;"  value="{%if customer.land_tax%}{{customer.land_tax}}{%end%}"></div>
             <div class="length1">专管员姓名</div>
-            <div class="length2"><input type="text" name="" id="zg_name" placeholder="专管员姓名" value="{%if customer.zg_name%}{{customer.zg_name}}{%end%}"></div>
+            <div class="length2"><input type="text" name="" id="zg_name"   value="{%if customer.zg_name%}{{customer.zg_name}}{%end%}"></div>
             <div class="length1">专管员联系方式</div>
-            <div class="length2"><input type="text" name="" id="zg_tel" placeholder="专管员联系方式" value="{%if customer.zg_tel%}{{customer.zg_tel}}{%end%}"></div>
+            <div class="length2"><input type="text" name="" id="zg_tel"   value="{%if customer.zg_tel%}{{customer.zg_tel}}{%end%}"></div>
           </li>
           <li>
             <div class="length1">经营范围</div>
-            <div class="length3"><input type="text" name="" id="business_scope" placeholder="经营范围" value="{%if customer.business_scope%}{{customer.business_scope}}{%end%}"></div>
+            <div class="length3"><input type="text" name="" id="business_scope"   value="{%if customer.business_scope%}{{customer.business_scope}}{%end%}"></div>
           </li>
           <li>
             <div class="length1">情况和注意事项</div>
-            <div class="length3"><input type="text" name="" id="attention" placeholder="情况和注意事项" value="{%if customer.attention%}{{customer.attention}}{%end%}"></div>
+            <div class="length3"><input type="text" name="" id="attention"   value="{%if customer.attention%}{{customer.attention}}{%end%}"></div>
           </li>
+          
+          <li>
+              <div class="length1">待调整事项</div>
+              <div class="length3"><input type="text" name="" id="adjusted_option"   value="{%if customer.adjusted_option%}{{customer.adjusted_option}}{%end%}"></div>
+            </li>
           <li>
             <div class="length1">主管意见</div>
-            <div class="length3"><input type="text" name="" id="zg_option" placeholder="主管意见" value="{%if customer.zg_option%}{{customer.zg_option}}{%end%}"></div>
+            <div class="length3"><input type="text" name="" id="zg_option"   value="{%if customer.zg_option%}{{customer.zg_option}}{%end%}"></div>
           </li>
         </ul>
       </div>
     </div>
     <div class="modal-footer">
+        {%if role!='3' and role!='8' and role!='5'%}
+        <div style="float: left;">
+            <i style="color:red;">*</i>：只允许财务修改
+         
+          </div>
+       {%end%}
       <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
       <button class="btn btn-primary" id="btn_test_save1">保存</button>
     </div>
@@ -1625,7 +1965,7 @@ margin: auto;
                 <input type="radio" name="is_general" value="0" style="width:auto;height:auto;" {%if not customer.is_general%}checked{%end%}>否
               </div>
             <div class="length1">税务概况</div>
-            <div class="length6"><input type="text" name="survey" id="survey" placeholder="税务概况" value="{%if customer.survey%}{{customer.survey}}{%end%}"></div>
+            <div class="length6"><input type="text" name="survey" id="survey"  value="{%if customer.survey%}{{customer.survey}}{%end%}"></div>
           </li>
           <li>
             <div class="length1">有无税种</div>
@@ -1639,17 +1979,17 @@ margin: auto;
               
             </div>
             <div class="length1">税种明细</div>
-            <div class="length6"><input type="text" name="" id="shuizhong_detail" placeholder="税种明细" value="{%if customer.shuizhong_detail%}{{customer.shuizhong_detail}}{%end%}"></div>
+            <div class="length6"><input type="text" name="" id="shuizhong_detail"  value="{%if customer.shuizhong_detail%}{{customer.shuizhong_detail}}{%end%}"></div>
           </li>
           <li>
             <div class="length1">征收方式</div>
-            <div class="length4"><input type="text" name="" id="zhengshou_way" placeholder="征收方式" value="{%if customer.zhengshou_way%}{{customer.zhengshou_way}}{%end%}"></div>
+            <div class="length4"><input type="text" name="" id="zhengshou_way" value="{%if customer.zhengshou_way%}{{customer.zhengshou_way}}{%end%}"></div>
             <div class="length1">税控盘类别</div>
-            <div class="length4"><input type="text" name="" id="shuikong_type" placeholder="税控盘类别" value="{%if customer.shuikong_type%}{{customer.shuikong_type}}{%end%}"></div>
-            <div class="length1">社保</div>
-            <div class="length4"><input type="text" name="" id="ss_num" placeholder="社保" value="{%if customer.ss_num%}{{customer.ss_num}}{%end%}"></div>
+            <div class="length4"><input type="text" name="" id="shuikong_type" value="{%if customer.shuikong_type%}{{customer.shuikong_type}}{%end%}"></div>
+            <div class="length1">参保人数</div>
+            <div class="length4"><input type="text" name="" id="ss_num"  value="{%if customer.ss_num%}{{customer.ss_num}}{%else%}0{%end%}"></div>
             <div class="length1">固定资产</div>
-            <div class="length4"><input type="text" name="" id="fixed_assets" placeholder="固定资产" value="{%if customer.fixed_assets%}{{customer.fixed_assets}}{%end%}"></div>
+            <div class="length4"><input type="text" name="" id="fixed_assets" value="{%if customer.fixed_assets%}{{customer.fixed_assets}}{%end%}"></div>
           </li>
         </ul>
       </div>
@@ -1669,24 +2009,24 @@ margin: auto;
         <ul style="border-top:1px solid #dedede;">
           <li>
             <div class="length1">法人身份证号</div>
-            <div class="length4"><input type="text" name="" id="legal_id_card" placeholder="法人身份证号" value="{%if customer.legal_id_card%}{{customer.legal_id_card}}{%end%}"></div>
+            <div class="length4"><input type="text" name="" id="legal_id_card" value="{%if customer.legal_id_card%}{{customer.legal_id_card}}{%end%}"></div>
             <div class="length1">实名采集账号</div>
-            <div class="length4"><input type="text" name="rel_name_collect_account" id="rel_name_collect_account" placeholder="实名采集账号" value="{%if customer.rel_name_collect_account%}{{customer.rel_name_collect_account}}{%end%}"></div>
+            <div class="length4"><input type="text" name="rel_name_collect_account" id="rel_name_collect_account"  value="{%if customer.rel_name_collect_account%}{{customer.rel_name_collect_account}}{%end%}"></div>
             <div class="length1">实名采集密码</div>
-            <div class="length4"><input type="text" name="" id="rel_name_collect_password" placeholder="实名采集密码" value="{%if customer.rel_name_collect_password%}{{customer.rel_name_collect_password}}{%end%}"></div>
+            <div class="length4"><input type="text" name="" id="rel_name_collect_password" value="{%if customer.rel_name_collect_password%}{{customer.rel_name_collect_password}}{%end%}"></div>
             <div class="length1">税控盘密码</div>
-            <div class="length4"><input type="text" name="" id="shuipan_password" placeholder="税控盘密码" value="{%if customer.shuipan_password%}{{customer.shuipan_password}}{%end%}"></div>
+            <div class="length4"><input type="text" name="" id="shuipan_password"  value="{%if customer.shuipan_password%}{{customer.shuipan_password}}{%end%}"></div>
           </li>
   
           <li>
             <div class="length1">税控盘口令</div>
-            <div class="length4"><input type="text" name="" id="shuipan_command" placeholder="税控盘口令" value="{%if customer.shuipan_command%}{{customer.shuipan_command}}{%end%}"></div>
+            <div class="length4"><input type="text" name="" id="shuipan_command"  value="{%if customer.shuipan_command%}{{customer.shuipan_command}}{%end%}"></div>
             <div class="length1">个税申报密码</div>
-            <div class="length4"><input type="text" name="" id="per_income_apply_password" placeholder="个税申报密码" value="{%if customer.per_income_apply_password%}{{customer.per_income_apply_password}}{%end%}"></div>
+            <div class="length4"><input type="text" name="" id="per_income_apply_password" value="{%if customer.per_income_apply_password%}{{customer.per_income_apply_password}}{%end%}"></div>
             <div class="length1">回单卡密码</div>
-            <div class="length4"><input type="text" name="" id="receipt_card_password" placeholder="回单卡密码" value="{%if customer.receipt_card_password%}{{customer.receipt_card_password}}{%end%}"></div>
+            <div class="length4"><input type="text" name="" id="receipt_card_password"  value="{%if customer.receipt_card_password%}{{customer.receipt_card_password}}{%end%}"></div>
             <div class="length1">公积金证书密码</div>
-            <div class="length4"><input type="text" name="" id="accumulation_fund_password" placeholder="公积金证书密码" value="{%if customer.accumulation_fund_password%}{{customer.accumulation_fund_password}}{%end%}"></div>
+            <div class="length4"><input type="text" name="" id="accumulation_fund_password"  value="{%if customer.accumulation_fund_password%}{{customer.accumulation_fund_password}}{%end%}"></div>
           </li>
         </ul>
       </div>
@@ -1704,8 +2044,9 @@ margin: auto;
       <div class="es-fytable">
         <ul style="border-top: 1px solid #dedede;">
           <li>
-            <div class="length1">公司名称</div>
-            <div class="length5"><input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="background-color:white;"  type="text" name="" id="company1" value="{%if customer.company%}{{customer.company}}{%end%}">
+            <div class="length1">{%if role!='3' and role!='8' and role!='5'%}<i style="color:red;">*</i>{%end%} 公司名称 </div>
+            <div class="length5"><input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="background-color:white;width:70%;"  type="text" name="" id="company1" value="{%if customer.company%}{{customer.company}}{%end%}">
+              <span id="exit_customer"></span>
             </div>
             <div class="length1">法人</div>
             
@@ -1714,17 +2055,17 @@ margin: auto;
             </div>
           </li>
           <li>
-            <div class="length1">信用代码</div>
-            <div class="length2">  <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="background-color:white;"  type="text" name="" id="company_reguid" value="{%if customer.company_reguid%}{{customer.company_reguid}}{%end%}"></div>
+            <div class="length1">{%if role!='3' and role!='8' and role!='5'%}<i style="color:red;">*</i>{%end%} 信用代码</div>
+            <div class="length2">  <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="background-color:white;text-transform:uppercase;" type="text" name=""　   id="company_reguid" value="{%if customer.company_reguid%}{{customer.company_reguid}}{%end%}"></div>
             <div class="length1">执照成立日期</div>
             <div class="length2"><input type="text" name="" id="reg_date" value="{%if customer.reg_date%}{{customer.reg_date.strftime("%Y-%m-%d")}}{%end%}"></div>
             <div class="length1">联系电话</div>
             <div class="length2">
                 {%if t_linkman%}
                 <input type="hidden" id="link_id" value="{{t_linkman[0].id}}" >
-              <input style="width:30%" type="text" name="" id="link_name" placeholder="联系人" {%if t_linkman%}value="{{t_linkman[0].name}}"{%end%}>-
+              <input style="width:30%" type="text" name="" id="link_name" {%if t_linkman%}value="{{t_linkman[0].name}}"{%end%}>-
 
-              <input style="width: 45%;" type="text" name="" id="link_tel" placeholder="电话" {%if t_linkman%}value="{{t_linkman[0].tel}}"{%end%}>
+              <input style="width: 45%;" type="text" name="" id="link_tel" {%if t_linkman%}value="{{t_linkman[0].tel}}"{%end%}>
               <span id="msg_link_tag" style="color:red" ></span>
               {%else%}
               无
@@ -1740,10 +2081,13 @@ margin: auto;
             </div>
             <div class="length1">地址类型</div>
             <div class="length2">
-              <input type="text" id="addr_type1" value="{%if customer.addr_type%}{{customer.addr_type}}{%end%}" placeholder="地址类型">
+              <input type="text" id="addr_type1" value="{%if customer.addr_type%}{{customer.addr_type}}{%end%}">
             </div>
             <div class="length1">注册资金</div>
-            <div class="length2"></div>
+            <div class="length2">
+              <input type="text" id="reg_money" value="{%if customer.reg_money%}{{customer.reg_money}}{%end%}">
+
+            </div>
           </li>
           <li>
             <div class="length1">合同约定</div>
@@ -1792,7 +2136,7 @@ margin: auto;
             </div>
           </li>
           <li>
-            <div class="length1">标签类型</div>
+            <div class="length1">{%if role!='3' and role!='8' and role!='5'%}<i style="color:red;">*</i>{%end%} 标签类型</div>
             <div class="length3">
               {%if not old_tag%}
                 <div style="border:none;">
@@ -1804,11 +2148,23 @@ margin: auto;
                 <div id='tag_box' style="border:none;" {%if customer.tag_parent_id!=1%}hidden{%end%}>
                     &nbsp;&nbsp;(
                 {%for item in t_type_new%}
-                <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="{%if item.parent_id==2%}display:none;{%end%}width:auto;height:auto;" type="radio" name="tag_id" value="{{item.order_int}}" title="{{item.name}}" {%if customer.tag_id==item.order_int and customer.tag_id!=11%}checked{%end%}/>{%if item.parent_id==1%}{{item.name}}{%end%}
+                {%if item.parent_id==1%}
+                <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="radio" name="tag_id" value="{{item.order_int}}" title="{{item.name}}" {%if customer.tag_id==item.order_int %}checked{%end%}/>{{item.name}}
+                {%end%}
                 {%end%}
                   )
                   <span id="msg_tag" style="color:red"></span>
             </div>
+            <div id='tag_box1' style="border:none;" {%if customer.tag_parent_id!=2 %}hidden{%end%}>
+                &nbsp;&nbsp;(
+            {%for item in t_type_new%}
+            {%if item.parent_id==2 and item.order_int!=11%}
+            <input parent_id="{{item.parent_id}}" {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="radio" name="tag_id" value="{{item.order_int}}" title="{{item.name}}" {%if customer.tag_id==item.order_int %}checked{%end%}/>{{item.name}}
+            {%end%}
+            {%end%}
+              )
+              <span id="msg_tag1" style="color:red"></span>
+        </div>
            
             &nbsp;&nbsp;
               <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="checkbox" name='is_building' value="1" {%if customer.is_building%}checked{%end%}>楼盘
@@ -1835,6 +2191,13 @@ margin: auto;
       </div>
     </div>
     <div class="modal-footer">
+       
+        <div style="float: left;">
+            {%if role!='3' and role!='8' and role!='5'%}
+            <i style="color:red;">*</i>：只允许财务修改
+            {%end%}
+         
+        </div>
       <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
       <button class="btn btn-primary" id="btn_test_save4">保存</button>
     </div>
@@ -1977,6 +2340,31 @@ margin: auto;
     <button class="btn btn-primary" id="btn_save_linkman">保存</button>
   </div>
 </div>
+<div id="feedback_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel_linkman">反馈
+      </h3>
+    </div>
+    <div class="modal-body">
+      <div class="control-group">
+    <div class="control-group">
+        <label class="control-label" for="lastname">反馈意见</label>
+        <div class="controls">
+            <textarea type="text" class="span4" id="feedback_msg" name="feedback_msg" value="" style="height: 50px;"></textarea>
+    </div>
+
+  
+  
+    </div>
+    </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+      <button class="btn btn-primary" id="btn_save_feedback">确定</button>
+    </div>
+  </div>
+
 <div id="add_tag_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -2128,13 +2516,22 @@ margin: auto;
     <div class="control-group">
       <label class="control-label" for="lastname">文件</label>
       <div class="controls">
-        <input type="file" value="1" id="file" name="file" class="form-control" />
-      </div>
+              <form 
+      
+              class="dropzone"
+              enctype="multipart/form-data"
+              id="my-dropzone"
+              method="post" >
+              <!--上传图片时，需要同时提交的数据，这里做个演示-->
+           {% raw xsrf_form_html() %}
+          </form>
+        <!-- <input type="file" value="1" id="file" name="file" class="form-control" /> -->
+    
       <!-- /controls -->
     </div>
   </div>
 
-
+  </div>
 
 
 
@@ -2389,7 +2786,8 @@ margin: auto;
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="projects_note">发起快递申请
                 <a class="btn btn-info btn-sm" id="choose_cutomer_addr_msg" href="javascript:void(0);">选择收件人信息</a>
-            </h3>
+                <a class=" btn btn-danger btn-sm" id="delete_express" href="javascript:void(0);">删除</a>           
+              </h3>
               </div>
 
 
@@ -2397,7 +2795,7 @@ margin: auto;
                 <div class="control-group">
                   <label for="inputEmail3" class="col-sm-5 control-label" id="l_rec_name">收件人</label>
             <div class="controls">
-                <input class="form-control" name="rec_name" id="rec_name" type="text" placeholder="收件人" value="{%if  customer.reg_person%}
+                <input class="form-control" name="rec_name" id="rec_name" type="text"  value="{%if  customer.reg_person%}
                       {{customer.reg_person}}{%end%}">
                       <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_name">
             </div>
@@ -2406,7 +2804,7 @@ margin: auto;
             <div class="control-group" >
             <label for="inputEmail3" class="col-sm-5 control-label" id="l_rec_tel">收件人电话</label>
             <div class="controls">
-                <input class="form-control" name="rec_tel" id="rec_tel" type="text" placeholder="收件人电话" value="{%if  customer.reg_number%}
+                <input class="form-control" name="rec_tel" id="rec_tel" type="text"  value="{%if  customer.reg_number%}
                 {{customer.reg_number}}{%else%}无{%end%}">
                 <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_tel">
                   </div>
@@ -2415,7 +2813,7 @@ margin: auto;
           <div class="control-group" >
               <label for="inputEmail3" class="col-sm-5 control-label" id="l_rec_addr">收件人地址</label>
               <div class="controls">
-                  <input class="form-control" style="width:100%;" name="rec_addr" id="rec_addr" type="text" placeholder="收件人地址" value="{%if  customer.reg_addr%}
+                  <input class="form-control" style="width:100%;" name="rec_addr" id="rec_addr" type="text" value="{%if  customer.reg_addr%}
                   {{customer.reg_addr}}{%end%}">
                   <input type="checkbox" name="save_customer_add_msg" value="1" checked style="display:none;">
                   <span hidden>收件人信息存入系统</span>
@@ -2450,7 +2848,7 @@ margin: auto;
                     <label for="inputEmail3" class="col-sm-5 control-label">公司名称</label>
 
                     <div class="controls">
-                        <input class="form-control" name="rec_company" id="rec_company" type="text" placeholder="公司名称" value="{%if customer.company%}
+                        <input class="form-control" name="rec_company" id="rec_company" type="text" value="{%if customer.company%}
                         {{customer.company}}{%else%}无{%end%}">
                         <div class="alert alert-danger" role="alert" style="display:none;" id="er_rec_company">
                           </div>
@@ -2460,7 +2858,7 @@ margin: auto;
                       <label for="inputEmail3" class="col-sm-5 control-label">快递单号</label>
 
                       <div class="controls">
-                          <input class="form-control" id="express_number" placeholder="快递单号">
+                          <input class="form-control" id="express_number" >
                           <div class="alert alert-danger" role="alert" style="display:none;" id="er_express_number">
                           </div>
                       </div>
@@ -2499,7 +2897,7 @@ margin: auto;
                             <label for="inputEmail3" class="col-sm-5 control-label" id="l_send_name">发件人</label>
 
                             <div class="controls">
-                                <input class="form-control" name="send_name" id="send_name" type="text" placeholder="申请人" value="{{name}}" data-provide="typeahead">
+                                <input class="form-control" name="send_name" id="send_name" type="text"  value="{{name}}" data-provide="typeahead">
                                 <div class="alert alert-danger" role="alert" style="display:none;" id="er_send_name">
                                   </div>
                             </div>
@@ -2508,7 +2906,7 @@ margin: auto;
                               <label for="inputEmail3" class="col-sm-5 control-label">备注</label>
 
                               <div class="controls">
-                                  <textarea class="form-control" name="express_remark" id="express_remark" type="text" placeholder="备注"></textarea>
+                                  <textarea class="form-control" name="express_remark" id="express_remark" type="text" ></textarea>
                               </div>
                             </div>
               </div>
@@ -2568,7 +2966,7 @@ margin: auto;
                   <div class="control-group" >
                   <label for="inputEmail3" class="col-sm-5 control-label">备注</label>
                   <div class="controls">
-                      <textarea class="form-control" id="accept_uid_remark" placeholder="备注"></textarea>
+                      <textarea class="form-control" id="accept_uid_remark" ></textarea>
                       <div class="alert alert-danger" role="alert" style="display:none;" id="er_accept_uid_remark">
                   </div>
                 </div>
@@ -2613,12 +3011,173 @@ margin: auto;
           </div>
 
 </div>
+<div class="modal hide fade" id="merge_customer_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-header" >
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="projects_note">合并客户
+      </h3>
+        </div>
+
+
+        <div class="modal-body" id="site_mod">
+          <div class="control-group">
+
+              <label class="control-label file_label" for="lastname" >需要合并的客户编号</label>
+              <div class="controls">
+                <input type="text" placeholder="客户编号" id="merege_id" class="form-control">
+                <a href="javascript:void(0);" class="btn btn-info" style="margin-top: -7px;" id="search_merge_id">查询</a>
+      </div>
+      </div>
+      <div class="control-group">
+          <div class="controls">
+            <div id="show_search_customer"></div>
+          </div>
+      </div>
+       
+</div>
+<div class="modal-footer">
+    <input type="hidden" value="0" id="is_other" name="is_other" />
+    <button class="btn btn-primary" target="_blank" id="btn_merge_customer">合并</button>
+
+</div>
+</div>
+<div class="modal hide fade" id="merge_customer_modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-header" >
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="projects_note">转移财务信息
+      </h3>
+        </div>
+
+
+        <div class="modal-body" id="site_mod">
+          <div class="control-group">
+
+              <label class="control-label file_label" for="lastname" >客户编号</label>
+              <div class="controls">
+                <input type="text" placeholder="客户编号" id="merege_id1" class="form-control">
+                <a href="javascript:void(0);" class="btn btn-info" style="margin-top: -7px;" id="search_merge_id1">查询</a>
+      </div>
+      </div>
+      <div class="control-group">
+          <div class="controls">
+            <div id="show_search_customer1"></div>
+          </div>
+      </div>
+       
+</div>
+<div class="modal-footer">
+    <input type="hidden" value="0" id="is_other" name="is_other" />
+    <button class="btn btn-primary" target="_blank" id="btn_merge_customer1">转移</button>
+
+</div>
+</div>
+
+<div class="modal hide fade" id="genjin_type_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-header" >
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="projects_note">选择类别
+      </h3>
+        </div>
+
+
+        <div class="modal-body" id="site_mod">
+          <div class="control-group">
+              <select name="" id="genjin_type1" class="form-control">
+                  <option value="">选择类别</option>
+                  <option value="1">跟进动态</option>
+                  <option value="2">定期跟进</option>
+              
+                  <option value="4">其他类别</option>
+                </select>
+            
+      </div>
+      </div>
+
+<div class="modal-footer">
+    <button class="btn btn-primary submit_msg" msg_modal='1' target="_blank" >确认</button>
+
+</div>
+</div>
+
     {%end%}
 
     {% block  js %}
 
     <script src="/static/bootstrap-typeahead.js"></script>
+    <script src="/static/dropzone.js"></script>
+    <script src="/static/dropzone-amd-module.js"></script>
     <script>
+Dropzone.options.myDropzone = {
+//指定上传图片的路径
+url: "/customer?tag=upload",
+dictDefaultMessage:"请点击选择文件或拖动文件到本区域",
+//添加上传取消和删除预览图片的链接，默认不添加
+addRemoveLinks: true,
+
+//关闭自动上传功能，默认会true会自动上传
+//也就是添加一张图片向服务器发送一次请求
+autoProcessQueue: false,
+
+//允许上传多个照片
+uploadMultiple: true,
+
+//每次上传的最多文件数，经测试默认为2，坑啊
+//记得修改web.config 限制上传文件大小的节
+parallelUploads: 100,
+paramName:'file',
+init: function () {
+    var submitButton = document.querySelector("#btn_save_file")
+    myDropzone = this; // closure
+
+    //为上传按钮添加点击事件
+    submitButton.addEventListener("click", function () {
+        var file_title = $("#file_title").val()
+        if(file_title==""){
+                  $("#msg_file_title").text('文件内容说明不能为空哦。')
+
+              }else{
+        //手动上传所有图片
+                myDropzone.processQueue();  
+              }
+      
+    });
+
+    //当添加图片后的事件，上传按钮恢复可用
+    this.on("addedfile", function (file) {
+      $("#file_title").val(file.name)
+        $("#btn_save_file").removeAttr("disabled");
+    });
+    this.on("sending", function(file, xhr, formData) {
+            var file_title = $("#file_title").val()
+            var file_remark = $("#file_remark").val()
+            formData.append("customer_id","{{ customer.customer_id }}")
+            formData.append("file_title", file_title)
+            formData.append("file_remark", file_remark)
+            formData.append('_xsrf', _xsrf);
+
+            console.log(formData)
+            });
+    //当上传完成后的事件，接受的数据为JSON格式
+    this.on("complete", function (data) {
+
+                   location.reload()
+
+        // if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+          
+        //     location.reload()
+         
+           
+        // }
+    });
+
+    //删除图片的事件，当上传的图片为空时，使上传按钮不可用状态
+    this.on("removedfile", function () {
+        if (this.getAcceptedFiles().length === 0) {
+            $("#btn_save_file").attr("disabled", true);
+        }
+    });
+}
+};
         $(function(){
 
 
@@ -2872,6 +3431,58 @@ laydate.render({
               });
 
       })
+         
+         $(".gj_msg").on("click",function(){
+              genjin_type = $(this).attr("genjin_type")
+              msg = $(this).attr("msg")
+              msg_id = $(this).attr("msg_id")
+              customer_id= $(this).attr("customer_id")
+             
+              if ($(this).text()=="保存"){
+                $("#p_msg_"+msg_id).show()
+                $("#p_msg_edit_"+msg_id).hide()
+                msg = $("#genjin_msg_"+msg_id).val()
+                $("#p_msg_"+msg_id).text(msg)
+               
+                $.post("/customer?tag=modify_genjin_msg",{"msg":msg,"msg_id":msg_id,"customer_id":customer_id,"_xsrf":_xsrf},function(result){
+                    if(result=="0"){
+                        self.write("0")
+                    }else{
+                        alert("更新失败, 请重新再试.")
+                        location.reload()
+                    }
+                })
+                 $(this).text("修改")
+                // $(this).attr("class","btn btn-mini  gj_msg")
+              }else{
+                $("#p_msg_"+msg_id).hide()
+                $("#p_msg_edit_"+msg_id).show()
+                $(this).text("保存")
+                // $(this).attr("class","btn btn-mini gj_msg")
+              }
+
+         })
+
+
+   $(".gj_msg_delete").on("click",function(result){
+              msg_id = $(this).attr("msg_id")
+              customer_id= $(this).attr("customer_id")
+            if(confirm("确认删除吗?")){
+
+           
+            $.post("/customer?tag=modify_genjin_delete",{"msg_id":msg_id,"customer_id":customer_id,"_xsrf":_xsrf},function(result){
+                    if(result=="0"){
+                    $("#show_msg_gj_"+msg_id).hide()
+                    location.reload()
+                    }else{
+                        alert("更新失败, 请重新再试.")
+                        location.reload()
+                    }
+                })
+
+                 }
+      })
+
 
 
            $("#a_add_project").on("click",function(){
@@ -3005,7 +3616,7 @@ $("#a_add_account_modal").modal('show')
            })
 
            $("#btn_save_contract").on("click", function () {
-            var contract_id= $("#btn_save_contract").attr("id")
+            var contract_id= $("#btn_save_contract").attr("contract_id")
             var contract_title = $("#contract_title").val()
             var contract_start_time = $("#contract_start_time").val()
             var contract_end_time = $("#contract_end_time").val()
@@ -3030,7 +3641,7 @@ $("#a_add_account_modal").modal('show')
                 "state_id": state_id,
                 "contract_id": contract_id
               }, function (result) {
-                //location.reload()
+              location.reload()
               })
             }
 
@@ -3041,7 +3652,7 @@ $("#a_add_account_modal").modal('show')
           $("#contract_title").val("")
          $("#contract_start_time").val("")
          $("#contract_end_time").val("")
-      $("#btn_save_contract").attr("id", 0)
+      $("#btn_save_contract").attr("contract_id", 0)
       $("#delete_contract").attr("contract_id", "0")
           var contract_remark = $("#contract_remark").val("")
             $("#add_contract_modal").modal("show")
@@ -3067,7 +3678,8 @@ $("#a_add_account_modal").modal('show')
           $("#contract_title").val(contract_title)
            $("#contract_end_time").val(contract_end_time)
           $("#contract_start_time").val(contract_start_time)
-          $("#btn_save_contract").attr("id", contract_id)
+          $("input[name=state_id][value='"+$(this).attr('state_id')+"']").prop('checked',true)
+          $("#btn_save_contract").attr("contract_id", contract_id)
           $("#delete_contract").show()
             $("#delete_contract").attr("contract_id",contract_id)
 
@@ -3175,10 +3787,10 @@ $("#a_add_account_modal").modal('show')
 
 
         })
-           document.getElementById("file").addEventListener("change", function (evt) {
+          //  document.getElementById("file").addEventListener("change", function (evt) {
 
-             $("#file_title").val(evt.target.files[0].name)
-            });
+          //    $("#file_title").val(evt.target.files[0].name)
+          //   });
 
 
      /*     $(".modify_linkman").on("click",function(){
@@ -3422,6 +4034,8 @@ $("#btn_add_express").on("click",function () {
   $("#er_rec_company").hide()
   $('#er_express_number').hide()
   $("#er_send_name").hide()
+  $("#delete_express").hide()
+  $("#delete_express").removeAttr('express_id')
   $("#add_express_modal").modal("show")
  })
 
@@ -3450,7 +4064,9 @@ $("#btn_add_express_rec").on('click',function () {
       $("#er_rec_company").hide()
       $('#er_express_number').hide()
       $("#er_send_name").hide()
-        $("#add_express_modal").modal("show")
+      $("#delete_express").hide()
+      $("#delete_express").removeAttr('express_id')
+      $("#add_express_modal").modal("show")
       })
  $("#btn_save_express").on("click",function(){
     var this_btn=$(this)
@@ -3601,8 +4217,29 @@ $("#btn_add_express_rec").on('click',function () {
     $("#er_express").hide()
     $('#btn_save_express').show()
   }
+  $("#delete_express").attr("express_id",$(this).attr('id'))
+  if($(this).attr('accept_at')=='None' && $(this).attr('uid_name')=='{{name}}'){
+    $("#delete_express").show()
+  }else{
+    $("#delete_express").hide()
+  }
   $("#add_express_modal").modal("show")
  })
+ $("#delete_express").on('click',function () {
+   var express_id=$(this).attr('express_id')
+   if(confirm('确定删除？')){
+    $.post('/project?tag=express',
+   {
+     '_xsrf':_xsrf,
+     'delete_id':express_id
+   },function (res) {
+     if(res=='-1'){
+       alert('已审核不能删除')
+     } 
+     location.reload()
+    })
+   } 
+  })
  $(".check_express").on('click',function () {
         $("#btn_check_express").attr('express_id',$(this).attr('id'))
         $("#check_express_modal").modal("show")
@@ -3655,7 +4292,7 @@ $('#btn_check_express').on('click',function () {
       document.getElementsByTagName('body')[0].className = 'modal-open';
 });
 var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); background-size:15px 10px;display:block;">#url1#</li>',
-    all_files=[]
+    all_files1=[]
     $gallery = $("#gallery"),
     $galleryImg = $("#galleryImg"),
     $uploaderInput = $("#uploaderInput1"),
@@ -3664,7 +4301,11 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
                 var src, url = window.URL || window.webkitURL || window.mozURL,
                 files = e.target.files;
                 for(var i =files.length-1, len = files.length; i < len; ++i) {
+                  
                     var file = files[i];
+
+
+                  
                     if(url) {
                         // src = url.createObjectURL(file);
                         src=file.name;
@@ -3672,9 +4313,10 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
                         src = e.target.result;
                     }
 
-                    $uploaderFiles.text(src);
-                    all_files.push(file)
+                    $uploaderFiles.append(src+' ');
+                    all_files1.push(file)
                 }
+              
 
             });
 $('.filepath_detail').on('click',function () {
@@ -3736,20 +4378,28 @@ $('.filepath_detail').on('click',function () {
     }
 
  })
- $(window).scroll(function(){
-	if ($(window).scrollTop()>=60) {
-		$(".es-nva").css({
-			"position":"fixed",
-			"top":"0px",
-			"left":"50%",
-			"margin-left":"-585px",
-			"z-index":"99"
+//  $(window).scroll(function(){
+// 	if ($(window).scrollTop()>=60) {
+// 		$(".es-nva").css({
+// 			"position":"fixed",
+// 			"top":"0px",
+// 			"left":"50%",
+// 			"margin-left":"-585px",
+// 			"z-index":"99"
 			
-		})
-	} else{
-		$(".es-nva").removeAttr("style")
-	}
-})
+// 		})
+// 	} else{
+// 		$(".es-nva").removeAttr("style")
+// 	}
+// })
+
+$(window).scroll(
+  function () { 
+    var scrollValue = $(window).scrollTop();
+    console.log(scrollValue);
+    scrollValue > 60 ? $(".esnava").show(): $(".esnava").hide();
+   }
+)
 $(".esdt-box1").click(function(){
   t_this=$(this)
   if($(this).hasClass('esdtcur1')==false){
@@ -3901,6 +4551,7 @@ $("#btn_test_save1").click(function () {
   business_scope=$("#business_scope").val()
   attention=$("#attention").val()
   zg_option=$("#zg_option").val()
+  adjusted_option=$("#adjusted_option").val()
 
   if (company==""){
     $("#company").focus()
@@ -3923,13 +4574,17 @@ $("#btn_test_save1").click(function () {
     'business_scope':business_scope,
     'attention':attention,
     'zg_option':zg_option,
+    'adjusted_option':adjusted_option,
     'customer_id':"{{customer.customer_id}}",
     'customer_other_id':"{%if customer.customer_other_id%}{{customer.customer_other_id}}{%else%}{%end%}",
     'step':'1'
   },function (data) {
     if(data['error_acc']!='' && data['error_acc']!=undefined){
       alert(data['error_acc'])
-    }else{
+    }else if(data['status']=='-100'){
+      $("#exist_customer1").html('<a target="_blank" style="color:red" href="?tag=show&id='+data['id']+'&guid='+data['guid']+'">公司名已存在(点击查看)</a>')
+    }
+    else{
         location.reload()
     }
    })
@@ -3940,12 +4595,15 @@ $("#btn_test_save1").click(function () {
     survey=$('#survey').val()
     is_check=$('input[name=is_check]:checked').val()
     btype_id=$('input[name=btype_id]:checked').val()
-    btype_id_name=$("input[name=btype_id]:checked").val()
+    btype_id_name=$("input[name=btype_id]:checked").attr('btype_id_name')
     shuizhong_detail=$("#shuizhong_detail").val()
     zhengshou_way=$("#zhengshou_way").val()
     shuikong_type=$("#shuikong_type").val()
     ss_num=$("#ss_num").val()
     fixed_assets=$("#fixed_assets").val()
+    if(ss_num==''){
+      ss_num=0
+    }
     $.post('customer?tag=edit_customer_other',{
     '_xsrf':_xsrf,
     'is_general':is_general,
@@ -4003,9 +4661,9 @@ $("#btn_test_save1").click(function () {
     is_general=$("input[name=is_general1]:checked").val()
     addr_type=$("#addr_type1").val()
     payment_id=$("#payment_id").val()
-    pay_type_id=$("input[name=pay_type_id]").val()
-    fee=$("input[name=pay_type_id]").attr('fee')
-    pay_typeid_name=$("input[name=pay_type_id]").attr('pay_typeid_name')
+    pay_type_id=$("input[name=pay_type_id]:checked").val()
+    fee=$("input[name=pay_type_id]:checked").attr('fee')
+    pay_typeid_name=$("input[name=pay_type_id]:checked").attr('pay_typeid_name')
     service_amount=$("#service_amount").val()
     service_amount_month=$("#service_amount_month").val()
     book_amount=$("#book_amount").val()
@@ -4016,10 +4674,12 @@ $("#btn_test_save1").click(function () {
     tag_parent_id=$('input[name=tag_parent_id]:checked').val()
     tag_parent_name=$('input[name=tag_parent_id]:checked').attr('title')
     tag_id=$("input[name=tag_id]:checked").val()
+    tag_id_parent=$("input[name=tag_id]:checked").attr('parent_id')
     tag_name=$("input[name=tag_id]:checked").attr('title')
     is_building=$('input[name=is_building]:checked').val()
     is_clearly=$('input[name=is_clearly]:checked').val()
     is_year=$('input[name=is_year]:checked').val()
+    reg_money=$("#reg_money").val()
     customer_type_name=''
     customer_type=''
     
@@ -4035,15 +4695,25 @@ $("#btn_test_save1").click(function () {
             customer_type = customer_type.slice(0, -1);
           }
     if(tag_parent_id=='2'){
-      tag_id=$("input[name=tag_id][value=11]").val()
-      tag_name=$("input[name=tag_id][value=11]").attr('title')
+      if(tag_id!='12' && tag_id_parent!='2'){
+        tag_id='11'
+      tag_name='非记账'
+      }
+      
+    }
+    if(company==''){
+      alert('公司名称不能为空')
     }
     if(((tag_id==undefined && tag_parent_id=='1')  || tag_parent_id==undefined)&& "{{old_tag}}"=='') {
 
       $("#msg_tag").text('未选择标签')
     }
-    else if((link_name=='' || link_tel=='') && link_id!=''){
-        $("#msg_link_tag").text('未填')
+    // else if((link_name=='' || link_tel=='') && link_id!=''){
+    //     $("#msg_link_tag").text('未填')
+    // } 
+    else if(company_reguid==''){
+      alert('信用代码不能为空')
+      
     }else if(company_reguid!='' && company_reguid.length!=18){
       alert('信用代码长度需要为18位')
     }
@@ -4081,9 +4751,17 @@ $("#btn_test_save1").click(function () {
         'is_clearly':is_clearly,
         'is_year':is_year,
         'customer_id':"{{customer.customer_id}}",
+        'reg_money':reg_money
         
-      },function (data) { 
-        location.reload()
+      },function (data) {
+        if(data['status']=='-100'){
+            $("#exit_customer").html('<a target="_blank" style="color:red" href="?tag=show&id='+data['id']+'&guid='+data['guid']+'">公司名已存在(点击查看)</a>')
+        }else if(data['status']=='-200'){
+          $("#exit_customer").html('<a target="_blank" style="color:red" href="?tag=show&id='+data['id']+'&guid='+data['guid']+'">信用代码已存在(点击查看)</a>')
+        }else{
+          location.reload()
+        } 
+       
        })
     }
     })
@@ -4095,8 +4773,13 @@ $("#btn_test_save1").click(function () {
   $('input[name=tag_parent_id]').on('change',function () { 
     if($(this).val()=='1'){
       $("#tag_box").show()
+      $("#tag_box1").hide()
+      if($('input[name=tag_id]:checked').val()=='12'){
+        $('input[name=tag_id]').prop('checked',false)
+      }
     }else if($(this).val()=='2'){
       $("#tag_box").hide()
+      $("#tag_box1").show()
     }
    })
    $("#btn_save_tag").click(function () { 
@@ -4132,7 +4815,7 @@ $("#btn_test_save1").click(function () {
     }
     })
 
-    $("#customer_modify4").click(function () { 
+    $(".customer_modify4").click(function () { 
 	$('#add_test_modal4').modal('show')
  })
  $('input[type="radio"][name="pay_type_id"]').click(function(){
@@ -4173,22 +4856,33 @@ $("#btn_test_save1").click(function () {
         function intToFloat(val){
           return new Number(val).toFixed(2);
    }
-   $("#submit_msg").click(function () { 
+   $(".submit_msg").click(function () { 
     dongtai_msg=$("#dongtai_msg").val()
     genjin_type=$("#genjin_type").val()
+    genjin_type1=$("#genjin_type1").val()
+    msg_modal=$(this).attr('msg_modal')    
     var formData = new FormData();
-    formData.append('file', $('#uploaderInput1')[0].files[0]);
+    formData.append('len1',all_files1.length)
+    for(var i=0;i<all_files1.length;i++){
+      formData.append('file'+i.toString(), all_files1[i]);
+    }
     formData.append('_xsrf', _xsrf)
     formData.append("dongtai_msg", dongtai_msg)
     formData.append("customer_id","{{customer.customer_id}}")
-    formData.append('genjin_type',genjin_type)
-    if(genjin_type==''){
-    
-      alert('未选择类别')
-    }else if (dongtai_msg==''){
+     if (dongtai_msg=='' && msg_modal==undefined){
       alert('跟进内容不为空')
     }
+    else if(genjin_type=='' && msg_modal==undefined){
+      $("#genjin_type_modal").modal('show')
+    }else if(genjin_type=='' && genjin_type1=='' && msg_modal=='1'){
+      alert('请选择类别')
+    }
     else{
+      if(genjin_type==''){
+        formData.append('genjin_type',genjin_type1)
+      }else{
+        formData.append('genjin_type',genjin_type)
+      }
       $.ajax({
                 url: '/customer?tag=dongtai_genjin',
                 type: 'POST',
@@ -4204,7 +4898,168 @@ $("#btn_test_save1").click(function () {
     }
 
     })
-      });
+    $("#feedback").click(function () { 
+      $("#feedback_modal").modal('show')
+     })
+    $("#btn_save_feedback").click(function () { 
+      feedback_msg=$("#feedback_msg").val()
+      if(feedback_msg==''){
+        alert('反馈不能为空')
+      }else{
+        $.post('/customer?tag=customer_feedback',{
+          '_xsrf':_xsrf,
+          'feedback_msg':feedback_msg,
+          'customer_id':'{{customer.customer_id}}',
+          'guid':'{{customer.guid}}',
+          'company':'{{customer.company}}'
+
+        },function (data) { 
+          location.reload()
+         })
+      }
+     })
+     $("#merge_customer").click(function () { 
+      $("#merge_customer_modal").modal('show')
+      })
+      $("#search_merge_id1").click(function () {
+        merege_id=$("#merege_id1").val()
+        if(merege_id==''){
+          alert('编号不能为空')
+        } 
+        else if(isNaN(merege_id)){
+          alert('编号需要为数字')
+        }
+        else if(merege_id=="{{customer.customer_id}}"){
+          alert('不能合并本客户')
+        }
+        else{
+          $.post('?tag=search_merege_customer',{
+            '_xsrf':_xsrf,
+            'merege_id':merege_id
+          },function (data) { 
+            if(data=='-1'){
+              $('#show_search_customer1').html('没找到~')
+            }else{
+              $('#show_search_customer1').html('查询到 公司名:'+data['company']+' 信用代码:'+data['company_reguid'])
+              $('#show_search_customer1').append('<br><br><input company_reguid="'+data['company_reguid']+'" company="'+data['company']+'" type="radio" name="merge_with1" value="1" title="'+
+              data['merege_id']+'" guid="'+data['guid']+'" >转移到编号为'+data['merege_id']+'的客户'
+             
+              )
+            }
+            
+           })
+        }
+       })
+       $("#btn_merge_customer").click(function () { 
+        merge_with=$("input[name=merge_with]:checked").val()
+        merege_id=$("input[name=merge_with]:checked").attr('title')
+        merege_guid=$("input[name=merge_with]:checked").attr('guid')
+        merege_company=$("input[name=merge_with]:checked").attr('company')
+        merege_reguid=$("input[name=merge_with]:checked").attr('company_reguid')
+        if(merge_with==undefined){
+          alert('请选择需要的合并')
+        }else{
+          $.post('?tag=merege_customer',{
+            '_xsrf':_xsrf,
+            'merege_with':merge_with,
+            'merege_id':merege_id,
+            'customer_id':'{{customer.customer_id}}',
+            'merege_guid':merege_guid,
+            'customer_company':"{{customer.company}}",
+            'merege_company':merege_company,
+            'customer_guid':'{{customer.guid}}',
+            'company_reguid':"{{customer.company_reguid}}",
+            'merege_reguid':merege_reguid
+          },function (data) {
+            if(data=='-1'){
+              alert('两个客户有合并过的，暂无此合并公能')
+            }else{
+              location.reload()
+            } 
+            
+           })
+        }
+        })
+    $("#merege_cw").click(function () {
+      if($('input[name=merege_project]:checked').val()==undefined && $('input[name=merege_his]:checked').val()==undefined ){
+        alert('未选择')
+        $('input[name=merege_project]').focus()
+      }else{
+        $("#merge_customer_modal1").modal('show')
+      }
+     })
+
+     $("#btn_merge_customer1").click(function () { 
+      merege_project_ids=[]
+      merege_his_ids=[]
+      $('input[name=merege_project]:checked').each(function () { 
+    
+              merege_project_ids.push($(this).val())
+    
+       })
+       $('input[name=merege_his]:checked').each(function () { 
+              merege_his_ids.push($(this).val())
+          
+       })
+
+        merege_project_ids=merege_project_ids.join('')
+        merege_his_ids=merege_his_ids.join(',')
+        merge_with=$("input[name=merge_with1]:checked").val()
+        merege_id=$("input[name=merge_with1]:checked").attr('title')
+        merege_guid=$("input[name=merge_with1]:checked").attr('guid')
+        merege_company=$("input[name=merge_with1]:checked").attr('company')
+        merege_reguid=$("input[name=merge_with1]:checked").attr('company_reguid')
+        if(merge_with==undefined){
+          alert('请选择需要的转移')
+        }
+        else{
+          $.post('?tag=merege_customer1',{
+            '_xsrf':_xsrf,
+            'merege_id':merege_id,
+            'merege_guid':merege_guid,
+            'merege_company':merege_company,
+            'merege_reguid':merege_reguid,
+            'merege_project_ids':merege_project_ids,
+            'customer_id':customer_id,
+            'merege_his_ids':merege_his_ids
+          },function (data) {
+            alert('转移成功') 
+            location.href='?tag=show&id='+customer_id+'&guid='+customer_guid+'&to_tag=finance_tab'
+           })
+        }
+        })
+
+
+
+     $("#search_merge_id").click(function () {
+        merege_id=$("#merege_id").val()
+        if(merege_id==''){
+          alert('编号不能为空')
+        } 
+        else if(isNaN(merege_id)){
+          alert('编号需要为数字')
+        }
+        else if(merege_id=="{{customer.customer_id}}"){
+          alert('不能合并本客户')
+        }
+        else{
+          $.post('?tag=search_merege_customer',{
+            '_xsrf':_xsrf,
+            'merege_id':merege_id
+          },function (data) { 
+            if(data=='-1'){
+              $('#show_search_customer').html('没找到~')
+            }else{
+              $('#show_search_customer').html('查询到 公司名:'+data['company']+' 信用代码:'+data['company_reguid'])
+              $('#show_search_customer').append('<br><br><input company_reguid="'+data['company_reguid']+'" company="'+data['company']+'" type="radio" name="merge_with" value="1" title="'+data['merege_id']+'" guid="'+data['guid']+'" > 将编号为'+data['merege_id']+'的客户合并到当前客户'+
+              '<br><br><input company_reguid="'+data['company_reguid']+'" company="'+data['company']+'" type="radio" name="merge_with" value="2" title="'+data['merege_id']+'" guid="'+data['guid']+'" > 将当前客户合并到编号为'+data['merege_id']+'的客户'
+              )
+            }
+            
+           })
+        }
+       })
+    });
 
     </script>
     {% end %}

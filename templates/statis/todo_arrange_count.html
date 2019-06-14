@@ -313,6 +313,7 @@ padding: 5px;
  {%block js%}
 <script>
 $(function () { 
+  $("#m_statis").click()
     $("#start_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
     language: 'zh-CN',initialDate: new Date()});
     $("#end_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59',

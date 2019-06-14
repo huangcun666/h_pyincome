@@ -33,6 +33,7 @@ class AddrHandler(BaseHandler):
             company = self.get_argument("company", "")
             cq_uid=self.get_argument('cq_uid','')
             newtype=self.get_argument('newtype','')
+            a_follow_uid_name= self.get_argument("a_follow_uid_name","")
             add_ctype_sql = ""
             act_id_sql=""
             left_sql="left"
@@ -65,6 +66,9 @@ class AddrHandler(BaseHandler):
                 else:
                     company_sql = " where "
                 company_sql += '  a.cq_uid=%s '%cq_uid
+
+
+                
             if role=='9':
                 if add_ctype_sql or add_ctype_sql or company_sql:
                     gs_sql = " and "
@@ -72,6 +76,8 @@ class AddrHandler(BaseHandler):
                     gs_sql=" where "
                 gs_sql+=' a.cq_uid=%s '%uid
                 gs_sql1=' and a.cq_uid=%s '%uid
+
+                
 
             if act_id:
                 left_sql=" inner "
@@ -125,6 +131,10 @@ class AddrHandler(BaseHandler):
                 new_sql=' and a_follow_uid=%s '%uid
             else:
                 new_sql=''
+            a_follow_uid_name_sql=""
+            if a_follow_uid_name:
+                a_follow_uid_name_sql += ' and  a_follow_uid_name="%s" '%a_follow_uid_name
+
             new_addr_count=self.db_company.get('''
              select count(*) a,
              (select count(*) from t_addr_manager where new_addr=1 and addr_arr is not null and rent_start is null '''+new_sql+''' )b,
@@ -152,33 +162,31 @@ class AddrHandler(BaseHandler):
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page-1) * pre_page
                 t_addr_manager=self.db_company.query('''
-                    select * from t_addr_manager a '''+company_sql +gs_sql+sql+new_sql+''' order by created_at desc limit %s,%s
+                    select * from t_addr_manager a '''+company_sql +gs_sql+sql+new_sql+a_follow_uid_name_sql+''' order by created_at desc limit %s,%s
                 ''',startpage,pre_page)
             else:
                 count = self.db_company.get(
                     '''  select count(*) count from t_addr_manager a ''' + left_sql
                     + ''' join t_addr_manager_req b on a.id =b.addr_id ''' +
-                    add_ctype_sql + act_id_sql + company_sql+gs_sql+new_addr_sql)
+                    add_ctype_sql + act_id_sql + company_sql+gs_sql+new_addr_sql+a_follow_uid_name_sql)
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page-1) * pre_page
                 t_addr_manager = self.db_company.query(
                     '''select a.*,b.req_act_id_name,b.req_now_addr,b.req_remark,created_by,b.created_at bcreated_at
                     from t_addr_manager a ''' + left_sql +
                     ''' join t_addr_manager_req b on a.id =b.addr_id   ''' +
-                    add_ctype_sql + act_id_sql + company_sql +gs_sql+new_addr_sql+''' order by ''' +
+                    add_ctype_sql + act_id_sql + company_sql +gs_sql+new_addr_sql+a_follow_uid_name_sql+''' order by ''' +
                     order_column + '''  
                     limit %s,%s 
                     ''', startpage, pre_page)
-            print     '''select a.*,b.req_act_id_name,b.req_now_addr,b.req_remark,created_by,b.created_at bcreated_at
-                 from t_addr_manager a ''' + left_sql +  ''' join t_addr_manager_req b on a.id =b.addr_id  
-                 ''' + add_ctype_sql + act_id_sql + company_sql +gs_sql+new_addr_sql+''' order by ''' + order_column
+              
 
-
-
+            t_a_follow_uid_name = self.db_company.query("select a_follow_uid_name name from t_addr_manager  group by a_follow_uid_name ")
             cq_names=self.db.query(' select * from  t_user where role=9 ')
 
             return self.render(
                 'addr/addr_list.html',
+                t_a_follow_uid_name=t_a_follow_uid_name,
                 zhuxiao_count=zhuxiao_count,
                 biangeng_count=biangeng_count,
                 new_addr_count=new_addr_count,
@@ -190,6 +198,7 @@ class AddrHandler(BaseHandler):
                 t_user_teams=t_user_teams,
                 company=company,
                 act_id=act_id,
+                a_follow_uid_name=a_follow_uid_name,
                 cq_uid=cq_uid,
                 project_type=project_type,
                 t_addr_manager=t_addr_manager,
@@ -300,7 +309,10 @@ class AddrHandler(BaseHandler):
                         t_addr_manager_upload = self.db_company.query(
                             "select * from t_addr_manager_upload where req_id=%s and up_type='跟进人反馈'",
                             t_addr_manager_req.id)
-
+                    t_customer =None
+                    if t_addr_manager.company:
+                        t_customer = self.db_customer.get("select * from t_customer where company=%s",t_addr_manager.company)
+                    
                     return self.render(
                         'addr/addr_show.html',
                         t_type_finish_type=t_type_finish_type,
@@ -310,6 +322,7 @@ class AddrHandler(BaseHandler):
                         search_key=search_key,
                         t_plan=t_plan,
                         t_type=t_type,
+                        t_customer=t_customer,
                         t_addr_manager=t_addr_manager,
                         t_company_tag_group=t_company_tag_group,
                         t_company_msg=t_company_msg,
@@ -344,6 +357,7 @@ class AddrHandler(BaseHandler):
             addr_id = self.get_argument("addr_id")
             if not addr_id:
                 return self.write("not id")
+
             project_type = self.db_company.get(
                 "select * from t_type where type_category='地址管理' and order_int=1"
             )
@@ -358,9 +372,9 @@ class AddrHandler(BaseHandler):
                 project_type.order_int, project_type.type_name, dt, uid, uid_name)
             if req_id:
                 self.db_company.execute(
-                    "update t_addr_manager set act_id=%s,act_id_name=%s,act_id_at=%s,act_by_uid=%s,act_by_uid_name=%s,act_by_uid_at=%s,req_id=%s where id=%s",
+                    "update t_addr_manager set act_id=%s,act_id_name=%s,act_id_at=%s,act_by_uid=%s,act_by_uid_name=%s,act_by_uid_at=%s,req_id=%s,now_addr=%s where id=%s",
                     project_type.order_int, project_type.type_name, dt, uid,
-                    uid_name, dt, req_id, addr_id)
+                    uid_name, dt, req_id,cq_addr_now, addr_id)
                 msg_text = "发起到期收款"
                 self.db_company.execute("""
                             insert into t_company_msg(uid,uid_name,message,created_at,company_name,tag_type,btype_id,rel_id,ext_id)

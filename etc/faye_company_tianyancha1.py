@@ -3,7 +3,7 @@ import torndb
 import time
 from pyquery import PyQuery as pq
 import requests
-db = torndb.Connection("192.168.2.169", "db_customer","root","deng")
+db = torndb.Connection("192.168.2.168", "db_customer","root","deng")
 
 def addNew(name,company_id):
     print name
@@ -27,7 +27,7 @@ def addNew(name,company_id):
         "Accept-Language":
         "zh-CN,zh;q=0.9",
         "Cookie":
-        "aliyungf_tc=AQAAANO8OWbRIw8ATWx3ceE5q7huSrDp; csrfToken=Qw3VkVDGDavVhaKdAPsQxcpP; TYCID=e18a580001d611e9857bb3db62d2e876; undefined=e18a580001d611e9857bb3db62d2e876; ssuid=2992908032; __insp_wid=677961980; __insp_slim=1545036548242; __insp_nv=true; __insp_targlpu=aHR0cHM6Ly93d3cudGlhbnlhbmNoYS5jb20v; __insp_targlpt=5aSp55y85p_lLeS6uuS6uumDveWcqOeUqOWVhuS4muWuieWFqOW3peWFt1%2FkvIHkuJrkv6Hmga%2Fmn6Xor6Jf5YWs5Y_45p_l6K_iX_W3peWVhuafpeivol%2FkvIHkuJrkv6HnlKjkv6Hmga%2Fmn6Xor6Lns7vnu58%3D; Hm_lvt_e92c8d65d92d534b0fc290df538b4758=1545035805; Hm_lpvt_e92c8d65d92d534b0fc290df538b4758=1545036549; __insp_norec_sess=true; _ga=GA1.2.1399497296.1545035808; _gid=GA1.2.709530492.1545035808; token=247936aea8a841309fcd7ba0cfd475f4; _utm=946a089c2c0349a89ed4b1a06ba4123b; tyc-user-info=%257B%2522myQuestionCount%2522%253A%25220%2522%252C%2522integrity%2522%253A%25220%2525%2522%252C%2522state%2522%253A%25225%2522%252C%2522vipManager%2522%253A%25220%2522%252C%2522monitorUnreadCount%2522%253A%252233%2522%252C%2522discussCommendCount%2522%253A%25221%2522%252C%2522onum%2522%253A%252245%2522%252C%2522renewalText%2522%253A%2522%25E4%25B9%25B01%25E9%2580%25811%2522%252C%2522isExpired%2522%253A%25221%2522%252C%2522token%2522%253A%2522eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxODYyMDkwOTUxOSIsImlhdCI6MTU0NTAzNTgzOCwiZXhwIjoxNTYwNTg3ODM4fQ.zIUGXHQn3qtjv7inG4kQtLUgaEbYZmg-fU66SQebSRcRX4fYfvgKiiA6TDKrShh24xPbojDmDRgNzNf9Bemo_w%2522%252C%2522redPoint%2522%253A%25220%2522%252C%2522pleaseAnswerCount%2522%253A%25221%2522%252C%2522renewal%2522%253A%25221%2522%252C%2522bizCardUnread%2522%253A%25220%2522%252C%2522vnum%2522%253A%252220%2522%252C%2522mobile%2522%253A%252218620909519%2522%257D; auth_token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxODYyMDkwOTUxOSIsImlhdCI6MTU0NTAzNTgzOCwiZXhwIjoxNTYwNTg3ODM4fQ.zIUGXHQn3qtjv7inG4kQtLUgaEbYZmg-fU66SQebSRcRX4fYfvgKiiA6TDKrShh24xPbojDmDRgNzNf9Bemo_w; RTYCID=d7be9861bd4e4e508295acc63eaccfef; CT_TYCID=4ea00e1e6ef745bfbedda294536145ea; cloud_token=b81e311fffec45019dba39ac2fdda6e4; cloud_utm=de4e109ec25f4f2b8e93cb9035613e09"
+        "TYCID=b357c9e0bbe511e8bdc5c3de6f3bb50e; undefined=b357c9e0bbe511e8bdc5c3de6f3bb50e; ssuid=9840529350; _ga=GA1.2.2097837523.1537345589; aliyungf_tc=AQAAAHUFyx/JeQAAXRiMPa46rFdBFQ91; csrfToken=-U8TU9Zp1Ua765CUOQwN5gxg; refresh_page=null; token=8498b21c4f60477bb63b672667f9ff4c; _utm=86acf79c96b44c63864e960a5e7c3314; cloud_token=48c53dbd51394fd3b4c050d352206c8f; _gid=GA1.2.1181829650.1554772271; _gat_gtag_UA_123487620_1=1; __insp_wid=677961980; __insp_nv=true; __insp_targlpu=aHR0cHM6Ly93d3cudGlhbnlhbmNoYS5jb20v; __insp_targlpt=5aSp55y85p_lLeWVhuS4muWuieWFqOW3peWFt1%2FkvIHkuJrkv6Hmga%2Fmn6Xor6Jf5YWs5Y_45p_l6K_iX_W3peWVhuafpeivol%2FkvIHkuJrkv6HnlKjkv6Hmga%2Fns7vnu58%3D; __insp_norec_sess=true; tyc-user-info=%257B%2522claimEditPoint%2522%253A%25220%2522%252C%2522myAnswerCount%2522%253A%25220%2522%252C%2522myQuestionCount%2522%253A%25220%2522%252C%2522explainPoint%2522%253A%25220%2522%252C%2522privateMessagePointWeb%2522%253A%25220%2522%252C%2522nickname%2522%253A%2522%25E7%25AC%259B%25E7%25A6%258F%2522%252C%2522integrity%2522%253A%25220%2525%2522%252C%2522privateMessagePoint%2522%253A%25220%2522%252C%2522state%2522%253A%25225%2522%252C%2522announcementPoint%2522%253A%25220%2522%252C%2522surday%2522%253A%2522269%2522%252C%2522isClaim%2522%253A%25220%2522%252C%2522vipManager%2522%253A%25220%2522%252C%2522discussCommendCount%2522%253A%25221%2522%252C%2522monitorUnreadCount%2522%253A%2522132%2522%252C%2522onum%2522%253A%252263%2522%252C%2522isExpired%2522%253A%25220%2522%252C%2522claimPoint%2522%253A%25220%2522%252C%2522token%2522%253A%2522eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxODYyMDkwOTUxOSIsImlhdCI6MTU1NDc3MjI5NCwiZXhwIjoxNTcwMzI0Mjk0fQ.EW2M4vO6HuVTe22LtegtsIjtprd6Z4j4WHhMmh9R4uE0CW3NYSkUY0dXn7FurERXVX_ap-lSZU7kk-yTwJfWcg%2522%252C%2522pleaseAnswerCount%2522%253A%25221%2522%252C%2522redPoint%2522%253A%25220%2522%252C%2522bizCardUnread%2522%253A%25220%2522%252C%2522vnum%2522%253A%252240%2522%252C%2522mobile%2522%253A%252218620909519%2522%257D; auth_token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxODYyMDkwOTUxOSIsImlhdCI6MTU1NDc3MjI5NCwiZXhwIjoxNTcwMzI0Mjk0fQ.EW2M4vO6HuVTe22LtegtsIjtprd6Z4j4WHhMmh9R4uE0CW3NYSkUY0dXn7FurERXVX_ap-lSZU7kk-yTwJfWcg; Hm_lvt_e92c8d65d92d534b0fc290df538b4758=1554772297; Hm_lpvt_e92c8d65d92d534b0fc290df538b4758=1554772297; __insp_slim=1554772297003"
     }
 
 
@@ -46,11 +46,11 @@ def addNew(name,company_id):
                 is_good= 1
 
             print guid,link_company
-            db1.execute("update t_customer set company_reguid=%s where id=%s",guid,is_good,company_id)
+            db.execute("update t_customer set company_reguid=%s where id=%s",guid,company_id)
 
 def dowork():
     num =1
-    for item in db1.query("select  id,company from t_customer where  company_reguid is null order by created_at "):
+    for item in db.query("select  id,company from t_customer where  company_reguid='' order by created_at "):
         num = num+1
         print "hello ",item.company,num
         if item.company:

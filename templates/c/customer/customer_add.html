@@ -25,6 +25,7 @@
                                                 <label class="control-label" for="username">公司名称</label>
                                                 <div class="controls">
                                                     <input type="text" class="span6 " id="company" name="company" value="{%if t_project%}{{t_project.customer_company}}{%end%}">
+                                                    <a href="javascript:void(0);" id="tianyan_company" target="_blank">天眼查(公司名)</a>
                                                     <p id="msg_company" class="help-block" style="color:red"></p>
                                                 </div>
                                                 <!-- /controls -->
@@ -44,7 +45,8 @@
                                             <div class="control-group">
                                                 <label class="control-label" for="company_reguid">统一社会信用代码</label>
                                                 <div class="controls">
-                                                    <input type="text" class="span6" id="company_reguid" name="company_reguid" value="">
+                                                    <input type="text" class="span6" id="company_reguid" name="company_reguid" value="{%if t_project and  t_project.company_uid%}{{t_project.company_uid}}{%end%}">
+                                                    <a href="javascript:void(0);" id="tianyan_reguid" target="_blank">天眼查(信用代码)</a>
                                                     <p id="msg_company_reguid" class="help-block" style="color:red"></p>
                                                 </div>
                                                 <!-- /controls -->
@@ -91,7 +93,7 @@
                                          <div class="control-group">
                                                 <label class="control-label" for="acc_uid_name">客服会计</label>
                                                 <div class="controls">
-                                         
+
                                                 <input type="text" name="acc_uid_name" id="acc_uid_name" class="form-control"/>
 
                                                     <p id="msg_is_general" class="help-block" style="color:red"></p>
@@ -203,7 +205,7 @@
 <div class="controls">
       <div style="border:none;display: inline;">
 {%for item in t_type_new_parents%}
-<input  {%if item.order==2%}checked{%end%} type="radio" name="tag_parent_id" value="{{item.order}}" title="{{item.name}}"/>{{item.name}} 
+<input  {%if item.order==2%}checked{%end%} type="radio" name="tag_parent_id" value="{{item.order}}" title="{{item.name}}"/>{{item.name}}
 {%end%}
       </div>
 <div id='tag_box' style="border:none;" hidden>
@@ -256,11 +258,11 @@
 
                                             <div class="control-group">
                                                 <label class="control-label" for="lastname">帐册费
-                                                    
+
                                                 </label>
                                                 <div class="controls">
                                                     <input type="text" class="span6" id="book_amount" name="book_amount" value="0">
-                                                    
+
                                                     <span style='color:red'>(为0时免帐册费)</span>
 
                                                 </div>
@@ -427,7 +429,7 @@
              laydate.render({
 
 
-                 
+
                     elem: '#end_date' //指定元素
            });
 
@@ -465,13 +467,13 @@ function intToFloat(val){
   })
 
     $('input[type="radio"][name="pay_type_id"]').click(function(){
-                   
+
                 service_amount = $("#service_amount").val()
                 if ($(this).is(':checked'))
                 {
                    if($(this).attr("fee")>0){
                          $("#service_amount").removeAttr("readOnly")
-                       
+
                     }else{
                          $("#service_amount").val("0")
                         all_total = 0
@@ -492,12 +494,34 @@ function intToFloat(val){
                         all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
                           if (all_total==Infinity){
                         all_total = 0
-                        
+
                     }
                         $("#service_amount_month").val(intToFloat(all_total))
 
 
         });
+
+        if($("#company").val()!=''){
+            $("#tianyan_company").attr('href','https://www.tianyancha.com/search?key='+$("#company").val())
+        }
+        if($("#company_reguid").val()!=''){
+            $("#tianyan_reguid").attr('href','https://www.tianyancha.com/search?key='+$("#company_reguid").val())
+
+        }
+         $("#company").blur(function () {
+            if($(this).val()==''){
+                $("#tianyan_company").attr('href','javascript:void(0);')
+            }else{
+                $("#tianyan_company").attr('href','https://www.tianyancha.com/search?key='+$(this).val())
+            }
+          })
+         $("#company_reguid").blur(function () {
+            if($(this).val()==''){
+                $("#tianyan_reguid").attr('href','javascript:void(0);')
+            }else{
+                $("#tianyan_reguid").attr('href','https://www.tianyancha.com/search?key='+$(this).val())
+            }
+          })
 
 
         $("#btn_save_customer").on("click", function () {
@@ -569,7 +593,7 @@ function intToFloat(val){
             tag_id=$("input[name=tag_id][value=11]").val()
             tag_name=$("input[name=tag_id][value=11]").attr('title')
             }
-    
+
             $("#msg_company").text("")
             $("#msg_is_general").text("")
             $("#msg_credit_rating").text("")
@@ -596,11 +620,14 @@ function intToFloat(val){
             else if((tag_id==undefined && tag_parent_id=='1')  || tag_parent_id==undefined) {
                 $("#msg_tag").text('未选择标签')
                 }
+                else if(company_reguid==''){
+                    $("#msg_company_reguid").text('信用代码不能为空')
+                }
                 else if(company_reguid!='' && company_reguid.length!=18){
-      alert('信用代码长度需要为18位')
+                    $("#msg_company_reguid").text('信用代码长度需要为18位')
     }
             else{
-                
+
                 $.post("/customer?tag=add",{
                     "service_amount_month":service_amount_month,
                     "service_amount":service_amount,
@@ -648,6 +675,11 @@ function intToFloat(val){
                         $("#msg_company").append("<a id='exit' href='customer?tag=show&id="+result['id']+"&guid="+result['guid']+"'>点击查看</a>")
                         $("#company").focus()
                     }
+                    else if(result['status']=="-200"){
+                        $("#msg_company_reguid").text("该信用代码("+result['company_reguid']+")已经存在。")
+                        $("#msg_company_reguid").append("<a id='exit' href='customer?tag=show&id="+result['id']+"&guid="+result['guid']+"'>点击查看</a>")
+                        $("#company_reguid").focus()
+                    }
                     else{
                                 location.href=result
                     }
@@ -658,12 +690,12 @@ function intToFloat(val){
             }
         })
 $('body').on('click','#more_projects',function () {
-    num=$(this).attr('num') 
+    num=$(this).attr('num')
     $.post('/customer?tag=more_projects',{
         '_xsrf':_xsrf,
         'customer_company':'{%if t_project%}{{t_project.customer_company}}{%end%}',
         'num':num
-    },function (result) { 
+    },function (result) {
         $("#show_projects").empty()
         item=result['t_projects']
         var text=''
@@ -680,10 +712,10 @@ $('body').on('click','#more_projects',function () {
             text+=' <a href="/project?tag=show&guid='+item[i].guid+'&id='+item[i].id+'">'+item[i].project_name+'</a><br> '
         }
         $("#show_projects").html(text+more_text)
-        
+
      })
  })
- $('input[name=tag_parent_id]').on('change',function () { 
+ $('input[name=tag_parent_id]').on('change',function () {
     if($(this).val()=='1'){
      $("#tag_box").css('display','inline');
       $("#tag_box").show()

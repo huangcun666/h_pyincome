@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>{%block title%}{%end%}</title>
+  <title>{%block title%}{%end%}{{role}}</title>
   <!-- Bootstrap core CSS-->
   <link href="/static/newcss/css/bootstrap.css" rel="stylesheet">
   <!-- Custom fonts for this template-->
@@ -18,10 +18,8 @@
   <link href="/static/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
   <!-- Custom styles for this template-->
   <link href="/static/css/sb-admin.css" rel="stylesheet">
-  <script>
-  document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
-  ':35729/livereload.js?snipver=1"></' + 'script>')
-</script>
+   <link href="/static/notify.css" rel="stylesheet">
+
 <style>
 
 .fayetbody {font-size: 12px;}
@@ -29,7 +27,7 @@
 .fayetable .fayetbody tr {height: 60px; line-height: 30px;}
 .fayetable .fayetbody tr td {text-align: left; vertical-align: middle;}
 .ddlz-top{width:86.2%; height: 58px; position: fixed; top: 56px; left: 10.3%; z-index: 99; background-color:#dedede; margin-left:30px;}
-.ddlz-top a {color: #414141; font-size: 10px; background-color: #fff; font-weight: 600; line-height: 58px; text-decoration: none; padding: 8px 15px; border-radius: 5px; margin-left: 5px;}
+.ddlz-top a {color: #414141; font-size: 10px; background-color: #fff; font-weight: 600; text-decoration: none; padding: 8px 15px; border-radius: 5px; margin-left: 6px; display: inline-block; margin-top: 15px;}
 .ddlz-top a:hover {background-color: #007bff; color: #fff;}
 .dropdown-item{
 height:35px;
@@ -193,7 +191,7 @@ padding: 5px;
   {%block head%}{%end%}
 </head>
 
-<body class="fixed-nav sticky-footer bg-dark" id="page-top" style="font-size: 13px;">
+<body class="fixed-nav sticky-footer" id="page-top" style="font-size: 13px;">
 
   <!-- Navigation-->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav" >
@@ -210,25 +208,78 @@ padding: 5px;
           </a>
         </li>
 
-{%if role=="3" or role=="5" or role=="2"%}
-<li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="财务审核">
-  <a class="nav-link" href="/project?tag=list_finance&show=1" style="color:#fff">
+  {%if role=="8" or name=="陈莹莹" %}
+        <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="业务报价">
+      <a class="nav-link" href="/trade?tag=list"  style="color:#fff">
+          <i class="fa fa-calendar-check-o"></i>
+        <span class="nav-link-text">商标管理</span>
+      </a>
+    </li>
+{%end%}
+{%if role=="1" or role=="13" %}
+              <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="业务报价">
+            <a class="nav-link" href="/addr?tag=addr_list_sales"  style="color:#fff">
+                <i class="fa fa-calendar-check-o"></i>
+              <span class="nav-link-text">挂靠地址续期</span>
+            </a>
+          </li>
+{%end%}
+  {%if role=="1" or role=="3" or role=="7" or role=="8" or role=="13" %}
+        <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="业务报价">
+            <a class="nav-link" href="/project?tag=bj_manage"  style="color:#fff">
+                <i class="fa fa-bar-chart"></i>
+              <span class="nav-link-text">业务报价</span>
+            </a>
+          </li>
+   {%end%}
+{%if role=="10" and is_manager=="1" %}
+<li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="会计订单分配">
+  <a class="nav-link" href="/project?tag=projects_state&ntag=wait_department&team_id=205&department_id=1&from_tag_where=acc" style="color:#fff">
     <i class="fa fa-fw fa-area-chart"></i>
-    <span class="nav-link-text">{%if role=="3"%}待审核业务{%elif role=="5"%}业务合同确认{%elif role=="2"%}待审核业务{%end%}</span>
+    <span class="nav-link-text">会计订单分配</span>
   </a>
 </li>
+
+
+
+{%end%}
+{%if role=="2" or role=="3"%}
+<li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="财务审核">
+  <a class="nav-link" href="/project?tag=list_finance&show=1&state=3" style="color:#fff">
+    <i class="fa fa-fw fa-area-chart"></i>
+    <span class="nav-link-text">财务审核</span>
+  </a>
+</li>
+<li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="财务审核">
+  <a class="nav-link" href="/project?tag=list_finance&show=1&state=2" style="color:#fff">
+    <i class="fa fa-fw fa-area-chart"></i>
+    <span class="nav-link-text">出纳审核</span>
+  </a>
+</li>
+
+{%end%}
+{%if role=="3" or role=="5" %}
+<li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="财务审核">
+  <a class="nav-link" href="/project?tag=list_finance&show=1&state=5" style="color:#fff">
+    <i class="fa fa-fw fa-area-chart"></i>
+    <span class="nav-link-text">合同审核</span>
+  </a>
+</li>
+
+
 
 {%end%}
 
 
 {%if role=="3"%}
-
+<!--
 <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="财务审核">
   <a class="nav-link" href="/project?tag=list_confirm&state_id=51" style="color:#fff">
     <i class="fa fa-fw fa-area-chart"></i>
     <span class="nav-link-text">财务审核</span>
   </a>
 </li>
+-->
 <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="地址安排审核">
   <a class="nav-link" href="/project?tag=list_addr_confirm&confirm=1" style="color:#fff">
     <i class="fa fa-fw fa-area-chart"></i>
@@ -254,14 +305,6 @@ padding: 5px;
 
 
 
-{%if role=="6"%}
-<li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="业务列表">
-  <a class="nav-link" href="/project?tag=list_confirm&state_id=63" style="color:#fff">
-    <i class="fa fa-calculator"></i>
-    <span class="nav-link-text">业务列表</span>
-  </a>
-</li>
-{%end%}
 {%if role=="7"%}
 <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="业务列表">
   <a class="nav-link" href="/project?tag=allview" style="color:#fff">
@@ -381,14 +424,7 @@ padding: 5px;
 -->
 
 {%end%}
-    {%if role=="5"%}
-    <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="待审业务">
-      <a class="nav-link" href="/project?tag=list_confirm&state_id=50" style="color:#fff">
-        <i class="fa fa-fw fa-area-chart"></i>
-        <span class="nav-link-text">待审业务</span>
-      </a>
-    </li>
-    {%end%}
+
   {%if  role=="1" or role=="8" or role=="7" or role=="10" or role=="6" or role=="9" or role=="13" or role=="15"%}
   <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="我的业务">
     <a class="nav-link" href="/project?tag=my" style="color:#fff">
@@ -408,6 +444,14 @@ padding: 5px;
       <span class="nav-link-text">应收管理</span>
     </a>
   </li>
+  <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="历史办理业务记录">
+    <a class="nav-link" target="_blank" href="/customer?tag=customer_his_income" style="color:#fff">
+      <i class="fa fa-window-restore"></i>
+      <span class="nav-link-text">历史办理业务记录</span>
+    </a>
+  </li>
+
+
 
 
 
@@ -426,14 +470,6 @@ padding: 5px;
               </a>
             </li>
             {%end%}
-      {%if role=="2"%}<!-- 出纳审核-->
-        <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="待审核业务">
-          <a class="nav-link" href="/project?tag=list_confirm&state_id=49">
-            <i class="fa fa-fw fa-dashboard"></i>
-            <span class="nav-link-text">待审核业务</span>
-          </a>
-        </li>
-        {%end%}
 
 
           {%if role=="1" or role=="13"%}
@@ -461,9 +497,6 @@ padding: 5px;
                   </a>
                   <ul class="sidenav-second-level collapse" id="collapseMulti">
 
-      <li class="fayenav" >
-        <a href="/addr?tag=addr_list_sales" style="color:#fff">挂靠地址续期</a>
-      </li>
 
 
 
@@ -554,7 +587,7 @@ padding: 5px;
   </li>
   {%end%}
 
-  {%if role=='8' or role=='7' or role=='9'%}
+  {%if role=='8' or role=='7' or role=='9' or name=="刘君"%}
   <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="交接被驳回">
     <a class="nav-link" href="/project?tag=project_logoff_list" style="color:#fff">
       <i class="fa fa-calendar-check-o"></i>
@@ -564,11 +597,11 @@ padding: 5px;
   {%end%}
 
 
-  {%if '231' in role_list or role=='9'%}
+  {%if '231' in role_list or role=='9' or role=="10"%}
   <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="办结确认">
-    <a class="nav-link" href="/project?tag=project_confirm_banjie" style="color:#fff">
+    <a class="nav-link" href="/project?tag=project_confirm_banjie{%if is_manager=="1" and role=="10"%}&team_id=205{%elif role=="7"%}&team_id=38{%end%}" style="color:#fff">
       <i class="fa fa-calendar-check-o"></i>
-      <span class="nav-link-text">办结确认</span>
+      <span class="nav-link-text">{%if is_manager=="1" and role=="10"%}会计业务办结确认{%elif role=="7"%}工商办结确认{%elif role=="8"%}办结确认管理{%else%}我的办结业务{%end%}</span>
     </a>
   </li>
   {%end%}
@@ -597,7 +630,7 @@ padding: 5px;
 </li>
     {%end%}
 
- {%if role=='10' or role=="8" or name=='陈月娇'%}
+ {%if role=='10' or role=="8" or name=='陈月娇' or is_manager=="1"%}
        <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="经济普查">
       <a class="nav-link" href="/company?tag=economic_census" style="color:#fff">
         <i class="fa fa-window-restore"></i>
@@ -606,8 +639,13 @@ padding: 5px;
     </li>
 {%end%}
     {%if role=='10' %}
- 
 
+    <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="业务列表">
+      <a class="nav-link" href="/project?tag=projects_qc_milepost&from_tag_where=1" style="color:#fff">
+        <i class="fa fa-window-restore"></i>
+        <span class="nav-link-text">订单流转</span>
+      </a>
+    </li>
     <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="业务列表">
       <a class="nav-link" href="/project?tag=my&correlation_projects=1" style="color:#fff">
         <i class="fa fa-window-restore"></i>
@@ -653,7 +691,7 @@ padding: 5px;
             </a>
           </li>
           {%end%}
- {%if role=="8" or role=="7" or role=="3"%}
+ {%if role=="8" or role=="7" or role=="3" or role=='2'%}
 
 
 <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="Menu Levels">
@@ -698,6 +736,8 @@ padding: 5px;
 
           <a href="/statis?tag=customer_exchange" style="color:#fff">催款统计</a>
         </li>
+        {%end%}
+        {%if role=="8" or role=="3" or role=='2'%}
       <li class="fayenav">
 
           <a href="/statis?tag=projects_income_title" style="color:#fff">到款明细</a>
@@ -708,6 +748,7 @@ padding: 5px;
 
             <a href="/statis?tag=projects_incomes" style="color:#fff">到款统计</a>
           </li>
+          {%if role=="8" or role=="7" or role=="3"%}
    <li>
 
             <a href="/statis?tag=todo_arrange_count" style="color:#fff">事项安排</a>
@@ -724,6 +765,7 @@ padding: 5px;
           <li class="fayenav">
             <a href="/statis?tag=customer_clearly_count" style="color:#fff">汇算清缴统计</a>
           </li>
+          {%end%}
        <!--
   <li>
     <a href="/statis?tag=statis_cq" style="color:#fff">工商统计</a>
@@ -854,9 +896,19 @@ padding: 5px;
             <span class="nav-link-text">Link</span>
           </a>
         </li> -->
+        {%if department_name=='销售部' or '250' in role_list or '302' in role_list or role=="3" %}
+        <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="客户管理">
+          <a class="nav-link"  href="/payment?tag=assist_list" target="_blank"  style="color:#fff">
+              <i class="fa fa-cog"></i>
+            <span class="nav-link-text">
+              应收协助
+            </span>
+          </a>
+        </li>
+        {%end%}
         {%if role!="12"%}
                 <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="客户管理">
-          <a class="nav-link" href="/customer?my=1" target="_blank"  style="color:#fff">
+          <a class="nav-link" href="/customer?my=1&tag_id=1&tag_parent_id=1&new_tag=1" target="_blank"  style="color:#fff">
               <i class="fa fa-cog"></i>
             <span class="nav-link-text">
               客户管理
@@ -864,14 +916,7 @@ padding: 5px;
           </a>
         </li>
         {%end%}
-        {%if role=="1" or role=="3" or role=="7" or role=="8" or role=="13" or role=="15"%}
-        <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="报价管理">
-            <a class="nav-link" href="/project?tag=bj_manage"  style="color:#fff">
-                <i class="fa fa-bar-chart"></i>
-              <span class="nav-link-text">报价管理</span>
-            </a>
-          </li>
-          {%end%}
+
          {%if is_gy_manage=='1' or role=="15"%}
         <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="报价管理">
               <a class="nav-link" href="/project?tag=provider_manage"  style="color:#fff">
@@ -1089,6 +1134,8 @@ padding: 5px;
     <!-- Custom scripts for all pages-->
     <script src="/static/js/sb-admin.min.js"></script>
 
+<script src="/static/bootstrap-notify.min.js"></script>
+<script src="/static/notify.js"></script>
   </div>
   <script>
       function getCookie(name) {
@@ -1096,7 +1143,8 @@ padding: 5px;
         return r ? r[1] : undefined;
     }
         $(function(){
-              $('.fayenav')
+        _xsrf =  getCookie("_xsrf")
+
 
               $("#btn_search").on("click",function(){
                    txt_search_word  =  $("#txt_search_word").val()
@@ -1153,6 +1201,15 @@ padding: 5px;
              $('body').on('click','#message_close1',function () {
             $('#wrap1').hide(1000)
              })
+            
+             
+            //  $("#exampleAccordion").hover(function(o){
+            //     o.preventDefault()
+            //     $("body").toggleClass("sidenav-toggled")
+            //     $(".navbar-sidenav .nav-link-collapse").addClass("collapsed")
+            //     $(".navbar-sidenav .sidenav-second-level, .navbar-sidenav .sidenav-third-level").removeClass("show")})
+
+
                 })
 
 

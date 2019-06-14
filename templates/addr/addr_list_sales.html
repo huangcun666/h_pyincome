@@ -138,12 +138,12 @@ th:first-child {
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="addr?tag=addr_list_sales&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="addr?tag=addr_list_sales&page={{ pagination.page - 1}}{%if act_id%}&act_id={{act_id}}{%end%}"" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
         {% end %}
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="addr?tag=addr_list_sales&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="addr?tag=addr_list_sales&page={{page}}{%if act_id%}&act_id={{act_id}}{%end%}"" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -155,7 +155,7 @@ th:first-child {
           {%end %}
 
          {% if pagination.has_next %}
-         <li class="paginate_button  page-item next" id="dataTable_next"><a href="addr?tag=addr_list_sales&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button  page-item next" id="dataTable_next"><a href="addr?tag=addr_list_sales&page={{pagination.page+1}}{%if act_id%}&act_id={{act_id}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>
@@ -169,7 +169,7 @@ th:first-child {
 <script>
 $(function(){
 
-    $("#list_company").click()
+    // $("#list_company").click()
 })
 </script>
 

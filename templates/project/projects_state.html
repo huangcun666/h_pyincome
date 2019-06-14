@@ -1,14 +1,26 @@
 {% extends "../base.html" %} {%block title%}收入管理{%end%} {% block body %}
-    <div class="ddlz-top">
+<style>
+.dtgd{
+  height: 120px;
+}
+.ddlz-top{
+  overflow: hidden;
+  padding: 0 15px;
+}
+.gdd {position: fixed; top: 70px; right:20px; width: 25px; height: 30px;z-index: 999; }
+.gdd img {display: block; margin: 5px auto; cursor: pointer;}
+</style>    
+<div class="ddlz-top">
         <a href="/project?tag=projects_state">全部</a>
     
         {%for item in t_project_type%}
         <a {%if params["btype_id"]==str(item.id)%}style="background-color:#efefef; padding:4px;"{%end%}
-        href="/project?tag=projects_state&btype_id={{item.id}}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%} {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%} {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
-        {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}">
+        href="/project?tag=projects_state&btype_id={{item.id}}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}">
         {{item.income_name}}</a>
         {%end%}
-      
+      <div class="gdd">
+        <img src="/static/images/dsds.png" alt="更多" title="更多">
+      </div>
     </div>
       <ol class="breadcrumb diao-top">
         <li class="breadcrumb-item g1">
@@ -18,12 +30,22 @@
         <li class="g1 g1-left">
             <div class="btn-group">
   <button type="button" style="font-size:12px;" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" id="btn_group_action" aria-haspopup="true" aria-expanded="false">
-    选中操作(0)
+    选中批量操作(0)
   </button>
 
   <div class="dropdown-menu" id="btnmenu_show">
-    <a class="dropdown-item" href="javascript:void(0)" id="btn_group_set_toMember" style="font-size:12px;">批量分配</a>
+    <a class="dropdown-item" href="javascript:void(0)" id="btn_group_set_toMember" style="font-size:12px;">批量操作分配</a>
+
   </div></div>
+<a href="/project?tag=projects_state" class="btn btn-sm {%if not  params["department_id"]%}btn-primary {%else%} btn-default {%end%}">全部</a>
+
+<a href="/project?tag=projects_state&team_id=205&department_id=1&from_tag_where=1" class="btn btn-sm {%if params["department_id"]=="1"%}btn-primary {%else%} btn-default {%end%}">会计部</a>
+
+<a href="/project?tag=projects_state&department_id=0&from_tag_where=1"  class="btn btn-sm {%if params["department_id"]=="0"%}btn-primary  {%else%} btn-default{%end%}">工商部</a>
+
+
+
+
 </li>
 
 
@@ -42,7 +64,7 @@
   <div class="modal-dialog" role="document" >
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongCQ">新增工商专员 </h5>
+        <h5 class="modal-title" id="exampleModalLongCQ">新增跟进人 </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -50,34 +72,40 @@
 <div class="modal-body form-horizontal" id="site_mod">
 
 
-    <div class="form-group">
-    <label for="inputEmail3" class="col-sm-5 control-label">工商专员</label>
+<table class="table">
+<thead>
+  <tr>
+      <th>请选择负责人 <a href="javascript:void(0)" id="add_ass">+增加</a> </th>
+        <th>跟单业务</th>
+  </tr>
+</thead>
+<tbody id="ass_gs">
+<tr><td style="width:220px;">
+<input type="text" name="cq_member" id="cq_member_0"   class="form-control cq_member"   index="0" data-items="8" data-provide="typeahead"   >
+<!--<select  name="cq_member"  class="form-control" index="0">
+ <option value="0">请选择</option>{%for m  in t_user_teams_cq%} <option value="{{m.id}}" >{{m.name}}</option>{%end%} </select>--></td>
+ 
+ <td>
+  <select id="cq_btype_id_0" name="cq_btype_id"  class="form-control" >   <option value="0">请选择</option>{%for m  in t_cq_service%}<option value="{{m.id}}">{{m.income_name}}</option>{%end%}</select>
+
+</td></tr>
+</tbody>
+</table>
+<hr/>
+      <div class="form-group" id="div_department">
+    <label for="inputEmail3" class="col-sm-5 control-label">将订单流转到其他部门处理.</label>
     <div class="col-sm-10">
-          <select id="cq_member" name="cq_member"  class="form-control" >
-                <option value="0">请选择</option>
-                        {%for m  in t_user_teams_cq%}
-                            <option value="{{m.id}}" >{{m.name}}</option>
-                     
+            <select id="cq_department_id" name="cq_department_id"  class="form-control" >
+                <option value="0">请选择部门</option>
+                        {%for m  in t_cq_department%}
+
+                            <option value="{{m.order_int}}">{{m.name}}</option>
+
                         {%end%}
                 </select>
     </div>
   </div>
-
-    <div class="form-group">
-    <label for="inputEmail3" class="col-sm-5 control-label">跟单业务</label>
-    <div class="col-sm-10">
-            <select id="cq_btype_id" name="cq_btype_id"  class="form-control" >
-                <option value="0">请选择</option>
-                        {%for m  in t_cq_service%}
-
-                            <option value="{{m.id}}">{{m.income_name}}</option>
-
-                        {%end%}
-                </select>
-    </div>
-  </div>
-
-      </div>
+</div>
       <div class="modal-footer">
 
         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
@@ -91,6 +119,7 @@
 
 
 
+
   <div class="nav nav-tabs" id="nav-tab" role="tablist" style="margin-bottom: 20px;">
       <a class="btn btn-light  nav_padding {%if not last_milepost_id and not ntag%}active{%end%}" 
       href="/project?tag=projects_state{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}
@@ -100,10 +129,10 @@
       {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
       {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
       {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
-      {%if params["end"]%}&end={{params["end"]}}{%end%}
+      {%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}
       {%if params["start"]%}&start={{params["start"]}}{%end%}
       {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}" >全 部</a>
-      <a class="btn btn-light  nav_padding {%if  ntag=="not_transition"%}active{%end%}"  
+    <a class="btn btn-light  nav_padding {%if  ntag=="not_transition"%}active{%end%}"  
       href="/project?tag=projects_state&ntag=not_transition
     {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
       {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
@@ -111,12 +140,12 @@
       {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
       {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
       {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
-      {%if params["end"]%}&end={{params["end"]}}{%end%}
+      {%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}
       {%if params["start"]%}&start={{params["start"]}}{%end%}
       {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}" >无需流转
-      <span class="badge badge-danger">{{wait_count1.count}}</span>
-      </a>
-      <a class="btn btn-light  nav_padding {%if  ntag=="wait"%}active{%end%}"  
+      <span class="badge badge-danger">{{not_transition_count.count}}</span>
+      </a> {%if not  params["from_tag_where"]%} 
+      <a class="btn btn-light  nav_padding {%if  ntag=="wait" and not  params["department_id"]%}active{%end%}"  
       href="/project?tag=projects_state&ntag=wait
     {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
       {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
@@ -124,31 +153,48 @@
       {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
       {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
       {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
-      {%if params["end"]%}&end={{params["end"]}}{%end%}
+      {%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}
       {%if params["start"]%}&start={{params["start"]}}{%end%}
       {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}" >待分配
       <span class="badge badge-danger">{{wait_count.count}}</span>
       </a>
-
-
-    {%for idx,item in enumerate(project_btypes)%}
-    <a class="btn btn-light  nav_padding " btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"  
-      href="/project?tag=projects_state&last_milepost_id={{item.id}}
-      {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
+{%end%}
+      <a class="btn btn-light  nav_padding {%if  params["department_id"]=="1" and ntag=="wait_department"%}active{%end%}"  
+      href="/project?tag=projects_state&ntag=wait_department
+    {%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
       {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
       {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
       {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
       {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
       {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
-      {%if params["end"]%}&end={{params["end"]}}{%end%}
+      {%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}
       {%if params["start"]%}&start={{params["start"]}}{%end%}
-      {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}" style="font-size:13px;">{%if item.id==165%}已填写办结信息,待仓管接单 {%else%}{{item.income_name}}{%end%}<span class="badge badge-danger">{{item.c}}</span></a>
+      {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}&team_id=205&department_id=1" >待分配(会计)
+         <span class="badge badge-danger">{{department_id_count.count}}</span>
+      </a>
+
+    {%for idx,item in enumerate(project_btypes)%}
+
+    {%if  params["department_id"]=="1" and params["from_tag_where"] and item.id  in [165,152,163,153] %}
+      {%continue%}
+    {%end%}
+    <a class="btn btn-light  nav_padding   {%if  last_milepost_id==item.id%}active{%end%}" btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"  
+      href="/project?tag=projects_state&last_milepost_id={{item.id}}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
+      {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
+      {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
+      {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
+      {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
+      {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
+      {%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}
+      {%if params["start"]%}&start={{params["start"]}}{%end%}
+      {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}" style="font-size:13px;">{%if item.id==165 %}已填写办结信息,待仓管接单 {%else%}{%if params["department_id"] > 0 and item.id==154%}上级办结确认{%else%}{{item.income_name}}{%end%}{%end%}<span class="badge badge-danger">{{item.c}}</span></a>
+ 
     {%end%}
     
-    <a class="btn btn-light  nav_padding {%if  ntag=="is_cancel"%}active{%end%}"  href="/project?tag=projects_state&ntag=is_cancel{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}">取消待审核
+    <a class="btn btn-light  nav_padding {%if  ntag=="is_cancel"%}active{%end%}"  href="/project?tag=projects_state&ntag=is_cancel{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}">取消待审核
         <span class="badge badge-danger">{{cancel_wait_count1.count}}</span>
     </a>
-    <a class="btn btn-light  nav_padding {%if  ntag=="is_cancel_confirm" %}active{%end%}"  href="/project?tag=projects_state&ntag=is_cancel_confirm{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}">取消单
+    <a class="btn btn-light  nav_padding {%if  ntag=="is_cancel_confirm" %}active{%end%}"  href="/project?tag=projects_state&ntag=is_cancel_confirm{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}">取消单
         <span class="badge badge-danger">{{cancel_confirm_count1.count}}</span>
     </a>
 
@@ -247,8 +293,10 @@
 <input type="hidden" name="tag" value="{{tag}}"/>
 <input type="hidden" name="last_milepost_id" value="{%if params["last_milepost_id"]%}{{params["last_milepost_id"]}}{%end%}"/>
 <input type="hidden" name="ntag" value="{%if ntag%}{{ntag}}{%end%}"/>
-
 <input type="hidden" name="btype_id" value="{%if params["btype_id"]%}{{params["btype_id"]}}{%end%}" />
+<input type="hidden" name="department_id" value="{%if params["department_id"]%}{{params["department_id"]}}{%end%}" />
+<input type="hidden" name="team_id" value="{%if params["team_id"]%}{{params["team_id"]}}{%end%}" />
+<input type="hidden" name="from_tag_where" value="{%if params["from_tag_where"]%}{{params["from_tag_where"]}}{%end%}" />
 
 
 
@@ -258,6 +306,8 @@
             id="qc_key" placeholder="客户/编号/公司" value="{%if params["qc_key"]%}{{params["qc_key"]}}{%end%}" />
     
     
+
+
     
     
     </td>
@@ -297,9 +347,15 @@
                                         </th>
                                         <th style="width: 40px;">
                                             编号
-                                        </th>
-                                        <th style="width: 150px;">业务名称</th>
-                                        <th style="width: 150px;">公司名称</th>
+                                        </th>     <th style="width: 50px;">渠道</th>
+                                         {%if   last_milepost_id%}  <th style="width: 50px;">
+                               办理业务
+                            </td>  {%end%}
+                                              <th style="width: 150px;">业务名称</th>
+
+                                   
+                                  
+                                                   <th style="width: 150px;">公司名称</th>
                                         <th style="width: 80px;">客户名称</th>
                                         <th style="width: 80px;">跟单专员</th>
                                         <th style="width: 80px;">合同金额</th>
@@ -327,6 +383,15 @@
                                 {{item.id}}
 
                             </td>  
+                                      <td>
+                                {{item.busniess_from_id_name}} 
+                                {%if item.project_department_id > 0%}
+                                 <span class="badge badge-pill badge-success">{{item.project_department_id_name}}</span>
+                                 {%end%}
+                            </td>  
+                               {%if   last_milepost_id%}          <td>
+                                {{item.btype_id_name}} {%if item.project_department_id%}({{item.project_department_id_name}}) {%end%}
+                            </td>  {%end%}
                             <td title="{{item.project_name}}">
                             <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" title="{{item.project_name}}"
                                                              >
@@ -335,19 +400,20 @@
 </a>
                             </td>  
                                       <td>
-                                     {%if len(item.customer_company) > 30%} {{item.customer_company[:30]}}....{%else%} {{item.customer_company}} {%end%}
+                                     {%if item.customer_company and  len(item.customer_company) > 30%} {{item.customer_company[:30]}}....{%else%} {{item.customer_company}} {%end%}
+                            
+                                                              {%if params["last_milepost_id"]=="162"  and  item.btype_id_name=="公司注销"  %}
+   {% raw diff_date(dt,item.id) %} {%end%}
                             </td>  
                           <td>
-                                {{item.customer_name}}
+                                {{item.customer_name}}  
                             </td>  
                            
-                             <td title="{%if not last_milepost_id%}{%if item.bsa%}{{item.bsa}} {%end%}{%end%}">
+                             <td >
                              {%if not  last_milepost_id%}
-                             {%if item.bsa%}
+   
+                   
 
-                             {%if len(item.bsa) > 12%} <font color='blue'>{{item.bsa[:12]}}...</font>{%else%}<font color='blue'> {{item.bsa}} </font>{%end%}
-                           
-                            {%else%}
 
                             {%if item.wait_set_state==1%}
                                      <font color='green'>请设置跟单员</font>
@@ -356,7 +422,7 @@
                              {%end%}
 
 
-  {%end%}
+
 
   {%else%}
 
@@ -383,7 +449,7 @@
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=projects_state&page={{ pagination.page - 1}}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="?tag=projects_state&page={{ pagination.page - 1}}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
 
 
@@ -391,7 +457,7 @@
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=projects_state&page={{page}}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="?tag=projects_state&page={{page}}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -402,7 +468,7 @@
           {% end %} 
 
          {% if pagination.has_next %}
-         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_state&page={{pagination.page+1}}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_state&page={{pagination.page+1}}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}{%if last_milepost_id%}&last_milepost_id={{last_milepost_id}}{%end%}{%if params["cq_btype_id"]%}&cq_btype_id={{params["cq_btype_id"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["cq"]%}&cq={{params["cq"]}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}{%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}{%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>                
@@ -419,20 +485,34 @@ language: 'zh-CN',initialDate: new Date()});
     $("#end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59',
 language: 'zh-CN',initialDate: new Date()});
             $("#nav-home-tab{{last_milepost_id}}").tab('show')
+$('#cq_member_0').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
 
          $("#btn_group_set_toMember").on("click",function(){
+
                 num = $("input[name=cbProject]:checked").length
                 if(num ==0){
                     alert("请选择操作的业务哦.")
                 }
                 else{
-
+                $("#cq_department_id").val("0")
                     $("#cq_member").val("0")
                     $("#team_cq1").modal("show")
 
                 }
 
          })
+
+          {%if params["department_id"]%}
+            $("#div_department").hide()
+          {%end%}
+
+
             {%if is_ok%}
                 
                  $.notify({
@@ -441,40 +521,99 @@ language: 'zh-CN',initialDate: new Date()});
                 });
             {%end%}
 
+        $("#add_ass").on("click",function(){
+          num = $("select[name=cq_member]").length
+   
+          strs = ' <tr><td><input type="text" name="cq_member" id="cq_member_'+num+'"  class="form-control cq_member"   index="'+num+'" data-items="8" data-provide="typeahead"  >'
+          strs += '</td><td><select id="cq_btype_id_'+num+'" name="cq_btype_id"  class="form-control" >'
+          strs += '     <option value="0">请选择</option>{%for m  in t_cq_service%}<option value="{{m.id}}">{{m.income_name}}</option>{%end%}</select>'
+          strs += ' </td></tr>'
+
+          $("#ass_gs").append(strs)
+
+          $('#cq_member_'+num+'').typeahead({
+          source: function (query, process) {
+          return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+          return process(JSON.parse(data));
+          });
+          }
+          });
+
+
+
+
+        })
+              
         $("#btn_save_team_cq").on('click',function(){
+            msg=""
 
-            var project_id_str = "";
-
-            $('input[name=cbProject]').each(function() {
-                if(this.checked){
+            var jsonArr = [];
+            var jsonArr_type = [];
+            $('input[name=cq_member]').each(function() {
+                var member_name = $(this).val()
+                var index =$(this).attr("index")
+                var cq_btype_id = $("#cq_btype_id_"+index).val()
+                var cq_btype_id_name =$("#cq_btype_id_"+index).find("option:selected").text()
+                if(member_name=="" && cq_btype_id >0){
+                    msg  = "跟单负责人要选择哦."
+                 
+                }else if(cq_btype_id==0 && member_name!=""){
+                    msg  = "跟单业务要选择哦."
                     
-                    project_id_str += $(this).val()+",";
-                }
-            });
-
-            project_id_str = project_id_str.substr(0, project_id_str.length - 1);   
-
-            var member_id = $("#cq_member").val()
-            var cq_btype_id = $("#cq_btype_id").val()
-            var cq_btype_id_name =$("#cq_btype_id option:selected").text()
-            if(member_id=="0"){
-            alert("请选择工商专员哦。")
-            $("#cq_member").focus()
-            return false;
-            }
-            else if(cq_btype_id=="0"){
-            alert("请选择办理的业务哦。")
-            $("#cq_member").focus()
-            return false;
-
-            }else{
-            console.log(member_id)
-            $.post("/project?tag=add_member_cq_group",{"cq_btype_id_name":cq_btype_id_name,"member_id":member_id,"project_id_str":project_id_str,"team_id":38,'_xsrf': _xsrf,"cq_btype_id":cq_btype_id },function(result){
-      
-                  location.reload()
-                  //is_ok
+                }else{
+                jsonArr_type.push({
+                            member_name:member_name,
+                            cq_btype_id:cq_btype_id,
+                            team_id:{{params["team_id"]}},
+                            cq_btype_id_name:cq_btype_id_name}
+                      )
+                    }
             })
-            }
+         
+            var cq_department_id = $("#cq_department_id").val()
+          
+            var cq_department_id_name =$("#cq_department_id").find("option:selected").text()
+            if(msg!="" && cq_department_id==0){
+                alert(msg)
+            }else{
+                $('input[name=cbProject]').each(function() {
+                    if(this.checked){
+                      project_id = $(this).val()
+
+                        jsonArr.push({
+                          project_id:project_id,
+                          cq_arr:jsonArr_type,
+                          cq_department_id:cq_department_id,
+                          cq_department_id_name:cq_department_id_name
+                        })
+                    }
+                });
+
+                var formData = new FormData();
+                formData.append('body',  JSON.stringify(jsonArr));
+                formData.append('_xsrf', _xsrf );
+                $.ajax({
+                      url : '/project?tag=add_member_cq_group',
+                      type : 'POST',
+                      data : formData,
+                      contentType: 'application/json; charset=utf-8',
+                      processData: false,  // tell jQuery not to process the data
+                      contentType: false,  // tell jQuery not to set contentType
+                      success : function(data) {
+                        console.log(data)
+                        if(data=="0"){
+                         location.reload()
+                        }else{
+                          alert(data)
+                        }
+
+                      }
+                });
+
+
+
+             }
+            
         })
 
         $("#checkall").on("change",function(){
@@ -504,7 +643,9 @@ language: 'zh-CN',initialDate: new Date()});
                 }
 
     })
-
+$('.gdd').click(function(){
+  $('.ddlz-top').toggleClass('dtgd')
+})
 
      })
 

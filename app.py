@@ -54,13 +54,14 @@ def main(mode):
     app = TornadoBoilerplate()
     http_server = tornado.httpserver.HTTPServer(app)
 
-    http_server.listen(options.port)
+    http_server.listen(options.port )
 
     tornado.ioloop.IOLoop.instance().start()
 
 if __name__ == "__main__":
 
     mode = sys.argv[1]
+
     if mode=="product":
         options.mysql_host = "127.0.0.1"
         options.port = 9000
@@ -70,18 +71,22 @@ if __name__ == "__main__":
         options.mysql_host = "192.168.2.169"
         # options.mysql_host = "127.0.0.1"
         options.port = 9999
-        options.mysql_database = "db_income_test"
-        options.mysql_database_customer = "db_customer_test"
+        options.mysql_database = "db_income_test3"
+        options.mysql_database_customer = "db_customer_test3"
     elif mode == "online":
         options.mysql_host = "192.168.2.168"
         # options.mysql_host = "127.0.0.1"
         options.port = 9998
         options.mysql_database = "db_income2"
         options.mysql_database_customer = "db_customer"
-        
+
     else:
         print "please write app.py product/dev to run"
-
+    try:
+        options.port = sys.argv[2]
+    except:
+        pass
+        
     print "visit http://localhost:{0} database: {1} mode:{2} mysql:{3} dbname:{4}".format(
         options.port, options.mysql_database, mode, options.mysql_host,
         options.mysql_database)

@@ -25,7 +25,13 @@ font-size: 12px;
 padding: 5px;
 }
 .faye-btn {padding: 6px; 0.2rem; background-color: #9ec6ef; color: #fff;margin-left: 5px; border-radius: 2px;}
-
+.sj-at,.sj-at1{width: 100px; height: 24px; border-radius: 5px;color: #6f6f6f; background-color: #fff; border: 1px solid #6f6f6f; cursor: pointer; margin-top: 10px;  }
+.atcur {background-color: #007bff; color: #fff;}
+.popover {
+max-width:800px;
+position: absolute;
+z-index: 1060;
+}
 </style>
 <!-- 发业源码结束 -->
 
@@ -133,6 +139,7 @@ padding: 5px;
                       <input type="hidden" name="tag" value="{{tag}}"/>
                       <input type="hidden" name="todo" value="{{todo}}"/>
                       <input type="hidden" name="my" value="{{my}}"/>
+                      <input type="hidden" name="todo_tags_search" value="{{params['todo_tags_search']}}">
                     </td>
                   <td>  
                       <select name="banli_time" class="form-control">
@@ -142,7 +149,20 @@ padding: 5px;
                           </select>
 
                   </td>
-                  <td><input type="text" value="{%if params['project_name']%}{{params['project_name']}}{%end%}" id="project" name="project" class="form-control" placeholder="办理事项"/></td>
+                  <td>
+                      <input value="{%for m in params['todo_tags_search'].split(',') %}{%if m%}{{m.split('_')[1]}},{%end%}{%end%}" placeholder="办理事项" readonly class="form-control"  id="todo_tags1"  
+                      data-container="body" data-toggle="popover" data-placement="bottom"   data-html="true"
+                        data-content="{%for item in todo_tags%}
+                      {{item.tag_category}} ：{%for row in item.gc.split(',')%} 
+                       <input type='button'  title='{{row.split("_")[1]}}' value='{{row.split("_")[1]}}' title_name='{{row}}_{{item.tag_category}}'
+                      name='todo_tag1'
+                      class='sj-at1  {%for m in params['todo_tags_search'].split(',') %}{%if m.split('_')[0]==row.split("_")[0]%}atcur{%end%}{%end%}'
+                      >{%end%}
+                      <hr style='margin-top:3px;margin-bottom:3px;'>{%end%}
+                      <a href='javascript:;' style='float:right;margin:2px;' class='btn btn-primary btn-sm close_tag'>确定</a>"  type="text">
+                      <div class="alert alert-danger" id="er_todo_tags" style="margin-top:0px;display:none;"></div>
+                  </td>
+                  <td><input type="text" value="{%if params['project_name']%}{{params['project_name']}}{%end%}" id="project" name="project" class="form-control" placeholder="办理事项备注"/></td>
 
                   <td>
                       <select name="department" class="form-control">
@@ -153,26 +173,29 @@ padding: 5px;
                         </select>
                   </td>
               <td>
-                <select name="fz_per" class="form-control">
+                <select name="fz_per1" id="fz_per1" class="form-control">
                   <option value="">选择负责人</option>
                   {%for item in responsible_per%}
                   <option value="{{item.responsible_per_name}}" {%if params['fz_name']==item.responsible_per_name%}selected{%end%}>{{item.responsible_per_name}}</option>
                   {%end%}
                 </select>
           
+                  <input class="form-control" type="text" name="fz_per" id="fz_per" placeholder="输入负责人" value="{{params['fz_name']}}"/>
+
             </td>
             <td>
-                <select name="bs_per" class="form-control">
+                <select name="bs_per1" id="bs_per1" class="form-control">
                     <option value="">选择办事人</option>
                     {%for item in banshi_per%}
                     <option value="{{item.banshi_per_name}}" {%if params['bs_name']==item.banshi_per_name%}selected{%end%}>{{item.banshi_per_name}}</option>
                     {%end%}
                   </select>
+                  <input  type="text" name="bs_per" id="bs_per" placeholder="输入办事人" value="{{params['bs_name']}}"/>
             </td>
 
           
             
-              <td> 
+              <td> <br/><br/>
                 <input type="submit" value="检索" class="btn btn-primary btn-sm" />
             </td>
           </tr>
@@ -185,11 +208,12 @@ padding: 5px;
   .faye-table tbody tr td {text-align: center; padding: 0.3rem; height: 40px; box-sizing: border-box;}
 </style>
 <div class="table-responsive">
-  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:11px;width:1250px;">
+  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:11px;width:1350px;">
     
                <thead class="table_class">
                    <tr>
-                      <th width="70"  {%if params['order_bl']%}style="color: #007bff;"{%end%}>办理日期
+                    <th width="65">创建时间</th>
+                      <th width="75"  {%if params['order_bl']%}style="color: #007bff;"{%end%}>办理日期
                         <a title="按办理日期排序" href="project?tag=todo_arrange
                         {%if params['order_bl']=='desc'%}&order_bl=asc{%else%}
                         &order_bl=desc
@@ -207,7 +231,7 @@ padding: 5px;
                    {%if params['project_name']%}&project={{params['project_name']}}{%end%}
                         "><i class="fa fa-sort" aria-hidden="true"></i></a>
                       </th> 
-                      <th  width="70" {%if params['order_bl_time']%}style="color: #007bff;"{%end%}>办理时段
+                      <th  width="75" {%if params['order_bl_time']%}style="color: #007bff;"{%end%}>办理时段
                           <a title="按办理时段排序" href="project?tag=todo_arrange
                           {%if params['order_bl_time']=='desc'%}&order_bl_time=asc{%else%}
                           &order_bl_time=desc
@@ -227,7 +251,8 @@ padding: 5px;
                       <th width="100">公司名称</th>
                       <th width="50">区域</th>
                       <th width="100">办事地点</th>
-                        <th  width="100">办理事项</th>  
+                      <th width="100">办理事项</th>
+                        <th  width="100">办理事项备注</th>  
                        <th  width="100">办理总结</th>
                        {%if role=="8"%}
                          <th width="70">负责部门</th>
@@ -253,7 +278,7 @@ padding: 5px;
                <tbody class="fayetbody">
                    {%if todo_arranges%}
                     {% for item in todo_arranges %}
-                        <tr >
+                        <tr >   <td>{{item.created_at.strftime("%Y-%m-%d")}}</td>
                             <td>{{item.bl_date.strftime("%Y-%m-%d")}}</td>
                             <td>{{str(item.start_time)[:-3]}}-{{str(item.end_time)[:-3]}}</td>
                             <td title="{{item.company}}">
@@ -268,7 +293,13 @@ padding: 5px;
 
 
                             </td>
-                         
+                         <td
+                         title="{%if item.todo_tags%}{%for row in item.todo_tags.split(',')%}{%if row%}{{row.split('_')[1]}},{%end%}{%end%}{%end%}"
+                         >{%if item.todo_tags%}
+                           {%for row in item.todo_tags.split(',')[:3]%}
+                           {%if row%}
+                           {{row.split('_')[1]}},{%end%}
+                           {%end%}{%if len(item.todo_tags.split(','))>4%}...{%end%}{%end%}</td>
                             <td title="{{item.project_name}}">
 
    {%if len(item.project_name) > 40%} {{item.project_name[:39]}}....... {%else%} {{item.project_name}} {%end%}
@@ -396,7 +427,8 @@ padding: 5px;
                    {%if params['start_time']%}&start={{params['start_time']}}{%end%}
                    {%if params['end_time']%}&end={{params['end_time']}}{%end%}
                    {%if params['banli_time']%}&banli_time={{params['banli_time']}}{%end%}
-                   {%if params['project_name']%}&project={{params['project_name']}}{%end%}" 
+                   {%if params['project_name']%}&project={{params['project_name']}}{%end%}
+                   {%if params['todo_tags_search']%}&todo_tags_search={{params['todo_tags_search']}}{%end%}" 
                     aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
           
           
@@ -420,7 +452,8 @@ padding: 5px;
               {%if params['start_time']%}&start={{params['start_time']}}{%end%}
               {%if params['end_time']%}&end={{params['end_time']}}{%end%}
               {%if params['banli_time']%}&banli_time={{params['banli_time']}}{%end%}
-              {%if params['project_name']%}&project={{params['project_name']}}{%end%}" 
+              {%if params['project_name']%}&project={{params['project_name']}}{%end%}
+              {%if params['todo_tags_search']%}&todo_tags_search={{params['todo_tags_search']}}{%end%}" 
                 aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                    {% else %}
                     <li class="paginate_button page-item active">
@@ -447,7 +480,8 @@ padding: 5px;
                    {%if params['start_time']%}&start={{params['start_time']}}{%end%}
                    {%if params['end_time']%}&end={{params['end_time']}}{%end%}
                    {%if params['banli_time']%}&banli_time={{params['banli_time']}}{%end%}
-                   {%if params['project_name']%}&project={{params['project_name']}}{%end%}"
+                   {%if params['project_name']%}&project={{params['project_name']}}{%end%}
+                   {%if params['todo_tags_search']%}&todo_tags_search={{params['todo_tags_search']}}{%end%}"
                    aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
                {% end %} </ul>
                
@@ -518,9 +552,27 @@ padding: 5px;
                         </div>
                       </div> 
                       <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-4 control-label">办理事项</label>
+                          <label class="col-sm-4 control-label">办理事项</label>
+                          <div class="col-sm-12">          
+                            <input placeholder="办理事项" readonly class="form-control" name="todo_tags" id="todo_tags"  
+                            data-container="body" data-toggle="popover" data-placement="bottom"   data-html="true"
+                              data-content="{%for item in todo_tags%}
+                            {{item.tag_category}} ：{%for row in item.gc.split(',')%} 
+                             <input type='button'  title='{{row.split("_")[1]}}' value='{{row.split("_")[1]}}' title_name='{{row}}_{{item.tag_category}}'
+                            name='todo_tag'
+                            class='sj-at'
+                            >{%end%}
+                            <hr style='margin-top:3px;margin-bottom:3px;'>{%end%}
+                            <a href='javascript:;' style='float:right;margin:2px;' class='btn btn-primary btn-sm close_tag'>确定</a>"  type="text">
+                            <div class="alert alert-danger" id="er_todo_tags" style="margin-top:0px;display:none;"></div>
+                            <input type="text" id="todo_tags_choose" hidden>
+                          </div>
+
+                      </div>
+                      <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-4 control-label">办理事项备注</label>
                         <div class="col-sm--10">
-                          <textarea  type="text" class="form-control" id="project_name" name="project_name" placeholder="办理事项"></textarea>
+                          <textarea  type="text" class="form-control" id="project_name" name="project_name" placeholder="办理事项备注"></textarea>
                           <div class="alert alert-danger" role="alert" id="save_to_project_name" style="display:none;"></div>
                         </div>
                       </div>
@@ -617,9 +669,9 @@ padding: 5px;
                         </div>
                       </div> 
                       <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-4 control-label">办理事项</label>
+                        <label for="inputEmail3" class="col-sm-4 control-label">办理事项备注</label>
                         <div class="col-sm--10">
-                          <textarea  type="text" class="form-control" id="project_name1" readonly="readonly" name="project_name1" placeholder="办理事项" ></textarea>
+                          <textarea  type="text" class="form-control" id="project_name1" readonly="readonly" name="project_name1" placeholder="办理事项备注" ></textarea>
                         </div>
                       </div>
                       <div class="form-group">
@@ -705,6 +757,7 @@ padding: 5px;
                   </div>
                 </div>
               </div>
+           
 </div>
  {% end %} 
  {%block js%}
@@ -774,6 +827,19 @@ return process(JSON.parse(data));
 });
 }
 });
+
+  $("#fz_per1").on("change",function(){
+      user = $(this).val()
+      $("#fz_per").val(user)
+
+  })
+  $("#bs_per1").on("change",function(){
+      user = $(this).val()
+ 
+      $("#bs_per").val(user)
+
+  })
+
   $('#banshi_per').typeahead({
     source: function (query, process) {
       return $.post('/api', { query: query, "_xsrf": _xsrf }, function (data) {
@@ -788,8 +854,20 @@ $('#company').typeahead({
       });
     }
 });
-  
-
+$('#bs_per').typeahead({
+    source: function (query, process) {
+      return $.post('/api', { query: query, "_xsrf": _xsrf }, function (data) {
+        return process(JSON.parse(data));
+      });
+    }
+  });
+  $('#fz_per').typeahead({
+    source: function (query, process) {
+      return $.post('/api', { query: query, "_xsrf": _xsrf }, function (data) {
+        return process(JSON.parse(data));
+      });
+    }
+  });
 $('.show_todo').on('click',function () {
   $('#btn_save_todo').removeAttr('leader_id')
   $('#btn_save_todo').removeAttr('todo_id')
@@ -854,6 +932,7 @@ $('#btn_save_todo').on('click',function () {
     var banshi_per1=$(this).attr('banshi_per')
     var leader_name1=$(this).attr('leader_name')
     var todo_type1=$(this).attr('todo_type')
+    var todo_tags=$("#todo_tags_choose").val()
     if(created_at==''){
       $('#save_to_created_at').html('办理日期不能为空哦.')
       $('#save_to_created_at').show()
@@ -865,7 +944,7 @@ $('#btn_save_todo').on('click',function () {
     }
     else if(project_name==''){
      
-      $('#save_to_project_name').html('办理事项不能为空哦.')
+      $('#save_to_project_name').html('办理事项备注不能为空哦.')
       $('#save_to_project_name').show()
     }
     else if(todo_type1==undefined){
@@ -886,7 +965,8 @@ $('#btn_save_todo').on('click',function () {
             'remark':remark,
             'leader_id': leader_id,
             'leader_name': leader_name,
-            'todo_type': todo_type
+            'todo_type': todo_type,
+            'todo_tags':todo_tags
         },function (result) { 
           location.reload()
          }
@@ -913,7 +993,8 @@ $('#btn_save_todo').on('click',function () {
             'remark':remark,
             'leader_id': leader_id,
             'leader_name': leader_name,
-            'todo_type': todo_type
+            'todo_type': todo_type,
+            'todo_tags':todo_tags
         },function (result) { 
           location.reload()
          }
@@ -1140,6 +1221,66 @@ $('#btn_save_todo1').on('click',function () {
   for(var i=0;i<hide_list.length;i++){
     $('.hour option[value='+hide_list[i]+']').hide()
   }
+  $("[data-toggle='popover']").popover();
+  $('body').on('click','input[name=todo_tag]',function () {
+        var str = ""; 
+        $('input[name=customer_tag]').remove()
+        $('input[name=company_tag]').each(function () {
+                if($(this).hasClass('atcur')){
+                    str += $(this).attr('search_title')+',';
+
+                }
+                
+            });
+        if(str!=''){
+            $('input[name=step]').after('<input type="hidden" name="customer_tag" value="'+str+'">')
+        }
+     })
+  $("body").on('click','.close_tag',function () { 
+        $("[data-toggle='popover']").popover('hide');
+      })
+  
+      $('body').on('click',".sj-at",function(){
+	  $(this).toggleClass("atcur")
+    if($(this).hasClass('atcur')){
+        $("#todo_tags").val($("#todo_tags").val()+$(this).val()+',')
+        $("#todo_tags_choose").val($("#todo_tags_choose").val()+$(this).attr('title_name')+',')
+    }else{
+        $("#todo_tags").val($("#todo_tags").val().replace($(this).val()+',',''))
+        $("#todo_tags_choose").val($("#todo_tags_choose").val().replace($(this).attr('title_name')+',',''))
+
+    }
+
+})
+$("#todo_tags").click(function () { 
+  todo_tags=$(this).val().split(',')
+    for(var i=0;i<todo_tags.length;i++){
+
+        $('.sj-at[title='+todo_tags[i]+']').addClass('atcur')
+    }
+    })
+
+    $('body').on('click',".sj-at1",function(){
+	  $(this).toggleClass("atcur")
+
+    if($(this).hasClass('atcur')){
+        $("#todo_tags1").val($("#todo_tags1").val()+$(this).val()+',')
+        $("input[name=todo_tags_search]").val( $("input[name=todo_tags_search]").val()+$(this).attr('title_name')+',')
+    }else{
+        $("#todo_tags1").val($("#todo_tags1").val().replace($(this).val()+',',''))
+        $("input[name=todo_tags_search]").val( $("input[name=todo_tags_search]").val().replace($(this).attr('title_name')+',',''))
+
+    }
+
+})
+$("#todo_tags1").click(function () { 
+  todo_tags=$(this).val().split(',')
+    for(var i=0;i<todo_tags.length;i++){
+
+        $('.sj-at1[title='+todo_tags[i]+']').addClass('atcur')
+    }
+    })
+
   // hide_list1=['14','15','16','17','18']
   // for(var i=0;i<hide_list1.length;i++){
   //   $('#ws .hour option[value='+hide_list1[i]+']').hide()

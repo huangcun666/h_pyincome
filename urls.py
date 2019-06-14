@@ -29,8 +29,9 @@ from handlers.payment import *
 from handlers.addr import *
 from handlers.displaylist import *
 from handlers.clearly import *
-
+from handlers.trade import *
 url_patterns = [
+    (r"/trade",TradeHandler),
     (r"/clearly", ClearlyHandler),
     (r"/plan", PlanHandler),
     (r"/company", CompanyHandler),

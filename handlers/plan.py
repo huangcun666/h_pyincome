@@ -138,35 +138,54 @@ class PlanHandler(BaseHandler):
             reminder_at = self.get_argument('reminder_at','')
             rtype = self.get_argument('rtype','')
             rtype_name = self.get_argument("rtype_name","传统商机")
-            rel_id = self.get_argument('rel_id','')
+            rel_id = self.get_argument('rel_id','0')
             plan_title = self.get_argument("plan_title",'')
             rel_url = self.get_argument("rel_url",'')
             plan_id=self.get_argument('plan_id','')
-            if not  rel_id:
-                self.write("not rel_id ")
+            business_id=self.get_argument('business_id','')
+            if not  rel_id  and not business_id:
+                self.write(" not rel_id and not business_id ")
             else:
-                if plan_id:
-                    self.db_company.execute('''
-                        update t_plan set is_read=1,is_read_at=%s where id=%s
-                    ''',dt,plan_id)
-                else:
+                if business_id:
                     result = self.db_company.execute(
-                        """
-                    INSERT INTO `t_plan` ( `plan_type_id_name`, `plan_type_id`,
-                    `plan_body`, `created_at`, `reminder_at`, `rtype`, `rel_id`,
-                    `is_read`,`is_hide`, `uid`, `uid_name`,`plan_title`,`rel_url`,`rtype_name`)
-                            VALUES
-                    (%s, %s,
-                    %s, %s, %s, %s, %s,
-                    0, 0, %s, %s,%s,%s,%s);
-                            """, plan_type_id_name, plan_type_id, plan_body, dt,
-                        reminder_at, rtype, rel_id, uid, uid_name, plan_title,
-                        rel_url, rtype_name)
-                    self.db_company.execute('''
-                     insert into t_company_msg(uid,uid_name,message,created_at,company_id,tag_type)
-                     values(%s,%s,%s,%s,%s,'销售计划')
-                    ''',uid,uid_name,str(result)+'_'+plan_type_id_name+'_'+plan_body+'_'+str(reminder_at),dt,rel_id)
-                    self.db_company.execute('''
-                        update t_company set last_updated=%s,last_updated_msg=%s,last_updated_type='销售计划' where id=%s
-                    ''',dt,plan_body,rel_id)
-                    self.write(str(result))
+                            """
+                        INSERT INTO `t_plan` ( `plan_type_id_name`, `plan_type_id`,
+                        `plan_body`, `created_at`, `reminder_at`, `rtype`, `rel_id`,
+                        `is_read`,`is_hide`, `uid`, `uid_name`,`plan_title`,`rel_url`,`rtype_name`,`business_id`)
+                                VALUES
+                        (%s, %s,
+                        %s, %s, %s, %s, %s,
+                        0, 0, %s, %s,%s,%s,%s,%s);
+                                """, plan_type_id_name, plan_type_id, plan_body, dt,
+                            reminder_at, rtype, rel_id, uid, uid_name, plan_title,
+                            rel_url, rtype_name,business_id)
+                    self.db.execute("""
+                        insert into business_develop_manage_msg(uid,uid_name,message,created_at,business_id,tag_type,btype_id)
+                        values(%s,%s,%s,%s,%s,%s,%s)
+                        """, uid, uid_name,plan_type_id+'_'+plan_type_id_name+'_'+plan_body+'_'+reminder_at, dt, business_id, "销售计划",'4')
+                else:
+                    if plan_id:
+                        self.db_company.execute('''
+                            update t_plan set is_read=1,is_read_at=%s where id=%s
+                        ''',dt,plan_id)
+                    else:
+                        result = self.db_company.execute(
+                            """
+                        INSERT INTO `t_plan` ( `plan_type_id_name`, `plan_type_id`,
+                        `plan_body`, `created_at`, `reminder_at`, `rtype`, `rel_id`,
+                        `is_read`,`is_hide`, `uid`, `uid_name`,`plan_title`,`rel_url`,`rtype_name`)
+                                VALUES
+                        (%s, %s,
+                        %s, %s, %s, %s, %s,
+                        0, 0, %s, %s,%s,%s,%s);
+                                """, plan_type_id_name, plan_type_id, plan_body, dt,
+                            reminder_at, rtype, rel_id, uid, uid_name, plan_title,
+                            rel_url, rtype_name)
+                        self.db_company.execute('''
+                        insert into t_company_msg(uid,uid_name,message,created_at,company_id,tag_type)
+                        values(%s,%s,%s,%s,%s,'销售计划')
+                        ''',uid,uid_name,str(result)+'_'+plan_type_id_name+'_'+plan_body+'_'+str(reminder_at),dt,rel_id)
+                        self.db_company.execute('''
+                            update t_company set last_updated=%s,last_updated_msg=%s,last_updated_type='销售计划' where id=%s
+                        ''',dt,plan_body,rel_id)
+                        self.write(str(result))

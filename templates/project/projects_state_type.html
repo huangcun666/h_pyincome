@@ -20,7 +20,7 @@
     <a class="dropdown-item" href="javascript:void(0)" id="btn_group_set_toMember">批量分配</a>
   </div>
 </div>
-
+          
  </li>
       </ol>
 
@@ -358,8 +358,13 @@
                              <th width="120">
                             跟单专员
                             </th>
-                            
-                              <th width="120">合同金额</th>
+                            {%if params["last_milepost_id"]=="162" and params["cq_btype_id"]=="158"%}
+                              
+<th width="120">登报周期</th>
+
+                              {%else%}
+<th width="120">合同金额</th>
+                              {%end%}
                                
                           
                              <th width="80">创建人</th>
@@ -442,9 +447,19 @@
                              {%end%}
                           
                             </td>  
-                             <td>
+                                {%if params["last_milepost_id"]=="162" and  params["cq_btype_id"]=="158"%}
+                              
+   <td>
+                                    {% raw diff_date(dt,item.id) %}
+                            </td>
+
+                              {%else%}
+   <td>
                                     {{item.all_income}}
                             </td>
+                              {%end%}
+                              
+                          
                           <td>
                             {{item.uid_name}}
                             </td>

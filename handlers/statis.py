@@ -17,7 +17,7 @@ from calendar import monthrange
 import datetime
 
 logger = logging.getLogger('boilerplate.' + __name__)
-
+import tools
 class StatisHandler(BaseHandler):
 
     def workdays(self,start, end, holidays=0, days_off=None):
@@ -914,10 +914,14 @@ class StatisHandler(BaseHandler):
             if gw and gw != "0" :
                 add_sql += " and uid = %s " % (gw)
             if role:
-                add_sql += " and role=%s" % (role)
-          
+                if role=='13':
+                    add_sql += " and (role=%s or uid=380 )"% (role)
+                else:
+                    add_sql += " and role=%s"% (role)
+
             if exists:
                 add_sql += " and uid_name = '%s' " %uid_name
+            
             count = self.db.get('''select  count(*) count,sum(sc) ssc,
               (select group_concat(uid_name,'|',total_income) gc from (select uid_name,sum(all_income) total_income
                from t_statis_kf
@@ -944,6 +948,15 @@ class StatisHandler(BaseHandler):
                  ) b group by ct order by ct desc
 
                 ''')
+            print('''
+             select ct ,GROUP_CONCAT( uid_name,"|",gc1) gc,sum(gc1) sc from (
+ select  date(project_created_at) ct,uid_name ,sum(all_income) gc1
+               from t_statis_kf
+              ''' + add_sql + '''
+                 group by
+                 ct,uid_name
+                 ) b group by ct order by ct desc
+            ''')
             # t_statis_kf_total = self.db.query(
             #     '''      select uid_name,sum(all_income) total_income
             #    from t_statis_kf
@@ -1223,9 +1236,16 @@ class StatisHandler(BaseHandler):
             daokuan_end=self.get_argument('daokuan_end','')
             sale=self.get_argument('sale','')
             kf=self.get_argument('kf','')
-            step=self.get_argument('step','1')
+            step=self.get_argument('step','')
+            keyword = self.get_argument("keyword","")
+            income_output = self.get_argument("income_output","")
+            output = self.get_argument("output","")
+
 
             sql=''
+            if keyword:
+                sql += ''' and  (project_name like   "%%''' + keyword + '''%%"  or customer_name like   "%%''' + keyword + '''%%"  or customer_tel like   "%%''' + keyword + '''%%" or customer_company like   "%%''' + keyword + '''%%")'''
+
             if project_id:
                 sql+=' and a.project_id=%s '%project_id
             if daokuan_start and daokuan_end:
@@ -1236,17 +1256,22 @@ class StatisHandler(BaseHandler):
             if kf:
                 sql+='  and d.member_name="%s" '%kf
             if step=='1':
-                sql+=' and (e.income_name="合同定金" or e.income_name="尾款") '
+                sql+=' and (e.income_name="合同定金" or e.income_name="尾款") and e.income_money > 0'
             elif step=='2':
-                sql+=' and e.income_name!="合同定金" and e.income_name!="尾款" '
+                sql+=' and (e.income_name!="合同定金" and e.income_name!="尾款" and e.income_name!="退款" and e.income_money > 0) '
+            elif step=='3':
+                sql+=' and  (income_money < 0) '
+
             params={
                 'daokuan_start':daokuan_start,
                 'daokuan_end':daokuan_end,
                 'sale':sale,
                 'kf':kf,
                 'project_id':project_id,
-                'step':step
+                'step':step,
+                'keyword':keyword
             }
+
             count=self.db.get('''
                 select count(*) count
                 from t_projects_income_title a
@@ -1256,25 +1281,62 @@ class StatisHandler(BaseHandler):
                 inner join t_projects_income e on a.id=e.parent_id and a.project_id=e.project_id
                 where a.fi_confirm_at is not null
             '''+sql)
+
             pagination=Pagination(page,pre_page,count.count,self.request)
             start_page=(page-1)*pre_page
+            limit_sql =""
+            if not output:
+                limit_sql="limit %s,%s"%(start_page,pre_page)
+         
             projects_income_title=self.db.query('''
-                select a.income_at,b.id,b.project_name,b.customer_company,b.customer_name,
-                e.income_money,e.income_name,
-                c.member_name  sale_name,d.member_name kf_name
+                select a.income_at,b.id,b.project_name,b.customer_company,b.customer_name,b.guid project_guid,
+                e.income_money,e.income_name,e.income_num,pay_type_name,a.company_id_name,
+                mbs
                 from t_projects_income_title a
                 inner join t_projects b on a.project_id=b.id
-                inner join t_projects_member c on b.id=c.project_id and c.team_id=34 and c.member_name <>''
-                inner join t_projects_member d on b.id=d.project_id and d.team_id=36 and d.member_name <>''
+                inner join 
+                 (select project_id,group_concat(team_name,"|",member_name)  mbs   from t_projects_member where member_id > 0 group by project_id) b
+                 on b.id= b.project_id 
                 inner join t_projects_income e on a.id=e.parent_id and a.project_id=e.project_id
-                where a.fi_confirm_at is not null '''+sql+''' order by a.created_at desc limit %s,%s
-            ''',start_page,pre_page)
+                where a.fi_confirm_at is not null '''+sql+''' order by a.income_at desc 
+            '''+limit_sql)
+
+            if output:
+                wb=xlwt.Workbook()
+                sh=wb.add_sheet(u'到款结算')
+                sh.write(0,0,u'订单号')
+                sh.write(0,1,u'业务内容')
+                sh.write(0,2,u'到款笔数')
+                sh.write(0,3,u'支付方式')
+                sh.write(0,4,u'到款日期')
+                sh.write(0,5,u'公司名称')
+                sh.write(0,6,u'客户姓名')
+                sh.write(0,7,u'到款内容')
+                sh.write(0,8,u'到款金额')
+                sh.write(0,9,u'销售顾问')
+                sh.write(0,10,u'客服顾问')
+                for idx,row in enumerate(projects_income_title):
+                    idx=idx+1
+                    sh.write(idx,0,row.id)
+                    sh.write(idx,1,row.project_name)
+                    sh.write(idx,2,row.income_num)
+                    sh.write(idx,3,"%s-%s"%(row.company_id_name,row.pay_type_name))                      
+                    sh.write(idx,4,row.income_at.strftime("%Y-%m-%d"))
+                    sh.write(idx,5,row.customer_company)
+                    sh.write(idx,6,row.customer_name)
+                    sh.write(idx,7,row.income_name)
+                    sh.write(idx,8,row.income_money)
+                    sh.write(idx,9,tools.get_member(row.mbs,u"销售顾问"))
+                    sh.write(idx,10,tools.get_member(row.mbs,u"客服顾问"))
+                wb.save('media/output/到款结算.xls')
+                return self.redirect("/static/output/到款结算.xls")
             self.render('statis/projects_income_title.html',
                 search_key="",
                 tag=tag,
                 params=params,
                 output_path="static/output/到款统计.xls",
                 pagination=pagination,
+                get_member = tools.get_member,
                 projects_income_title=projects_income_title
                 )
 
@@ -1295,7 +1357,11 @@ class StatisHandler(BaseHandler):
             if params['step']=='1':
                 sql+=' and (e.income_name="合同定金" or e.income_name="尾款") '
             elif params['step']=='2':
-                sql+=' and e.income_name!="合同定金" and e.income_name!="尾款" '
+                sql+=' and e.income_name!="合同定金" and e.income_name!="尾款" and e.income_name!="退款" '
+            elif params['step']=='3':
+                sql+=' and  e.income_name="退款" '
+
+
             projects_income_title=self.db.query('''
                 select a.income_at,b.id,b.project_name,b.customer_company,b.customer_name,
                 e.income_money,e.income_name,

@@ -29,7 +29,7 @@
 
 
 <td>
-    <input type="text" name="company" placeholder="公司名称" class="form-control">
+    <input type="text" name="company" placeholder="公司名称" class="form-control" value="{%if params["company"]%}{{params["company"]}}{%end%}">
           <td>
 {%end%}
 
@@ -60,6 +60,9 @@
 <th width="100">客服顾问</th>
 <th width="100">销售顾问</th>
 <th width="100">客服会计</th>
+{%if  params['step']=='3'%}
+<th width='100'>办结人</th>
+{%end%}
 <th width='130'></th>
 {%end%}
 {%block data%}
@@ -136,6 +139,11 @@
     <td>
         {{item.acc_uid_name}}
     </td>
+    {%if  params['step']=='3'%}
+    <td>
+      {{item.jiedan_name}}
+    </td>
+    {%end%}
     <td>
         {%if not item.economic_census_id and item.acc_uid==int(uid)%}
         <a href="javascript:void(0)" project_id="{{item.project_id}}" class="btn btn-primary btn-sm handler" step="1">接单</a>

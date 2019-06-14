@@ -5,14 +5,27 @@
         <li class="breadcrumb-item g1">
          主面板
         </li>
-        <li class="breadcrumb-item g1">办结确认
+        <li class="breadcrumb-item g1">{%if params['team_id']=="38"%}工商 {%elif params["team_id"]=="205"%}会计{%else%}全部{%end%}业务办结确认
+            {%if role=="8" or role=="7" or role=="3"%}
+            <a href="/project?tag=project_confirm_banjie" class="btn {%if not  params['team_id'] %}btn-primary{%else%}btn-info{%end%} btn-sm ">全部</a>
+<a href="/project?tag=project_confirm_banjie&team_id=38" class="btn {%if params['team_id']=="38" %}btn-primary{%else%}btn-info{%end%} btn-sm ">工商业务</a>
+
+            
+            {%end%}
+         {%if role=="8" or role=="7" or role=="3" or (is_manager=="1" and role=="10") %}
+            <a href="/project?tag=project_confirm_banjie&team_id=205"  class="btn {%if  params['team_id']=="205" %}btn-primary{%else%}btn-info{%end%} btn-sm">会计部业务</a>
+     {%end%}
             {%if t_projects and (params['project_id'] or params['project_name'] 
             or params['customer_company'] or params['customer_name'] or params['customer_tel'] 
             or params['gendan'] or params['sale_man'] or (params['start_time'] and params['end_time']))%}
+
+             
             <li class="g1 g1-left">    
             <a href="{{output_path}}" class="btn btn-primary btn-sm">点击下载数据（Excel格式）</a>
                 </li>
             {%end%}
+
+       
         </li>
       </ol>
 
@@ -42,33 +55,39 @@
       </form>
            <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                     <a href="/project?tag=project_confirm_banjie" class="btn btn-light  nav_padding {%if not step%}active{%end%}" >全部</a>
-                    <a href="/project?tag=project_confirm_banjie&step=1" class="btn btn-light  nav_padding {%if step=='1'%}active{%end%}" >待确认</a>
-                     <a href="/project?tag=project_confirm_banjie&step=2" class="btn btn-light  nav_padding {%if step=='2'%}active{%end%}" >已确认</a>
-                     <a href="/project?tag=project_confirm_banjie&step=3" class="btn btn-light  nav_padding {%if step=='3'%}active{%end%}" >异常待确定</a>
+                     <a href="/project?tag=project_confirm_banjie{%if  params['department_id']%}&department_id={{params['department_id']}}{%end%}{%if  params['team_id']%}&team_id={{params['team_id']}}{%end%}" class="btn btn-light  nav_padding {%if not step%}active{%end%}" >全部</a>
+                    <a href="/project?tag=project_confirm_banjie&step=1{%if  params['department_id']%}&department_id={{params['department_id']}}{%end%}{%if  params['team_id']%}&team_id={{params['team_id']}}{%end%}" class="btn btn-light  nav_padding {%if step=='1'%}active{%end%}" >待确认</a>
+                     <a href="/project?tag=project_confirm_banjie&step=2{%if  params['department_id']%}&department_id={{params['department_id']}}{%end%}{%if  params['team_id']%}&team_id={{params['team_id']}}{%end%}" class="btn btn-light  nav_padding {%if step=='2'%}active{%end%}" >已确认</a>
+                     <a href="/project?tag=project_confirm_banjie&step=3{%if  params['department_id']%}&department_id={{params['department_id']}}{%end%}{%if  params['team_id']%}&team_id={{params['team_id']}}{%end%}" class="btn btn-light  nav_padding {%if step=='3'%}active{%end%}" >异常待确定</a>
     
         </div>
         </nav>  
         <div class="table-responsive">
-                  <table class="table table-bordered fayetable" id="dataTable" width="100%" cellspacing="0"  style="width:2000px" >
-                  <thead style="background-color:#000;color:#fff ; font-size:13px;">
+                          <div class="alert alert-warning" role="alert">
+
+                    共 {{pagination.total_count}} 条记录
+                   
+                   
+                   </div>
+                  <table class="table table-bordered fayetable" id="dataTable" width="100%" cellspacing="0"   >
+                  <thead style="background-color:#000;color:#fff ; font-size:11px;">
                         <tr>                       
                     
                            <th width="60">
                             编号
                             </th>
-                             <th width="300">业务名称</th>  
+                             <th >业务名称</th>  
 
                                 <th  width="200">公司名称</th>  
-                             <th width="100">客户名称</th>  
+                             <th width="70">客户名称</th>  
                                 <!-- <th width="100">客户电话</th> -->
-                             <th width="120">
-                            跟单专员
+                             <th width="70">
+                            跟进人
                             </th>
                             <!-- <th width="120">销售顾问</th> -->
                             
                               <!-- <th width="120">合同金额</th> -->
-                               <th width='100'>办结时间</th>
+                               <th width='140'>办结时间</th>
                           
                              <!-- <th width="80">创建人</th> -->
                         <!-- <th width="160">创建时间</th> -->
@@ -107,8 +126,8 @@
                             </td>  
                            <!-- <td>{{item.customer_tel}}</td> -->
                              <td >
-                        {{item.member_name}}
-
+                        {{item.member_name}}<span class="badge badge-pill {%if item.team_name=="客服会计"%}badge-success{%else%}badge-primary{%end%}" style="font-size:13px;">{{item.team_name}}</span>
+                        
                             </td> 
                             <!-- <td>{%if item.sale_man%}{{item.sale_man}}{%end%}</td>  -->
                              <!-- <td>
@@ -129,13 +148,13 @@
                             <td>
                                 {%if  item.confirm_banjie==0 or item.confirm_banjie==2%}
                                 {%if '231' in role_list%}
-                                <a href="javascript:(void);" class="btn  btn-sm btn-secondary confirm_banjie_btn"
-                                 id="{{item.id}}" guid="{{item.m_guid}}" confirm_banjie="{{item.confirm_banjie}}" banjie_remark="{{item.banjie_remark}}">审核</a>
+                                <a href="javascript:(void);" class="btn  btn-sm btn-danger confirm_banjie_btn"
+                                 id="{{item.id}}" team_name="{{item.team_name}}" mid="{{item.mid}}" guid="{{item.m_guid}}" confirm_banjie="{{item.confirm_banjie}}" banjie_remark="{{item.banjie_remark}}">审核</a>
                                 {%else%}
-                                <a href="javascript:(void);" class="btn  btn-sm btn-secondary" id="{{item.id}}" guid="{{item.m_guid}}">待审核</a>
+                                <a href="javascript:(void);" class="btn  btn-sm btn-info" id="{{item.id}}" guid="{{item.m_guid}}">待审核</a>
                                 {%end%}
                                 {%elif item.confirm_banjie==1%}
-                                <a href="javascript:(void);" class="btn  btn-sm btn-secondary" id="{{item.id}}" guid="{{item.m_guid}}">已确认</a>
+                                <a href="javascript:(void);" class="btn  btn-sm btn-success" id="{{item.id}}" guid="{{item.m_guid}}">已确认</a>
                                 {%end%}
                             </td>
                         </tr>
@@ -187,17 +206,12 @@
                       </div>
                     </div>
                   </div> 
-                  <div class="alert alert-secondary" role="alert">
 
-                    共 {{pagination.total_count}} 条记录
-                   
-                   
-                   </div>
                 <ul class="pagination">
                         {% if pagination.has_prev %}
                              <li class="paginate_button page-item previous " id="dataTable_previous">
                              <a href="?tag=project_confirm_banjie{%if step%}&step={{step}}{%end%}   
-                              {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}
+                              {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['team_id']%}&team_id={{params['team_id']}}{%end%}
                              {%if params['project_name']%}&project_name={{params['project_name']}}{%end%}
                              {%if params['customer_company']%}&customer_company={{params['customer_company']}}{%end%}
                              {%if params['customer_name']%}&customer_name={{params['customer_name']}}{%end%}
@@ -214,7 +228,7 @@
                              {% if page != pagination.page %}
                              <li class="paginate_button page-item ">
                             <a href="?tag=project_confirm_banjie{%if step%}&step={{step}}{%end%}
-                            {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}
+                            {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['team_id']%}&team_id={{params['team_id']}}{%end%}
                             {%if params['project_name']%}&project_name={{params['project_name']}}{%end%}
                             {%if params['customer_company']%}&customer_company={{params['customer_company']}}{%end%}
                             {%if params['customer_name']%}&customer_name={{params['customer_name']}}{%end%}
@@ -236,7 +250,7 @@
                              {% if pagination.has_next %}
                              <li class="paginate_button page-item next" id="dataTable_next">
                                  <a href="/project?tag=project_confirm_banjie{%if step%}&step={{step}}{%end%}
-                                 {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}
+                                 {%if params['project_id']%}&project_id={{params['project_id']}}{%end%}{%if params['team_id']%}&team_id={{params['team_id']}}{%end%}
                                  {%if params['project_name']%}&project_name={{params['project_name']}}{%end%}
                                  {%if params['customer_company']%}&customer_company={{params['customer_company']}}{%end%}
                                  {%if params['customer_name']%}&customer_name={{params['customer_name']}}{%end%}
@@ -273,6 +287,8 @@ $("#end_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoc
     $('.confirm_banjie_btn').on('click',function () {
     $('#btn_confirm_banjie').attr('banjie_id',$(this).attr('id'))
     $('#btn_confirm_banjie').attr('guid',$(this).attr('guid'))
+    $("#btn_confirm_banjie").attr('mid',$(this).attr('mid'))
+    $("#btn_confirm_banjie").attr('team_name',$(this).attr('team_name'))
     $('input[name=confirm_banjie][value='+$(this).attr('confirm_banjie')+']').prop('checked',true)
     $('#remark').val($(this).attr('banjie_remark'))
     $("#confirm_banjie_modal").modal('show')
@@ -297,7 +313,10 @@ $("#end_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoc
             'confirm_banjie':confirm_banjie,
             'banjie_remark':banjie_remark,
             'guid':$(this).attr('guid'),
-            'id':$(this).attr('banjie_id')
+            'id':$(this).attr('banjie_id'),
+            'project_id':$(this).attr('banjie_id'),
+            'mid':$(this).attr('mid'),
+            'team_name':$(this).attr('team_name')
         },function (result) { 
             location.reload()
          })

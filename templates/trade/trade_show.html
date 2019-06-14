@@ -1,0 +1,1414 @@
+{% extends "../base.html" %} {%block title%}商标管理{%end%} {%block head%}
+<link href="/static/vendor/bootstrap/css/style.css" rel="stylesheet">
+<link href="/static/basic.css" rel="stylesheet">
+<link href="/static/dropzone.css" rel="stylesheet">
+{%end%} {% block body %}
+
+<style>
+.mexbox {font-size:12px;display: inline-block; line-height: 18px;margin-top:14px;}
+.sj-table ul li.xiaolei {height: 40px;}
+.xiaolei .sj-table-left {height: 40px; line-height: 40px;}
+.xiaolei .sj-table-right {height: 40px; line-height: 40px;}
+/* .form-group {margin-bottom: 0.5rem;}
+.col-sm-10 {overflow: hidden;}
+.col-sm-10 label {float: left; display: inline-block; width: 31%; margin-right: 5%; line-height: 32px;}
+.col-sm-10 input {float: left; display: inline-block; width: 64%;} */
+.col-sm-4{ width: 31%; margin-left:3%;margin-top: 6px; }
+.g1-right1{
+    position: absolute;
+    right:155px;
+}
+.g1-right2{
+    position: absolute;
+    right:265px;
+}
+</style>
+<div style="position: fixed; width: 98%; z-index: 999; ">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item g1">
+            主面板
+        </li>
+        <li class="breadcrumb-item g1">商标管理
+        </li>
+    
+    </ol>
+</div>
+<div style="position: fixed; top: 55px; width: 98%; z-index: 998; height: 11.5%; background-color: #ebebeb"></div>
+
+
+
+<style>
+.popover {
+max-width:336px;
+position: absolute;
+z-index: 1060;
+}
+.estu { height: 14px; position: relative; float: left; padding-left: 20px;}
+.estu-f {float: left;color: #4bacce;}
+.estu-r {float: right; color: #4bacce;}
+.estu form {position: absolute; top: 0; left: 0;opacity:0; filter:alpha(opacity=0);}
+.estu form input {width: 100%; cursor: pointer;}
+
+.faye-table {
+width: 100%;
+height: auto;
+/*background-color: purple;*/
+margin: 0% auto;
+font-weight: bold;
+}
+.faye-table ul {
+overflow: hidden;
+margin: 0;
+padding: 0;
+}
+.faye-table ul li {
+width: 100%;
+list-style: none;
+box-sizing: border-box;
+border-bottom: 1px solid #dedede;
+width: 100%;
+height: 40px;
+overflow: hidden;
+}
+.faye-table ul li div {
+float: left;
+height: 40px;
+line-height: 40px;
+text-align: center;
+border-left: 1px solid #dedede;
+}
+.faye-table ul li div.fayet {
+width: 8%;
+background-color: #eee;
+border-bottom: 1px solid #dedede;
+}
+.faye-table ul li div.fayet_1 {
+width: 12%;
+background-color: #eee;
+border-bottom: 1px solid #dedede;
+}
+.faye-table ul li div.fayet_3 {
+width: 88%;
+}
+.faye-table ul li div.fayet_2 {
+width: 21.3333%;
+}
+.faye-table ul li div.fayet1 {
+width: 17%;
+}
+.faye-table ul li div.fayet2 {
+width: 25%;
+}
+.faye-table ul li div.fayet3 {
+width: 92%;
+}
+.faye-table ul li div.fayet4 {
+width: 10%;
+}
+.faye-table ul li div.fayet5 {
+width: 15%;
+}
+.faye-table ul li div.fayet60 {
+height: 180px;
+border-left: 1px solid #dedede;
+}
+.faye-table ul li div.fayet70 {
+width: 34%;
+height: 180px;
+border-left: 1px solid #dedede;
+}
+.faye-table ul li div.fayet6 {
+width: 33%;
+height: 180px;
+border-left: 1px solid #dedede;
+}
+.faye-table ul li div.fayet7 {
+width: 34%;
+height: 180px;
+border-left: 1px solid #dedede;
+}
+.faye-table ul li.gaodu {
+height: 180px;
+}
+.faye-table ul li div.direction {
+text-align: left;
+padding-left: 10px;
+box-sizing: border-box;
+}
+.faye-table ul li div.fayet6 span {
+display: block;
+width: 100%;
+height: 40px;
+border-bottom: 1px solid #dedede;
+background-color: #eee;
+}
+.faye-table ul li div.fayet7 span {
+display: block;
+width: 100%;
+height: 40px;
+border-bottom: 1px solid #dedede;
+background-color: #eee;
+}
+.faye-table ul li div.f        <div class="card-columns"> {
+display: block;
+width: 100%;
+height: 140px;
+line-height: 22px;
+font-style: normal;
+padding-top: 8px;
+box-sizing: border-box;
+}
+.faye-table ul li div.fayet7 i {
+display: block;
+width: 100%;
+height: 140px;
+line-height: 22px;
+font-style: normal;
+padding-top: 8px;
+box-sizing: border-box;
+}
+#box {
+margin: 10px auto;
+width: 100%;
+min-height: 0;
+background: #FF9
+}
+#demo {
+margin: 10px auto;
+width: 100%;
+min-height: 0;
+background: #CF9
+}
+.message-item {
+margin-bottom: 5px;
+margin-left: 40px;
+position: relative;
+}
+.message-item .message-inner {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 10px;
+position: relative;
+}
+.message-item .message-inner:before {
+border-right: 10px solid #ddd;
+border-style: solid;
+border-width: 10px;
+color: rgba(0, 0, 0, 0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -20px;
+top: 6px;
+width: 0;
+}
+.message-item .message-inner:after {
+border-right: 10px solid #fff;
+border-style: solid;
+border-width: 10px;
+color: rgba(0, 0, 0, 0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -18px;
+top: 6px;
+width: 0;
+}
+.message-item:before {
+background: #fff;
+border-radius: 2px;
+bottom: -30px;
+box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+content: "";
+height: 100%;
+left: -30px;
+position: absolute;
+width: 3px;
+}
+.message-item:after {
+background: #fff;
+border: 2px solid #ccc;
+border-radius: 50%;
+box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+content: "";
+height: 15px;
+left: -36px;
+position: absolute;
+top: 10px;
+width: 15px;
+}
+.clearfix:before,
+.clearfix:after {
+content: " ";
+display: table;
+}
+.message-item .message-head {
+border-bottom: 1px solid #eee;
+margin-bottom: 8px;
+padding-bottom: 8px;
+}
+.message-item .message-head .avatar {
+margin-right: 20px;
+}
+.message-item .message-head .user-detail {
+overflow: hidden;
+}
+.message-item .message-head .user-detail h5 {
+font-size: 16px;
+font-weight: bold;
+margin: 0;
+}
+.message-item .message-head .post-meta {
+float: left;
+padding: 0 15px 0 0;
+}
+.message-item .message-head .post-meta>div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta>div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item .message-head .post-meta>div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta>div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item img {
+min-height: 25px;
+max-height: 25px;
+}
+.modal-ku {
+margin: auto;
+}
+#nav {
+height: 30px;
+width: 100%;
+background-color: #007bff;
+}
+#nav ul {
+margin: 0 0 0 30px;
+padding: 0px;
+font-size: 12px;
+color: #FFF;
+line-height: 30px;
+white-space: nowrap;
+}
+#nav li {
+list-style-type: none;
+display: inline;
+}
+#nav li a {
+cursor: pointer;
+text-decoration: none;
+font-family: Arial, Helvetica, sans-serif;
+padding: 7px 10px;
+color: #FFF;
+}
+#nav li a:hover {
+color: #ff0;
+background-color: #007bff;
+}
+</style>
+<style>
+        ul li {list-style: none;}
+        .sj-table ul {padding-left: 0; margin: 0;}
+        .sj-table ul li {height: 49px; border-bottom: 1px solid #dedede; }
+        .sj-table-left {float: left; width: 30%; height: 49px; background-color: #eeeeee; border-bottom: 1px solid #dedede; text-align: center; line-height: 49px; font-size: 12px; color: #000; font-weight: bold;}
+        .sj-table-right {float: right; width: 70%; height: 49px; border-left: 1px solid #dedede; box-sizing: border-box; text-align: left; font-size: 12px; color: #000; font-weight: 100; padding-left: 10px;}
+        .sj-table-right div{font-family:"微软雅黑";}
+        .sj-but button {margin-left: 8px; cursor: pointer; margin-bottom: 15px;}
+        .sjbq {background-color: #007bff; color: #fff; font-weight: 100; font-size: 12px; border-radius:3px;}
+        .sjbq2 {background-color: #22ac38; color: #fff; font-weight: 100; font-size: 12px; border-radius:3px; padding: 2px 6px;}
+        .sjyase { height: 31px; border:1px solid #007bff; color: #007bff; border-radius: 5px; background-color: #fff;}
+        .sjyase:hover { height: 31px; color: #fff;  text-align: center; background-color: #007bff; border-radius: 5px; } 
+        .sjyase1 {height: 31px; width: 107px; border-radius: 5px; border:1px solid #dedede; color: #8c8c8c; font-size: 14px; text-align: center; line-height: 31px; text-decoration: none;}
+        .sjyase1:hover {background-color: #007bff; border:1px solid #007bff; color: #fff; text-decoration: none;}
+        .sjyase1-btn {background-color: #007bff; border:1px solid #007bff; color: #fff; text-decoration: none;}
+        .estu {padding-left: 0;}
+        .transfer_chose{background-color: #007bff;color: #fff;}
+        .sjgl-table {width: 100%; height: auto; overflow: hidden; }
+        .sjgl-table-big {width: 100%;}
+        .sjgl-table-big tr {font-size: 0.9rem}
+        .sjgl-table-big tbody tr {border-top: 1px solid #dedede;}
+          
+    </style>
+<div class="row">
+<div class="col-lg-3">
+	<div style="position: fixed; z-index: 999; width: 21%;margin-top:80px;">
+
+        <div class="card-columns">
+            <div class="card mb-12">
+                <div class="sj-table">
+         
+                <ul>
+                    <li>
+                            <div class="sj-table-left">新公司名称</div>
+                            <div class="sj-table-right"><div class="mexbox" >{{t_trade.trade_name}}</div></div>
+                          </li>
+            
+                          <li class="xiaolei">
+                            <div class="sj-table-left">商标申请号</div>
+                            <div class="sj-table-right">{{t_trade.trade_number}}</div>
+                          </li><li class="xiaolei"><div class="sj-table-left">申请时间</div>
+                            <div class="sj-table-right">{%if t_trade.trade_reg_at%}{{t_trade.trade_reg_at}}{%else%}无{%end%}</div>
+                        </li><li class="xiaolei"><div class="sj-table-left">类别</div>
+                            <div class="sj-table-right">{%if t_trade.trade_regtype%}{{t_trade.trade_regtype}}{%else%}{%end%}</div>
+                          </li>
+                          <li class="xiaolei">
+                                <div class="sj-table-left">业务订单号</div>
+                                <div class="sj-table-right">
+                           
+                                {{t_trade.project_id}}</div></li>
+                                <li class="xiaolei"><div class="sj-table-left">客户联系人</div>
+                                <div class="sj-table-right">
+                                        {%if t_project %}
+                                       {{t_project.customer_name}}
+                                    {%end%}
+                               </div></li>
+
+                                <li class="xiaolei"><div class="sj-table-left">销售顾问                                    </div>
+                                    <div class="sj-table-right">
+                                            {%if t_proejct_member_arr %}
+                                                {%raw get_member(t_proejct_member_arr,"销售顾问")%}
+                                            {%end%}
+                                   </div></li>
+                                    <li class="xiaolei"><div class="sj-table-left">客服顾问</div>
+                                        <div class="sj-table-right">
+                                                {%if t_proejct_member_arr %}
+                                                {%raw get_member(t_proejct_member_arr,"客服顾问")%}
+                                            {%end%}
+                                       </div></li>
+                                
+                                <li class="xiaolei"><div class="sj-table-left">创建人</div>
+                                <div class="sj-table-right">
+                                     
+                                    {{t_trade.created_uid_name}}</div></li>
+                                    <li class="xiaolei"><div class="sj-table-left" >创建时间</div>
+                                <div class="sj-table-right" >
+                                    {{t_trade.created_at}}</div></li>
+                          
+                          <li>
+                                <div class="sj-table-left" style="height:80px;line-height: 80px;">备注</div>
+                          <div class="sj-table-right"><div class="mexbox" title="{{t_trade.trade_remark}}">{%if t_trade.trade_remark%}{{t_trade.trade_remark[:40]}}{%if len(t_trade.trade_remark)>40%}...{%end%}{%end%}</div></div>
+                        </li>
+           </ul>
+               
+           
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <div class="col-lg-9" style="margin-top:80px;">
+
+        <div class="card-columns">
+                <div class="card mb-12">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1" style="display: inline-block;">
+                            确认单信息
+                        </h6>
+                    </div>
+                    <hr class="my-0">
+                    <div style="padding:5px; margin-left:5px; font-size:18px;">
+                            {%if t_project%}
+                        <div class="sjgl-table">
+                            <table class="sjgl-table-big">
+                                <thead>
+                                    <tr>
+                                        <th style="width:10%;">确认单号</th>
+                                        <th style="width:10%;">客户姓名</th>
+                                        <th style="width:15%;">联系方式</th>
+                                        <th style="width:20%;">公司名称</th>
+                                        <th>业务内容</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><a target="_blank" href="project?tag=show&guid={{t_project.guid}}&id={{t_project.id}}">{{t_project.id}}</a></td>
+                                        <td>{{t_project.customer_name}}</td>
+                                        <td>{{t_project.customer_tel}}</td>
+                                        <td>{{t_project.customer_company}}</td>
+                                        <td>{{t_project.project_name}}</td>
+                                    </tr>
+                            </tbody>
+                            </table>
+                            </div>
+                            {%end%}
+                            </div>
+                </div>
+    </div>
+
+<!--
+            <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+              <h6 class="m-0 font-weight-bold text-primary">阶段4  </h6>
+            </a>
+      <div class="collapse show" id="collapseCardExample">
+            <div class="card-body">
+                    <button>信息公示</button>  {{t_trade.created_uid_name}} {{t_trade.created_at}} 标记初审 等待公示
+               
+                    <button>无异议</button>
+                    <button>异议</button>
+            </div>
+          </div>     </div> 
+
+
+
+        --->
+{%for idx,item in enumerate(t_trade_milepost)%}    
+    {%if item.mile_id_order==1%}
+
+                <!-- Collapsable Card Example -->
+                <div class="card shadow mb-4">
+                  <!-- Card Header - Accordion -->
+                  <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-fw fa-comment"></i>阶段{{idx+1}} {{item.mile_id_name}}    </h6>
+                  </a>
+                  <!-- Card Content - Collapse -->
+                  <div class="collapse show" id="collapseCardExample">
+                    <div class="card-body">
+                        <i class="fa fa-random"></i>  {{item.mile_id_name}} 
+                            {%if not  item.mile_by_at%}
+                            <button mile_id="{{item.mile_id}}" class="btn_upload_file" type_name="{{item.mile_id_name}}-附件" type_name="{{item.mile_id_name}}">递交资料</button> 
+                            <button class="btn_mile" mile_id="{{item.mile_id}}" 
+                             type_name="{{item.mile_id_name}}-结果"   title="递交申请结果" choice_txt="成功|不成功"> 递交结果</button>
+                            {%else%}
+                       <span class="badge badge-pill badge-success">{{item.mile_by_uid_name}} {{item.mile_by_at}}确认递交 {{item.state_id_name}}</span>
+                            {%end%} 
+                {%if t_trade_file%}
+                <ul>
+                  {%for row_file in t_trade_file%}
+              
+                  {%if item.mile_id_name in  row_file.type_name %}
+                  <li><i class="fa fa-fw fa-file"></i> [{{row_file.type_name}}] <a href="{{row_file.file_path}}" target="_blank">{{row_file.source_name}}</a>
+                  {%if row_file.remark%} 备注: {{row_file.remark}}{%end%}
+                  <span class="badge badge-pill badge-info">{{row_file.file_by}} {{row_file.file_by_at}}</span>
+                    </li>
+                  {%end%}
+                  {%end%}
+              </ul>
+              {%end%}
+                        {%if item.state_id>1 %}
+                          <div class=" alert alert-danger">
+                                {{item.mile_by_uid_name}} 于 {{item.mile_by_at}}  标记为 递交{{item.state_id_name}} 该业务结束
+                          </div>
+                          {%end%}
+                    </div>
+                  </div>
+
+                </div>
+
+
+   {%if not  item.mile_by_at or item.state_id>1%}
+                {%break%}
+   {%end%}
+
+     {%elif item.mile_id_order==2%}
+
+                <!-- Collapsable Card Example -->
+                <div class="card shadow mb-4">
+                  <!-- Card Header - Accordion -->
+                  <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-fw fa-comment"></i>阶段{{idx+1}} {{item.mile_id_name}}    </h6>
+                  </a>
+                  <!-- Card Content - Collapse -->
+                  <div class="collapse show" id="collapseCardExample">
+                    <div class="card-body">
+                        <i class="fa fa-random"></i>   
+                            {%if not  item.mile_by_at%}
+                            等待受理结果
+                            <button class="btn_mile" mile_id="{{item.mile_id}}" 
+                            title="递交申请结果"
+                             type_name="{{item.mile_id_name}}结果" choice_txt="受理|不受理"> 受理结果</button>
+                            {%else%}
+                             {{item.mile_id_name}} 
+                                 <span class="badge badge-pill badge-success">{{item.mile_by_uid_name}} {{item.mile_by_at}}标记为 {{item.state_id_name}}</span>
+                      
+                            {%end%} 
+                {%if t_trade_file%}
+                <ul>
+                  {%for row_file in t_trade_file%}
+                  {%if item.mile_id_name in row_file.type_name%}
+                  <li><i class="fa fa-fw fa-file"></i> [{{row_file.type_name}}] <a href="{{row_file.file_path}}" target="_blank">{{row_file.source_name}}</a>
+                  {%if row_file.remark%} 备注: {{row_file.remark}}{%end%}
+                  <span class="badge badge-pill badge-info">{{row_file.file_by}} {{row_file.file_by_at}}</span>
+                    </li>
+                  {%end%}
+                  {%end%}
+              </ul>
+              {%end%}
+                        {%if item.state_id>1 %}
+                          <div class=" alert alert-danger">
+                                {{item.mile_by_uid_name}} 于 {{item.mile_by_at}}  标记为 工商{{item.state_id_name}} 该业务结束
+                          </div>
+                          {%end%}
+                    </div>
+                  </div>
+
+                </div>
+
+
+   {%if not  item.mile_by_at or item.state_id>1%}
+                {%break%}
+   {%end%}
+
+  {%elif item.mile_id_order==3 %}
+
+  <div class="card shadow mb-4">
+        <!-- Card Header - Accordion -->
+        <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+          <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-fw fa-comment"></i>阶段{{idx+1}} {{item.mile_id_name}}          {%if t_trade.trade_number%}
+          ( <b>申请号: {{t_trade.trade_number}} </b>)
+            {%end%} </h6>
+        </a>
+        <div class="collapse show" id="collapseCardExample">
+    <div class="card-body">
+           
+           
+        <i class="fa fa-random"></i>
+           
+            {%if   item.mile_by_at%}
+             {{item.mile_id_name}}   
+           <i class="fa fa-random"></i> 
+           <span class="badge badge-pill badge-info">{{item.mile_by_uid_name}} {{item.mile_by_at}}
+           
+           标记
+           <span>{{item.state_id_name}} </span></span>
+           {%else%}
+                等待受理
+            {%end%}
+
+
+
+            {%if  not item.mile_by_at or item.state_id== 0%}
+            <button class="btn_mile" mile_id="{{item.mile_id}}" type_name="{{item.mile_id_name}}-结果"  title="{{item.mile_id_name}}结果" choice_txt="初审|部分驳回|全部驳回"> {%if item.state_id>1%}{{item.state_id_name}}复审结果 {%else%}受理结果{%end%}</button>
+           
+            {%else%}
+            <button>信息审核</button>
+            {%end%}
+            {%if t_trade_file%}
+                <ul>
+                  {%for row_file in t_trade_file%}
+                  {%if item.mile_id_name in row_file.type_name %}
+                  <li><i class="fa fa-fw fa-file"></i> [{{row_file.type_name}}] <a href="{{row_file.file_path}}" target="_blank">{{row_file.source_name}}</a>
+                  {%if row_file.remark%} 备注: {{row_file.remark}}{%end%}
+                  <span class="badge badge-pill badge-info">{{row_file.file_by}} {{row_file.file_by_at}}</span>
+                    </li>
+                  {%end%}
+                  {%end%}
+              </ul>
+              {%end%}
+            {%if  t_trade_milepost_his%}
+            <ul>
+                {%for row in t_trade_milepost_his%}
+                {%if row.mile_id==item.mile_id%}
+                <li><i class="fa fa-calendar-check-o"></i>第{{row.his_order}}次.{{row.his_name}}
+                {%if row.his_remark%} 备注: {{row.his_remark}}{%end%}
+
+                <span class="badge badge-pill badge-info">{{row.his_uid_name}} {{row.his_at}}</span>   
+                {%if row.state_uid%}
+                <span class="badge badge-pill badge-primary">复审结果:{{row.state_id_name}} {{row.state_id_at}} {{row.state_uid_name}}</span>   
+                {%end%}
+                
+
+                {%if row.state_id == 0%}
+                <button mile_id="{{item.mile_id}}" class="btn_upload_file" his_id="{{row.his_id}}"  type_name="资料补正-附件">{{item.state_id_name}}-资料补正</button> 
+            
+                <button class="btn_mile" his_id="{{row.his_id}}" type_name="资料补正-结果" mile_id="{{item.mile_id}}" title="递交申请结果" choice_txt="初审|部分驳回|全部驳回"> {%if item.state_id>1%}{{item.state_id_name}}复审结果 {%else%}受理结果{%end%}</button>
+                {%end%}
+                {%if t_trade_file%}
+                <ul>
+                  {%for row_file in t_trade_file%}
+                  {%if "资料补正" in row_file.type_name and row_file.his_id==row.his_id%}
+                  <li><i class="fa fa-fw fa-file"></i> [{{row_file.type_name}}] <a href="{{row_file.file_path}}" target="_blank">{{row_file.source_name}}</a>
+                  {%if row_file.remark%} 备注: {{row_file.remark}}{%end%}
+                  <span class="badge badge-pill badge-info">{{row_file.file_by}} {{row_file.file_by_at}}</span>
+                    </li>
+                  {%end%}
+                  {%end%}
+              </ul>
+              {%end%}
+                  </li>
+                {%end%}
+                {%end%}
+            </ul>
+            {%end%}
+
+    </div>
+  </div>
+</div>
+{%if not  item.mile_by_at or item.state_id> 1%}
+{%break%}
+{%end%}
+
+{%elif item.mile_id_order==4 %}
+
+<div class="card shadow mb-4">
+    <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+      <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-fw fa-comment"></i>阶段{{idx+1}} {{item.mile_id_name}}      </h6>
+    </a>
+<div class="collapse show" id="collapseCardExample">
+    <div class="card-body">
+        {%if   item.mile_by_at%}
+        <i class="fa fa-random"></i>   <span style="color:{%if item.state_id> 1%} red{%else%}green{%end%}">{{item.state_id_name}} </span>
+       <span class="badge badge-pill badge-info">{{item.mile_by_uid_name}} {{item.mile_by_at}}</span>
+       {%else%}
+            等待受理
+        {%end%}
+
+      {%if  not item.mile_by_at or item.state_id== 0%}
+     
+            <button class="btn_mile" mile_id="{{item.mile_id}}" title="递交申请结果" choice_txt="通过|被异议">初审结果</button>
+            {%else%}
+            <button>信息审核</button>
+            {%end%}
+
+            {%if  t_trade_milepost_his%}
+            <ul>
+                {%for row in t_trade_milepost_his%}
+                {%if row.mile_id==item.mile_id%}
+                <li><i class="fa fa-calendar-check-o"></i>第{{row.his_order}}次.{{row.his_name}}
+                {%if row.his_remark%} 备注: {{row.his_remark}}{%end%}
+
+                <span class="badge badge-pill badge-info">{{row.his_uid_name}} {{row.his_at}}</span>   
+                {%if row.state_uid%}
+                <span class="badge badge-pill badge-primary">复审结果:{{row.state_id_name}} {{row.state_id_at}} {{row.state_uid_name}}</span>   
+                {%end%}
+                
+
+                {%if row.state_id == 0%}
+                <button mile_id="{{item.mile_id}}" class="btn_upload_file" his_id="{{row.his_id}}"  type_name="资料补正">{{item.state_id_name}}-资料补正</button> 
+            
+                <button class="btn_mile" his_id="{{row.his_id}}" mile_id="{{item.mile_id}}" title="被异议" choice_txt="通过|被异议"> {%if item.state_id>1%}{{item.state_id_name}}复审结果 {%else%}受理结果{%end%}</button>
+                {%end%}
+                {%if t_trade_file%}
+                <ul>
+                  {%for row_file in t_trade_file%}
+                  {%if row_file.type_name=="资料补正" and row_file.his_id==row.his_id%}
+                  <li><i class="fa fa-fw fa-file"></i> [{{row_file.type_name}}] <a href="{{row_file.file_path}}" target="_blank">{{row_file.source_name}}</a>
+                  {%if row_file.remark%} 备注: {{row_file.remark}}{%end%}
+                  <span class="badge badge-pill badge-info">{{row_file.file_by}} {{row_file.file_by_at}}</span>
+                    </li>
+                  {%end%}
+                  {%end%}
+              </ul>
+              {%end%}
+                  </li>
+                {%end%}
+                {%end%}
+            </ul>
+            {%end%}
+    </div>
+  </div>     </div>
+
+  {%if not  item.mile_by_at  or item.state_id> 1 %}
+  {%break%}
+  {%end%}
+  {%elif item.mile_id_order==5 %}
+
+  <div class="card shadow mb-4">
+      <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-fw fa-comment"></i>阶段{{idx+1}} {{item.mile_id_name}}      </h6>
+      </a>
+  <div class="collapse show" id="collapseCardExample">
+      <div class="card-body">
+              {{t_trade.created_uid_name}} {{t_trade.created_at}} 标记受理  
+         
+              {%if  not item.mile_by_at%}
+              <button class="btn_cert_modal" mile_id="{{item.mile_id}}" type_name="电子证书" title="{{item.mile_id_name}} 信息"  choice_txt="电子证书|被异议"> 填写{{item.mile_id_name}} 信息</button>
+              {%else%}
+              <button>信息审核</button>
+              {%end%}
+
+              {%if t_trade_file%}
+              <ul>
+                {%for row_file in t_trade_file%}
+                {%if row_file.type_name=="电子证书" %}
+                <li><i class="fa fa-fw fa-file"></i> [{{row_file.type_name}}] <a href="{{row_file.file_path}}" target="_blank">{{row_file.source_name}}</a>
+                {%if row_file.remark%} 备注: {{row_file.remark}}{%end%}
+                <span class="badge badge-pill badge-info">{{row_file.file_by}} {{row_file.file_by_at}}</span>
+                  </li>
+                {%end%}
+                {%end%}
+            </ul>
+            {%end%}
+      </div>
+    </div>     </div>
+
+    {%if not  item.mile_by_at%}
+        {%break%}
+    {%end%}
+    {%elif item.mile_id_order==6 %}
+
+    <div class="card shadow mb-4">
+        <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+          <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-fw fa-comment"></i>阶段{{idx+1}} {{item.mile_id_name}}      </h6>
+        </a>
+    <div class="collapse show" id="collapseCardExample">
+        <div class="card-body">
+                {{t_trade.created_uid_name}} {{t_trade.created_at}} 标记受理  
+           
+                {%if  not item.mile_by_at%}
+                <button class="btn_cert_modal" mile_id="{{item.mile_id}}" type_name="纸质证书" title="{{item.mile_id_name}} 信息"  choice_txt="初审|驳回"> 填写{{item.mile_id_name}} 信息</button>
+                {%else%}
+               
+                <button class="btn_cert_modal" mile_id="{{item.mile_id}}"  type_name="纸质证书"  title="{{item.mile_id_name}} 信息"  choice_txt="初审|驳回"> 填写{{item.mile_id_name}} 信息</button>
+                {%end%}
+
+                {%if t_trade_file%}
+                <ul>
+                  {%for row_file in t_trade_file%}
+                  {%if row_file.type_name=="纸质证书" %}
+                  <li><i class="fa fa-fw fa-file"></i> [{{row_file.type_name}}] <a href="{{row_file.file_path}}" target="_blank">{{row_file.source_name}}</a>
+                  {%if row_file.remark%} 备注: {{row_file.remark}}{%end%}
+                  <span class="badge badge-pill badge-info">{{row_file.file_by}} {{row_file.file_by_at}}</span>
+                    </li>
+                  {%end%}
+                  {%end%}
+              </ul>
+              {%end%}
+        </div>
+      </div>     </div>
+
+      {%if not  item.mile_by_at%}
+      {%break%}
+      {%end%}
+      {%elif item.mile_id_order==7 %}
+  
+      <div class="card shadow mb-4">
+          <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-fw fa-comment"></i>阶段{{idx+1}} {{item.mile_id_name}}      </h6>
+          </a>
+      <div class="collapse show" id="collapseCardExample">
+          <div class="card-body">
+                  
+             
+                  {%if  not item.mile_by_at%}
+                     待与客户交接  
+                     <button class="btn_trans"
+                      mile_id="{{item.mile_id}}" 
+                      title="{{item.mile_id_name}} 信息"  
+                      type_name="资料交接"
+                      > 交接 信息</button>
+                  {%else%}
+
+                       <i class="fa fa-random"></i>   
+                       已交接,该业务办结
+       <span class="badge badge-pill badge-info">{{item.mile_by_uid_name}} {{item.mile_by_at}}</span>
+                  <button>信息审核</button>
+                  {%end%}
+
+
+                {%if t_trade_file%}
+                <ul>
+                  {%for row_file in t_trade_file%}
+                  {%if row_file.type_name=="资料交接" %}
+                  <li><i class="fa fa-fw fa-file"></i> [{{row_file.type_name}}] <a href="{{row_file.file_path}}" target="_blank">{{row_file.source_name}}</a>
+                  {%if row_file.remark%} 备注: {{row_file.remark}}{%end%}
+                  <span class="badge badge-pill badge-info">{{row_file.file_by}} {{row_file.file_by_at}}</span>
+                    </li>
+                  {%end%}
+                  {%end%}
+              </ul>
+              {%end%}
+          </div>
+        </div>     </div>
+  {%end%}
+
+{%end%}            
+
+             
+    
+    <div class="card-columns">
+    <div class="card mb-12">
+    <div class="card-body">
+    <h6 class="card-title mb-1">
+    </h6>
+    <textarea style="width:100%" class="form-control" id="txt_msg" placeholder="跟进记录"></textarea>
+    <button style="float:right; margin:9px 0" id="btn_save_msg" class="sjyase">确定添加</button>&nbsp;&nbsp;
+    <div class="estu">
+                                   
+            <div class="estu-f">
+              <img src="static/images/img/photo_03.jpg" alt="" width="20" height="14"></div>
+            <p class="estu-r">上传文件 </p>
+            <form>
+                      <input type="file" id="uploaderInput1" />
+                      
+                  </form>
+          </div>
+          <div class="estu">
+                <div class="estu-f" id="uploaderFiles1">
+                  
+                  </div>
+            </div>
+    <div class="estu">
+    <div class="estu-f" id="uploaderFiles1">
+    </div>
+    </div>
+    </div>
+    <hr class="">
+    <div style="margin-top:10px;margin-bottom:40px">
+    <div class="qa-message-list" id="wallmessages">
+        <center>
+        <h6 class="card-title mb-1 ">等待
+        <a href="#" class=" mr-3 d-in等待1-btn"  >
+            全部动态
+        </a>
+        <a href="#" class=" mr-3 d-inline-block a_project_state_modal sjyase1" style="font-size:14px;" type_id="1" >
+            跟进记录
+        </a>
+        <a href="#" class=" mr-3 d-inline-block a_project_state_modal sjyase1"  type_id="1" >
+            操作标签
+        </a>
+        </h6>
+        </center>
+    
+        <style>
+		.sjlao {overflow: hidden; width: 98%; margin: 15px auto; height: auto; position: relative; }
+		.sjlao-f {float: left; width: 8%; position: relative;}
+		.sjlao-f img {display: block; margin: 0 auto;width:100%;}
+		.sjlao-f span {text-align: center; display: block;}
+		.sjlao-r {float: left; width: 89%; height: auto; border: 1px solid #dedede; margin-top: 3px; margin-left: 2%; box-shadow: 0px 0px 10px #ccc; padding: 15px 15px 5px ; box-sizing: border-box;}
+		.sjtext {line-height: 24px;margin-top:-16px;}
+		.sjlao-r hr {margin: 5px 0 ;}
+		.sjlao-r .fj { font-size: 14px; color: #007bff; font-weight: bold;}
+		.sj-x {top: 16px;margin-left:-29px; }
+		.sj-time {color: #919191;}
+            </style>
+            {%if t_trade_msg%}
+    {%for item in t_trade_msg%}
+        <div class="sjlao">
+            <div class="sjlao-f">
+                  
+                <img src="/static/images/avatar.jpeg" alt="" style="max-width:73px;max-height:73px;">
+                <span class="handle">{{item.uid_name}}</span>
+                
+            </div>
+
+            <div class="sjlao-r">
+                    <div class="sj-x">
+                            <img src="/static/images/img/xsj_07.jpg" alt="" width="14" height="16">
+                        </div>
+                <div class="sjtext">
+
+{%if item.tag_type=="操作标签"%}
+{%if not item.message%}
+将客户标签清除
+{%else%}
+{%for row in item.message.split(",")%}
+<span class="badge badge-pill badge-warning sjbq">
+     {{row.split("_")[1]}}</span>
+
+{%end%}
+{%end%}
+{%elif item.tag_type=="销售计划"%}
+{%for row in item.message.split(",")%}
+     {{row.split("_")[1]}} {{row.split("_")[2]}}  实施时间:{{row.split("_")[3]}} 
+     {%end%}
+{%else%}
+ {{item.message}}
+
+
+{%end%}
+
+                </div>
+                {%if item.file_path%}
+                <a href="{{item.file_path}}" target="_blank" class="fj">查看附件</a>
+                {%end%}
+                <hr>
+                <div>
+                    <span style="float: left;" class="sj-time">{{item.created_at}}</span>
+              
+                    <span style="float: right;" class="sjbq2">{{item.tag_type}}</span>
+                    {%if item.btype_id==3 and item.uid_name==name and item.is_current_day==1 %}
+                    <a href="javascript:;" style="background-color: #dc3545;
+                    color: #fff;
+                    font-weight: 100;
+                    font-size: 12px;
+                    border-radius: 3px;
+                    padding: 2px 6px;float: right; margin-right:10px;text-decoration:none;"  class="delete_msg" msg_id="{{item.id}}" >删除</a>
+                        <a href="javascript:;" style="background-color:#007bff;;
+                        color: #fff;
+                        font-weight: 100;
+                        font-size: 12px;
+                        border-radius: 3px;
+                        padding: 2px 6px;float: right; margin-right:10px;text-decoration:none;"  class="edit_msg" msg="{{item.message}}" msg_id="{{item.id}}" >修改</a>
+
+
+                   
+                    {%end%}
+                </div>
+            </div>
+        </div>
+    {%end%}
+    {%end%}
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+<style>
+.sj-at,.sj-at1{width: 100px; height: 26px; border-radius: 5px;color: #6f6f6f; background-color: #fff; border: 1px solid #6f6f6f; cursor: pointer; margin-top: 10px;  }
+.atcur {background-color: #007bff; color: #fff;}
+.modal-dialog1 {width: 1138px; max-width:none;}
+</style>
+
+
+<div id="add_file_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="lb_title">上传附件
+                    <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                        <i class="btn-icon-only icon-remove">×</i>
+                        </i>
+                    </a>
+
+                </h5>
+            </div>
+            <div class="modal-body form-horizontal" id="site_mod">
+                <div class="form-group">
+                    <div class="col-md-12">
+              
+                            <div id="dropzone_upload" class="dropzone ">
+                                    
+                            </div>
+
+            <div>
+                <!--上传按钮，提供多张图片一次性上传的功能-->
+        
+            </div>
+            </div></div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+   
+    </div>
+</div>
+
+<!-----modal en-->
+<input type="hidden" value="" id="hd_type_name"/>
+<input type="hidden" value="" id="hd_mile_id"/>
+<input type="hidden" value="" id="hd_his_id"/>
+<input type="hidden" value="" id="hd_title"/>
+
+<div id="req_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="lb_title_mile">申请状态
+                        <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                            <i class="btn-icon-only icon-remove">×</i>
+                            </i>
+                        </a>
+    
+                    </h5>
+                </div>
+                <div class="modal-body form-horizontal" id="site_mod">
+                        <div class="form-group" id="div_choice">
+                                <div class="col-md-12" id="rb_list">
+                                    <input type="radio" name="state_id" state_id_name="成功" value="1"/>  <span id="rb_state_id_name1"></span> 
+                                    <input type="radio" name="state_id" state_id_name="不成功" value="2"/>  <span id="rb_state_id_name2"></span> 
+
+
+                                    </div>
+                        </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="control-label" for="username">说明备注</label>
+                        <textarea type="text" class="form-control " id="state_id_remark" name="state_id_remark" placeholder=""></textarea>
+                        <div class="alert alert-danger" role="alert" id="state_id_remark_msg" style="display:none;"></div>
+                        <br>
+                    </div>
+                </div> 
+
+                    <div  id="dropzone" class="dropzone">
+                                    
+                            </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    <button class="btn btn-primary" id="btn_set_milepost">保存</button>
+                </div>
+            </div>
+       
+        </div>
+    </div>
+    <!--- cert -->
+
+    <div id="trans_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="lb_title_trans">客户资料交接
+                        <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                            <i class="btn-icon-only icon-remove">×</i>
+                            </i>
+                        </a>
+    
+                    </h5>
+                </div>
+                <div class="modal-body form-horizontal" id="site_mod">
+
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="control-label" for="username">说明备注</label>
+                        <textarea type="text" class="form-control " id="trans_remark" name="trans_remark" placeholder=""></textarea>
+                        <div class="alert alert-danger" role="alert" id="trans_remark_msg" style="display:none;"></div>
+                        <br>
+                    </div>
+                </div> 
+
+                     <div id="dropzone2" class="dropzone">
+                    选择文件
+                </div>
+                </div>
+            
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    <button class="btn btn-primary" id="btn_save_trans">保存</button>
+                </div>
+            </div>
+       
+        </div>
+    </div>
+    <!--- cert -->
+
+    <div id="cert_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="lb_title_cert">证书
+                        <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                            <i class="btn-icon-only icon-remove">×</i>
+                            </i>
+                        </a>
+    
+                    </h5>
+                </div>
+                <div class="modal-body form-horizontal" id="site_mod">
+                    
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label class="control-label" for="username" id="lb_cert_name">证书时间</label>
+                            <input type="text" class="form-control " id="cert_at" name="cert_at" placeholder=""/>
+                            <div class="alert alert-danger" role="alert" id="cert_at_msg" style="display:none;"></div>
+                            <br>
+                        </div>
+                    </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="control-label" for="username">说明备注</label>
+                        <textarea type="text" class="form-control " id="cert_remark" name="cert_remark" placeholder=""></textarea>
+                        <div class="alert alert-danger" role="alert" id="state_id_remark_msg" style="display:none;"></div>
+                        <br>
+                    </div>
+                </div> 
+        
+                            <div id="dropzone2" class="dropzone">
+                                    选择文件
+                            </div>
+
+                        
+                    
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    <button class="btn btn-primary" id="btn_set_cert">保存</button>
+                </div>
+            </div>
+       
+        </div>
+    </div>
+    <!--- modal end-->
+
+{%end%} {%block js%}
+<script src="/static/dropzone.js"></script>
+
+<script>
+
+Dropzone.autoDiscover = false;
+$(function () {
+
+_xsrf = getCookie("_xsrf")
+
+var trade_id = {{t_trade.id}}
+
+
+$("#cert_at").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd',
+    language: 'zh-CN',initialDate: new Date()});
+$(".btn_mile").on("click",function(){
+    title=$(this).attr("title")
+    mile_id =$(this).attr("mile_id")
+    type_name = $(this).attr('type_name')
+
+    $("#lb_title_mile").text(title)
+
+    choice_txt = $(this).attr("choice_txt").split("|")
+    rb_list_str =""
+    $.each(choice_txt,function(index,j){
+        rb_list_str+='<input type="radio" name="state_id" state_id_name="'+j+'" value="'+(index+1)+'"/> <span id="rb_state_id_name1">'+j+'</span>  '
+    })
+    $("#rb_list").html(rb_list_str)
+
+     $("#rb_state_id_name1").text(choice_txt[0])
+     $("#rb_state_id_name2").text(choice_txt[1])
+    
+     his_id = $(this).attr("his_id")
+     alert("hi")
+     if(his_id==undefined){
+        his_id=0
+     }
+    alert(his_id)
+    $("#hd_type_name").val(type_name)
+    $("#hd_mile_id").val(mile_id)
+    $("#hd_his_id").val(his_id)
+    $("#hd_title").val(title)
+
+    $("#req_modal").modal("show")
+})
+
+
+
+  //Dropzone的初始化，myDropzone为form的id
+$(".btn_upload_file").on("click",function(){
+      
+       
+        mile_id=$(this).attr("mile_id")
+        type_name = $(this).attr("type_name")
+        $("#hd_mile_id").val(mile_id)
+        $("#hd_type_name").val(type_name)
+ 
+        his_id = $(this).attr("his_id")
+        if(his_id==undefined){
+            his_id=0
+        }
+        $("#hd_his_id").val(his_id)
+         $("#add_file_modal").modal("show")
+})
+$(".btn_cert_modal").on("click",function(){
+     title=$(this).attr("title")
+     $("#lb_title_cert").text(title)
+     $("#lb_cert_name").text(title+"时间")
+      $("#cert_modal").modal("show")
+      type_name = $(this).attr("type_name")
+      $("#btn_set_cert").attr("type_name",type_name)
+      $("#btn_set_cert").attr("mile_id",$(this).attr("mile_id"))
+
+})
+
+
+$("#btn_set_cert").on("click",function(){
+    cert_at = $("#cert_at").val()
+    cert_remark = $("#cert_remark").val()
+    mile_id = $(this).attr("mile_id")
+    $.post("/trade?tag=cert",{"trade_id":trade_id,"mile_id":mile_id,"_xsrf":_xsrf,"cert_at":cert_at,"cert_remark":cert_remark},function(result){
+            alert(result)
+    })
+    
+})
+
+
+
+$(".btn_trans").on("click",function(){
+    title=$(this).attr("title")
+    mile_id=$(this).attr("mile_id")
+    type_name = $(this).attr("type_name")
+    $("#hd_mile_id").val(mile_id)
+    $("#hd_type_name").val(type_name)
+    $("#lb_title_mile").text(title)
+    
+    $(".btn_save_file").attr("mile_id",mile_id)
+
+
+    $("#btn_save_trans").attr("title",title)
+
+    $("#trans_modal").modal("show")
+})
+
+$("#btn_save_trans").on("click",function(){
+    mile_id = $(this).attr("mile_id")
+    state_id=$("input[name=state_id]:checked").val()
+    state_id_name=$("input[name=state_id]:checked").attr("state_id_name")
+    title= $(this).attr("title")
+        state_id_remark  = $("#state_id_remark").val()
+        $.post("/trade?tag=save_trans",{"_xsrf":_xsrf,"mile_id":mile_id,"trade_id":trade_id,"state_id_remark":state_id_remark},function(result){
+                alert(result)
+        })
+})
+
+$("#btn_set_milepost").on("click",function(){
+    mile_id = $("#hd_mile_id").val()
+    state_id=$("input[name=state_id]:checked").val()
+    state_id_name=$("input[name=state_id]:checked").attr("state_id_name")
+    title = $("#hd_title").val()
+
+    his_id =$("#hd_his_id").val()
+    if(state_id==undefined || state_id=="" ){
+            alert("请选择"+title+"状态哦.")
+    }else{
+
+  
+        state_id_remark  = $("#state_id_remark").val()
+        $.post("/trade?tag=set_milepost",{"_xsrf":_xsrf,"mile_id":mile_id,"trade_id":trade_id,"state_id":state_id,"state_id_name":state_id_name,"state_id_remark":state_id_remark,
+    "his_id":his_id},function(result){
+               location.reload()
+        })
+}
+})
+Dropzone.options.previewaDropzone = false;
+var myDrop= new Dropzone("#dropzone", {
+url: "/trade?tag=upload" ,
+addRemoveLinks: true,
+uploadMultiple: true,
+dictRemoveFile:"移除",
+dictDefaultMessage:"请点击选择文件或拖动文件到本区域",
+paramName:'file',
+
+init:function(){
+    this.on("sending", function(file, xhr, formData) {
+           
+           trade_remark =$("#trade_remark").val()
+   
+           trade_id  = {{t_trade.id}}
+         //  type_name = $("#btn_set_cert").attr("type_name")
+       //    mile_id =  $("#btn_set_cert").attr("mile_id")
+           type_name = $("#hd_type_name").val()
+           mile_id =  $("#hd_mile_id").val()
+           his_id = $("#hd_his_id").val()
+           if(trade_remark==undefined){
+               trade_remark=""
+           }
+
+           
+           formData.append("trade_remark",trade_remark);
+           formData.append("trade_id",trade_id);
+           formData.append("type_name",type_name);
+           formData.append("mile_id",mile_id);
+           formData.append("his_id",his_id);
+           formData.append("_xsrf",_xsrf);
+
+           
+           console.log(formData)
+           });
+
+}
+
+});
+var myDrop1= new Dropzone("#dropzone_upload", {
+url: "/trade?tag=upload" ,
+addRemoveLinks: true,
+uploadMultiple: true,
+dictRemoveFile:"移除",
+dictDefaultMessage:"请点击选择文件或拖动文件到本区域",
+paramName:'file',
+
+init:function(){
+    this.on("sending", function(file, xhr, formData) {
+           
+           trade_remark =$("#trade_remark").val()
+              if(trade_remark==undefined){
+               trade_remark=""
+           }
+
+           trade_id  = {{t_trade.id}}
+         //  type_name = $("#btn_set_cert").attr("type_name")
+       //    mile_id =  $("#btn_set_cert").attr("mile_id")
+           type_name = $("#hd_type_name").val()
+           mile_id =  $("#hd_mile_id").val()
+          his_id = $("#hd_his_id").val()
+           formData.append("trade_remark",trade_remark);
+           formData.append("trade_id",trade_id);
+           formData.append("type_name",type_name);
+           formData.append("mile_id",mile_id);
+           formData.append("his_id",hd_his_id);
+           formData.append("_xsrf",_xsrf);
+
+           
+           console.log(formData)
+           });
+
+}
+
+});
+/*
+$('#dropzone_z1').dropzone({
+    url: "/trade?tag=upload" ,
+dictDefaultMessage:"请点击选择文件或拖动文件到本区域",
+addRemoveLinks: true,
+autoProcessQueue: false,
+uploadMultiple: true,
+parallelUploads: 100,
+dictRemoveFile:"移除",
+
+paramName:'file',
+init:function(){
+    var submitButton = document.querySelector("#btn_save_file")
+    myDropzone = this;
+    submitButton.addEventListener("click", function () {
+        myDropzone.processQueue();
+    });
+    this.on("addedfile", function () {
+        $("#btn_save_file").removeAttr("disabled");
+    });
+
+    this.on("sending", function(file, xhr, formData) {
+           
+            trade_remark =$("#trade_remark").val()
+    
+            trade_id  = {{t_trade.id}}
+            type_name = $("#btn_save_file").attr("type_name")
+            mile_id =  $("#btn_save_file").attr("mile_id")
+            his_id = $("#btn_save_file").attr("his_id")
+            formData.append("trade_remark",trade_remark);
+            formData.append("trade_id",trade_id);
+            formData.append("type_name",type_name);
+            formData.append("mile_id",mile_id);
+            formData.append("his_id",his_id);
+            formData.append("_xsrf",_xsrf);
+
+            
+            console.log(formData)
+            });
+    this.on("removedfile", function () {
+        if (this.getAcceptedFiles().length === 0) {
+            $("#btn_save_file").attr("disabled", true);
+        }
+    });
+this.on("complete", function (data) {
+       
+       if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+         
+          location.reload()
+        
+          
+       }
+   });
+}
+});
+
+*/
+
+
+})
+</script> {%end%}

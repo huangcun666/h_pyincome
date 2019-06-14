@@ -12,7 +12,16 @@
 
 
 <ul class="list-group">
-  <li class="list-group-item active">订单编号:{{t_projects.id}}</li>
+{%if not t_projects.rec_by_uid_at%}
+<li class="list-group-item" style="background-color:#D6EAF8;"><h4>当前待({{t_projects.rec_by}})确认</h4>
+
+<button class="btn btn-primary btn-sm confirm_btn"  rec_by_uid_at="{%if t_projects.rec_by_uid_at%}{{t_projects.rec_by_uid_at}}{%end%}">
+  确认已收到</button>
+</li>
+{%else%}
+<li class="list-group-item" ><h4>确认状态:</h4><span class="alert alert-info">({{t_projects.rec_by}})已确认 {{t_projects.rec_by_uid_at}} {{t_projects.uid_name}}</span></li>
+{%end%}
+  <li class="list-group-item ">订单编号:{{t_projects.id}}</li>
   <li class="list-group-item"><h4>发起人:</h4>{{t_projects.uid_name}}</li>
   <li class="list-group-item"><h4>公司名称:</h4>{{t_projects.customer_company}}</li>
   <li class="list-group-item"><h4>业务内容:</h4>{{t_projects.project_name}}</li>
@@ -25,14 +34,15 @@
   <a href="{{t_projects.file_name}}" class="btn" target="_blank">查看</a>
 {%end%}</li>
 {%if not t_projects.rec_by_uid_at%}
-<li class="list-group-item" style="background-color:#D6EAF8;"><h4>确认状态:</h4>待确认</li>
+<li class="list-group-item" style="background-color:#D6EAF8;"><h4>当前待({{t_projects.rec_by}})确认</h4>
+
+<button class="btn btn-primary btn-sm confirm_btn" rec_by_uid_at="{%if t_projects.rec_by_uid_at%}{{t_projects.rec_by_uid_at}}{%end%}">
+  确认已收到</button>
+</li>
 {%else%}
-<li class="list-group-item" style="background-color:#D6EAF8;"><h4>确认状态:</h4><span class="alert alert-info">已确认 {{t_projects.rec_by_uid_at}} {{t_projects.uid_name}}</span></li>
+<li class="list-group-item"><h4>确认状态:</h4><span class="alert alert-info">已确认 {{t_projects.rec_by_uid_at}} {{t_projects.uid_name}}</span></li>
 {%end%}
-{% if not t_projects.rec_by_uid_at%}
-<li class="list-group-item"><button class="btn btn-primary btn-sm" id="confirm_btn" rec_by_uid_at="{%if t_projects.rec_by_uid_at%}{{t_projects.rec_by_uid_at}}{%end%}">
-  待确认</button></li>
-  {%end%}
+
 </ul>
     
 
@@ -44,7 +54,7 @@
  {%block js%}
 <script>
   _xsrf =  getCookie("_xsrf")
-  $('#confirm_btn').on('click',function () {
+  $('.confirm_btn').on('click',function () {
     var rec_by_uid_at=$(this).attr('rec_by_uid_at') 
     $.post(
       '/project?tag=confirm_transition',

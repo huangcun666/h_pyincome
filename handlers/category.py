@@ -22,13 +22,13 @@ class CategoryHandler(BaseHandler):
         if tag =="add":
             category_name = self.get_argument('category_name')
             order_int = self.get_argument('order_int',0)
-
+            is_business=self.get_argument('is_business','0')
 
             if not category_name:
                 self.write("not category name")
             else:
-                result = self.db.execute("insert into t_projects_category(category_name,uid,order_int) values(%s,%s,%s)",
-                category_name,uid, order_int)
+                result = self.db.execute("insert into t_projects_category(category_name,uid,order_int,is_business) values(%s,%s,%s,%s)",
+                category_name,uid, order_int,is_business)
                 all_categorys=self.db.query('''
            select * from  t_projects_category  where uid=%s  order by order_int desc,id desc 
         ''',uid)
@@ -44,12 +44,19 @@ class CategoryHandler(BaseHandler):
 
         elif tag=='delete_category':
             id=self.get_argument('id')
+            is_business=self.get_argument('is_business','')
+
             self.db.execute('''
-                delete from t_projects_category where id=%s
-            ''',id)
-            self.db.execute(
-                        "update t_projects_member set b_category_id=0 , b_category_id_name=null where member_id=%s and  b_category_id=%s",
-                        uid,id)
+                    delete from t_projects_category where id=%s
+                ''',id)
+            if is_business:
+                self.db.execute('''
+                delete from business_develop_manage_category where  category_id=%s
+                ''',id)
+            else:
+                self.db.execute(
+                            "update t_projects_member set b_category_id=0 , b_category_id_name=null where member_id=%s and  b_category_id=%s",
+                            uid,id)
 
 
 

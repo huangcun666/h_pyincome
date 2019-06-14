@@ -1,5 +1,7 @@
 {% extends "../base.html" %} {%block title%}{%if t_project.customer_company%}{{t_project.customer_company}}{%end%}-业务明细{%end%}
-
+{%block head%}
+<link href="/static/dropzone.css" rel="stylesheet">
+{%end%}
  {% block body %}
 
 
@@ -236,8 +238,15 @@ background-color: #007bff;
 .diao-top {background-color: #fff; margin-top: 60px; margin-bottom: 20px;}
 .g1 {font-size: 10px; color: #414141; font-weight: 600; line-height: 42px;}
 .topxian {border-top: 3px solid #007aff;}
-</style>
 
+ul,li {list-style: none;}
+.jizmx li {overflow: hidden;  float: left; width: 20%; height: 32px; line-height: 28px; margin-right: 50px; margin-top: 20px;}
+.jizmx li label {float: left; width: 80px; margin-right: 10px; line-height: 32px; text-align: right;}
+.jixuk {float: right; width: 55%; overflow: hidden;  border:1px solid #6f6f6f; border-radius: 5px;}
+.jz-kk {width: 50%; float: left; border:none; padding-left: 5px; box-sizing: border-box;}
+.jz-at {width: 50%; float: left; border:none; color: #6f6f6f; background-color: #fff; border-left: 1px solid #6f6f6f; cursor: pointer;}
+.atcur {background-color: #007bff; color: #fff;}
+</style>
                     <div class="ddlz-top">
                         <a href="#yewushouru">收入明细</a>
                         <a href="#daokuanjiesuan">到款信息</a>
@@ -356,6 +365,15 @@ background-color: #007bff;
                     {%end%}</div>
 
     </li>
+
+        <li>
+      <div class="fayet" style="border-left: none;">信用代码</div>
+      <div class="fayet3">
+      {{t_project.company_uid}}
+      </div>
+    </li>
+
+
     {%if t_project.promo_id_name%}
     <li>
       <div class="fayet" style="border-left: none;">优惠活动</div>
@@ -436,16 +454,16 @@ background-color: #007bff;
 
 
                  {%if t_project.contract_uid_name%}
-      <span class="bg-success" style="color:#fff;font-size:16px; padding:5px;">  <b>
 
 
-                  ({{t_project.contract_uid_name}} 已经确认）   {{t_project.contract_confirm_at}}   </b></span>
-
+ <span class='badge badge-pill badge-success' style="font-size:13px;">
+                  {{t_project.contract_uid_name}}    {{t_project.contract_confirm_at}}  已经确认
+</span>
                   {%else%}
-                    {%if int(role)==5%}
-                <a href="javascript:void(0)" class="btn btn-primary" id="btn_contract_confrim">马上确认</a>
+                    {%if int(role)==5 or role=="3"%}
+                <a href="javascript:void(0)" class="btn btn-info" id="btn_contract_confrim">马上确认</a>
                 {%else%}
-                     <span class="bg-info" style="color:#fff;font-size:16px; padding:5px;">  <b>待合同岗确认
+                     <span class='badge badge-pill badge-success'>  <b>待合同岗确认
                 </b></span>
                 {%end%}
                   {%end%}
@@ -453,10 +471,10 @@ background-color: #007bff;
                 {%if t_project.contract_remark%} 备注： {{t_project.contract_remark}} {%end%}
 
               {%else%}
-                {%if int(role)==5%}
+                {%if int(role)==5 or role=="3"%}
                 <a href="javascript:void(0)" class="btn btn-primary" id="btn_contract_confrim">马上确认</a>
                 {%else%}
-                 <span class="bg-info" style="color:#fff;font-size:16px; padding:5px;">  <b>待合同岗确认
+                 <span class='badge badge-pill badge-info ' style="font-size:13px;"  style='font-size:13px;' >  <b>待合同岗确认
                 </b></span>{%end%}
               {%end%}
 
@@ -487,7 +505,7 @@ background-color: #007bff;
                 {%else%}
 
 
-                        <font color='blue'>待确认</font>
+                      <span class='badge badge-pill badge-info ' style="font-size:13px;"  style='font-size:13px;' >待确认</span>
 
 
 
@@ -497,7 +515,7 @@ background-color: #007bff;
                 {%end%}
 
               {%else%}
-  <span style="background-color:yellow">非推广业务 无关键词</span>
+   <span class='badge badge-pill badge-default'  style='font-size:13px;' >非推广业务 无关键词</span>
  {%end%}
       </div>
 
@@ -570,10 +588,22 @@ background-color: #007bff;
         <div class="fayet"  style="border-left: none;">待收代收款</div>
 
         <div class="fayet3">
+        
           {%if t_projects_income_all %}
+          {%set income_text=''%}
           {%for t_projects_income in t_projects_income_all%}
-          {{t_projects_income['income_name']}}:{{t_projects_income['income_money']}}
+          {%set income_text+=t_projects_income['income_name']+':'+str(t_projects_income['income_money'])%}
+          {%if t_projects_income['remark']%}
+           {%set income_text+=' 备注:'+t_projects_income['remark']%}
+           {%end%}
           {%end%}
+          <span title="{{income_text}}">
+          {%if len(income_text)>100%}
+            {{income_text[:100]}}...
+          {%else%}
+          {{income_text}}
+          {%end%}
+        </span>
           {%end%}
           {%if role=='3'%}
           <div  style="background-color:#eee; border-bottom: 1px solid #dedede;float: right;padding:0 5px;">
@@ -779,15 +809,15 @@ background-color: #007bff;
 
 
                          {%if item.income_uid%}
-                          <span class="bg-success" style="color:#fff;font-size:14px; padding:5px;">  <b>出纳({{item.income_uid_name}})于{{item.income_uid_at}}确认</b></span>
+                        <span class='badge badge-pill badge-success' style="font-size:13px;"  style='font-size:13px;' >  <b>出纳({{item.income_uid_name}})于{{item.income_uid_at}}确认</b></span>
 
                             {%if item.fi_confirm_uid%}
-                            <span class="bg-success" style="color:#fff;font-size:14px; padding:5px;">
+                            <span class='badge badge-pill badge-success' style="font-size:13px;"  style='font-size:13px;' >
                              <b>财务({{item.fi_confirm_uid_name}})于{{item.fi_confirm_at}}确认</b></span>
 
                             {%else%}
                             {%if role=="3"%}
-                                  <input type="button" income_id="{{item.id}}" class="btn btn-primary btn-sm btn_confirm" value="确认"
+                                  <input type="button" income_id="{{item.id}}" class="btn btn-info btn-sm btn_confirm btn-pill" value="财务确认"
                                    title_guid="{{item.guid}}"
                                     title_id="{{item.id}}" ctype="2" />
                               {%else%}
@@ -796,20 +826,20 @@ background-color: #007bff;
                             {%end%}
                            {%if role=="3" or role=="2" or (t_project.uid==int(uid)) and not item.income_uid%}   </a>{%end%}
                            {%if item.is_print==0%}
-                           <span class="bg-info" style="color:#fff;font-size:14px; padding:5px;margin-left:3px;">  <b>尚未打印</b>   </span>
+                           <span class='badge badge-pill badge-info ' style="font-size:13px;"  style='font-size:13px;' > <b>尚未打印</b>   </span>
                            {%else%}
 
-                           <span class="bg-dark" style="color:#fff;font-size:14px; padding:5px;margin-left: 3px;">  <b>已打印</b>   </span>
+                           <span class='badge badge-pill badge-success' style="font-size:13px;"  style='font-size:13px;' > <b>已打印</b>   </span>
                            {%end%}
                          {%else%}
 
-                            {%if role=="2"%}
-                                <input type="button" title_id="{{item.id}}"  ctype="1"  class="btn_confirm" value="确认"
+                            {%if role=="2" or role=="3" %}
+                                <input type="button" title_id="{{item.id}}"  ctype="1"  class="btn_confirm" value="出纳确认"
                               title_guid="{{item.guid}}"
                               />
 
                               {%else%}
-                               <span class="bg-info" style="color:#fff;font-size:16px; padding:8px;">   <b>待出纳确认</b>      </span>
+                               <span class='badge badge-pill badge-info ' style="font-size:13px;"  style='font-size:13px;' >   <b>待出纳确认</b>      </span>
 
                               {%end%}
 
@@ -849,9 +879,17 @@ background-color: #007bff;
                        <a href="javascript:void(0)" id="a_add_team" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>设置</a>
 
        {%end%}
-         {%if (role=="7") or (role=="8") or (name=="陈月娇")%}
-                             <a href="javascript:void(0)" id="a_add_team_cq" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i><b>新增工商专员</b></a>
+         {%if (role=="7") or (role=="8") or (name=="陈月娇") %}
+                             <a href="javascript:void(0)" team_id="38" class="a_add_team_cq" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i><b>新增工商专员</b></a>
                           {%end%}
+
+                {%if (is_manager=="1" and role=="10" or role=="8" or role=="7") and t_project.project_department_id==1%}
+                             <a href="javascript:void(0)" team_id="205" class="a_add_team_cq" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i><b>新增会计</b></a>
+                             {%elif role=="8" or role=="7" %}
+                                   <a href="javascript:void(0)" team_id="205" class="a_to_kj" id="a_to_kj" department_id="1" department_id_name="会计部" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i><b>流转至会计部</b></a>
+
+
+                          {%end%}   
        </h6> </div>
                     <hr class="my-0">
                     <div class="card-body  bg-faded">
@@ -866,10 +904,21 @@ background-color: #007bff;
                           {%if item.btype_id%}
       ({{item.btype_id_name}})
                           {%end%}
+                    {%if is_manager=="1" and item.team_id==205%}
+
+                        <a href="javascript:void(0)"
+                          team_id="{{item.team_id}}"
+                          project_id="{{item.project_id}}"
+                          ddf="{{item.ddf}}"
+                             mid="{{item.mid}}"
+                             guid="{{item.guid}}" class="a_delete_member" guid="{{item.guid}}" staff_name="{{item.name}}">
+                             <img width="20" src="/static/images/delete.png"/>
+                             </a>
+
+                    
 
 
-
-                       {%if  role=="7" and item.team_id==38 or  (item.btype_id==158 and name=="陈月娇") or  (item.updated_uid_name==name and item.team_id==38) or role=='8' or name=='吴蔚亮'%}
+                       {%elif  role=="7" and item.team_id==38 or  (item.btype_id==158 and name=="陈月娇") or  (item.updated_uid_name==name and item.team_id==38) or role=='8' or name=='吴蔚亮'%}
 
                         <a href="javascript:void(0)"
                           team_id="{{item.team_id}}"
@@ -958,7 +1007,7 @@ background-color: #007bff;
                    <img  alt="删除该条记录" src="/static/images/delete.png" width="25" /></a>
                   {%end%}
                   {%end%}
-            <b>{%if item.state_id==0%} <span class="badge badge-info">已通过</span>{%elif item.state_id==1%} <span class="badge badge-danger">未通过</span>{%elif item.is_check==1%}<span class="badge badge-dark">待审核</span>{%end%}{{item.uid_name}} ({{item.creatd_at}} )</b> :<span style="font-size:20px; color:red;">
+            <b>{%if item.state_id==0%} <span class="badge badge-pill badge-info" style="font-size:13px;">已通过</span>{%elif item.state_id==1%} <span class="badge badge-danger">未通过</span>{%elif item.is_check==1%}<span class="badge badge-dark">待审核</span>{%end%}{{item.uid_name}} ({{item.creatd_at}} )</b> :<span style="font-size:20px; color:red;">
                <b>{%if item.is_cancel==1%}<s>{{item.msg}}</s>{%else%}{{item.msg}}{%end%}{%if item.remark%} 备注：{{item.remark}}{%end%}</b>
                <!--
             {%if item.note_id%}<span class="bg-primary" style="color:#fff;font-size: 80%;padding:5px;">已读</span>{%else%}
@@ -968,17 +1017,17 @@ background-color: #007bff;
             {%if item.read_name%}
             {%for strs in item.read_name.split(",")%}
                 {%if strs%}
-              <span class="badge badge-info">{{strs}}</span>
+              <span class="badge badge-pill badge-info" style="font-size:13px;">{{strs}}</span>
                 {%end%}
             {%end%}
             {% if item.check_at%}
             {%if item.state_id==0 and item.check_at%}
-            <span class="alert alert-success">{{item.check_name}}
+            <span class="badge badge-pill badge-success">{{item.check_name}}
             确认审核通过</span>{%else%} <span class="alert alert-danger">{{item.check_name}}驳回{</span>{%end%}
              {%if item.remark%}备注：{{item.remark}}{%end%}
              {%elif item.created_name%}
             {%if item.state_id==0%}
-            <span class="alert alert-info">
+            <span class="badge badge-pill badge-info">
                {{item.created_name}}
             审核通过(待确认)</span>
              {%if item.state_id==0 and not item.check_at and '287' in role_list%}
@@ -1019,19 +1068,22 @@ background-color: #007bff;
 
             {%if item.read_name%}
             {%for strs in item.read_name.split(",")%}
-              <span class="badge badge-info">{{strs}}</span>
+              <span class="badge badge-pill badge-info" style="font-size:13px;">{{strs}}</span>
             {%end%}
 
             {%end%}
           
             {% if item.check_at%}
            {%if item.state_id==0 and item.check_at%}
-           <span class="alert alert-success">{{item.check_name}}
+         
+           <span class="badge badge-pill badge-success" style="font-size:13px">
+           
+           {{item.check_name}}
            确认审核通过</span>{%else%} <span class="alert alert-danger">{{item.check_name}}驳回{</span>{%end%}
             {%if item.remark%}备注：{{item.remark}}{%end%}
             {%elif item.created_name%}
            {%if item.state_id==0%}
-           <span class="alert alert-info">
+           <span class="badge badge-pill badge-primary" style="font-size:13px">
               {{item.created_name}}
            审核通过(待确认)</span>
             {%if item.state_id==0 and not item.check_at and '287' in role_list%}
@@ -1077,7 +1129,9 @@ background-color: #007bff;
                           <div class="card-body ">
                             <h6 class="card-title mb-1 ">
 
-            办理进度更新记录
+            办理进度更新记录     {%if t_project.business_id%}
+            <a target="_blank" href='/company?tag=show_business&id={{t_project.business_id}}&guid={{t_project.business_guid}}'>商机开发详情</a>
+            {%end%}
 
             {%if t_project.is_expedited==1%}
                  <font color='red' style="font-size:18px;"> <b>(加急业务)</b></font>
@@ -1835,16 +1889,16 @@ background-color: #007bff;
               {%if item.type_name=='待接单'%}
             <li class="list-group-item">
               {%if  role=='7' and not item.confirm_at%}
-              流程1:等待接单安排地址<span class="badge badge-success">{{row.uid_name}}发起{{item.created_at}}</span>
+              流程1:等待接单安排地址<span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}}发起{{item.created_at}}</span>
               <button class="addr_jiedan" id="{{item.id}}" addr_provider_id={{row.id}}>确认接单</button>
               <button class="addr_remark" id="{{item.id}}">备注</button>
               {%elif item.uid_name==name and item.confirm_at %}
-              流程1:{{item.uid_name}}已接单<span class="badge badge-success">{{row.uid_name}}发起{{item.confirm_at}}</span>
+              流程1:{{item.uid_name}}已接单<span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}}发起{{item.confirm_at}}</span>
               <button class="addr_remark" id="{{item.id}}">备注</button>
               {%elif item.uid_name!=name and item.confirm_at %}
-              流程1:{{item.uid_name}}已接单<span class="badge badge-success">{{row.uid_name}}发起{{item.confirm_at}}</span>
+              流程1:{{item.uid_name}}已接单<span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}}发起{{item.confirm_at}}</span>
               {%else%}
-              流程1:等待地址安排负责人接单<span class="badge badge-success">{{item.created_at}}</span>
+              流程1:等待地址安排负责人接单<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.created_at}}</span>
               {%end%}
               {%if item.remark%}备注信息：{{item.remark}}{%end%}
             </li>
@@ -1855,11 +1909,11 @@ background-color: #007bff;
                 流程2:<button class="a_add_addr_provider" id="{{item.id}}" addr_provider_id="{{row.id}}" >安排地址</button>
                 <button class="addr_remark" id="{{item.id}}">备注</button>
                 {%elif item.uid_name==name and item.confirm_at%}
-                流程2：已安排<span class="badge badge-success">{{item.confirm_at}}</span>
+                流程2：已安排<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.confirm_at}}</span>
                 <button class="addr_remark" id="{{item.id}}">备注</button>
                 {%else%}
                 流程2:地址安排负责人({{item.uid_name}})正在安排中
-                <span class="badge badge-success">{{item.created_at}}</span>
+                <span class="badge badge-pill badge-success" style="font-size:13px;">{{item.created_at}}</span>
                 {%end%}
                 {%if item.remark%}备注信息：{{item.remark}}{%end%}
             </li>
@@ -1867,7 +1921,7 @@ background-color: #007bff;
             {%if item.type_name=='安排完成'%}
 
             <li class="list-group-item">
-              流程3:负责人({{item.uid_name}})安排地址完成<span class="badge badge-success">{{item.created_at}}</span>
+              流程3:负责人({{item.uid_name}})安排地址完成<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.created_at}}</span>
               {%if item.uid_name==name%}
               <button class="addr_remark" id="{{item.id}}">备注</button>
               {%if item.remark%}备注信息：{{item.remark}}{%end%}
@@ -1966,7 +2020,7 @@ background-color: #007bff;
 {%if item.xiezhu_id==row.id%}
   {%if item.type_name=='待审核'%}
 <li class="list-group-item">
-    流程1:工商专员{{item.uid_name}}发起协助：{{row.xiezhu_content}}<span class="badge badge-success">{{item.created_at}}</span>
+    流程1:工商专员{{item.uid_name}}发起协助：{{row.xiezhu_content}}<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.created_at}}</span>
     {%if name==item.uid_name and not item.confirm_at and  (item.is_pass==None or item.is_pass==0) %}
     <button class="edit_xiezhu_content" xiezhu_content="{{row.xiezhu_content}}" id="{{row.id}}" gs_id="{{item.id}}" >修改</button>
     {%end%}
@@ -1974,14 +2028,14 @@ background-color: #007bff;
 
 {%if item.is_pass==0%}
 <li class="list-group-item">
-  流程2:协助申请被驳回<span class="badge badge-success">{{item.reject_at}}</span>
+  流程2:协助申请被驳回<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.reject_at}}</span>
   {%if item.remark%}
   备注：{{item.remark}}
   {%end%}
 </li>
 {%elif not item.confirm_at and not item.is_pass%}
 <li class="list-group-item">
-    流程2:待经理审核中<span class="badge badge-success">{{item.created_at}}</span>
+    流程2:待经理审核中<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.created_at}}</span>
     {%if name=='罗文波'%}
     <button class="manage_sh" id="{{row.id}}" gs_id="{{item.id}}">审核</button>
     {%end%}
@@ -1991,19 +2045,19 @@ background-color: #007bff;
 
 {%if item.type_name=='待接单'%}
 <li class="list-group-item">
-    流程2:{{item.fz_name}}审核通过<span class="badge badge-success">{{item.created_at}}</span>
+    流程2:{{item.fz_name}}审核通过<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.created_at}}</span>
     {%if item.remark%}
     备注：{{item.remark}}
     {%end%}
   </li>
 <li class="list-group-item">
   {%if item.created_at and not item.confirm_at%}
-  流程3:待销售顾问{{item.uid_name}}接单<span class="badge badge-success">{{item.created_at}}</span>
+  流程3:待销售顾问{{item.uid_name}}接单<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.created_at}}</span>
   {%if name==item.uid_name%}
   <button class="xs_jiedan" id="{{row.id}}" xs_id="{{item.id}}">接单</button>
   {%end%}
   {%elif item.confirm_at%}
-  流程3:{{item.uid_name}}已接单，业务处理中<span class="badge badge-success">{{item.confirm_at}}</span>
+  流程3:{{item.uid_name}}已接单，业务处理中<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.confirm_at}}</span>
   {%if name==item.uid_name and not row.sh_created_at%}
   <button class="xs_banjie"  id="{{row.id}}">确认办结</button>
   {%end%}
@@ -2012,20 +2066,20 @@ background-color: #007bff;
 {%end%}
 {%if item.type_name=='结果审核'%}
 <li class="list-group-item">
-    流程4:销售顾问{{item.uid_name}}申请办结<span class="badge badge-success">{{item.created_at}}</span>
+    流程4:销售顾问{{item.uid_name}}申请办结<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.created_at}}</span>
    {% if row.xiezhu_zj%}办理总结：{{row.xiezhu_zj}}{%end%}
     {%if item.is_pass==0%}
     <button class="xs_banjie" sh_id="{{item.id}}" id="{{row.id}}" project_zj="{{row.xiezhu_zj}}" is_pass="{{item.is_pass}}">修改办结</button>
     {%end%}
 </li>
 {%if item.is_pass==0%}
-<li class="list-group-item">流程5:{{item.fz_name}}驳回办结<span class="badge badge-success">{{item.reject_at}}</span>
+<li class="list-group-item">流程5:{{item.fz_name}}驳回办结<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.reject_at}}</span>
   {%if item.remark%}
   备注：{{item.remark}}
   {%end%}
 </li>
 {%elif item.created_at and not item.confirm_at%}
-<li class="list-group-item">流程5:待部门负责人确认<span class="badge badge-success">{{item.created_at}}</span>
+<li class="list-group-item">流程5:待部门负责人确认<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.created_at}}</span>
   {%if is_xz_manage=='1'%}
   <button class="shenhe_banjie" xs_uid_name="{{item.uid_name}}"
   xiezhu_zj="{{row.xiezhu_zj}}"sh_id="{{item.id}}" gs_uid_name="{{item.gs_uid_name}}"
@@ -2033,7 +2087,7 @@ background-color: #007bff;
   {%end%}
 </li>
 {%elif item.confirm_at%}
-<li class="list-group-item">流程5：{{item.fz_name}}确认办结<span class="badge badge-success">{{item.confirm_at}}</span>
+<li class="list-group-item">流程5：{{item.fz_name}}确认办结<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.confirm_at}}</span>
   {%if item.remark%}
   备注：{{item.remark}}
   {%end%}
@@ -2043,10 +2097,10 @@ background-color: #007bff;
 {%if item.type_name=='已确认'%}
 <li class="list-group-item">
   {%if item.confirm_at%}
-  流程6:工商专员{{item.uid_name}}确认业务已经办完<span class="badge badge-success">{{item.confirm_at}}</span>
+  流程6:工商专员{{item.uid_name}}确认业务已经办完<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.confirm_at}}</span>
 
   {%else%}
-  流程6:待工商专员{{item.uid_name}}确认<span class="badge badge-success">{{item.created_at}}</span>
+  流程6:待工商专员{{item.uid_name}}确认<span class="badge badge-pill badge-success" style="font-size:13px;">{{item.created_at}}</span>
   {%if name==item.uid_name%}
   <button class="gs_queren" id="{{item.id}}">确认</button>
   {%end%}
@@ -2128,14 +2182,14 @@ background-color: #007bff;
 <li class='list-group-item' style="background:#aefefefe;">
 
       {{item.is_cancel_uid_name}} 请求取消该订单
-      {%if item.is_cancel_confirm_at%}
-        <span class="badge badge-pill badge-info"> 申请时间: {{item.is_cancel_at}}</span>
+      {%if item.is_cancel_confirm_at%} 
+        <span class="badge badge-pill badge-info " style="font-size:13px;"> 申请时间: {{item.is_cancel_at}}</span>
 
-        <span class="badge badge-pill badge-success">{{item.is_cancel_confirm_uid_name}} 已同意取消({{item.btype_id_name}}) {{item.is_cancel_confirm_at}}</span>
+        <span class="badge badge-pill badge-success" style="font-size:13px;">{{item.is_cancel_confirm_uid_name}} 已同意取消({{item.btype_id_name}}) {{item.is_cancel_confirm_at}}</span>
 
 
 
- {%if role=="7"%}
+ {%if role=="7" or ( is_manager=="1"  and role=="10" )%}
 <button class="btn-danger"  mid="{{item.mid}}"  name="btn_cancel_member" atype="manager_roll">
 
   恢复订单({{item.btype_id_name}})
@@ -2148,9 +2202,9 @@ background-color: #007bff;
       {%else%}
 
 
-        <span class="badge badge-pill badge-info">审批中  {{item.is_cancel_at}}</span>
+        <span class="badge badge-pill badge-info " style="font-size:13px;">审批中  {{item.is_cancel_at}}</span>
 
-    {%if role=="7"%}
+    {%if role=="7"  or ( is_manager=="1" and role=="10" )%}
       <button class="btn-danger"  mid="{{item.mid}}"   name="btn_cancel_member" atype="manager" >
 
         同意取消({{item.btype_id_name}})
@@ -2167,7 +2221,7 @@ background-color: #007bff;
 {%else%}
 
 
- {%if int(getMemberIdInProject(t_project_members,u"工商专员",item.member_id))==int(uid) %}
+ {%if item.member_id==int(uid) %}
 <li class='list-group-item' style="background:#eee;">
 
 
@@ -2192,17 +2246,17 @@ background-color: #007bff;
   {%if  item.mid==row.member_id%}
 
     {%if row.income_name==u"待接单"%}
-
+    
 
      <li class='list-group-item'> 流程{{row.order_int}}:
 订单分配
        {%if   row.confirm_at%}
 
 
-        <span class="badge badge-success"> 订单分配给{{row.uid_name}}  {{row.confirm_at}} </span>
+        <span class="badge badge-pill badge-success" style="font-size:13px;"> 订单分配给{{row.uid_name}}  {{row.confirm_at}} </span>
 
 
-        <!--<span class="badge badge-success">{{row.uid_name}}  于{{row.confirm_at}} 接单成功</span>-->
+        <!--<span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}}  于{{row.confirm_at}} 接单成功</span>-->
 
          {%else%}
 
@@ -2226,13 +2280,14 @@ background-color: #007bff;
        </li>
 
   {%elif  row.income_name==u"办理中" %}
+  
      <li class='list-group-item'> 流程{{row.order_int}}:
 
 
 
        {%if   row.confirm_at%}
            {{row.income_name}}
-        <span class="badge badge-success"> {{row.uid_name}} 已接单 {{row.confirm_at}} </span>
+        <span class="badge badge-pill badge-success" style="font-size:13px;"> {{row.uid_name}} 已接单 {{row.confirm_at}} </span>
 
 
          {%else%}
@@ -2252,7 +2307,7 @@ background-color: #007bff;
 
           {%else%}
 
-            <span class="badge badge-primary">正在等待 {{row.uid_name}} 确认接单... </span>
+            <span class="badge badge-pill badge-info" style="font-size:13px;">正在等待 {{row.uid_name}} 确认接单... </span>
 
           {%end%}
 
@@ -2268,15 +2323,18 @@ background-color: #007bff;
        </li>
 
   {%elif  row.income_name==u"办结" %}
+  
      <li class='list-group-item'> 流程{{row.order_int}}:
 
        {{row.income_name}}
 
        {%if   row.confirm_at%}
 
-        <span class="badge badge-success">{{row.uid_name}} 已办结 {{row.confirm_at}} </span>
-
-
+        <span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}} 已办结 {{row.confirm_at}} </span>
+        {%if  (role=='3' or role=='8') and  not project_milepost_type[idxe+1].confirm_at and row.is_today==1%}
+        {{project_milepost_type[idxe-1].confirm_at}}
+        <button class="btn-danger" id="banjie_reject" mid="{{row.member_id}}"  mp_id="{{row.id}}" mp_id_banli="{{project_milepost_type[idxe-1].id}}" >办结驳回</button>
+        {%end%}
          {%else%}
 
 
@@ -2284,7 +2342,7 @@ background-color: #007bff;
 
 
 
-            <button class=" btn_cq_rec_order" mid="{{row.member_id}}"  mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order"> 已办结
+            <button class=" btn_cq_rec_order" mid="{{row.member_id}}" btype_id_name="{{item.btype_id_name}}" type_name="{{row.type_name}}" mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order"> 已办结
             </button>
 
 
@@ -2294,7 +2352,7 @@ background-color: #007bff;
 
           {%else%}
 
-           <span class="badge badge-primary">{{row.uid_name}}正在光速办理中... </span>
+           <span class="badge badge-pill badge-info " style="font-size:13px;">{{row.uid_name}}正在光速办理中... </span>
 
           {%end%}
 
@@ -2310,11 +2368,11 @@ background-color: #007bff;
      {%end%}
      {%if confirm_banjie%}
   {%if '231' in role_list and  (confirm_banjie.confirm_banjie==0 or confirm_banjie.confirm_banjie==2)%}
-  <button class="confirm_banjie_btn"
+  <button  mid="{{row.member_id}}" class="confirm_banjie_btn" team_name="{{item.team_name}}"
   id="{{confirm_banjie.id}}" guid="{{confirm_banjie.m_guid}}" confirm_banjie="{{confirm_banjie.confirm_banjie}}" banjie_remark="{{confirm_banjie.banjie_remark}}"
   >审核</button>
   {%elif confirm_banjie.confirm_banjie==1%}
-  <span class="badge badge-dark">罗文波已确认审核</span>
+  <span class="badge badge-pill badge-dark"  style="font-size:13px;">{%if confirm_banjie.confirm_name%}{{confirm_banjie.confirm_name}}{%end%}已确认审核</span>
   {%end%}
   {%end%}
 
@@ -2324,14 +2382,16 @@ background-color: #007bff;
 
        </li>
 
+
  {%elif  row.income_name==u"填写办结信息" %}
+ 
      <li class='list-group-item'> 流程{{row.order_int}}:
 
        {{row.income_name}}
 
        {%if   row.confirm_at%}
 
-        <span class="badge badge-success">{{row.uid_name}} 已更新公司信息,及通知仓管 {{row.confirm_at}} </span>
+        <span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}} 已更新公司信息,及通知仓管 {{row.confirm_at}} </span>
 
 
          {%else%}
@@ -2339,7 +2399,7 @@ background-color: #007bff;
 
           {%if row.uid==int(uid)%}
           {%if t_project.company_confirm_at%}
-               <span class="badge badge-primary">已更新办结公司信息  {{t_project.company_confirm_at}}</span>
+               <span class="badge badge badge-primar-pilly" style="font-size:13px;">已更新办结公司信息  {{t_project.company_confirm_at}}</span>
 
 
            {%end%}
@@ -2350,7 +2410,7 @@ background-color: #007bff;
 
           {%else%}
 
-           <span class="badge badge-primary">{{row.uid_name}}正在填写办结信息... </span>
+           <span class="badge bad-pillge badge-info" style="font-size:13px;">{{row.uid_name}}正在填写办结信息... </span>
 
           {%end%}
 
@@ -2456,7 +2516,7 @@ background-color: #007bff;
 流程{{row.order_int}}:
 
        仓管确认交接完成<font color='red'>*</font>
-    <span class="badge badge-success">{{row.uid_name}} 确认已交接完成 该业务已经结束 {{row.confirm_at}} </span>
+    <span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}} 确认已交接完成 该业务已经结束 {{row.confirm_at}} </span>
 
 
                {%if row.remark%}
@@ -2471,7 +2531,7 @@ background-color: #007bff;
 
 流程{{row.order_int}}:
       {{row.income_name}}
-        <span class="badge badge-success">{{row.uid_name}} 已通知{{getMemberName(t_project_members,"销售顾问")}},与客户交接 {{row.confirm_at}} </span>
+        <span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}} 已通知{{getMemberName(t_project_members,"销售顾问")}},与客户交接 {{row.confirm_at}} </span>
 
 
          {%else%}
@@ -2509,7 +2569,7 @@ background-color: #007bff;
           {%else%}
 
 
-          <span class="badge badge-primary"> (等待仓管确认,告知销售顾问与客户交接....)</span>
+          <span class="badge badge-pill badge-info" style="font-size:13px;"> (等待仓管确认,告知销售顾问与客户交接....)</span>
 
           {%end%}
 
@@ -2558,7 +2618,7 @@ background-color: #007bff;
 
        {%if   row.confirm_at%}
 
-        <span class="badge badge-success">{{row.uid_name}} 接受交接请求 正在交接中 {{row.confirm_at}} </span>
+        <span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}} 接受交接请求 正在交接中 {{row.confirm_at}} </span>
 
          {%else%}
 
@@ -2576,9 +2636,9 @@ background-color: #007bff;
           <button class=" btn_cq_rec_order"  mid="{{row.member_id}}"  update_id="{{row.update_id}}"  mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order">开始与客户交接
           </button>
           {%else%}
-
-          (等待销售顾问{{getMemberName(t_project_members,"销售顾问")}},接受交接确认)
-
+ <span class="badge badge-pill badge-info" style="font-size:13px;">
+          等待销售顾问{{getMemberName(t_project_members,"销售顾问")}},接受交接确认
+</span>
           {%end%}
 
        {%end %}
@@ -2599,7 +2659,7 @@ background-color: #007bff;
 
        {%if   row.confirm_at%}
 
-           <span class="badge badge-success">{{row.uid_name}} 已交接完成 等待仓管确认 {{row.confirm_at}} </span>
+           <span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}} 已交接完成 等待仓管确认 {{row.confirm_at}} </span>
 
 
          {%else%}
@@ -2645,7 +2705,6 @@ background-color: #007bff;
               class="btn btn-primary btn-sm modify_transition"
               transition_id="{{tans_row.id}}"
               rec_by_uid_at ="{%if tans_row.rec_by_uid_at%}{{tans_row.rec_by_uid_at}}{%else%}{%end%}"
-
               pm_id={{tans_row.mid}}
             tran_at="{{tans_row.tran_at}}"
             tran_by ="{{tans_row.tran_by}}"
@@ -2678,23 +2737,25 @@ background-color: #007bff;
 
        </li>
   {%elif  row.income_name==u"仓管确认交接完成" %}
-     <li class='list-group-item'> 流程{{row.order_int}}:
+     <li class='list-group-item'> 流程 {%if item.team_id==205 %} 4: 办结确认 {%else%} {{row.order_int}}   {{row.income_name}}{%end%}:
 
-       {{row.income_name}}
+     
 
        {%if   row.confirm_at%}
        {%set  cg_confirm_at+=1%}
-        <span class="badge badge-success">{{row.uid_name}} 确认已交接完成 该业务已经结束 {{row.confirm_at}} </span>
+        <span class="badge badge-pill badge-success" style="font-size:13px;">{{row.uid_name}} 确认该订单已完成 {{row.confirm_at}} </span>
 
          {%else%}
 
 
            {%if 11==int(role)%}
-          <button class=" btn_cq_rec_order" mid="{{row.member_id}}"  mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order">确认已交接完成
+          <button class=" btn_cq_rec_order" mid="{{row.member_id}}"  mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order">
+          
+          {%if item.team_id==205 %}确认已办结 {%else%} 确认已交接完成{%end%}
           </button>
           {%else%}
 
-          (等待仓管交接完成)
+         <span class="badge badge-pill badge-info" style="font-size:13px;"> 等待订单完成确认</span>
 
           {%end%}
 
@@ -2703,7 +2764,7 @@ background-color: #007bff;
        {%if row.remark%}
           备注信息:{{row.remark}}
        {%end%}
-   {%if 11==int(role)%}
+   {%if 11==int(role) %}
         <button class=" btn_cq_rec_order_remark" remark="{%if row.remark%}{{row.remark}}{%end%}" mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order_remark">备注
           </button>
      {%end%}
@@ -2741,10 +2802,10 @@ background-color: #007bff;
 <li class="list-group-item">
 <b>{{logoff_item.income_name}}</b>
 {%if logoff_item.finish_at%}
-<span class="badge badge-info">{{logoff_item.uid_name}} - 申请{{logoff_item.finish_at}}办结</span>
+<span class="badge badge-pill badge-info" style="font-size:13px;">{{logoff_item.uid_name}} - 申请{{logoff_item.finish_at}}办结</span>
 
 {%if  logoff_item.state_id==2 %}
-<span class="badge badge-success">{{logoff_item.leader_uid_name}} {{logoff_item.leader_at}}  已确认</span>
+<span class="badge badge-pill badge-success" style="font-size:13px;">{{logoff_item.leader_uid_name}} {{logoff_item.leader_at}}  已确认</span>
 
 
 {%elif  logoff_item.state_id==3 %}
@@ -2961,7 +3022,7 @@ background-color: #007bff;
 
 
                   <td>         {%if item.file_name%}
-
+                  
                    <a href="project?tag=view_img&img={{item.file_name}}" style="font-size:13px;" target="_blank"><img src="/static/ico/web_icon_051.png" height="20"/>
                           查看</a>
                       {%end%}</td>
@@ -2983,6 +3044,7 @@ background-color: #007bff;
                           is_customer = "{{item.is_customer}}"
                           use_type="{%if item.use_type%}{{item.use_type}}{%end%}"
                           type_ids="{{item.type_ids}}"
+                          is_inner="{{item.is_inner}}"
                           rec_by_uid_at ="{%if item.rec_by_uid_at%}{{item.rec_by_uid_at}}{%else%}{%end%}"
                           remark="{%if item.remark%}{{item.remark}}{%end%}">修 &emsp;&nbsp; 改</a>
                           <a
@@ -3058,7 +3120,7 @@ background-color: #007bff;
 
                           <td>
                               {%if (item.uid==int(uid) or role=='11') and cg_confirm_at!=len(project_btypes) or role=="8" or uid=='119' %}
-                              <a href="javascript:void(0)"  class="btn-sm modify_transition1" transition_id="{{item.id}}"
+                              <a href="javascript:void(0)"  class="btn-sm modify_transition1" transition_id="{{item.id}}" file_name="{{item.file_name.split('/')[-1]}}"
                         >删除
                       {%end%}</a>
 
@@ -4687,8 +4749,22 @@ background-color: #007bff;
 
     <div class="control-group">
       <label class="control-label" for="lastname">附件</label>
-      <div class="controls">
-        <input type="file" value="1" id="tran_file" name="tran_file" class="form-control" />
+      <div class="col-md-10">
+        <form 
+
+        class="dropzone"
+        enctype="multipart/form-data"
+        id="my-dropzone"
+        method="post" >
+        <!--上传图片时，需要同时提交的数据，这里做个演示-->
+     <input type="hidden" value="{{t_project.id}}" name="id"/>
+     {% raw xsrf_form_html() %}
+    </form>
+    <div>
+      <!--上传按钮，提供多张图片一次性上传的功能-->
+
+  </div>
+        <!-- <input type="file" value="1" id="tran_file" name="tran_file" class="form-control" /> -->
       </div>
       <!-- /controls -->
     </div>
@@ -4699,8 +4775,7 @@ background-color: #007bff;
 
 
   <div class="modal-footer">
-  <div class="alert alert-danger " role="alert" id="show_msg_by_transition">
-
+  <div class="alert alert-danger " role="alert" id="show_msg_by_transition" style="display:none;">
 </div>
   <a href="javascript:void(0)" id="delete_transition" class="btn-danger btn">删除本条数据</a>
     <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
@@ -4917,7 +4992,7 @@ background-color: #007bff;
   <div class="modal-dialog" role="document" >
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">新增工商专员 </h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">新增业务跟进人 </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -4927,15 +5002,16 @@ background-color: #007bff;
 
 
     <div class="form-group">
-    <label for="inputEmail3" class="col-sm-5 control-label">工商专员</label>
+    <label for="inputEmail3" class="col-sm-5 control-label">跟进人</label>
     <div class="col-sm-10">
-          <select id="cq_member" name="cq_member"  class="form-control" >
+        <!--  <select id="cq_member" name="cq_member"  class="form-control" >
                 <option value="0">请选择</option>
                         {%for m  in t_user_teams_cq%}
                             <option value="{{m.id}}" >{{m.name}}</option>
 
                         {%end%}
-                </select>
+                </select>-->
+                <input type="text" name="cq_member" id="cq_member"   class="form-control cq_member"   index="0" data-items="8" data-provide="typeahead"   >
     </div>
   </div>
 
@@ -4997,7 +5073,7 @@ background-color: #007bff;
       <div class="form-group" id='projects_note_content'>
       <label for="inputEmail3" class="col-sm-3 control-label" id="projects_lab">交代内容
         </label>
-          <select name='note_chengjiao' style="width:120px;">
+          <select name='note_chengjiao'  style="width:120px;">
               <option value="">选择成交事项</option>
               {%for item in t_projects_note_chengjiao%}
               <option value="{{item.msg}}">{{item.msg}}</option>
@@ -5423,11 +5499,9 @@ background-color: #007bff;
   </div>
 </div>
 
-
-
 <!-- Modal -->
 <div class="modal fade" id="service_modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-  <div class="modal-dialog" role="document" >
+  <div class="modal-dialog" role="document" style="width:1138px;max-width:none;">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle">业务收入明细
@@ -5442,7 +5516,7 @@ background-color: #007bff;
       </div>
 
 <div class="modal-body form-horizontal" id="site_mod">
-<div class="row">
+<!-- <div class="row">
   {%for item in t_projects_service_income%}
 
     <div class="form-group" id="income_detail">
@@ -5465,10 +5539,28 @@ background-color: #007bff;
       </div>
        {%end%}
 
-      </div>
+      </div> -->
+   
+    
+      <div>
 
+          <ul class="jizmx">
+              {%for item in t_projects_service_income%}
+            <li>
+              <label for="">{{item.service_name}}</label>
+              <div class="jixuk">
+                <input style="color:red;" type="text" sid="{{item.sid}}"  name="service_money"
+          service_name="{{item.service_name}}" guid="{{item.guid}}" value="{%if item.service_money!=0.00 and item.is_free==0 or item.is_free==1%}{{item.service_money}}{%end%}"
+                class="jz-kk">
+                <input type="button" value="免收费" class="jz-at {%if item.is_free==1%}atcur{%end%}" sid="{{item.sid}}">
+                <input type="checkbox" name="is_free" value="{{item.sid}}" {%if item.is_free==1%}checked{%end%} hidden>
+              </div>
+            </li>
+            {%end%}
+        </ul>
+        </div>
 </div>
-      <div class="modal-footer">
+      <div class="modal-footer" style="margin-top:20px;">
 
         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
                  <button class="btn btn-primary" target="_blank" id="btn_save_income_servie">保 存</button>
@@ -5830,11 +5922,11 @@ background-color: #007bff;
                  <div class=" form-group  span5   " style="margin:10px;">
             <label for="exampleInputEmail1"  class="control-label">成交周期(天）:</label>
 
-            <input class="form-control" value="{%if t_project.deal_day%}{{t_project.deal_day}}{%end%}" type="text" name="deal_day" id="deal_day" placeholder="花了多少天完成了订单" />
+            <input class="form-control" value="{{t_project.deal_day}}" type="text" name="deal_day" id="deal_day" placeholder="花了多少天完成了订单" />
           </div>
                   <div class="form-group span5" style="margin:10px;"    >
                         <label for="exampleInputEmail1"  class="control-label">预计合同定金:</label>
-                        <input class="form-control"  value="{%if t_project.pre_income%}{{t_project.pre_income}}{%end%}"  type="text" name="pre_income" id="pre_income" placeholder="预计合同定金金额" value="">
+                        <input class="form-control"  value="{{t_project.pre_income}}"  type="text" name="pre_income" id="pre_income" placeholder="预计合同定金金额" value="">
                     </div>
   </div>
               <div class="form-group" id="div_addr_type">
@@ -5854,7 +5946,15 @@ background-color: #007bff;
           <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">企业名称:</label>
             <input class="form-control"  value="{%if t_project.customer_company%}{{t_project.customer_company}}{%end%}" type="text" name="customer_company" id="customer_company"  placeholder="企业名称">
+            <small id="customer_company_uidHelpInline" class="text-danger"></small>
           </div>
+
+            <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">信用代码:</label>
+            <input class="form-control"  value="{%if t_project.company_uid%}{{t_project.company_uid}}{%end%}" type="text" name="company_uid" id="company_uid" placeholder="信用代码"  onkeyup="this.value=this.value.toUpperCase()">
+               <small id="company_uidHelpInline" class="text-danger"></small>
+          </div>
+
           <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">联系方式:</label>
             <input class="form-control" value="{%if t_project.customer_tel%}{{t_project.customer_tel}}{%end%}"   type="text" name="customer_tel" id="customer_tel" placeholder="手机号码">
@@ -5911,7 +6011,15 @@ background-color: #007bff;
                 <label for="exampleInputEmail1"  class="col-sm-4 control-label">企业名称:</label>
                 <input class="form-control"  value="{%if t_project.customer_company%}{{t_project.customer_company}}{%end%}" type="text" name="customer_company3" id="customer_company3"  placeholder="企业名称">
               </div>
+
+                <div class="form-group">
+            <label for="exampleInputEmail1"  class="col-sm-4 control-label">信用代码:</label>
+            <input class="form-control"  type="text" name="company_uid3" id="company_uid3" 　style="text-transform:uppercase; " value="{%if t_project.customer_company%}{{t_project.customer_company}}{%end%}" placeholder="信用代码">
+               <small id="company_uidHelpInline" class="text-danger"></small>
+          </div>
         </div>
+
+
         <div class="modal-footer">
 
 
@@ -5943,7 +6051,17 @@ background-color: #007bff;
                 <label for="exampleInputEmail1"  class="col-sm-4 control-label">企业名称:</label>
                 <input class="form-control"  value="{%if t_project.customer_company%}{{t_project.customer_company}}{%end%}" type="text" name="customer_company1" id="customer_company1"  placeholder="企业名称">
               </div>
+
+
+            <div class="form-group">
+                <label for="exampleInputEmail1"  class="col-sm-4 control-label">信用代码:</label>
+                <input class="form-control"  value="{%if t_project.company_uid%}{{t_project.company_uid}}{%end%}" type="text" name="customer_company1" id="customer_company1"  placeholder="企业名称">
+                           <small id="company_uidHelpInline" class="text-danger"></small>
+              
+              </div>
         </div>
+
+        
         <div class="modal-footer">
 
 
@@ -6122,7 +6240,9 @@ background-color: #007bff;
             </div>
          <div class="form-group">
               <label for="exampleInputEmail1"  class="col-sm-6 control-label">统一社会信用代码:</label>
-              <input class="form-control to_customer" type="text" name="company_uid" value="{% if t_project.company_uid%}{{t_project.company_uid}}{%end%}" id='company_uid' placeholder="输入信用代码">
+              <input class="form-control to_customer" type="text" name="company_uid2" value="{% if t_project.company_uid%}{{t_project.company_uid}}{%end%}" id="company_uid2" placeholder="输入信用代码">
+              <span id="company_uid2HelpInline"></span>
+          
             </div>
 
 
@@ -6253,7 +6373,7 @@ background-color: #007bff;
           <label for="inputEmail3" class="col-sm-12 control-label">
             <b>{{item.income_name}}</b>
           </label>
-          <div class="col-sm-10">
+          <div class="col-sm-12">
             <div class="row">
 
 
@@ -6263,7 +6383,13 @@ background-color: #007bff;
              {{t_projects_income['income_money']}}{%end%}{%end%}{%end%}" />
 
               </div>
-
+              <div class="col-sm-6">
+                <input  type="text" id="{{item.income_name}}_remark"  class="form-control" placeholder="备注"
+                placeholder="填写金额" value="{%if t_projects_income_all%}{% for t_projects_income in t_projects_income_all %}
+             {%if t_projects_income['income_name']==item.income_name%}
+             {{t_projects_income['remark']}}{%end%}{%end%}{%end%}"
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -6398,7 +6524,9 @@ background-color: #007bff;
 
 {%for item in t_income_other_type%}
   <div class="form-group">
-    <label for="inputEmail3" class="col-sm-12 control-label"><b>{{item.income_name}}</b></label>
+    <label for="inputEmail3" class="col-sm-12 control-label"><b>{{item.income_name}}</b>  {%if item.income_name.encode('utf-8')==u"退款"%}
+      <font color="red">*退款请到对应的退款项目录入负数.</font> 
+  {%end%}</label>
         <div class="col-sm-10">
     <div class="row">
 
@@ -6408,6 +6536,8 @@ background-color: #007bff;
 
 
 {%if item.income_name.encode('utf-8') not  in ['CA费用','税控盘','印花税','罚款','其他','退款']%}
+
+
        <a
        href="javascript:void(0)"
        title_name="{{item.income_name}}"
@@ -6986,7 +7116,8 @@ background-color: #007bff;
               <div class="modal-header">
                 <h5 class="modal-title" ><span id="express_title">发起快递申请</span>
                   <a class="btn btn-primary btn-sm" id="choose_cutomer_addr_msg" href="javascript:void(0);">选择收件人信息</a>
-            </h5>
+                  <a class=" btn btn-danger btn-sm" id="delete_express" href="javascript:void(0);">删除</a>
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -7213,11 +7344,206 @@ background-color: #007bff;
  {% end %}
 
  {%block js%}
+ <script src="/static/dropzone.js"></script>
+<script src="/static/dropzone-amd-module.js"></script>
 <script>
+Dropzone.options.myDropzone = {
+//指定上传图片的路径
+url: "/project?tag=add_tran",
+dictDefaultMessage:"请点击选择文件或拖动文件到本区域",
+//添加上传取消和删除预览图片的链接，默认不添加
+addRemoveLinks: true,
 
+//关闭自动上传功能，默认会true会自动上传
+//也就是添加一张图片向服务器发送一次请求
+autoProcessQueue: false,
+
+//允许上传多个照片
+uploadMultiple: true,
+
+//每次上传的最多文件数，经测试默认为2，坑啊
+//记得修改web.config 限制上传文件大小的节
+parallelUploads: 100,
+paramName:'file',
+init: function () {
+    var submitButton = document.querySelector("#btn_save_trans")
+    myDropzone = this; // closure
+
+    //为上传按钮添加点击事件
+    submitButton.addEventListener("click", function () {
+            Dropzone.options.PDFDrop={
+              accept:function(file,done){
+                alert(file)
+              }
+            }
+              // var tran_by = $("#tran_by").val()
+                var rec_by = $("#rec_by").val()
+                var tran_at = $("#tran_at").val()
+                var trans_remark =$("#trans_remark").val()
+                var transition_id =$("#btn_save_trans").attr("transition_id")
+                var is_customer = $("#btn_save_trans").attr("is_customer")
+                var mid = $("#btn_save_trans").attr("mid")
+                if(is_customer==undefined){
+                    is_customer=0
+                }
+                if(mid==undefined){
+                    mid=0
+                }
+
+                var is_inner = $("input[name=is_inner]:checked").val()
+                var use_type = $("#use_type").val()
+                  var type_ids=[]
+                  var type_names=[]
+                  var remark=$('#projects_type_remark').val();
+
+                  $('input[name=check_projects_type_trans]:checked').each(function () {
+                        type_ids.push($(this).val());
+                        type_names.push($(this).attr('income_name'))
+                  })
+                  type_ids=type_ids.join(',')
+                  type_names=type_names.join(',')
+
+                if (is_inner==undefined){
+                    $("#msg_rec_by").text("未选择类型")
+                }
+                else if(rec_by==""){
+                    $("#rec_by").focus()
+                    $("#show_msg_by_transition").text("签收方不能为空")
+                    $("#show_msg_by_transition").show()
+                }
+                else if(tran_at==""){
+                      $("#show_msg_by_transition").text("交接时间不能为空")
+                      $("#tran_at").focus()
+                    $("#show_msg_by_transition").show()
+
+                }
+                  else{
+                  //手动上传所有图片
+                  myDropzone.processQueue();
+                  if($("#my-dropzone").children('.dz-image-preview').length<=0){
+
+                  
+                  var formData = new FormData();
+                  formData.append('_xsrf', _xsrf)
+                  formData.append("trans_remark",trans_remark)
+                  formData.append("tran_at", tran_at)
+                  formData.append("is_inner",is_inner)
+                  formData.append("rec_by", rec_by)
+                  formData.append("project_id","{{t_project.id}}")
+                  formData.append("type_ids", type_ids)
+                  formData.append("type_names", type_names)
+                  formData.append("transition_id", transition_id)
+                  formData.append("use_type", use_type)
+                  formData.append("is_customer", is_customer)
+                  formData.append("mid", mid)
+
+
+
+                  $(this).text("保存中..")
+                  $(this).attr("disabled", "disabled")
+
+                    $.ajax({
+                        url: '/project?tag=add_tran',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,  // tell jQuery not to set contentType
+                        success: function (data) {
+                          if(data >=0){
+                          location.reload()
+
+                          }
+                          else{
+                              if(data=="内部交接:签收用户不存在哦."){
+                                  $("#rec_by").focus()
+                              }
+                              $("#show_msg_by_transition").show()
+                              $("#show_msg_by_transition").text(data)
+
+                          }
+
+                        }
+                      });
+
+
+                    }
+                  }
+
+         
+    });
+
+    //当添加图片后的事件，上传按钮恢复可用
+    this.on("addedfile", function () {
+        $("#btn_save_trans").removeAttr("disabled");
+    });
+    this.on("sending", function(file, xhr, formData) {
+        var rec_by = $("#rec_by").val()
+        var tran_at = $("#tran_at").val()
+        var trans_remark =$("#trans_remark").val()
+        var transition_id =$("#btn_save_trans").attr("transition_id")
+        var is_customer = $("#btn_save_trans").attr("is_customer")
+        var mid =$("#btn_save_trans").attr("mid")
+        if(is_customer==undefined){
+            is_customer=0
+        }
+        if(mid==undefined){
+            mid=0
+        }
+
+        var is_inner =  $("input[name=is_inner]:checked").val()
+        var use_type = $("#use_type").val()
+          var type_ids=[]
+          var type_names=[]
+          var remark=$('#projects_type_remark').val();
+
+          $('input[name=check_projects_type_trans]:checked').each(function () {
+                type_ids.push($(this).val());
+                type_names.push($(this).attr('income_name'))
+           })
+           type_ids=type_ids.join(',')
+           type_names=type_names.join(',')
+
+          formData.append('_xsrf', _xsrf)
+          formData.append("trans_remark",trans_remark)
+          formData.append("tran_at", tran_at)
+          formData.append("is_inner",is_inner)
+          formData.append("rec_by", rec_by)
+          formData.append("project_id","{{t_project.id}}")
+          formData.append("type_ids", type_ids)
+          formData.append("type_names", type_names)
+          formData.append("transition_id", transition_id)
+          formData.append("use_type", use_type)
+          formData.append("is_customer", is_customer)
+          formData.append("mid", mid)
+          
+
+            console.log(formData)
+            });
+    //当上传完成后的事件，接受的数据为JSON格式
+    this.on("complete", function (data) {
+
+                   location.reload()
+
+        // if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+          
+        //     location.reload()
+         
+           
+        // }
+    });
+
+    //删除图片的事件，当上传的图片为空时，使上传按钮不可用状态
+    this.on("removedfile", function () {
+        if (this.getAcceptedFiles().length === 0) {
+            $("#btn_save_trans").removeAttr("disabled");
+        }
+    });
+}
+};
 $(function(){
 
 
+customer_id="{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
 $("#show_msg_by_transition").hide()
 {%if mid%}
  $("#home-tab{{mid}}").tab('show')
@@ -7237,14 +7563,24 @@ _xsrf =  getCookie("_xsrf")
         mid = $(this).attr("mid")
         guid = $(this).attr("guid")
         atype = $(this).attr("atype")
-        $.post("/project?tag=cancel_memeber_task", { "mid": mid, "project_id": "{{t_project.id}}", "guid": guid, "_xsrf": _xsrf, "atype": atype }, function (result) {
+        $.post("/project?tag=cancel_memeber_task", { "mid": mid, "project_id": "{{t_project.id}}", "guid": guid, "_xsrf": _xsrf, "atype": atype,
+        "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}" 
+      }, function (result) {
           location.reload()
         })
     }
 
 
   })
-
+$('#banjie_reject').click(function () { 
+    mid = $(this).attr("mid")
+    mp_id = $(this).attr("mp_id")
+    $.post("/project?tag=cancel_memeber_task", { "mid": mid, "project_id": "{{t_project.id}}", "_xsrf": _xsrf, "atype": 'banjie_reject',
+        "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}" 
+      }, function (result) {
+          location.reload()
+        })
+ })
 
 $.ajax({
   type: "GET",
@@ -7377,6 +7713,8 @@ $("#btn_add_express").on("click",function () {
   $("#er_rec_company").hide()
   $('#er_express_number').hide()
   $("#er_send_name").hide()
+$("#delete_express").removeAttr("express_id")
+  $("#delete_express").hide()
   $("#add_express_modal").modal("show")
  })
  $("#btn_add_express_rec").on('click',function () {
@@ -7404,8 +7742,27 @@ $("#btn_add_express").on("click",function () {
       $("#er_rec_company").hide()
       $('#er_express_number').hide()
       $("#er_send_name").hide()
-        $("#add_express_modal").modal("show")
-      })
+$("#delete_express").removeAttr("express_id")
+$("#delete_express").hide()
+$("#add_express_modal").modal("show")
+})
+
+$("#delete_express").on('click',function () {
+   var express_id=$(this).attr('express_id')
+   if(confirm('确定删除？')){
+    $.post('/project?tag=express',
+   {
+     '_xsrf':_xsrf,
+     'delete_id':express_id
+   },function (res) {
+     if(res=='-1'){
+       alert('已审核不能删除')
+     } 
+     location.reload()
+    })
+   } 
+  })
+
  $(".edit_express").on("click",function () {
   $('input[name=rec_file]').prop('checked', false)
   type_ids_arr =$(this).attr('rec_file_ids').split(',')
@@ -7457,6 +7814,12 @@ $("#btn_add_express").on("click",function () {
   }else{
     $("#er_express").hide()
     $('#btn_save_express').show()
+  }
+  $("#delete_express").attr("express_id",$(this).attr('id'))
+  if($(this).attr('accept_at')=='None' && $(this).attr('uid_name')=='{{name}}'){
+    $("#delete_express").show()
+  }else{
+    $("#delete_express").hide()
   }
   $("#add_express_modal").modal("show")
  })
@@ -7617,7 +7980,9 @@ $("#delete_linkman").on("click",function(){
                 {
                   "_xsrf": _xsrf,
                   "id": linkman_id,
-                  "guid":linkman_guid
+                  "guid":linkman_guid,
+                  'customer_id':customer_id,
+                  'project_id':"{{t_project.id}}"
                   },function(result){
                     alert("删除成功！")
                     location.reload()
@@ -7658,6 +8023,7 @@ $("#btn_save_linkman").on("click",function(){
                 $.post("/project?tag=add",{
                   "_xsrf":_xsrf,
                   "project_id":{{t_project.id}},
+                  "customer_id":customer_id,
                   "tel":tel,
                   "name":name,
                   "remark":remark,
@@ -7725,101 +8091,15 @@ $("#a_add_trans_customer").on("click", function () {
   })
 
 
-$("#btn_save_trans").on("click",function(){
-
-       // var tran_by = $("#tran_by").val()
-        var rec_by = $("#rec_by").val()
-        var tran_at = $("#tran_at").val()
-        var trans_remark =$("#trans_remark").val()
-        var transition_id =$(this).attr("transition_id")
-        var is_customer = $(this).attr("is_customer")
-        var mid = $(this).attr("mid")
-        if(is_customer==undefined){
-            is_customer=0
-        }
-        if(mid==undefined){
-            mid=0
-        }
-
-        var is_inner =  $("input[name=is_inner]:checked").val()
-        var use_type = $("#use_type").val()
-          var type_ids=[]
-          var type_names=[]
-          var remark=$('#projects_type_remark').val();
-
-          $('input[name=check_projects_type_trans]:checked').each(function () {
-                type_ids.push($(this).val());
-                type_names.push($(this).attr('income_name'))
-           })
-           type_ids=type_ids.join(',')
-           type_names=type_names.join(',')
-
-        if (is_inner==undefined){
-            $("#msg_rec_by").text("未选择类型")
-        }
-        else if(rec_by==""){
-            $("#rec_by").focus()
-             $("#show_msg_by_transition").text("签收方不能为空")
-        }
-        else if(tran_at==""){
-              $("#show_msg_by_transition").text("交接时间不能为空")
-              $("#tran_at").focus()
-        }
-          else{
-
-          var formData = new FormData();
-          formData.append('file', $('#tran_file')[0].files[0]);
-          formData.append('_xsrf', _xsrf)
-          formData.append("trans_remark",trans_remark)
-          formData.append("tran_at", tran_at)
-          formData.append("is_inner",is_inner)
-          formData.append("rec_by", rec_by)
-          formData.append("project_id",{{t_project.id}})
-          formData.append("type_ids", type_ids)
-          formData.append("type_names", type_names)
-          formData.append("transition_id", transition_id)
-          formData.append("use_type", use_type)
-          formData.append("is_customer", is_customer)
-          formData.append("mid", mid)
-
-
-
-          $(this).text("保存中..")
-          $(this).attr("disabled", "disabled")
-
-            $.ajax({
-                url: '/project?tag=add_tran',
-                type: 'POST',
-                data: formData,
-                processData: false,  // tell jQuery not to process the data
-                contentType: false,  // tell jQuery not to set contentType
-                success: function (data) {
-                  if(data >=0){
-                   location.reload()
-
-                  }
-                  else{
-                      if(data=="内部交接:签收用户不存在哦."){
-                          $("#rec_by").focus()
-                      }
-                      $("#show_msg_by_transition").show()
-                      $("#show_msg_by_transition").text(data)
-
-                  }
-
-                }
-              });
-
-
-
-          }
-
-      })
-
  $(".modify_transition1").on("click",function(){
 
           if(confirm("确认删除吗？")){
-            $.post("/project?tag=delete_tran_upload",{"transition_id":$(this).attr('transition_id'),"_xsrf":_xsrf,"project_id":'{{t_project.id}}'},function(result){
+            $.post("/project?tag=delete_tran_upload",
+            {"transition_id":$(this).attr('transition_id'),
+            "_xsrf":_xsrf,"project_id":'{{t_project.id}}',
+            "file_name":$(this).attr('file_name'),
+            "customer_id":customer_id
+            },function(result){
                 alert("删除成功")
                 location.reload()
 
@@ -7843,13 +8123,13 @@ $(".modify_transition").on("click",function(){
           var is_inner = $(this).attr("is_inner")
 
 
-          if(is_customer==1){
+          if(is_customer=='1'){
             $("#is_inner_span").hide()
           }
-          if(is_inner==1){
-               $("#is_inner").prop('checked', true);
+          if(is_inner=='1'){
+               $("#is_inner[value='1']").prop('checked', true);
           }else{
-              $("#is_inner").prop('checked', false);
+              $("#is_inner[value='0']").prop('checked', true);
           }
           if (rec_by_uid_at!="" || rec_by_uid_at==undefined){
               $("#btn_save_trans").hide()
@@ -8021,6 +8301,7 @@ $(".delete_state").on("click",function(){
         type_id=$(this).attr('type_id')
         $.post("project?tag=delete",{
               "_xsrf":_xsrf,
+              "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
               "curr_state_id":curr_state_id,
               "project_id":{{t_project.id}},
               "name":name,
@@ -8393,11 +8674,13 @@ $(".modify_state10").on('click',function(){
     $("#btn_save_project1").attr('disabled','disabled')
                     $(this).text("保存中...")
                     $.post("/project?tag=modify1",{
-                        "project_id":{{t_project.id}},
+                      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
+                        "project_id":"{{t_project.id}}",
                         "project_guid":"{{t_project.guid}}",
                         "customer_company":customer_company,
                         "_xsrf":_xsrf},function(result){
                           $.post("project?tag=add_state",{
+                            "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
                               "_xsrf":_xsrf,
                               "type_id": type_id,
                               "curr_state_id":curr_state_id,
@@ -8515,6 +8798,7 @@ $("#btn_save_project_state").on("click",function(){
     $(this).attr("disabled","disabled")
     $(this).text('保存中..')
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8539,6 +8823,7 @@ $("#btn_save_project_state").on("click",function(){
       $(this).attr("disabled","disabled")
        $(this).text('保存中..')
       $.post("project?tag=add_state",{
+        "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8574,6 +8859,7 @@ $("#btn_save_project_state1").on("click",function(){
     $(this).text('保存中..')
 
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8607,6 +8893,7 @@ $("#btn_save_project_state2").on("click",function(){
     $(this).text('保存中..')
 
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8640,6 +8927,7 @@ $("#btn_save_project_state3").on("click",function(){
     $(this).text('保存中..')
 
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8673,6 +8961,7 @@ $("#btn_save_project_state4").on("click",function(){
     $(this).text('保存中..')
 
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8706,6 +8995,7 @@ $("#btn_save_project_state5").on("click",function(){
     $(this).text('保存中..')
 
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8739,6 +9029,7 @@ $("#btn_save_project_state6").on("click",function(){
     $(this).text('保存中..')
 
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8772,6 +9063,7 @@ $("#btn_save_project_state7").on("click",function(){
     $(this).text('保存中..')
 
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8804,6 +9096,7 @@ $("#btn_save_project_state8").on("click",function(){
     $(this).text('保存中..')
 
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8837,6 +9130,7 @@ $("#btn_save_project_state9").on("click",function(){
     $(this).text('保存中..')
 
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -8870,6 +9164,7 @@ $("#btn_save_project_state10").on("click",function(){
     $(this).text('保存中..')
 
     $.post("project?tag=add_state",{
+      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
         "_xsrf":_xsrf,
         "type_id": type_id,
         "curr_state_id":curr_state_id,
@@ -9039,8 +9334,13 @@ $("#btn_save_project_state10").on("click",function(){
 
   })
 
+function fullChar2halfChar(result) {
+
+    return result.replace("（", "(").replace("）", ")") ;
+}
 $("#btn_save_project1").on("click",function () {
-  customer_company = $("#customer_company1").val();
+  customer_company = fullChar2halfChar($("#customer_company1").val());
+  company_uid = $("#company_uid1").val()
   is_update_company_customer=''
   is_update_company_project=''
   if(customer_company==''){
@@ -9067,9 +9367,11 @@ $("#btn_save_project1").on("click",function () {
                         // }
                         }
                         $.post("/project?tag=modify1",{
+                        "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
                         "project_id":"{{t_project.id}}",
                         "project_guid":"{{t_project.guid}}",
                         "customer_company":customer_company,
+                        "company_uid":company_uid,
                         "is_update_company_project":is_update_company_project,
                         "is_update_company_customer":is_update_company_customer,
                         "_xsrf":_xsrf},function(result){
@@ -9089,14 +9391,16 @@ $("#btn_save_project1").on("click",function () {
                         //   is_update_company_project=1
                         // }
                         }
+             
                         $("#btn_save_project1").attr('disabled','disabled')
                         $("#btn_save_project1").text("保存中...")
                         $.post("/project?tag=modify1",{
+                          "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
                         "project_id":"{{t_project.id}}",
                         "project_guid":"{{t_project.guid}}",
                         "is_update_company_project":is_update_company_project,
                         "is_update_company_customer":is_update_company_customer,
-                        "customer_company":customer_company,
+                        "customer_company":customer_company, "company_uid":company_uid,
                         "_xsrf":_xsrf},function(result){
                             console.log("result"+result)
                             location.reload()
@@ -9115,6 +9419,7 @@ $('#btn_save_project_kehu').on('click',function () {
     $("#btn_save_project_kehu").attr('disabled','disabled')
                     $(this).text("保存中...")
                     $.post("/project?tag=modify1",{
+                      "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
                         "project_id":{{t_project.id}},
                         "project_guid":"{{t_project.guid}}",
                         "customer_name":customer_name,
@@ -9124,6 +9429,163 @@ $('#btn_save_project_kehu').on('click',function () {
                         })
   }
  })
+    $('#customer_company').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"customer_company_guid"}, function (data) {
+            return process(JSON.parse(data));
+        });
+    },
+     updater: function(item) {
+       // # myOwnFunction(item);
+       // # var $fld = $('#my-input-field');
+
+      $('#customer_company').val(item.split("-")[0])
+
+
+      if(item.split("-")[1]==""){
+   
+        $("#company_uidHelpInline").html("当公司名称不为空,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+item.split("-")[0]+"'>查询信用代码</a>")
+         
+      }
+    else{
+      $("#company_uid").val(item.split("-")[1])
+    }
+
+    
+        return item.split("-")[0];
+    }
+    });
+
+    $('#customer_company1').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"customer_company_guid"}, function (data) {
+            return process(JSON.parse(data));
+        });
+    },
+     updater: function(item) {
+       // # myOwnFunction(item);
+       // # var $fld = $('#my-input-field');
+
+      $('#customer_company1').val(item.split("-")[0])
+
+
+      if(item.split("-")[1]==""){
+   
+        $("#company_uidHelpInline1").html("当公司名称不为空,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+item.split("-")[0]+"'>查询信用代码</a>")
+         
+      }
+    else{
+      $("#company_uid1").val(item.split("-")[1])
+    }
+
+    
+        return item.split("-")[0];
+    }
+    });
+
+
+$("#company_uid").on('change keydown paste input keyup', function(){
+     val = $(this).val()
+   
+     if (val.length==18){
+        $("#company_uidHelpInline").text("")
+     }else{
+       $("#company_uidHelpInline").html("信用代码必须位18位,当前:"+val.length+".<a target='_blank' href='https://www.tianyancha.com/search?key="+$("#customer_company").val()+"'>查询信用代码</a>")
+     }
+});
+
+$("#customer_company").on('change', function(){
+    val = $(this).val()
+    $.post('/api', { query: val ,"_xsrf":_xsrf,"tag":"customer_company_one"}, function (data) {
+      consolo.log(data+'llllll')
+            if(data!=""){
+
+            
+              if(data==undefined ||  data.length!=18){
+                  $("#company_uidHelpInline").html("当前信用代码位数不正确请与财务联系修改,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+$(this).val()+"'>查询信用代码</a>")
+                    $("#company_uid").val("")
+              }else{
+                  $("#company_uid").val(data)
+              }
+            }else{
+                $("#company_uid").val("")
+                $("#company_uidHelpInline").html("当公司名称不为空,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+val+"'>查询信用代码</a>")
+            }
+        });
+
+
+});
+
+
+
+
+
+    $('#customer_company2').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"customer_company_guid"}, function (data) {
+            return process(JSON.parse(data));
+        });
+    },
+     updater: function(item) {
+       // # myOwnFunction(item);
+       // # var $fld = $('#my-input-field');
+
+      $('#customer_company2').val(item.split("-")[0])
+
+
+      if(item.split("-")[1]==""){
+   
+        $("#company_uid2HelpInline1").html("当公司名称不为空,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+item.split("-")[0]+"'>查询信用代码</a>")
+         
+      }
+    else{
+      $("#company_uid2").val(item.split("-")[1])
+    }
+
+    
+        return item.split("-")[0];
+    }
+    });
+
+
+$("#company_uid2").on('change keydown paste input keyup', function(){
+     val = $(this).val()
+   
+     if (val.length==18){
+        $("#company_uid2HelpInline").text("")
+     }else{
+       $("#company_uid2HelpInline").html("信用代码必须位18位,当前:"+val.length+".<a target='_blank' href='https://www.tianyancha.com/search?key="+$("#customer_company").val()+"'>查询信用代码</a>")
+     }
+});
+
+$("#customer_company2").on('change', function(){
+    val = $(this).val()
+    $.post('/api', { query: val ,"_xsrf":_xsrf,"tag":"customer_company_one"}, function (data) {
+      consolo.log(data+'llllll')
+            if(data!=""){
+
+            
+              if(data==undefined ||  data.length!=18){
+                  $("#company_uid2HelpInline").html("当前信用代码位数不正确请与财务联系修改,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+$(this).val()+"'>查询信用代码</a>")
+                    $("#company_uid2").val("")
+              }else{
+                  $("#company_uid2").val(data)
+              }
+            }else{
+                $("#company_uid2").val("")
+                $("#company_uid2HelpInline").html("当公司名称不为空,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+val+"'>查询信用代码</a>")
+            }
+        });
+
+
+});
+
+
+
+
+
+
+
 
 $("#btn_save_project").on("click",function(){
                 pre_income = $("#pre_income")
@@ -9139,6 +9601,7 @@ $("#btn_save_project").on("click",function(){
                 bf_value = busniess_from.val().split('|')[0]
                 business_channel= $("input[name=business_channel]:checked")
                 customer_company = $("#customer_company")
+                company_uid = $("#company_uid")
                 customer_tel = $("#customer_tel")
                 sign_type_id = $("input[name=sign_type_id]:checked")
                // remark = $("#project_remark")
@@ -9155,14 +9618,15 @@ $("#btn_save_project").on("click",function(){
                 type_in_customer=''
                 is_update_company_customer=''
                 is_update_company_project=''
-
-                // if (company.val()=="0" || company.val()==undefined){
-                //   $("#pcompanyHelpInline").text("请选择业务所属公司哦。")
-                //   $("#company").focus()
-                //    console.log("hi1")
-                //   return false;
-                // }
-                if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
+               if(customer_company.val()!="" && company_uid.val().length!=18){
+                  $("#company_uidHelpInline").html("当公司名称不为空,信用代码必须为18位哦.<a target='_blank' href='https://www.tianyancha.com/search?key="+customer_company.val()+"'>查询信用代码</a>")
+         
+                  
+                  $("#company_uid").focus()
+                
+                  return false;
+                }
+                else  if (busniess_from=="2" && (business_channel.val()=="0" || business_channel.val()==undefined)){
                   $("#business_channelHelpInline").text("请选择来源渠道哦。")
                   $("input[name=business_channel]:first").focus()
                    console.log("hi2")
@@ -9318,6 +9782,7 @@ $("#btn_save_project").on("click",function(){
                         $(this).attr("disabled","disabled")
                         $(this).text("保存中...")
                         $.post("/project?tag=modify",{
+                        "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
                         "is_update_company_customer":is_update_company_customer,
                         "is_update_company_project":is_update_company_project,
                         "is_company_history":is_company_history,
@@ -9331,6 +9796,7 @@ $("#btn_save_project").on("click",function(){
                         "deal_day":deal_day.val(),
                         "business_channel":business_channel.val(),
                         "customer_company":customer_company.val(),
+                        "company_uid":company_uid.val(),
                         "customer_tel":customer_tel.val(),
                        // "remark":remark.val(),
                         "sign_type_id":sign_type_id.val(),
@@ -9371,12 +9837,13 @@ $("#btn_save_project").on("click",function(){
                       // $('#btn_save_project').attr("disabled","disabled")
                       // $('#btn_save_project').text("保存中...")
                       $.post("/project?tag=modify",{
+                        "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
                         "is_update_company_customer":is_update_company_customer,
                         "is_update_company_project":is_update_company_project,
                         "is_company_history":is_company_history,
                         "project_id":"{{t_project.id}}",
                         "project_guid":"{{t_project.guid}}",
-
+                         "company_uid":company_uid.val(),
                         "pre_income":pre_income.val(),
                         "project_name":project_name.val(),
                         "customer_name":customer_name.val(),
@@ -9410,15 +9877,21 @@ $("#btn_save_project").on("click",function(){
 
 })
 
-
+$('#cq_member').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
 $("#btn_save_team_cq").on('click',function(){
-    var member_id = $("#cq_member").val()
+    var member_id_name = $("#cq_member").val()
     var cq_btype_id = $("#cq_btype_id").val()
     var cq_btype_id_name =$("#cq_btype_id option:selected").text()
-    $(this).attr("disabled", "disabled")
-   $(this).text("保存中...")
-    if(member_id=="0"){
-      alert("请选择工商专员哦。")
+    var team_id = $(this).attr("team_id")
+
+    if(member_id_name==""){
+      alert("请选择跟进人哦。")
       $("#cq_member").focus()
       return false;
     }
@@ -9428,19 +9901,22 @@ $("#btn_save_team_cq").on('click',function(){
       return false;
 
     }else{
-      console.log(member_id)
-      $.post("/project?tag=add_member_cq",{"cq_btype_id_name":cq_btype_id_name,"member_id":member_id,"project_id":{{t_project.id}},"team_id":38,'_xsrf': _xsrf,"cq_btype_id":cq_btype_id },function(result){
+    $(this).attr("disabled", "disabled")
+   $(this).text("保存中...")
+      $.post("/project?tag=add_member_cq",{"cq_btype_id_name":cq_btype_id_name,"member_id_name":member_id_name,
+      "project_id":{{t_project.id}},"team_id":team_id,'_xsrf': _xsrf,
+      "cq_btype_id":cq_btype_id,"customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}" },function(result){
           location.reload()
       })
     }
 })
 
 
-$("#a_add_team_cq").on("click",function(){
-
+$(".a_add_team_cq").on("click",function(){
+  $("#btn_save_team_cq").attr("team_id",$(this).attr("team_id"))
   $("#btn_save_team_cq").removeAttr("disabled", "disabled")
   $("#btn_save_team_cq").text("保存")
-  $("#cq_member").val("0")
+  $("#cq_member").val("")
 $("#team_cq1").modal("show")
 })
 
@@ -9752,6 +10228,9 @@ $("body").on("click",'#btn_save_income_servie',function(){
       $("input[name=service_money]").each(function(){
           guid = $(this).attr("guid")
           service_money = $(this).val()
+          if(service_money==''){
+            service_money='0.00'
+          }
           sid = $(this).attr("sid")
 
           b_service_money = $.isNumeric(service_money)
@@ -9776,7 +10255,6 @@ $("body").on("click",'#btn_save_income_servie',function(){
           FreeList.push(sid)
        })
        FreeList=FreeList.join(',')
-
       $(this).text("保存中..")
       $(this).attr("disabled","disabled")
 
@@ -9785,6 +10263,7 @@ $("body").on("click",'#btn_save_income_servie',function(){
           formData.append('free',FreeList);
           formData.append('_xsrf', _xsrf );
           formData.append("project_id",{{t_project.id}})
+          formData.append("customer_id","{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}")
           $.ajax({
                 url : '/project?tag=add_service_income',
                 type : 'POST',
@@ -9877,13 +10356,14 @@ $("#btn_save_fromword").on("click",function(){
       ddf=$(this).attr('ddf')
       ddff=$(this).attr('ddff')
       team_id=$(this).attr('team_id')
-    if( (ddf!='0' && team_id=='38' || ddff!='0' && team_id!='38') && ('{{role}}'!='8' && '{{name}}'!='吴蔚亮' && "{{role}}"!='7') )
+    if( (ddf!='0' && team_id=='38' || ddff!='0' && team_id!='38') && ('{{role}}'!='8' && '{{name}}'!='吴蔚亮' && "{{role}}"!='7' && {{is_manager}}!=1)  )
     {
         alert('已过删除时间，请联系管理员或财务经理删除!')
       }
     else{
         if(confirm("确认"+staff_name+"移出项目组吗？")){
-          $.post("/project?tag=delete_member",{"mid":mid, "_xsrf": _xsrf,"project_id":project_id,"guid":guid
+          $.post("/project?tag=delete_member",{"mid":mid, "_xsrf": _xsrf,"project_id":project_id,"guid":guid,
+          "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}"
           },function(result){
                 alert(staff_name+"移出操作成功！")
                  location.reload()
@@ -10231,7 +10711,9 @@ $("#btn_save_fromword").on("click",function(){
                 member_id = $(this).val()
                 cannot_update=$(this).attr('cannot_update')
                 $.post("/project?tag=add_member",{"_xsrf": _xsrf,"guid":guid,'cannot_update':cannot_update,
-                "member_id":member_id,"project_id":{{t_project.id}}},function(result){
+                "member_id":member_id,"project_id":"{{t_project.id}}",
+                "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}"
+              },function(result){
                     location.reload()
                     console.log(result)
                 })
@@ -10399,16 +10881,27 @@ $("#btn_save_fromword").on("click",function(){
      $('#btn_save_project_type_money').on("click",function () {
        var caval=$("input[name='CA费用']").val();
        var caid=$("input[name='CA费用']").attr('id');
+       var caremark=$("#CA费用_remark").val();
+
        var shuikongpanval=$("input[name='税控盘']").val();
        var shuikongpanid=$("input[name='税控盘']").attr('id');
+       var shuikongpanremark=$("#税控盘_remark").val();
+
        var yinhuashuival=$("input[name='印花税']").val();
        var yinhuashuiid=$("input[name='印花税']").attr('id');
+       var yinhuashuiremark=$("#印花税_remark").val();
+
        var fakuanval=$("input[name='罚款']").val();
        var fakuanid=$("input[name='罚款']").attr('id');
+       var fakuanremark=$("#罚款_remark").val();
+
        var otherval=$("input[name='其他']").val();
        var otherid=$("input[name='其他']").attr('id');
+       var otherremak=$("#其他_remark").val();
+
        var tuikuanval=$("input[name='退款']").val();
        var tuikuanid=$("input[name='退款']").attr('id');
+       var tuikuanremark=$("#退款_remark").val();
 
       if (isNaN(caval) | isNaN(shuikongpanval) | isNaN(yinhuashuival) | isNaN(fakuanval)| isNaN(otherval | isNaN(tuikuanval))){
           alert('金额必须为数字！！！')
@@ -10420,21 +10913,27 @@ $("#btn_save_fromword").on("click",function(){
           'caval':caval,
           'ca':'CA费用',
           'caid':caid,
+          'caremark':caremark,
           'shuikongpanval':shuikongpanval,
           'shuikongpan':'税控盘',
           'shuikongpanid':shuikongpanid,
+          'shuikongpanremark':shuikongpanremark,
           'yinhuashuival':yinhuashuival,
           'yinhuashui':'印花税',
           'yinhuashuiid':yinhuashuiid,
+          'yinhuashuiremark':yinhuashuiremark,
           'fakuanval':fakuanval,
           'fakuan':'罚款',
           'fakuanid':fakuanid,
+          'fakuanremark':fakuanremark,
           'otherval':otherval,
           'other':'其他',
           'otherid':otherid,
+          'otherremak':otherremak,
           'tuikuan':'退款',
           'tuikuanval':tuikuanval,
           'tuikuanid':tuikuanid,
+          'tuikuanremark':tuikuanremark,
           'project_id':{{t_project.id}},
           "_xsrf": _xsrf
         },function (data) {
@@ -10581,6 +11080,7 @@ $("#btn_save_fromword").on("click",function(){
                             //  alert(income_num)
                               if(income_num==1 ){
                                   $(this).removeAttr("disabled","disabled")
+
                               }else{
 
 
@@ -10589,15 +11089,9 @@ $("#btn_save_fromword").on("click",function(){
                                  $("#income_"+val.income_id+"_"+val.income_num).attr("parent_id","0")
 
                               }
-                               if(income_name=="合同定金" || income_name=="尾款"){
+                               if(income_name=="合同定金" || income_name=="尾款" || income_name=="退款"){
                                           $(this).attr("disabled","disabled")
                                }
-
-
-
-
-
-
                         })
 
                 }else{
@@ -10608,25 +11102,23 @@ $("#btn_save_fromword").on("click",function(){
                           $("#income_"+val.income_id+"_"+val.income_num).attr("parent_id",val.parent_id)
 
                          //if(val.income_name=="合同定金" || val.income_name=="尾款"){
-
+                         
 
 
 
                           $("#income_"+val.income_id+"_"+val.income_num).attr("disabled","disabled")
 
-
-
                           $("#income_"+val.income_id+"_"+val.income_num).attr("income_detail",JSON.stringify(val.income_detail))
-
-
-
                           $("#income_"+val.income_id+"_"+val.income_num).attr("income_num",val.income_num)
                           $("#income_"+val.income_id+"_"+val.income_num).val(val.income_money)
-                         // $("#income_" + val.income_id + "_" + val.income_num).css('background-color', '#D6EAF8');
                           $("#a_income_" + val.income_id + "_" + val.income_num).hide()
-
+               
+                            
 
                         })
+                      
+                          $("input[name=income_val][income_name=退款]").attr("disabled","disabled")
+                               
                 }
 
           },"json")
@@ -10715,6 +11207,7 @@ $("#btn_save_fromword").on("click",function(){
               'note_id':note_id,
               'note_content':note_content,
               'project_id':"{{t_project.id}}",
+              'customer_id':customer_id,
               'is_chengjiao':is_chengjiao,
               'is_check':is_check,
               "_xsrf":_xsrf
@@ -10726,7 +11219,7 @@ $("#btn_save_fromword").on("click",function(){
     })
     $('#btn_save_companyinfo').on("click",function () {
         var customer_company=$('#customer_company2').val();
-        var company_uid=$('#company_uid').val();
+        var company_uid=$('#company_uid2').val();
         var comany_person=$('#comany_person').val();
         var true_reg_addr =$("#true_reg_addr").val()
         var company_created_day=$('#company_created_day').val();
@@ -10739,7 +11232,8 @@ $("#btn_save_fromword").on("click",function(){
           if (company_fever == undefined){
           company_fever = "0"
             }
-          $.post("/project?tag=set_companyinfo",{"customer_company":customer_company,"company_uid":company_uid,
+          $.post("/project?tag=set_companyinfo",{"customer_company":customer_company,
+          "company_uid":company_uid,
           "comany_person":comany_person,
           "company_created_day":company_created_day,
           "company_expired_day":company_expired_day,
@@ -10873,6 +11367,7 @@ $("#btn_save_project3").on("click",function(){
                 mtype = $(this).attr("mtype")
                 is_close = $(this).attr('is_close')
                 btype_id_name=$(this).attr("btype_id_name")
+                type_name=$(this).attr('type_name')
                 if(is_close==undefined){
                   is_close = "0"
 
@@ -10887,10 +11382,91 @@ $("#btn_save_project3").on("click",function(){
                 }
 
               $("#accept_project_transfile").attr("mid",mid)
-               $("#accept_project_transfile").attr("mp_id",mp_id)
+              $("#accept_project_transfile").attr("mp_id",mp_id)
+                if(type_name=='办结'){
+                  if(confirm('您确认该业务('+btype_id_name+')确认办结吗?')){
+                    $.post("milepost?tag=confirm",
+                {"is_close":is_close,"mid":mid,"update_id":update_id,"mp_id":mp_id,
+                "guid":guid,"customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
+                "_xsrf":_xsrf,'project_id':"{{t_project.id}}","btype_id_name":btype_id_name},function(result){
 
-                $.post("milepost?tag=confirm",
-                {"is_close":is_close,"mid":mid,"update_id":update_id,"mp_id":mp_id,"guid":guid,
+                  if(result=='-100'){
+                    $('#exampleModalLongTitle_company').text('请填写办结公司信息')
+                    $('#exampleModalLongTitle_company').addClass('text-danger')
+
+                    $("#btn_modify2").attr("mp_id",mp_id)
+                    $('#new_project_modal2').modal('show');
+                  // $("#btn_modify2").click()
+                  }
+                  else if(result=='wrong_tran'){
+                      //$("# btn_projects_transfile").click($()
+                     mp_id = $("#btn_projects_transfile").attr("mp_id")
+                     $("#btn_save_projects_transfile").attr("mp_id",mp_id)
+                    $('#projects_transfile_modal').modal('show');
+                  }
+                  else if(result=='wrong_tran_sales'){
+                      //$("# btn_projects_transfile").click($()
+                   //  var mp_id = $("#btn_projects_transfile_sales").attr("mp_id")
+                     var  mid = $("#btn_projects_transfile_sales").attr("mid")
+                     var  mtype = $("#btn_projects_transfile_sales").attr("mtype")
+                     $("#btn_save_projects_transfile_sales").attr("mtype",mtype)
+                     $("#btn_save_projects_transfile_sales").attr("mid",mid)
+                    $('#projects_transfile_modal_sales').modal('show');
+                  }
+                  else if(result=='not_confirm_sales'){
+
+                      //$("# btn_projects_transfile").click($()
+                     var   mp_id = $("#btn_sales_check_cg_list").attr("mp_id")
+                     var  mid = $("#btn_sales_check_cg_list").attr("mid")
+                     var  mtype = $("#btn_sales_check_cg_list").attr("mtype")
+
+                     $("#btn_save_to_back_transfile").attr("mtype",mtype)
+                     $("#btn_save_to_back_transfile").attr("mid",mid)
+
+                     $("#btn_save_reject_remark").attr("mtype",mtype)
+                     $("#btn_save_reject_remark").attr("mid",mid)
+                     $("#btn_save_reject_remark").attr("tag","transition")
+                     $("#btn_save_reject_remark").attr("mp_id",mp_id)
+
+                    $('#projects_transfile_modal_sales').modal('show');
+
+                  }
+                  else if(result=='not_confirm_cg'){
+
+                      //$("# btn_projects_transfile").click($()
+                   //  var mp_id = $("#btn_projects_transfile_sales").attr("mp_id")
+                   //  var  mid = $("#btn_modify_tran").attr("mid")
+                    /// var  mtype = $("#btn_modify_tran").attr("mtype")
+                     var   mp_id = $("#btn_check_cq_list").attr("mp_id")
+                     var  mid = $("#btn_check_cq_list").attr("mid")
+                     var  mtype = $("#btn_check_cq_list").attr("mtype")
+                     $("#btn_save_to_back_transfile").attr("mtype",mtype)
+                     $("#btn_save_to_back_transfile").attr("mid",mid)
+
+                     $("#accept_project_transfile").attr("mid",mid)
+                     $("#accept_project_transfile").attr("mtype",mtype)
+
+
+
+                     $("#btn_save_reject_remark").attr("mtype",mtype)
+                     $("#btn_save_reject_remark").attr("mid",mid)
+                     $("#btn_save_reject_remark").attr("tag","transition")
+                     $("#btn_save_reject_remark").attr("mp_id",mp_id)
+
+                    $('#projects_transfile_modal').modal('show');
+
+
+
+                  }
+                  else{
+                   location.reload()
+                  }
+                }) 
+                  }
+                }else{
+                  $.post("milepost?tag=confirm",
+                {"is_close":is_close,"mid":mid,"update_id":update_id,"mp_id":mp_id,
+                "guid":guid,"customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
                 "_xsrf":_xsrf,'project_id':"{{t_project.id}}","btype_id_name":btype_id_name},function(result){
 
                   if(result=='-100'){
@@ -10965,7 +11541,7 @@ $("#btn_save_project3").on("click",function(){
                    location.reload()
                   }
                 })
-
+                }
            })
 
 
@@ -11182,6 +11758,25 @@ $("#btn_save_project3").on("click",function(){
           }
 
         })
+
+
+
+      $("#a_to_kj").on("click",function(){
+          department_id = $(this).attr("department_id")
+          department_id_name = $(this).attr('department_id_name')
+           $.post(
+                    '/project?tag=to_kj',
+                    {
+                      '_xsrf':_xsrf,
+                      "project_id":'{{t_project.id}}',
+                      "project_guid":"{{t_project.guid}}",
+                      "department_id":department_id,
+                      "department_id_name":department_id_name
+                    },function (result) {
+                    location.reload()
+                    }
+                  )
+      })
 
 
       $("#accept_project_transfile").on("click",function(){
@@ -11458,6 +12053,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
          formData.append("trans_remark",trans_remark)
          formData.append('len',all_files.length)
          formData.append('transition_id',transition_id)
+         formData.append('customer_id',customer_id)
          $(this).text('保存中')
          $(this).attr('disabled','disabled')
           $.ajax({
@@ -11608,6 +12204,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
         'addr_shoufei':addr_shoufei,
         'addr_id':addr_id,
         "project_id":"{{t_project.id}}",
+        'customer_id':customer_id,
         "addr_milepost_id":addr_milepost_id,
         "addr_provider_id":addr_provider_id
       },function (result) {
@@ -11638,6 +12235,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
        {
          '_xsrf':_xsrf,
          'project_id':"{{t_project.id}}",
+         'customer_id':customer_id,
          'step':1
        },function (res) {
          location.reload()
@@ -11656,6 +12254,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
          'id':id,
          'project_id':"{{t_project.id}}",
          'addr_provider_id':addr_provider_id,
+         'customer_id':customer_id,
          'step':2
        },function (res) {
          location.reload()
@@ -11694,6 +12293,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
         '_xsrf':_xsrf,
         'id':id,
         'project_id':"{{t_project.id}}",
+        'customer_id':customer_id,
         'step':4
       },function (result) {
         if(result['addr_provider']==null){
@@ -11745,6 +12345,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                 'xiezhu_id':xiezhu_id,
                 'gs_id':gs_id,
                 'project_id':"{%if t_project%}{{t_project.id}}{%end%}",
+                'customer_id':customer_id,
                 'step':1
             },function (res) {
                 if(res=='1'){
@@ -11778,16 +12379,16 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                     for( var i=0;i<mileposts.length;i++){
                         if(mileposts[i].type_name=='待审核' ){
                             text+='<p>流程1:工商专员'+mileposts[i].uid_name+'发起协助工单'+
-                            '<span class="badge badge-success">'+mileposts[i].created_at+'</span></p>'
+                            '<span class="badge badge-pill badge-success" style="font-size:13px;">'+mileposts[i].created_at+'</span></p>'
                             if(mileposts[i].confirm_at!=null){
-                                text+='<p>流程2:'+mileposts[i+1].fz_name+'审核通过<span class="badge badge-success">'+
+                                text+='<p>流程2:'+mileposts[i+1].fz_name+'审核通过<span class="badge badge-pill badge-success" style="font-size:13px;">'+
                                 mileposts[i].confirm_at+'</span></p>'
 
                             }else if(mileposts[i].is_pass==0){
-                                text+='<p>流程2:协助申请被驳回<span class="badge badge-success">'+mileposts[i].reject_at+'</span></p>'
+                                text+='<p>流程2:协助申请被驳回<span class="badge badge-pill badge-success" style="font-size:13px;">'+mileposts[i].reject_at+'</span></p>'
                             }
                             else{
-                                text+='<p>流程2:待经理审核中<span class="badge badge-success">'+mileposts[i].created_at+'</span></p>'
+                                text+='<p>流程2:待经理审核中<span class="badge badge-pill badge-success" style="font-size:13px;">'+mileposts[i].created_at+'</span></p>'
 
                             }
                             if(mileposts[i].remark!=''){
@@ -11796,24 +12397,24 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                         }
                         if(mileposts[i].type_name=='待接单'){
                             if(mileposts[i].created_at!=null & mileposts[i].confirm_at==null){
-                                    text+='<p>流程3:待销售顾问'+mileposts[i].uid_name+'接单<span class="badge badge-success">'+
+                                    text+='<p>流程3:待销售顾问'+mileposts[i].uid_name+'接单<span class="badge badge-pill badge-success" style="font-size:13px;">'+
                                     mileposts[i].created_at+'</span></p>'
                             }else if(mileposts[i].confirm_at!=null){
                                 text+='<p>流程3:'+mileposts[i].uid_name+'已接单，业务处理中'+
-                                '<span class="badge badge-success">'+
+                                '<span class="badge badge-pill badge-success" style="font-size:13px;">'+
                                 mileposts[i].confirm_at+'</span></p>'
                             }
                         }
                         if(mileposts[i].type_name=='结果审核'){
-                            text+='<p>流程4:销售顾问'+mileposts[i].uid_name+'申请办结<span class="badge badge-success">'+
+                            text+='<p>流程4:销售顾问'+mileposts[i].uid_name+'申请办结<span class="badge badge-pill badge-success" style="font-size:13px;">'+
                                 mileposts[i].created_at+'</span></p>'
                             if(mileposts[i].is_pass==0){
-                                text+='<p>流程5:'+mileposts[i].fz_name+'驳回办结<span class="badge badge-success">'+mileposts[i].reject_at+'</span></p>'
+                                text+='<p>流程5:'+mileposts[i].fz_name+'驳回办结<span class="badge badge-pill badge-success" style="font-size:13px;">'+mileposts[i].reject_at+'</span></p>'
                             }
                             else if(mileposts[i].created_at!=null & mileposts[i].confirm_at==null){
-                                text+='<p>流程5:待部门负责人确认<span class="badge badge-success">'+mileposts[i].created_at+'</span></p>'
+                                text+='<p>流程5:待部门负责人确认<span class="badge badge-pill badge-success" style="font-size:13px;">'+mileposts[i].created_at+'</span></p>'
                             } else if(mileposts[i].confirm_at!=null){
-                                text+='<p>流程5：'+mileposts[i].fz_name+'确认办结<span class="badge badge-success">'+mileposts[i].confirm_at+'</span></p>'
+                                text+='<p>流程5：'+mileposts[i].fz_name+'确认办结<span class="badge badge-pill badge-success" style="font-size:13px;">'+mileposts[i].confirm_at+'</span></p>'
                             }
                             if(mileposts[i].remark!=''){
                                     text+='<p>备注：'+mileposts[i].remark+'</p>'
@@ -11821,10 +12422,10 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                         }
                         if(mileposts[i].type_name=='已确认'){
                             if(mileposts[i].confirm_at==null){
-                                text+='<p>流程6:待工商专员'+mileposts[i].uid_name+'确认<span class="badge badge-success">'+mileposts[i].created_at+
+                                text+='<p>流程6:待工商专员'+mileposts[i].uid_name+'确认<span class="badge badge-pill badge-success" style="font-size:13px;">'+mileposts[i].created_at+
                                 '</span></p>'
                             }else{
-                                text+='<p>流程6:工商专员'+mileposts[i].uid_name+'确认业务已经办完<span class="badge badge-success">'+mileposts[i].confirm_at+
+                                text+='<p>流程6:工商专员'+mileposts[i].uid_name+'确认业务已经办完<span class="badge badge-pill badge-success" style="font-size:13px;">'+mileposts[i].confirm_at+
                                 '</span></p>'
 
                             }
@@ -11870,7 +12471,9 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                 'fenpei_xs_id':fenpei_xs_id,
                 'fenpei_xs_name':fenpei_xs_name,
                 'remark':remark,
-                'step':2
+                'step':2,
+                'customer_id':customer_id,
+                'project_id':"{{t_project.id}}"
             },function (res) {
                 location.reload()
              }
@@ -11885,7 +12488,9 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
             {
                 '_xsrf':_xsrf,
                 'xs_id':xs_id,
-                'step':3
+                'step':3,
+                'customer_id':customer_id,
+                'project_id':"{{t_project.id}}"
             },function (res) {
                 location.reload()
              }
@@ -11910,7 +12515,9 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                 'xiezhu_zj':xiezhu_zj,
                 'is_pass':is_pass,
                 'sh_id':sh_id,
-                'step':4
+                'step':4,
+                'customer_id':customer_id,
+                'project_id':"{{t_project.id}}"
             },function (res) {
                 location.reload()
              }
@@ -11948,7 +12555,9 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                 'xiezhu_id':xiezhu_id,
                 'gs_uid_name':gs_uid_name,
                 'gs_uid':gs_uid,
-                'step':5
+                'step':5,
+                'customer_id':customer_id,
+                'project_id':"{{t_project.id}}"
             },function (res) {
                 location.reload()
              }
@@ -11962,7 +12571,9 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
             {
                 '_xsrf':_xsrf,
                 'queren_id':queren_id,
-                'step':6
+                'step':6,
+                'customer_id':customer_id,
+                'project_id':"{{t_project.id}}"
             },function (res) {
                 location.reload()
              }
@@ -12039,10 +12650,12 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
                 '/project?tag=project_relation',
                 {
                   '_xsrf':_xsrf,
+                  "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
                   'relation_id':"{{t_project.id}}",
                   'be_relation_id':be_relation_id,
                   'id':id,
-                  'be_relation_project_id':be_relation_project_id
+                  'be_relation_project_id':be_relation_project_id,
+                  
                 },function (result){
                   if(result=='-1'){
                     if(confirm('该订单已经关联过了')){
@@ -12282,6 +12895,9 @@ $('.filepath_detail').on('click',function () {
  $('.confirm_banjie_btn').on('click',function () {
     $('#btn_confirm_banjie').attr('banjie_id',$(this).attr('id'))
     $('#btn_confirm_banjie').attr('guid',$(this).attr('guid'))
+    $('#btn_confirm_banjie').attr('team_name',$(this).attr('team_name'))
+    $('#btn_confirm_banjie').attr('mp_id',$(this).attr('mp_id'))
+    $('#btn_confirm_banjie').attr('mid',$(this).attr('mid'))
     $('input[name=confirm_banjie][value='+$(this).attr('confirm_banjie')+']').prop('checked',true)
     $('#remark_confirm_banjie').val($(this).attr('banjie_remark'))
     $("#confirm_banjie_modal").modal('show')
@@ -12289,6 +12905,7 @@ $('.filepath_detail').on('click',function () {
     $('#btn_confirm_banjie').on('click',function () {
         confirm_banjie=$('input[name=confirm_banjie]:checked').val()
         banjie_remark=$('#remark_confirm_banjie').val()
+
         if(confirm_banjie==undefined){
             $('#er_confirm_banjie').text('未选择')
             $('#er_confirm_banjie').show()
@@ -12301,7 +12918,10 @@ $('.filepath_detail').on('click',function () {
             'confirm_banjie':confirm_banjie,
             'banjie_remark':banjie_remark,
             'guid':$(this).attr('guid'),
-            'id':$(this).attr('banjie_id')
+            'id':$(this).attr('banjie_id'),
+            'team_name':$(this).attr('team_name'),
+            'project_id':"{{t_project.id}}",
+            'mid':$(this).attr('mid')
         },function (result) {
             location.reload()
          })
@@ -12392,6 +13012,7 @@ $('.filepath_detail').on('click',function () {
                         }
                         }
                         $.post("/project?tag=modify1",{
+                        "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
                         "project_id":"{{t_project.id}}",
                         "project_guid":"{{t_project.guid}}",
                         "banjie_company_uid":banjie_company_uid,
@@ -12416,6 +13037,7 @@ $('.filepath_detail').on('click',function () {
                         }
                         }
                         $.post("/project?tag=modify1",{
+                        "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
                         "project_id":"{{t_project.id}}",
                         "project_guid":"{{t_project.guid}}",
                         "banjie_company_uid":banjie_company_uid,
@@ -12439,7 +13061,9 @@ $('.filepath_detail').on('click',function () {
        "/project?tag=check_note",
        {
          '_xsrf':_xsrf,
-         "check_id_pass":check_id
+         "check_id_pass":check_id,
+         "customer_id":"{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
+         "project_id":"{{t_project.id}}",
        },function () { 
          location.reload()
         }
@@ -12480,6 +13104,19 @@ $('.filepath_detail').on('click',function () {
        })
      }
     })
+    $(".jz-at").click(function(){
+      if( $('input[name=is_free][value='+$(this).attr('sid')+']').is(':checked')){
+        $('input[name=is_free][value='+$(this).attr('sid')+']').prop('checked',false)
+
+        $(this).prev().val('')
+      }else{
+        $('input[name=is_free][value='+$(this).attr('sid')+']').prop('checked',true)
+    
+        $(this).prev().val('0.00')
+      }
+
+	$(this).toggleClass("atcur")
+})
 
 })
 

@@ -1,4 +1,4 @@
-{% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+{% extends "../base.html" %} {%block title%}最新记账收款记录{%end%} {% block body %}
 <div class="main">
 <div class="main-inner">
 <div class="container">
@@ -7,7 +7,7 @@
 <div class="widget ">
 <div class="widget-header">
 <i class="icon-user"></i>
-<h3>记账应收管理
+<h3>最新记账收款记录
 
 {% include "payment_nav.html" %}
 </h3>
@@ -16,8 +16,10 @@
 <div class="tab-content">
 
         <form class="form-search" id="query_form">
-            <input type="text" value="{%if params['company']%}{{params['company']}}{%end%}" id="company" name="company" class="input-medium search-query"
-                placeholder="公司名称">
+   
+
+                  <input type="text" value="{%if params['company']%}{{params['company']}}{%end%}" name="company"  placeholder="公司名称/姓名/信用代码/编号">
+
             <input style="width:80px;" type="text" value="{%if params['kf']%}{{params['kf']}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
             <input  style="width:80px;" type="text" value="{%if params['acc_end_start']%}{{params['acc_end_start']}}{%end%}" id="acc_end_start" name="acc_end_start" class="input-medium search-query" placeholder="记账到期开始">
             <input  style="width:80px;" type="text" value="{%if params['acc_end_end']%}{{params['acc_end_end']}}{%end%}" id="acc_end_end" name="acc_end_end" class="input-medium search-query" placeholder="记账到期结束">
@@ -29,8 +31,12 @@
       
  
       
-            <input type="checkbox" value="1" id="is_general" {%if params['is_general']%}checked{%end%} name="is_general" class="input-medium search-query">一般纳税人
+  <select name="is_general" style="width:90px;">
+      <option value="" {%if params["is_general"]==""%}selected{%end%}>纳税类型</option>
+    <option value="1" {%if params["is_general"]=="1"%}selected{%end%}>一般纳税人</option>
+    <option value="0" {%if params["is_general"]=="0"%}selected{%end%}>小规模</option>
 
+  </select>
 
 
             <button type="submit" class="btn">检 索</button>
@@ -48,7 +54,9 @@
             <a href="/payment?tag=list&show_tag=1" id="customer_tab">全部</a>
         </li>
 
-
+        <li {%if  by_tag=='非记账' %} class="active" {%end%}>
+                <a href="/payment?tag=list&by_tag=非记账" id="customer_tab">非记账</a>
+            </li>
      {%for item in t_customer_type%}
         <li {%if  by_tag==item.name %} class="active" {%end%}>
             <a href="/payment?tag=list&by_tag={{item.name}}" id="customer_tab">{{item.name}}</a>
@@ -67,14 +75,14 @@
       
                   
 
-            <a href="/payment?tag=output{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}
+            <a href="/payment?tag=list&output=1{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if params['kf']%}&kf={{params['kf']}}{%end%}
             {%if params['company']%}&company={{params['company']}}{%end%}
             {%if params['acc_end_start']%}&acc_end_start={{params['acc_end_start']}}{%end%}
             {%if params['acc_end_end']%}&acc_end_end={{params['acc_end_end']}}{%end%}
             {%if params['acc_book_end_start']%}&acc_book_end_start={{params['acc_book_end_start']}}{%end%}
             {%if params['acc_book_end_end']%}&acc_book_end_end={{params['acc_book_end_end']}}{%end%}
             {%if params['is_general']%}&is_general={{params['is_general']}}{%end%}{%if params['small_amount']%}&small_amount={{params['small_amount']}}{%end%}
-            {%if params['big_amount']%}&big_amount={{params['small_amount']}}{%end%}" target="_blank" class="btn btn-primary">excel数据下载</a>
+            {%if params['big_amount']%}&big_amount={{params['small_amount']}}{%end%}" target="_blank" class="btn btn-primary" target="_blank">excel数据下载</a>
 {%end%}
            
 
@@ -82,22 +90,21 @@
         <table class="table  table-bordered " style="font-size:12px;">
             <thead>
                 <tr style="background-color: black; color:#fff;">
-                                <th style="min-width:130px;">公司名称</th>
+                                <th style="min-width:180px;">公司名称</th>
 <th style="min-width:40px;">会计</th>
 
 
-                                <th style="min-width:55px;">付款方式</th>
-                                <th style="min-width:55px;">总服务费</th>
-                                <th style="min-width:55px;">月服务费</th>
-                                <th  style="min-width:45px;">标签</th>
+                                <th style="min-width:40px;">付款方式</th>
+                                <th style="min-width:50px;">总服务费</th>
+                                <th style="min-width:50px;">月服务费</th>
                                 <th>帐册费</th>
                                 <th>记账到期</th>
                                   <th>账费到期</th>
                              <th width="175">最新收款明细</th>
                                 <th width="175">待收明细</th>
                                 <th width="70">待收金额</th>
-                                <th width="60">备注</th>
-                               {%if role=="3" or role=="8" or role=="5" %}    <th width="30"></th>{%end%}
+                                <th width="60">客户备注</th>
+                              {%if role=='3' or role=='8' or role=='5'%}  <th width="30"></th>{%end%}
 
 
                                 </tr>
@@ -108,24 +115,64 @@
                     <tr>
 
                         <td> <a target="_blank" href="/customer?tag=show&id={{item.customer_id}}&guid={{item.guid}}">{{item.company}}</a>
-                           {%if role=="3" or role=="8" or role=="5" %} <a class="modify_customer_detail btn-sm control"
-         customer_id="{{item.customer_id}}"
-         promo_id="{{item.promo_id}}|{{item.promo_id_name}}" is_general="{{item.is_general}}"
-         pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
-         pay_service_amount = "{{item.pay_service_amount}}"
-         pay_service_amount_month  = "{{item.pay_service_amount_month}}"
-         pay_book_amount ="{{item.pay_book_amount}}" guid="{{item.guid}}"
-         customer_type="{{item.customer_type}}"  href="javascript:void(0)"
-         customer_company = "{{item.company}}"
+            
+                                  {%if role=="3" or role=="8" or role=="5" %} <a 
+                           class="modify_customer_detail btn-sm control"
+         customer_id="{{item.a_customer_id}}"
+         promo_id="{{item.customer_promo_id}}|{{item.customer_promo_id_name}}"
+          is_general="{{item.customer_is_general}}"
+         pay_pay_typeid_name="{{item.customer_paytype_id_name}}"
+         pay_service_amount = "{{item.customer_service_amount}}"
+         pay_service_amount_month  = "{{item.customer_service_amount_month}}"
+         pay_book_amount ="{{item.customer_book_amount}}" guid="{{item.guid}}"
+         customer_type="{{item.customer_customer_type}}"  href="javascript:void(0)"
+         customer_company = "{{item.company}}" tag_id="{{item.customer_tag_id}}"
+         tag_id_name="{{item.customer_tag_id_name}}" 
+         tag_parent_id="{{item.customer_tag_parent_id}}"
+         tag_parent_id_name="{{item.customer_tag_parent_id_name}}" 
+         is_building="{{item.customer_is_building}}"
+         is_clearly="{{item.customer_is_clearly}}" is_year="{{item.customer_is_year}}"
+        adjusted_option="{% if  adjusted_option(item.customer_id)%}{%if adjusted_option(item.customer_id).adjusted_option%}{{adjusted_option(item.customer_id).adjusted_option}}{%end%}{%end%}"
         >
-    {%if item.is_general%}<font color='red'><i class="icon-star"></i> 一般纳税人</font>{%end%}
+  
 
-    <img src="/static/images/modify.png" width="20"/></a>{%end%}{%if item.customer_type_name%}<br />
-            <span style="font-size:11px; color:blue;"><i class="icon-star"></i> {{item.customer_type_name}}
+    <img src="/static/images/modify.png" width="20"/></a>{%end%}   
+   {%if item.is_general%}<font color='red'><i class="icon-star"></i> 一般纳税人</font>{%end%}<br />
+            <span style="font-size:11px; color:blue;"><i class="icon-star"></i> 
+                {%if item.tag_parent_id_name!=item.tag_id_name%}
 
-            </span>
+                {{item.tag_parent_id_name}}&nbsp;
+               {%end%}
+                {%if item.tag_id_name%}
+              {{item.tag_id_name}}&nbsp
+               {%end%}
+                 {%if item.is_building%}
+               楼盘&nbsp;
+               {%end%}
+                 {%if item.is_year%}
+             工商年检&nbsp;
+               {%end%}
+                 {%if item.is_clearly%}
+              汇算清缴&nbsp;
+               {%end%}
 
-            {%end%}</td>
+            </span><br/>
+    {%if item.company_reguid%}<font color='green'>{{item.company_reguid}}</font>{%end%}
+    {% if  adjusted_option(item.customer_id)%}
+    {%if adjusted_option(item.customer_id).adjusted_option%}
+        <br><font color='red' title="{{adjusted_option(item.customer_id).adjusted_option}}" >{{adjusted_option(item.customer_id).adjusted_option[:28]}}{%if len(adjusted_option(item.customer_id).adjusted_option)>28%}..{%end%}</font>
+    {%end%}
+    {%end%}
+
+
+    <div class="alert alert-info">
+
+        付款方式:{{item.customer_paytype_id_name}}<br/>{{item.customer_service_amount}}（总）/{{item.customer_service_amount_month}}（月）<br/>
+        {{item.customer_book_amount}}(帐册费)
+    </div>
+             
+
+            </td>
                         <td>{{item.acc_uid_name}}</td>
                    <td>{{item.pay_pay_typeid_name}}</td>
 
@@ -133,8 +180,7 @@
 
                         <td>{{item.pay_service_amount}}</td>
                         <td>{{item.pay_service_amount_month}}</td>
-                        <td>{%if item.customer_type_name%}
-                            {%if item.customer_type_name[-1]==','%}{{item.customer_type_name[:-1]}}{%else%}{{item.customer_type_name}}{%end%}{%end%}</td>
+            
                         <td>{{item.pay_book_amount}}</td>
   <td>
     {%if item.acc_end%}
@@ -155,17 +201,22 @@
 
 </td>
 
-    <td title="{%if item.t_remark%}{{item.t_remark}}{%end%}">  {%if role=="3" or role=="8" or role=="5" %}
+    <td title="{%if item.t_remark%}{{item.t_remark}}{%end%}"> 
         {%if item.t_remark%}
-        {%if len(item.t_remark)>8%}
-        {{item.t_remark[:8]}}...{%else%} {{item.t_remark}}{%end%}{%end%}
-              {%if role=='3'%}
+        {%if len(item.t_remark)>15%}
+        {{item.t_remark[:15]}}...{%else%} {{item.t_remark}}{%end%}{%end%}
+              {%if role=='3' or role=='8'%}
         <a class="handler_remark_modify"
         type='button'
          customer_id="{{item.customer_id}}"
          t_remark="{%if item.t_remark%}{{item.t_remark}}{%end%}"
-             href="javascript:void(0)"> <img src="/static/images/modify.png" width="20"/></a>{%end%}
+             href="javascript:void(0)"> <img src="/static/images/modify.png" width="20"/></a>
+             {%end%}
     </td>
+
+
+ {%if role=='3' or role=='8' or role=='5'%}
+
                                 <td>
 
                 <a class=" handler_detail_modify "
@@ -188,11 +239,7 @@
                      href="javascript:void(0)"> <img src="/static/images/modify.png" width="20"/></a>
 
                 </td>
-
-{%end%}
-
-
-
+   {%end%}
                     </tr>
                     {%end%}
 
@@ -209,14 +256,13 @@
                         <ul>
                             {% if pagination.has_prev %}
                             <li><a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}
-                                {%if params['kf']%}&kf={{params['kf']}}{%end%}
-                                {%if params['company']%}&company={{params['company']}}{%end%}
+                                {%if params['kf']%}&kf={{params['kf']}}{%end%}{%if params['company']%}&company={{params['company']}}{%end%}
                                 {%if params['acc_end_start']%}&acc_end_start={{params['acc_end_start']}}{%end%}
                                 {%if params['acc_end_end']%}&acc_end_end={{params['acc_end_end']}}{%end%}
                                 {%if params['acc_book_end_start']%}&acc_book_end_start={{params['acc_book_end_start']}}{%end%}
                                 {%if params['acc_book_end_end']%}&acc_book_end_end={{params['acc_book_end_end']}}{%end%}
                                 {%if params['is_general']%}&is_general={{params['is_general']}}{%end%}
-                                {%if by_tag%}&by_tag={{by_tag}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                {%if by_tag%}&by_tag={{by_tag}}{%end%}{%if params["big_amount"]%}&big_amount={{params["big_amount"]}}{%end%}{%if params["small_amount"]%}&small_amount={{params["small_amount"]}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li>
                                 <a href="/payment?tag={{tag}}&page={{ page }}
                                 {%if params['kf']%}&kf={{params['kf']}}{%end%}
@@ -226,7 +272,7 @@
                                 {%if params['acc_book_end_start']%}&acc_book_end_start={{params['acc_book_end_start']}}{%end%}
                                 {%if params['acc_book_end_end']%}&acc_book_end_end={{params['acc_book_end_end']}}{%end%}
                                 {%if params['is_general']%}&is_general={{params['is_general']}}{%end%}
-                                {%if by_tag%}&by_tag={{by_tag}}{%end%}">{{ page }}</a></li>
+                                {%if by_tag%}&by_tag={{by_tag}}{%end%}{%if params["big_amount"]%}&big_amount={{params["big_amount"]}}{%end%}{%if params["small_amount"]%}&small_amount={{params["small_amount"]}}{%end%}">{{ page }}</a></li>
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
                             {% end %} {% else %}
@@ -240,7 +286,7 @@
                                 {%if params['acc_book_end_start']%}&acc_book_end_start={{params['acc_book_end_start']}}{%end%}
                                 {%if params['acc_book_end_end']%}&acc_book_end_end={{params['acc_book_end_end']}}{%end%}
                                 {%if params['is_general']%}&is_general={{params['is_general']}}{%end%}
-                                {%if by_tag%}&by_tag={{by_tag}}{%end%}">下页 &raquo;</a></li>
+                                {%if by_tag%}&by_tag={{by_tag}}{%end%}{%if params["big_amount"]%}&big_amount={{params["big_amount"]}}{%end%}{%if params["small_amount"]%}&small_amount={{params["small_amount"]}}{%end%}">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>
@@ -592,6 +638,7 @@ $(function(){
              })
 
          })
+         
 })
 
 

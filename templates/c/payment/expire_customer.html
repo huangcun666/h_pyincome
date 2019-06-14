@@ -35,8 +35,11 @@ body .modal {
                                 <div class="tab-pane active" id="formcontrols">
 
                                     <fieldset>
-                                            <form class="form-search" id="query_form">
-                                                    <input type="text" value="{{company}}" name="company" class="input-medium seexpire_customerarch-query" placeholder="公司名称">
+      <form class="form-search" id="query_form">
+
+  <input type="text" value="{%if company%}{{company}}{%end%}" name="company"  placeholder="公司名称/姓名/信用代码/编号">
+
+
                                             <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
 
                                                     <button type="submit" class="btn">检 索</button>
@@ -113,7 +116,7 @@ body .modal {
                                                 <tr style="background-color: black; color:#fff;">
 
 
-                                                    <th style="min-width:150px;">公司名称</th>
+                                                    <th style="min-width:180px;">公司名称</th>
 
 
                                                                                                         <th style="min-width:40px;">会计</th>
@@ -126,9 +129,9 @@ body .modal {
 
 
 
-                                                    <th>帐册费</th>
-                                                    <th>记账到期</th>
-                                                    <th>账册到期</th>
+                                                    <th  width="60">帐册费</th>
+                                                    <th  width="60">记账到期</th>
+                                                    <th  width="60">账册到期</th>
                                                     <th width="160">最新收款明细</th>
                                                     <th width="160">待收明细</th>
 <th width="30">待收金额</th>
@@ -150,23 +153,66 @@ body .modal {
                                                     <td>
          <a target="_blank" href="/customer?tag=show&id={{item.customer_id}}&guid={{item.guid}}">{{item.company}}</a>
 
-        <a class="modify_customer_detail btn-sm control"
+                         {%if role=="3" or role=="8" or role=="5" %} <a 
+                           class="modify_customer_detail btn-sm control"
          customer_id="{{item.customer_id}}"
-         promo_id="{{item.promo_id}}|{{item.promo_id_name}}" is_general="{{item.is_general}}"
-         pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
-         pay_service_amount = "{{item.pay_service_amount}}"
-         pay_service_amount_month  = "{{item.pay_service_amount_month}}"
-         pay_book_amount ="{{item.pay_book_amount}}" guid="{{item.guid}}"
-         customer_type="{{item.customer_type}}"  href="javascript:void(0)"
-         customer_company = "{{item.company}}"
+         promo_id="{{item.customer_promo_id}}|{{item.customer_promo_id_name}}"
+          is_general="{{item.customer_is_general}}"
+         pay_pay_typeid_name="{{item.customer_paytype_id_name}}"
+         pay_service_amount = "{{item.customer_service_amount}}"
+         pay_service_amount_month  = "{{item.customer_service_amount_month}}"
+         pay_book_amount ="{{item.customer_book_amount}}" guid="{{item.guid}}"
+         customer_type="{{item.customer_customer_type}}"  href="javascript:void(0)"
+         customer_company = "{{item.company}}" tag_id="{{item.customer_tag_id}}"
+         tag_id_name="{{item.customer_tag_id_name}}" 
+          tag_parent_id="{{item.customer_tag_parent_id}}"
+         tag_parent_id_name="{{item.customer_tag_parent_id_name}}" 
+         is_building="{{item.customer_is_building}}"
+         is_clearly="{{item.customer_is_clearly}}" is_year="{{item.customer_is_year}}"
+         adjusted_option="{% if  adjusted_option(item.customer_id)%}{%if adjusted_option(item.customer_id).adjusted_option%}{{adjusted_option(item.customer_id).adjusted_option}}{%end%}{%end%}"
+
         >
-            <img src="/static/images/modify.png" width="20"/></a>{%if item.is_general%}<font color='red'><i class="icon-star"></i> 一般纳税人</font>{%end%}
-                                    {%if item.customer_type_name%}<br />
-                                    <span style="font-size:11px; color:blue;"><i class="icon-star"></i> {{item.customer_type_name}}
+  
+
+    <img src="/static/images/modify.png" width="20"/></a>{%end%}   
+
+
+
+{%if item.is_general%}<font color='red'><i class="icon-star"></i> 一般纳税人</font>{%end%}
+                                   <br />
+                                    <span style="font-size:11px; color:blue;"><i class="icon-star"></i>
+                                        {%if item.tag_parent_id_name!=item.tag_id_name%}
+
+                                    {{item.tag_parent_id_name}}&nbsp;
+                                   {%end%}
+                                    {%if item.tag_id_name%}
+                                  {{item.tag_id_name}}&nbsp;
+                                   {%end%}
+                                     {%if item.is_building%}
+                                   楼盘&nbsp;
+                                   {%end%}
+                                     {%if item.is_year%}
+                                 工商年检&nbsp;
+                                   {%end%}
+                                     {%if item.is_clearly%}
+                                  汇算清缴&nbsp;
+                                   {%end%}
 
                                     </span>
+<br/>
+    {%if item.company_reguid%}<font color='green'>{{item.company_reguid}}</font>{%end%}
+    {% if  adjusted_option(item.customer_id)%}
+    {%if adjusted_option(item.customer_id).adjusted_option%}
+        <br><font color='red' title="{{adjusted_option(item.customer_id).adjusted_option}}" >{{adjusted_option(item.customer_id).adjusted_option[:25]}}{%if len(adjusted_option(item.customer_id).adjusted_option)>25%}..{%end%}</font>
+    {%end%}
+    {%end%}                        
 
-                                    {%end%}
+    <div class="alert alert-info">
+
+        付款方式:{{item.customer_paytype_id_name}}<br/>{{item.customer_service_amount}} （总）/{{item.customer_service_amount_month}}（月）<br/>
+        {{item.customer_book_amount}}(帐册费)
+    </div>
+                                
                                                      </td>
                                                      <td>{{item.acc_uid_name}}</td>
                                                     <td>{{item.pay_pay_typeid_name}}</td>
@@ -196,8 +242,8 @@ customer_id="{{item.customer_id}}"
 item_id="{{item.id}}"
 cp_title_id="{{item.cp_title_id}}"
 e_wait_pay_amount = "{{item.wait_pay_amount}}"
-wait_pay="{%if item.acc_end and  compare_date(item.acc_end,dt_next)%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}
-{%if item.acc_book_end and  compare_date(item.acc_book_end,dt_next)%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}(年付)账册费:{{item.pay_book_amount}}元{%end%}"
+wait_pay="{%if item.acc_end and  compare_date(item.acc_end,dt_next)%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.customer_paytype_id_name}})记账费:{{item.customer_service_amount}}元 {%end%}
+{%if item.acc_book_end and  compare_date(item.acc_book_end,dt_next)%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}(年付)账册费:{{item.customer_book_amount}}元{%end%}"
      last_waitpay_expire = "{{item.pb_remark}}"
     href="javascript:void(0)"
      curr_expire_pay="{%if item.acc_end and compare_date(item.acc_end,dt_next)%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
@@ -668,6 +714,7 @@ $(".edit_detail").on("click", function () {
     $("#btn_save_wai_pay1").attr('acc_end', acc_end)
     $("#btn_save_wai_pay1").attr('acc_book_end', acc_book_end)
     $("#btn_save_wai_pay1").val(pay_id)
+    $("#btn_save_wai_pay1").attr('fee', fee)
     $('#acc_book_end1').combodate("setValue", acc_book_end);
     $('#acc_end1').combodate("setValue", acc_end);
     $.get("/payment?tag=get_last_payment", { "customer_id": customer_id }, function (result) {

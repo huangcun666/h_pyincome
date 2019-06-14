@@ -193,7 +193,7 @@ display: -webkit-box;
                                <div class="tab-pane active" id="formcontrols">
 <ul class="nav nav-tabs" id="myTab">
 
-   {%if department_name=='销售部' and '250' not in role_list%}
+   {%if department_name=='销售部' and '250' not in role_list or '302' in role_list%}
    <li  {%if not show_tag%}class="active" {%end%}>
     <a href="/payment?tag=assist_list" id="tab_confirm">全部
      <span class="badge bg-danger">{%if not show_tag%}{{count.count}}{%else%}{{count.aaa}}{%end%}</span>
@@ -300,12 +300,12 @@ display: -webkit-box;
            {%end%}
     </select>
     {%end%}
-    {%if show_tag=='3' %}
+
     <input type="text" name="ass_day" class="input-medium" style="width:80px;" placeholder="跟进天数起" value="{{params['ass_day']}}">
     <input type="text" name="ass_day_end" class="input-medium" style="width:80px;" placeholder="跟进天数止" value="{{params['ass_day_end']}}">
     <input type="text" name="ass_num" class="input-medium" style="width:80px;" placeholder="跟进次数起" value="{{params['ass_num']}}">
     <input type="text" name="ass_num_end" class="input-medium" style="width:80px;" placeholder="跟进次数止" value="{{params['ass_num_end']}}">
-    {%end%}
+   
     {%if show_tag=='6'%}
     <select name="status"  style="width: 100px;">
         <option value="">选择收款</option>
@@ -323,7 +323,7 @@ display: -webkit-box;
                                    <fieldset>
                         
                                        {%if customers%}
-                                       {%if '250' in role_list and (show_tag=='-1000' or show_tag=='-2000' or show_tag=='2' or show_tag=='3') %}
+                                       {%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
                                        <a class="btn btn-primary btn-sm allot_choose" href="javascript:void(0);" style="margin-bottom: 5px;">批量分配</a>
                                    {%end%}
                                     <div class="alert alert-info" style="font-size: 16px;">总待收金额:{{count.sw}}</div>
@@ -331,14 +331,14 @@ display: -webkit-box;
                                     <table class="table" style="margin:1px;">
                                            <thead>
                                                <tr style="background-color: black; color:#fff;">
-                                                    {%if '250' in role_list and  (show_tag=='-1000' or show_tag=='-2000' or show_tag=='2' or show_tag=='3') %}
+                                                    {%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
                                                     <th> <input type="checkbox" id="choose_all"></th>
                                                     {%end%}
                                                <th style="width:13px; ">公司名称</th>
                                              
                                                <th style="width: 80px;">销售</th>
                                                <th style="width: 80px;">客服</th>
-                                               {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}
+                                               {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  (department_name=='销售部' and '250' not in role_list or '302' in role_list)) %}
                                                <th style="width:110px;">跟进人</th>
                                                {%elif show_tag=='-1000'%}
                                                <th style="width:100px;">上次跟进人</th>
@@ -350,9 +350,9 @@ display: -webkit-box;
                                                <th style="width:50px; ">待收金额</th>
                                           
                                                <th style="width: 150px;">最新动态</th>
-                                               {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}
+                                               {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  (department_name=='销售部' and '250' not in role_list or '302' in role_list )) %}
                                                <th style="width:150px;">跟进状态</th>
-                                                <th style="width:120px;"></th>
+                                                <th style="width:120px;">客户备注</th>
                                                 {%end%}
                                                 {%if role=='8' and (show_tag=='-1000' or show_tag=='-2000' )%}
                                                 <th></th>
@@ -387,11 +387,13 @@ display: -webkit-box;
 
                                                {%for item in customers%}
                                                <tr>
-                                                    {%if '250' in role_list and (show_tag=='-1000' or show_tag=='-2000' or show_tag=='2' or show_tag=='3') %}
+                                                    {%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
                                                     <td ><input type="checkbox" name="check" value="{{item.customer_id}}" {%if show_tag!='-1000' and show_tag!='-2000'%}assist_id="{{item.assist_id}}" sale_id="{{item.assist_sale_id}}"{%end%} id="check"></td>
                                                     {%end%}
                                                    <td>
-                                                    {%if department_name=='销售部' and '250' not in role_list and item.jd_at==None %}
+                                                       
+                                                    {%if (department_name=='销售部' and '250' not in role_list or '302' in role_list ) and item.jd_at==None %}
+                                                 
                                                     <span class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</span>
                                                     {%else%}
                                                        <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or item.req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
@@ -437,9 +439,9 @@ display: -webkit-box;
                                                    <td  style="width: 60px;  color: red;">{%if item.wait_pay_amount%}{{item.wait_pay_amount}}{%end%}</td>
                                                
                                                    <td id='{{item.customer_id}}'  style="width: 150px; " 
-                                                   title="{%if item.sale_cuikuan_id  and role!='8' %}{%if department_name=='销售部' and '250' not in role_list and item.sale_last_cuikuan_at%}{%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%else%}{%if item.last_cuikuan_at%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%end%}{%else%}{%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}{%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%else%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%end%}">
+                                                   title="{%if item.sale_cuikuan_id  and role!='8' %}{%if (department_name=='销售部' and '250' not in role_list or '302' in role_list ) and item.sale_last_cuikuan_at%}{%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%else%}{%if item.last_cuikuan_at%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%end%}{%else%}{%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}{%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%else%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%end%}">
                                                    {%if item.sale_cuikuan_id and role!='8' %}
-                                                   {%if department_name=='销售部' and '250' not in role_list and item.sale_last_cuikuan_at%}
+                                                   {%if (department_name=='销售部' and '250' not in role_list or '302' in role_list) and item.sale_last_cuikuan_at%}
                                                    {%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg[:20]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}{%end%}
                                                    {%else%}
                                                    {%if item.last_cuikuan_at%}{{item.last_cuikuan_msg[:20]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}{%end%}
@@ -461,7 +463,7 @@ display: -webkit-box;
                                                     {%end%}
                                                 </td>
                                              
-                                                   {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}
+                                                   {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  (department_name=='销售部' and '250' not in role_list or '302' in role_list)) %}
                                                        <td  style="font-size:11px;" title="{%if item.assist_msg%}{{item.assist_msg}}{%end%}">
                                                            <!-- {%if item.assist_msg%}{{item.assist_msg[:25]}}{%if len(item.assist_msg)>25%}...{%end%}{%end%} -->
                                                            {%if item.jd_at%}
@@ -470,22 +472,42 @@ display: -webkit-box;
                                                        </td>
                                         
 
-                                                       <td  style="font-size:11px;"
-                                                       {%if  item.jd_at!=None and item.sale_end_at!=None%}
-                                                       title="{%if item.status==1%}已收款{%elif item.status==2%}未收款{%end%} 总结:{{item.summary}} {{item.sale_end_at.strftime('%Y-%m-%d')}}"
-                                                    
-                                                       {%end%}
-                                                       >
-                                                            {%if department_name=='销售部' and '250' not in role_list%}
-                                                            {%if item.jd_at==None%}
-                                                            <a class="btn btn-sm control sale_jd" assist_id="{{item.assist_id}}" href="javascript:void(0);" style="width: 30px; height: 24px; color: #4aa8cc;">接单</a>
-                                                            {%elif  item.jd_at!=None and item.sale_end_at==None %}
-                                                            <a class="btn btn-sm control sale_finish" assist_id="{{item.assist_id}}"  customer_id="{{item.customer_id}}" href="javascript:void(0);" style="width: 30px; height: 24px; color: #4aa8cc;">完结</a>
-                                                            {%elif  item.jd_at!=None and item.sale_end_at!=None%}
+                                                       <td  style="font-size:11px;">
+                         
+                                                        {%if item.customer_remark%}{{item.customer_remark}}{%end%}
+                                                
+                                                            
+                                                            </td>
+                                                            {%end%}
 
-                                                            {%if item.status==1%}已收款{%elif item.status==2%}未收款{%end%}
-                                                            <br>
-                                                            总结:{{item.summary[:18]}}{%if len(item.summary)>18%}...{%end%}
+                                                    <td>   
+                                                        
+
+                                                                 <div class="dropdown">
+                                                                        <a href="javascript:void(0)" class="btn  btn-sm" style="width: 60px; height: 24px; color: #4aa8cc;">查 看 </a>
+                                                                        
+                                                                        <div class="dropdown-content">
+                                                                                {%if role=='8' and (show_tag=='-1000' or show_tag=='-2000' )%}
+                                                                                
+                                                                                    <a class="handler_detail" type='button'
+                                                                                    customer_id="{{item.customer_id}}"
+                                                                                    href="javascript:void(0)"
+                                                                                     step='4'
+                                                                                     style="text-align:center;"
+                                                                                       > 分 配 </a>
+                            
+                                                                             
+                                                                                {%end%}
+
+
+
+                                                                                {%if show_tag!='-1000' and show_tag!='-2000'%}
+                                                                                {%if department_name=='销售部' and '250' not in role_list or '302' in role_list%}
+                                                            {%if item.jd_at==None%}
+                                                            <a style="text-align:center;" class="sale_jd" assist_id="{{item.assist_id}}" href="javascript:void(0);"> 接 单 </a>
+                                                            {%elif  item.jd_at!=None and item.sale_end_at==None %}
+                                                            <a style="text-align:center;" class="sale_finish" assist_id="{{item.assist_id}}"  customer_id="{{item.customer_id}}" href="javascript:void(0);" style="text-align:center;">完 结</a>
+                                                            
                                                             {%end%}
                                                             {%else%}
                                                             {%if  item.assist_id%}
@@ -494,58 +516,31 @@ display: -webkit-box;
                                                             assist_id="{{item.assist_id}}"
                                                             assist_msg="{{item.assist_msg}}"
                                                             href="javascript:void(0)"
-                                                             
-                                                               style="width: 30px; height: 24px; color: #4aa8cc;"
+                                                            style="text-align:center;"
+                                                               
                                                                >
-                                                                分配</a>
-                                                            {%elif item.distribute_at!=None and item.jd_at==None%}
-                                                            待销售{{item.sale_name}}接单{{item.distribute_at.strftime('%Y-%m-%d')}}
-                                                            {%elif item.jd_at!=None and item.sale_end_at==None%}
-                                                            销售{{item.sale_name}}处理中{{item.jd_at.strftime('%Y-%m-%d')}}
-                                                            {%elif item.sale_end_at!=None%}
-                                                            {%if item.status==1%}已收款{%elif item.status==2%}未收款{%end%}
+                                                                分 配</a>
+                                                           
                                                             
                                                     
-                                                            <br>
-                                                            总结:{{item.summary[:15]}}{%if len(item.summary)>15%}...{%end%}
+                                                        
                                                             {%end%}
                                                             {%else%}
-                                                            <a class="btn handler_detail btn-sm control" type='button'
+                                                            <a class="handler_detail" type='button'
                                                             customer_id="{{item.customer_id}}"
                                                             href="javascript:void(0)"
                                                              step='4'
-                                                               style="width: 30px; height: 24px; color: #4aa8cc;"
+                                                             style="text-align:center;"
                                                                >
-                                                                分配</a>
+                                                                分 配</a>
                                                             {%end%}
                                                             {%end%}
-                                                            </td>
-                                                            {%end%}
-                                                {%if role=='8' and (show_tag=='-1000' or show_tag=='-2000' )%}
-                                                    <td>
-                                                        <a class="btn handler_detail btn-sm control" type='button'
-                                                        customer_id="{{item.customer_id}}"
-                                                        href="javascript:void(0)"
-                                                         step='4'
-                                                           style="width: 30px; height: 24px; color: #4aa8cc;"
-                                                           >
-                                                            分配</a>
-
-                                                    </td>
-                                                    {%end%}
-                                                    <td>   
-                                                        
-
-                                                                 <div class="dropdown">
-                                                                        <a href="javascript:void(0)" class="btn  btn-sm" style="width: 60px; height: 24px; color: #4aa8cc;">查 看 </a>
-                                                                        
-                                                                        <div class="dropdown-content">
-                                                                                {%if show_tag!='-1000' and show_tag!='-2000'%}
                                                                                 {%if    item.sale_end_at!=None %}
                                                                                 {%if '250' in role_list  and item.is_check==0%}
                                                                                     <a class="check_xiezhu" type='button'
-                                                                                    assist_id="{{item.assist_id}}"
+                                                                                    assist_id="{{item.assist_id}}" sale_id="{{item.assist_sale_id}}"
                                                                                     href="javascript:void(0)"
+                                                                                    style="text-align:center;"
                                                                                        >
                                                                                         审 核</a>
                                                                                         {%elif  item.is_check==1  or (item.is_check==2 and ('250' in role_list or role=='3') ) %}
@@ -559,7 +554,7 @@ display: -webkit-box;
                                     
                                                                                          customer_id="{{item.customer_id}}"
                                                                                         href="javascript:void(0)"
-                                                                                      
+                                                                                        style="text-align:center;"
                                                                                            >
                                                                                             查看审核</a>
                                                                                             {%elif item.is_check==2 and '250' not in role_list%}
@@ -573,12 +568,13 @@ display: -webkit-box;
             
                                                                                                  customer_id="{{item.customer_id}}"
                                                                                                 href="javascript:void(0)"
-                                                                                                   
+                                                                                                style="text-align:center;"
                                                                                                    >
                                                                                                     查看审核</a>
                                                                                             <a class="sale_finish" 
-                                                                                            assist_id="{{item.assist_id}}"   customer_id="{{item.customer_id}}"
-                                                                                         
+                                                                                            assist_id="{{item.assist_id}}" 
+                                                                                              customer_id="{{item.customer_id}}"
+                                                                                              style="text-align:center;"
                                                                                              href="javascript:void(0);">重填办结</a>
                                                                                             
                                                                                          
@@ -588,7 +584,7 @@ display: -webkit-box;
                                                                                         {%end%}
                                                                                         {%end%}
                                                                                     <a href="javascript:void(0)"  class="linkman_detail"
-                                                                                    customer_id="{{item.customer_id}}"
+                                                                                    customer_id="{{item.customer_id}}" style="text-align:center;"
                                                                                  
                                                                                     >查看联系人</a>
                                                                                     <a class="handler_detail1" type='button'
@@ -600,10 +596,9 @@ display: -webkit-box;
                                                                                          curr_expire_pay="{%if item.acc_end and item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
                                                                                         {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
                                                                                         href="javascript:void(0)"
-                                                                                        company_name="{{item.company}}"
-                                                                                        {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  department_name=='销售部' and '250' not in role_list) %}jd_at="{{item.jd_at}}"  sale_end_at="{{item.sale_end_at}}"{%end%}
-                                                                                       
-                                                                                    
+                                                                                        company_name="{{item.company}}" 
+                                                                                        {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  (department_name=='销售部' and '250' not in role_list or '302' in role_list)) %}jd_at="{{item.jd_at}}"  sale_end_at="{{item.sale_end_at}}"{%end%}
+                                                                                        style="text-align:center;"
                                                                                         >
                                                                                          催款记录</a>
                                                                      
@@ -618,6 +613,37 @@ display: -webkit-box;
 
 
 <td colspan="15" style="text-align:right;border-top:1px solid #fff; ">
+        <span style="color:red;font-size: 14px;">{%if show_sb(item.customer_id)%}参保人数:{{show_sb(item.customer_id).ss_num}}{%end%}</span>
+        {%if show_tag!='-1000' and show_tag!='-2000'%}
+        {%if department_name=='销售部' and '250' not in role_list or '302' in role_list%}
+        {%if item.jd_at==None%}
+     
+        {%elif  item.jd_at!=None and item.sale_end_at==None %}
+       
+        {%elif  item.jd_at!=None and item.sale_end_at!=None%}
+
+        {%if item.status==1%}已收款{%elif item.status==2%}未收款{%end%}
+        <br>
+        总结:{{item.summary[:18]}}{%if len(item.summary)>18%}...{%end%}
+        {%end%}
+        {%else%}
+        {%if  item.assist_id%}
+        {%if item.distribute_at!=None and item.jd_at==None%}
+        待销售{{item.sale_name}}接单{{item.distribute_at.strftime('%Y-%m-%d')}}
+        {%elif item.jd_at!=None and item.sale_end_at==None%}
+        销售{{item.sale_name}}处理中{{item.jd_at.strftime('%Y-%m-%d')}}
+        {%elif item.sale_end_at!=None%}
+        {%if item.status==1%}已收款{%elif item.status==2%}未收款{%end%}
+        
+
+        <br>
+        总结:{{item.summary[:15]}}{%if len(item.summary)>15%}...{%end%}
+        {%end%}
+        {%end%}
+        {%end%}   
+
+        {%end%}
+        &nbsp;
     会计:{{item.acc_uid_name}}&nbsp;
 {{item.pay_pay_typeid_name}}
 &nbsp; 总费{{item.pay_service_amount}}
@@ -847,14 +873,27 @@ display: -webkit-box;
                         <div class="controls">
                              <input type="radio" value="1" id="is_check" name="is_check">通过
                              <input type="radio" value="2" id="is_check" name="is_check">不通过
+                             <input type="radio" value="3" id="is_check" name="is_check">重新分配
                         </div>
                     </div>
                     <div class="control-group">
+
+                        <div id="distribute_box" class="controls" style="display:none;">
+                            <select id="sale_name1" name="sale_name1">
+                                    <option value="">选择销售</option>
+                                    {%for item in t_user_sales%}
+                                 <option value="{{item.id}}">{{item.name}}</option>
+                                    {%end%}
+                                </select>
+                                 <p class="alert alert-danger" id="er_sale_name" hidden></p>
+                                </div>
+                        <div id="check_box">
                         <label class="control-label" for="lastname">备注</label>
              
                         <div class="controls">
                            <textarea  id="check_remark" style="margin: 0px 0px 9px; width: 491px; height: 61px;"></textarea>
                         </div>
+                    </div>
                     </div>
                 
              
@@ -1207,15 +1246,51 @@ display: -webkit-box;
             $(".check_xiezhu").click(function () { 
                 $("#btn_save_check").attr('assist_id',$(this).attr('assist_id'))
                 $("#re_sale_finish").hide()
+                $("input[name=is_check]").first().prop('checked',true)
+                $("#distribute_box").hide()
+                $("#check_box").show()
+                $("#btn_save_check").attr('sale_id',$(this).attr('sale_id'))
                 $("#check_xiezhu_modal").modal('show')
              })
+             $("input[name=is_check]").change(function () { 
+                is_check=$("input[name=is_check]:checked").val()
+                 if(is_check=='3'){
+                    $("#distribute_box").show()
+                    $("#check_box").hide()
+                 }else{
+                    $("#distribute_box").hide()
+                    $("#check_box").show()
+                 }
+              })
              $("#btn_save_check").click(function () { 
                 assist_id=$(this).attr('assist_id')
                 is_check=$("#is_check:checked").val()
                 check_remark=$("#check_remark").val()
+                sale_name=$("select[name=sale_name1]").find("option:selected").text(); 
+                sale_id=$("#sale_name1").val()
+                assist_ids_and_sales=[($(this).attr('assist_id')+'|'+$(this).attr('sale_id'))].join(',')
                 if(is_check==undefined){
                     alert('请选择')
                 }else{
+                if(is_check=='3'){
+                    if(sale_id==''){
+                        alert('未选择销售')
+                    }else{
+                    $.post('/payment?tag=ask_assist',{
+                "_xsrf":_xsrf,
+                "sale_name":sale_name,
+                "assist_ids_and_sales":assist_ids_and_sales,
+                "sale_id":sale_id,
+                "step":6
+            },function (result) {
+                if(result=='-1'){
+                    alert('销售填写错误')
+                }else{location.reload()} 
+                
+             })
+            }
+                }
+                else{
                     $.post('/payment?tag=ask_assist',
                 {
                     "_xsrf":_xsrf,
@@ -1226,7 +1301,7 @@ display: -webkit-box;
                   
                 },function (data) { 
                     location.reload()
-                 })
+                 })}
                 }
 
 
@@ -1237,6 +1312,8 @@ display: -webkit-box;
                 $('input[name=is_check][value='+is_check+']').prop('checked',true)
                 $("#check_remark").val(check_remark)
                 sale_name=$(this).attr('sale_name')
+                $("#distribute_box").hide()
+                $("#check_box").show()
                 if (sale_name=="{{name}}" && is_check!='1'){
                     $("#re_sale_finish").show()
                 }

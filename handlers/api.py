@@ -79,18 +79,40 @@ class ApiHandler(BaseHandler):
 
         elif tag=='company':
             response = []
+            if query:
+                query = query.replace("（","(").replace("）",")") 
             if len(query)>0:
                 t_users = self.db.query("select * from t_projects where customer_company like  '%%"+query+"%%' limit 20")
                 for item in t_users:
                     response.append(item.customer_company)
             self.write(tornado.escape.json_encode(response))
         elif tag=='customer_company':
+            if query:
+                query = query.replace("（","(").replace("）",")") 
             response = []
             if len(query)>0:
                 t_users = self.db_customer.query("select * from t_customer where company like  '%%"+query+"%%' limit 20 ")
                 for item in t_users:
                     response.append(item.company)
             self.write(tornado.escape.json_encode(response))
+        elif tag=='customer_company_guid':
+            if query:
+                query = query.upper()
+            response = []
+            if len(query)>0:
+                t_users = self.db_customer.query("select * from t_customer where company like  '%%"+query+"%%' limit 20 ")
+                for item in t_users:
+                    response.append(item.company+"-"+item.company_reguid)
+            self.write(tornado.escape.json_encode(response))
+        elif tag=='customer_company_one':
+            if len(query)>0:
+                if query:
+                    query = query.replace("（","(").replace("）",")") 
+                t_customer = self.db_customer.get("select company_reguid from t_customer where company = %s  ",query)
+                if t_customer:
+                    self.write(t_customer.company_reguid)
+                else:
+                    self.write("")
 
         elif tag == 'customer_company_acc_uid':
 

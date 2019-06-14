@@ -5,6 +5,56 @@ padding: 0.1rem 0.2rem;
 background-color: #9ec6ef;
  margin-left: 20px; 
  border-radius: 2px;}
+
+ .faye-lba .hh { margin: 5px 0; border:1px solid #b8b8b8; color: #212529; }
+.faye-lba {background:#fff;  border-radius: 5px; border:1px solid #d3d3d3;}
+.badges {float: right; width: 25px; height: 20px; background-color: #E60012;line-height: 14px;}
+.faye-lba .faye-lba-top {height:35px; line-height: 35px; background-color:#007bff; font-weight: bold; padding-left: 15px; border-radius: 5px;}
+.hh:hover {border:1px solid #007bff; color: #007bff;}
+.popover {
+max-width:336px;
+position: absolute;
+z-index: 1060;
+}
+/* .form-group {margin-bottom: 0.5rem;}
+.col-sm-10 {overflow: hidden;}
+.col-sm-10 label {float: left; display: inline-block; width: 31%; margin-right: 5%; line-height: 32px;}
+.col-sm-10 input {float: left; display: inline-block; width: 64%;} */
+
+.col-sm-4{ width: 31%; margin-left:3%;margin-top: 6px; }
+
+.g1-right1{
+    position: fixed;
+    right:47px;
+}
+.g1-right2{
+    position: fixed;
+    right:155px;
+}
+#btn_drop_time{
+    box-shadow: 0 0 0 0.08rem rgba(40, 44, 48, 0.25);
+    width:100%;
+}
+.create_time{
+   
+    border-radius: 3px;
+    color: #6f6f6f;
+    background-color: #fff;
+    border: 1px solid #6f6f6f;
+    cursor: pointer;
+}
+#created_at_ul li{
+    float: left;
+    margin:3px;
+}
+#created_at_ul li a{
+    cursor: pointer;
+    text-decoration:none;
+}
+.choose_time{
+    background-color: #007bff;
+    color: white;
+}
 </style>
 
       <ol class="breadcrumb">
@@ -15,111 +65,513 @@ background-color: #9ec6ef;
         <li class="g1 g1-left">
         
             <a href="javascript:void(0);" class="btn btn-primary btn-sm" id="add_cb_addr">新增</a>
+         
         </li>
+        {%if '314' in role_list%}
+        <li class="g1 g1-right2">
+        
+                <a href="?tag=business_develop_manage_statistics" class="btn btn-primary btn-sm" >总商机统计</a>
+                
+             
+            </li>
+            {%end%}
+        <li class="g1 g1-right1">
+        
+                <a href="?tag=business_develop_manage_statistics&my=1" class="btn btn-primary btn-sm">我的商机统计</a>
+
+             
+            </li>
 
       </ol>
       <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <a class="btn btn-light  nav_padding {%if not step%} active {%end%}"
                     href="/company?tag=business_develop_manage" style="font-size:13px;">全部 
-                    <span class="badge badge-danger"></span>
+                    <span class="badge badge-danger">{%if not step%}{{count.count}}{%else%}{{count.count1}}{%end%}</span>
                     </a>
                 <a class="btn btn-light  nav_padding {%if step=='1'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=1" style="font-size:13px;">待分配跟进人 
-                <span class="badge badge-danger"></span>
+                href="/company?tag=business_develop_manage&step=1" style="font-size:13px;">待分配 
+                <span class="badge badge-danger">{%if step=='1'%}{{count.count}}{%else%}{{count.count2}}{%end%}</span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='2'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=2" style="font-size:13px;">待跟进人接单
-                <span class="badge badge-danger"></span>
+                href="/company?tag=business_develop_manage&step=2" style="font-size:13px;">待接单
+                <span class="badge badge-danger">
+                    {%if step=='2'%}{{count.count}}{%elif '283' not in role_list and '284' not in role_list and '300' not in role_list%}
+                    {{count.count31}}{%else%}{{count.count32}}{%end%}
+                </span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='3'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=3" style="font-size:13px;"> 跟进人做办结处理 
-                <span class="badge badge-danger"></span>
+                href="/company?tag=business_develop_manage&step=3" style="font-size:13px;">处理中 
+                <span class="badge badge-danger">{%if step=='3'%}{{count.count}}{%else%}{{count.count4}}{%end%}</span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='4'%}active {%end%}"
                 href="/company?tag=business_develop_manage&step=4" style="font-size:13px;">审核 
-                <span class="badge badge-danger"></span>
+                <span class="badge badge-danger">{%if step=='4'%}{{count.count}}{%else%}{{count.count5}}{%end%}</span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='5'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=5" style="font-size:13px;">通过 
-                <span class="badge badge-danger"></span>
+                href="/company?tag=business_develop_manage&step=5" style="font-size:13px;">已成交 
+                <span class="badge badge-danger">{%if step=='5'%}{{count.count}}{%else%}{{count.count6}}{%end%}</span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='6'%}active {%end%}"
                 href="/company?tag=business_develop_manage&step=6" style="font-size:13px;">驳回 
-                <span class="badge badge-danger"></span>
+                <span class="badge badge-danger">{%if step=='6'%}{{count.count}}{%else%}{{count.count7}}{%end%}</span>
                 </a>
+                <a class="btn btn-light  nav_padding  {%if step=='7'%}active {%end%}"
+                href="/company?tag=business_develop_manage&step=7" style="font-size:13px;">放弃商机 
+                <span class="badge badge-danger">{%if step=='7'%}{{count.count}}{%else%}{{count.count8}}{%end%}</span>
+                </a>
+                <a class="btn btn-light  nav_padding  {%if step=='invalid_business'%}active {%end%}"
+                href="/company?tag=business_develop_manage&step=invalid_business" style="font-size:13px;">反馈无效列表 
+                <span class="badge badge-danger">{%if step=='invalid_business'%}{{count.count}}{%else%}{{count.count10}}{%end%}</span>
+                </a>
+                {%if '300' in role_list%}
+                <a class="btn btn-light  nav_padding  {%if step=='anomaly'%}active {%end%}"
+                href="/company?tag=business_develop_manage&step=anomaly" style="font-size:13px;">异常列表
+                <span class="badge badge-danger">{%if step=='anomaly'%}{{count.count}}{%else%}{{count.count9}}{%end%}</span>
+                </a>
+                {%end%}
                </div>
         </nav>
+<div class="row">
+    {%if step=='3'%}
+        <div class="col-2" style="padding-right: 1px;">
+                <div class="nav flex-column nav-pills faye-lba" id="v-pills-tab" role="tablist">
+                 
+                 
+                  <a class="faye-lba-top" style="color: #fff;">菜单管理</a>
+        
+                  <a class="nav-link hh"  id="v-pills-settings-tab"  
+                  href="/company?tag=business_develop_manage&{%if step%}&step={{step}}{%end%}"  
+                 style="padding-left:15px; height:35px; vertical-align: middle !important; text-align: left;background-color:#fff;color:black;{%if not category_id and ntag!="ungroup"%}border:1px solid #007bff; color: #007bff;{%end%}"
+                   aria-selected="false">全部<span class="badge badge-primary badges"  id="v-pills-settings-tab" ></span></a>
+             <a class="nav-link hh "  href="/company?tag=business_develop_manage{%if step%}&step={{step}}{%end%}&ntag=ungroup" 
+              aria-selected="false" {%if  ntag=="ungroup"%}style="border:1px solid #007bff; color: #007bff;" {%end%}
+             >未分组<span class="badge badge-primary badges" style="font-size:13px;{%if  ntag=="ungroup"%}background-color: #e60012;{%end%}" id="v-pills-settings-tab" ></span></a>
+        
+        
+        
+        
+                {%for item in t_categories%}
+                    <a class="nav-link hh "
+                    {%if  category_id==str(item.id)%}style="border:1px solid #007bff; color: #007bff;" {%end%}
+                    id="v-pills-settings-tab"
+                
+                    href="/company?tag=business_develop_manage{%if step%}&step={{step}}{%end%}&category_id={{item.id}}"
+                   aria-selected="false" category_id={{item.id}}>{{item.category_name}} {%if item.count > 0%}
+                   <span class="badge badge-primary badges" style="font-size:13px;{%if  category_id==str(item.id)%}background-color: #e60012;{%end%}" >{{item.count}}</span>{%end%}</a>
+                {%end%}
+               <a class="nav-link" style="text-align: right;"  id="manage_group" href="javascript:void(0)"
+             >+管理分组</a>
+           
+                </div>
 
-<div class="table-responsive">
-
-                  <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0">
-                    <thead class="table_class">
-                        <tr>
-                        <th width='100'>编号</th>
-                        <th width='100'>商机类型</th>
-                        <th width="100">客户姓名</th>
-                        <th width="150">公司名称</th>
-                        <th width="100">联系电话</th>
-                        <th width="100">业务需求</th>
-                        <!-- <th width="150">来源关键词</th>
-                        <th width="100">来源方式</th>
-                        <th width="100">来源渠道</th>
-                        <th width="150">来源端口</th>
-
-                        <th width="150">推荐人</th>
-                        <th width="200">被推荐公司名称</th>
-                        <th width="100">被推荐联系人姓名</th>
-                        <th width="100">被推荐联系人电话</th> -->
-                        <th width="100">备注</th>
-                        <th width="100">创建人</th>
-                        <th width="100">创建时间</th>
-                        <th width="100"></th>
-                    </tr>
-                </thead>
-                <tbody class="fayetbody"> 
-                    {%if business_develop_manage%}
-                    {%for item in business_develop_manage%}
-                    <tr>
-                        <td>{{item.id}}</td>
-                        <td>{{item.business_from_name}}</td>
-                        <td>{{item.customer_name}}</td>
-                        <td>{{item.company}}</td>
-                        <td>{{item.phone}}</td>
-                        <td>{{item.project_request}}</td>
-                        <td>{{item.remark}}</td>
-                        <td>{{item.uid_name}}</td>
-                        <td>{{item.created_at}}</td>
-                        <td><a href="/company?tag=show_business&id={{item.id}}&guid={{item.guid}}" class="btn btn-primary btn-sm">查看</a></td>
-                    </tr>
-                    {%end%}
-                    {%else%}
-                    <tr>
-                        <td colspan="15" style="text-align: left;">还没有哦~</td>
-                    </tr>
-                    {%end%}
-                </tbody>
-                </table>
-
-                <div class="col-sm-12 col-md-7">
-                        <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
-                            <ul class="pagination">
-                                {% if pagination.has_prev %}
-                                <li class="paginate_button page-item previous " id="dataTable_previous">
-                                <a href="company?tag=business_develop_manage{%if step%}&step={{step}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
-                                <li class="paginate_button page-item ">
-                                    <a href="company?tag=business_develop_manage{%if step%}&step={{step}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
-                                {% else %}
-                                <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
-                                {% end %} {% else %}
-                                <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
-                                {% end %} {%end %} {% if pagination.has_next %}
-                                <li class="paginate_button page-item next" id="dataTable_next"><a href="company?tag=business_develop_manage{%if step%}&step={{step}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
-                                {% end %}
-                            </ul>
-                        </div>
-                    </div>
             </div>
+    {%end%}
+            <div  {%if step=='3'%} class="col-10"  style="padding-left:1px;"{%else%}class="col-12"{%end%}>
+                <form>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td style="width:8%"><select name="business_from_id" class="form-control">
+                                    <option value="">商机类型</option>
+                                    {% for idx, item in enumerate(t_income_type) %}
+                                    {%if item.is_hide==0%}
+                                             <option value="{{item.id}}" {%if params['business_from_id']==str(item.id)%} selected {%end%}>{{item.income_name}}</option>
+                                             
+                                             {%end%}
+                                          {% end %}
+                              
+                                </select></td>
+                                <td style="width:15%">
+                                    <input class="form-control" type="text" placeholder="编号/客户/电话/公司" {%if params['search_key']%} value="{{params['search_key']}}"{%end%} name="search_key">
+                                </td>
+                                <td style="width:8%">
+                                <input type="text" class="form-control" placeholder="确认单" name="project_id" value="{{params['project_id']}}">
+                                </td>
+                                <td style="width:8%">
+                                <input type="text" class="form-control" name="customer_name" placeholder="客户姓名" value="{{params['customer_name']}}">
+                                </td>
+                                <td style="width:8%">
+                                <input type="text" class="form-control" name="customer_tel" placeholder="联系方式" value="{{params['customer_tel']}}">
+                                </td>
+                                <td style="width:8%">
+                                <button data-html="true"  type="button" style="width:100%;background-color:white;box-shadow: 0 0 0 0.08rem rgba(40, 44, 48, 0.25);"  class="btn btn-sm customer_btn">业务标签</button>
+                                </td>
+                                {%if step in ['3','4','5','6']%}
+                                <td style="width:8%">
+<button data-html="true"  type="button" style="width:100%;background-color:white;box-shadow: 0 0 0 0.08rem rgba(40, 44, 48, 0.25);"  class="btn btn-sm genjin_btn">跟进情况</button>
+
+</td>
+    <div style="display:none;">
+    <input class="form-control"  type="text" placeholder="跟进天数起" {%if params['genjin_days_start']%} value="{{params['genjin_days_start']}}"{%end%} name="genjin_days_start">
+    <input class="form-control" type="text" placeholder="跟进天数止" {%if params['genjin_days_end']%} value="{{params['genjin_days_end']}}"{%end%} name="genjin_days_end">
+    <input class="form-control" type="text" placeholder="跟进次数起" {%if params['genjin_count_start']%} value="{{params['genjin_count_start']}}"{%end%} name="genjin_count_start">
+        <input class="form-control" type="text" placeholder="跟进次数止" {%if params['genjin_count_end']%} value="{{params['genjin_count_end']}}"{%end%} name="genjin_count_end">
+    </div>
+{%end%}
+                                <td  style="width:8%">
+                                   <input type="text" class="form-control" name="created_name" id="created_name" placeholder="创建人" {%if params['created_name']%} value="{{params['created_name']}}"{%end%}> 
+                                </td>
+                                <td style="width:8%;">
+                                        <div class="btn-group" style="width:100%;">
+                                           
+                                                <button  id="btn_drop_time"  data-toggle="dropdown" href="#"
+                                                 style="width:100%;background-color:white;box-shadow: 0 0 0 0.08rem rgba(40, 44, 48, 0.25);"
+                                                  class="btn dropdown-toggle btn-sm">{%if params['create_time']%}{{params['create_time']}}{%else%}创建时间{%end%}</button>
+                                                <ul class="dropdown-menu" id="created_at_ul" style="width:414px;">
+                                                  <li><input type="button" class="create_time {%if params['create_time']=='不限'%}choose_time{%end%}" value="不限"></li>
+                                                  <li><input type="button" class="create_time {%if params['create_time']=='今天'%}choose_time{%end%}" value="今天"></li>
+                                                  <li><input type="button" class="create_time {%if params['create_time']=='昨天'%}choose_time{%end%}" value="昨天"></li>
+                                                  <li><input type="button" class="create_time {%if params['create_time']=='最近7天'%}choose_time{%end%}" value="最近7天"></li>
+                                                  <li><input type="button" class="create_time {%if params['create_time']=='最近30天'%}choose_time{%end%}" value="最近30天"></li>
+                                                  <li><input type="button" class="create_time {%if params['create_time']=='自定义'%}choose_time{%end%}" value="自定义"></li>
+                                                <div class="time_box" style="display:none;">
+                                                <li><input {%if params['created_name_start']%}value="{{params['created_name_start']}}"{%end%} readonly="readonly" id="created_name_start" type="text" class="form-control" style="width:150px;" placeholder="创建开始时间"></li>
+                                                <li><input readonly="readonly" {%if params['created_name_end']%}value="{{params['created_name_end']}}"{%end%} id="created_name_end" type="text" class="form-control"  style="width:150px;" placeholder="创建结束时间">
+                                                </li>
+                                                <li><input style="width:50px;margin-left:8px;"  class="btn btn-primary btn-sm" type="button" id="close_time" value="确定"></li>
+                                            </div>
+                                            </ul>
+                                              </div>
+                                <input type="hidden" name="create_time" id="">
+                                <input type="hidden" name="created_name_start" id="">
+                                <input type="hidden" name="created_name_end" id="">
+
+                                            </td>
+                              
+                                <td  style="width:8%">
+                                   <input type="text" class="form-control" name="referrer_name"  id="referrer_name" placeholder="反馈人" {%if params['referrer_name']%} value="{{params['referrer_name']}}"{%end%}>                                     
+                                </td>
+                                {%if step in ['2','3','4','5','6']%}
+                                <td style="width:8%">
+                                        <input class="form-control"  type="text" placeholder="跟进人" {%if params['genjin_name']%} value="{{params['genjin_name']}}"{%end%} name="genjin_name" id="genjin_name">
+                                        </td>
+                                {%end%}
+                               
+                                <td>
+                                    <input type="hidden" name="step" value="{{step}}">
+                                    <input type="hidden" name="tag" value="{{tag}}">
+                                    <input id="search_btn" type="submit" class="btn btn-primary btn-sm" value="检索" >
+                                </td>
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                </form>
+                    <div class="tab-content" id="v-pills-tabContent">
+                            <div class="tab-pane fade  active show " id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                                    <div class="btn-group" style="margin-top:10px; font-size:12px;">
+                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="btn_group_action" aria-haspopup="true" aria-expanded="false" style="font-size:11px;">
+                                              选中操作(0)
+                                          </a>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                              <a class="dropdown-item" href="javascript:void(0)" id="btn_set_group">设置分组</a>
+  
+                                              {%if ('293' in role_list or '283' in role_list) and step %}
+                                              <a href="javascript:void(0);" class="dropdown-item business_distribution">{%if step=='1'%}批量分配{%else%}批量协助{%end%}</a>
+                                              {%end%}
+                                              {%if step=='7' and '293' in role_list and params['is_valid_business']=='1'%} 
+                                              <a href="javascript:void(0);" reallocate='1'  class="dropdown-item business_distribution">重新分配</a>
+                                              {%elif step in ['2','3','4','5','6','7'] and  '293' not in role_list%}
+                                                <a href="javascript:void(0);" id='business_transfer'  class="dropdown-item">商机转让</a>
+                                              {%end%}
+                                                {%if step=='7'%}
+                                                <a href="javascript:void(0);" id='business_claim'  class="dropdown-item">商机认领</a>
+                                                {%end%}
+                                            </div>
+                                          
+                                          {%if step=='7'%}
+                                          <nav>
+                                            <div class="nav nav-tabs" style="height:32px; margin-top:-7px;" id="nav-tab" role="tablist">
+                                                    <a  class="btn btn-light  nav_padding  {%if not params['is_valid_business']%}active{%end%}"
+                                                    href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=7" style="font-size:13px;height:32px;">全部 
+                                                    <span class="badge badge-danger"></span>
+                                                    </a>
+                                                <a class="btn btn-light  nav_padding  {%if params['is_valid_business']=='1'%}active {%end%}"
+                                                href="/company?tag=business_develop_manage&step=1{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=7&is_valid_business=1" style="font-size:13px;height:32px;">有效商机 
+                                                <span class="badge badge-danger"></span>
+                                                </a>
+                                                <a class="btn btn-light  nav_padding  {%if params['is_valid_business']=='2'%}active {%end%}"
+                                                href="/company?tag=business_develop_manage&step=2{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=7&is_valid_business=2" style="font-size:13px;height:32px;">无效商机
+                                                <span class="badge badge-danger"></span>
+                                                </a>
+
+
+                                              
+                                               </div>
+                                        </nav>
+                                        {%elif step=='3'%}
+                                        <nav>
+                                                <div class="nav nav-tabs" style="height:32px; margin-top:-7px;" id="nav-tab" role="tablist">
+                                                        <a  class="btn btn-light  nav_padding  {%if params['deal_type']=='all'%}active{%end%}"
+                                                        href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=3&deal_type=all" style="font-size:13px;height:32px;">全部商机 
+                                                        <span class="badge badge-danger"></span>
+                                                        </a>
+                                                    <a class="btn btn-light  nav_padding  {%if params['deal_type']=='1'%}active {%end%}"
+                                                    href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=3&deal_type=1" style="font-size:13px;height:32px;">跟进商机 
+                                                    <span class="badge badge-danger"></span>
+                                                    </a>
+                                                    <a class="btn btn-light  nav_padding  {%if params['deal_type']=='2'%}active {%end%}"
+                                                    href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=3&deal_type=2" style="font-size:13px;height:32px;">协助商机
+                                                    <span class="badge badge-danger"></span>
+                                                    </a>
+                                                    <a class="btn btn-light  nav_padding  {%if params['deal_type']=='3'%}active {%end%}"
+                                                    href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=3&deal_type=3" style="font-size:13px;height:32px;">自建商机
+                                                    <span class="badge badge-danger"></span>
+                                                    </a>
+    
+                                                  
+                                                   </div>
+                                            </nav>
+                                        {%elif step=='4'%}
+                                        <nav>
+                                                <div class="nav nav-tabs" style="height:32px; margin-top:-7px;" id="nav-tab" role="tablist">
+                                                        <a  class="btn btn-light  nav_padding  {%if  params['check_type']=='all'%}active{%end%}"
+                                                        href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=4&check_type=all" style="font-size:13px;height:32px;">全部商机 
+                                                        <span class="badge badge-danger"></span>
+                                                        </a>
+                                                    <a class="btn btn-light  nav_padding  {%if params['check_type']=='1'%}active {%end%}"
+                                                    href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=4&check_type=1" style="font-size:13px;height:32px;">成交商机 
+                                                    <span class="badge badge-danger"></span>
+                                                    </a>
+                                                    <a class="btn btn-light  nav_padding  {%if params['check_type']=='2'%}active {%end%}"
+                                                    href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=4&check_type=2" style="font-size:13px;height:32px;">放弃商机
+                                                    <span class="badge badge-danger"></span>
+                                                    </a>
+    
+                                                  
+                                                   </div>
+                                            </nav>
+                                          {%end%}
+                                          <span style="padding-top:8px; margin-left:12px; font-size:13px;">
+                                           共 {{pagination.total_count}} 条记录</span>
+                                          
+                                          </div>
+                    <div class="table-responsive">
+
+                            <table class="table faye-table table-bordered fayetable" id="dataTable" cellspacing="0">
+                              <thead class="table_class">
+                                  <tr>
+                                <th style="width: 20px;"><input type="checkbox" id="allcheck_business"></th>
+                                <th style="width: 50px;">编号</th>  
+                                {%if step in ['3','4','5','6']%}
+                                <th width="70">跟进情况</th>
+                                <th width="60">跟进人</th>
+                                {%end%}                              
+                                <th style="width: 80px;">商机类型</th>
+                                <th style="width: 80px;">客户姓名</th>
+                                <th style="width: 100px;">联系电话</th>
+                                <th style="width: 170px;">公司名称</th>
+                                <th style="width: 100px;">业务标签</th>
+                                <th style="width: 170px;">最新动态</th>
+                                  {%if step in ['3','4','5','6']%}
+           
+                                  {%else%}
+                                  {%if step=='2'%}
+                                  <th width="60">接单人</th>
+                                  {%else%}
+                                  <th width="60">创建人</th>
+                                  {%end%}
+                                  <th width="60">创建时间</th>
+                                  {%end%}
+                              </tr>
+                          </thead>
+                          <tbody class="fayetbody"> 
+                              {%if business_develop_manage%}
+                              {%for item in business_develop_manage%}
+                              <tr>
+                                
+                                  <td><input type="checkbox" name="businessid_milepostid_company" value="{{item.id}}_{{item.business_milepost_id}}_{{item.company}}_{% if item.business_category_id%}{{item.business_category_id}}{%end%}_{%if item.be_assigner_ids%}{%for row in item.be_assigner_ids[:-1].split(',')%}{{row}}|{%end%}{%end%}"></td>
+                                 <td>{{item.id}}</td>
+                                 {%if step in ['3','4','5','6']%}
+                                 <td>{%if item.gen_jin_days%}{{int(item.gen_jin_days)+1}}天{%end%}/{%if item.genjin_count%}{{item.genjin_count}}{%else%}0{%end%}次<br>{%if item.new_genjin_day!=None%}<span style="line-height:0px;color:red;font-size:15px;">{{item.new_genjin_day}}天</span>{%end%}</td>
+                        
+                                 <td>{%if item.be_assigner_names%} {{item.be_assigner_names[:-1]}}{%end%}</td>
+                                 {%end%}
+                                  <!-- <td>{{item.id}}</td> -->
+                                  <td>{{item.business_from_name}}
+                              
+                                    {%if item.project_request%}
+                                    {%for row in item.project_request.split(',')%}
+                                    {%if row.split('_')[2]=='特殊业务'%}
+                                <span class="badge badge-pill badge-success"><b>
+                                {{row.split('_')[1]}}</b></span>{%end%}{%end%}
+                                {%end%}        
+                            </td>
+                                  <td title="{%if item.customer_name%}{{item.customer_name}}{%end%}">
+                                    <div {%if len(item.customer_name)>7%}style="font-size:12px;display: inline-block; line-height: 18px;"{%end%}>
+
+                                        <a href="/company?tag=show_business&id={{item.id}}&guid={{item.guid}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}">
+                                            <!-- {%if item.business_from_id==295 and item.feedback_type_id in [2,3]%}
+                                            {%if item.be_referrer_name%}{%if len(item.be_referrer_name)>12%} {{item.be_referrer_name[:12]}}..{%else%}{{item.be_referrer_name}}{%end%}{%else%}无{%end%}                                            
+                                            {%else%}
+                                            {%if item.customer_name%}{%if len(item.customer_name)>12%} {{item.customer_name[:12]}}..{%else%}{{item.customer_name}}{%end%}{%else%}无{%end%}
+                                            {%end%} -->
+                                            {%if item.first_link_name%}
+                                                {{item.first_link_name}}
+                                            {%else%}无
+                                            {%end%}
+                                        </a>
+                                    </div>
+                                   </td>
+                                  <td>
+                                      {%if item.first_link_phone%}{{item.first_link_phone}}{%end%}
+                                        <!-- {%if item.business_from_id==295 and item.feedback_type_id in [2,3]%}
+                                        {{item.be_referrer_phone}}
+                                        {%else%}
+                                    {{item.phone}}{%end%} -->
+                                </td>
+                                  <td>
+                                        {%if item.business_from_id==295 and item.feedback_type_id in [2,3]%}
+                                        {%if item.be_referrer_company%}
+                                        <div {%if len(item.be_referrer_company)>12 or item.project_id%}style="font-size:12px;display: inline-block; line-height: 18px;"{%end%}>
+                                                  
+                                                {%if item.be_referrer_company%}{{item.be_referrer_company}}{%else%}无{%end%}<br>
+                                                {%if item.project_id%}办结确认单号:
+                                                {%if get_projects(item.project_id)%}
+                                            {%for row in get_projects(item.project_id)%}
+                                            <a target="_blank" href="project?tag=show&guid={{row.guid}}&id={{row.id}}">{{row.id}}</a>{%end%}
+                                                {%end%}
+                                            {%end%}
+                                                </div>
+                                        {%else%}
+                                        <div {%if item.project_id%}style="font-size:12px;display: inline-block; line-height: 18px;"{%end%}>
+                                                  
+                                            无<br>{%if item.project_id%}办结确认单号:
+                                            {%if get_projects(item.project_id)%}
+                                            {%for row in get_projects(item.project_id)%}
+                                            <a target="_blank" href="project?tag=show&guid={{row.guid}}&id={{row.id}}">{{row.id}}</a>{%end%}
+                                                {%end%}
+                                            {%end%}
+                                                </div>
+                                                  {%end%}
+                                        {%else%}
+                                              {%if item.company%}
+                                    <div {%if len(item.company)>12 or item.project_id%}style="font-size:12px;display: inline-block; line-height: 18px;"{%end%}>
+                                              
+                                              {%if item.company%}{{item.company}}{%else%}无{%end%}<br>{%if item.project_id%}办结确认单号:
+                                              {%if get_projects(item.project_id)%}
+                                              {%for row in get_projects(item.project_id)%}
+                                              <a target="_blank" href="project?tag=show&guid={{row.guid}}&id={{row.id}}">{{row.id}}</a>{%end%}
+                                                  {%end%}
+                                              {%end%}
+                                            </div>
+                                    {%else%}
+                                    <div {%if item.project_id%}style="font-size:12px;display: inline-block; line-height: 18px;"{%end%}>
+                                              
+                                           无<br>{%if item.project_id%}办结确认单号:
+                                           {%if get_projects(item.project_id)%}
+                                           {%for row in get_projects(item.project_id)%}
+                                           <a target="_blank" href="project?tag=show&guid={{row.guid}}&id={{row.id}}">{{row.id}}</a>{%end%}
+                                               {%end%}
+                                           {%end%}
+                                          </div>
+                                            
+                                            {%end%}
+                                        {%end%}
+                                 
+                                  </td>
+                                  <td title="{%if item.customer_tag%}{% for idx,row in enumerate(item.customer_tag[:-1].split(',')) %}{%if row%}{%if len(item.customer_tag[:-1].split(','))==idx+1%}{{row.split('_')[1]}} {%else%}{{row.split('_')[1]}},{%end%}{%end%}{%end%}{%end%}"
+                                  >
+                                 
+                                    {%if item.customer_tag%}
+                                    <div {%if len(item.customer_tag[:-1])>7%}style="font-size:12px;display: inline-block; line-height: 18px;"{%end%}>
+                                        {% for idx,row in enumerate(item.customer_tag[:-1].split(',')[:2]) %}
+                                        {%if row%}
+                                        {%if len(item.customer_tag[:-1].split(','))==idx+1 and  len(item.customer_tag[:-1].split(','))<=1%}
+                                        {{row.split('_')[1]}}
+                                        {%elif  idx==1 and len(item.customer_tag[:-1].split(','))>1%}
+                                        {{row.split('_')[1]}}...
+                                        {%else%}
+                                       {{row.split('_')[1]}} ,
+                                        {%end%}
+                                        {%end%}
+                                        {%end%}
+                                    </div>
+                                    {%end%}
+                                    </td>
+                                  <td
+                                  title="{%if item.btype_id%}{%if item.btype_id==1%}{{item.msg_uid_name}}设置客户标签：{% for idx,row in enumerate(item.message.split(',')) %}{%if row%}{%if len(item.message.split(','))==idx+1%}{{row.split('_')[1]}}{{item.msg_created_at.strftime('%Y-%m-%d')}}{%else%}{{row.split('_')[1]}},{%end%}{%end%}{%end%}{%else%}{{item.message}}{{item.msg_created_at.strftime('%Y-%m-%d')}}{%end%}{%end%}"
+                                  >{%if item.btype_id%}
+                                      {%if item.btype_id==1%}
+                                      <div {%if len(item.message)>12%}style="font-size:12px;display: inline-block; line-height: 18px;"{%end%}>
+                                      {{item.msg_uid_name}}设置客户标签：
+                                      {% for idx,row in enumerate(item.message.split(',')[:3]) %}
+                                      {%if row%}
+                                          {%if len(item.message.split(','))==idx+1 and  len(item.message.split(','))<=2%}
+                                          {{row.split('_')[1]}}{{item.msg_created_at.strftime('%Y-%m-%d')}}
+                                          {%elif  idx==2 and len(item.message.split(','))>2%}
+                                          {{row.split('_')[1]}}{{item.msg_created_at.strftime('%Y-%m-%d')}}...
+                                          {%else%}
+                                         {{row.split('_')[1]}} ,
+                                          {%end%}
+                                      {%end%}
+                                      {%end%}
+                                      </div>
+                                      {%elif item.btype_id==4%}
+                                      <div style="font-size:12px;display: inline-block; line-height: 18px;">
+
+                                      {{item.msg_uid_name}}设置销售计划：
+                                      {{item.message.split('_')[1]}} {{item.message.split('_')[2]}} {{item.message.split('_')[3]}}
+                                      {{item.msg_created_at.strftime('%Y-%m-%d')}}
+                                    </div>
+                                      {%else%}
+                                      <div {%if len(item.message)>12%}style="font-size:12px;display: inline-block; line-height: 18px;"{%end%}>
+                                      {%if len(item.message)>25%}
+                                      {{item.message[:25]}}{{item.msg_created_at.strftime('%Y-%m-%d')}}...
+                                      {%else%}
+                                        {{item.message}}{{item.msg_created_at.strftime('%Y-%m-%d')}}
+                                      {%end%}
+                                      </div>
+                                      {%end%}
+                                      {%end%}
+                                  </td>
+                                  {%if step in ['3','4','5','6']%}
+                                  
+                                  {%else%}
+                                  {%if step=='2'%}
+                                  <td>{{item.be_assigner_names[:-1]}}</td>
+                                  {%else%}
+                                  <td>{{item.uid_name}}</td>
+                                  {%end%}
+                                  <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
+                                  {%end%}
+                              </tr>
+                              {%end%}
+                              {%else%}
+                              <tr>
+                                  <td colspan="15" style="text-align: left;">还没有哦~</td>
+                              </tr>
+                              {%end%}
+                          </tbody>
+                          </table>
+          
+                          <div class="col-sm-12 col-md-7">
+                                  <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                                      <ul class="pagination">
+                                          {% if pagination.has_prev %}
+                                          <li class="paginate_button page-item previous " id="dataTable_previous">
+                                          <a href="company?tag=business_develop_manage&page={{ pagination.page - 1}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                          <li class="paginate_button page-item ">
+                                              <a href="company?tag=business_develop_manage&page={{ page }}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                          {% else %}
+                                          <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                          {% end %} {% else %}
+                                          <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
+                                          {% end %} {%end %} {% if pagination.has_next %}
+                                          <li class="paginate_button page-item next" id="dataTable_next"><a href="company?tag=business_develop_manage&page={{pagination.page+1}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                                          {% end %}
+                                      </ul>
+                                  </div>
+                              </div>
+                      </div>
+                      </div>
+                      </div>
+
+            </div>
+</div>
+
 
     <div class="modal fade" id="add_business_develop_manage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                     <div class="modal-dialog" role="document" >
@@ -137,130 +589,254 @@ background-color: #9ec6ef;
                         
                         <div class="modal-body" id="site_mod">
                             <div class="form-group">
-                                <label for="exampleInputEmail1"  class="col-sm-4 control-label">业务来源: <small class="text-danger">（必填）</small></label>
+                                <label for="exampleInputEmail1"  class="col-sm-3 control-label">业务来源: <small class="text-danger" style="font-size:15px;">*</small></label>
                     
                                {% for idx, item in enumerate(t_income_type) %}
-                                        {%if role!='6' and item.id==2%}
+                               {%if item.is_hide==0%}
+                               
+                                        {%if role!='6' and item.id==294 and role!='8'%}
                                         {%else%}
                                      <input type="radio" name="busniess_from"  value="{{item.id}}|{{item.income_name}}"
                                      {%if role!='6'%}   {%if idx==1%}checked{%end%} {%else%}   {%if idx==0%}checked{%end%} {%end%} 
                                    /> &nbsp;{{item.income_name}}
                                         {%end%}
+                                        {%end%}
                                      {% end %}
                     
                               </div>
+                              <div class="feedback_div">
+                              <div class="form-group">
+                            
+                                        <label style="top:-11px;" for="exampleInputEmail1"  class="col-sm-2 control-label">类别:<small class="text-danger" style="font-size:15px;">*</small></label>
+
+                                    
+                                    <div style="display:inline-block;">
+                                    {% for idx, item in enumerate(t_income_type) %}
+                                    {%if item.is_hide!=0%}
+                                             {%if role!='6' and item.id==2%}
+                                             {%else%}
+                                             {%if item.is_hide==3%}<br>{%end%}
+                                          <input type="radio" name="feedback_type"  value="{{item.is_hide}}|{{item.income_name}}"
+                                         
+                                        /> &nbsp;{{item.income_name}}
+                                             {%end%}
+                                             {%end%}
+                                          {% end %}
+                                        </div>   
+                              </div>
+                              </div>
+                              <div class="feedback_hide_div">
                               <div id="be_referrer_div">
                               <div class="form-group">
-                                    <div class="col-sm-10">
-                                        <label for="be_referrer_company">被推荐公司名称</label>
-                                        <input  class="form-control" type="text" name="be_referrer_company" id="be_referrer_company" placeholder="被推荐公司名称">
+                                  <div class="row">
+                                    <div class="col-sm-4">
+                                            <label for="be_referrer_company" id="be_referrer_company_lab">新公司名称:</label>
+                                    </div>
+                                 
+                                    <div class="col-sm-7" style="margin-left:-17px;">
+                                        
+                                        <input  class="form-control" type="text" name="be_referrer_company" id="be_referrer_company" placeholder="新公司名称">
                                     </div>
                                 </div>
+                                </div>
                                 <div class="form-group">
-                                        <div class="col-sm-10">
-                                            <label for="be_referrer_name">被推荐联系人姓名</label>
-                                            <input  class="form-control" type="text" name="be_referrer_name" id="be_referrer_name" placeholder="被推荐联系人姓名">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <label for="be_referrer_name" id="be_referrer_name_lab" >新公司联系人姓名:</label><small class="text-danger" style="font-size:15px;">*</small>
+                                            </div>
+                                            <div class="col-sm-7" style="margin-left:-17px;">
+                                                <div id="link_div1">
+                                                        <input type="radio" name="link_gender" value="1" >男 <input  name="link_gender" type="radio" value="2">女
+
+                                                </div>
+                                                    <input  class="form-control" type="text" name="be_referrer_name" id="be_referrer_name" placeholder="新公司联系人">
+                                                    <div class="alert alert-danger" id="er_be_referrer_name" style="margin-top:0px;display:none;"></div>
+                                                </div>
                                         </div>
+
+                                    
                                     </div>
                                     <div class="form-group">
-                                            <div class="col-sm-10">
-                                                <label for="be_referrer_name">被推荐联系人电话</label>
-                                                <input type="text"  class="form-control" name="be_referrer_phone" id="be_referrer_phone" placeholder="被推荐联系人电话">
+                                            <div class="row">
+                                                    <div class="col-sm-4">
+                                                            <label for="be_referrer_phone_lab" id="be_referrer_phone_lab">新公司联系人电话:</label><small class="text-danger" style="font-size:15px;">*</small>
+                                                    </div>
+                                            <div class="col-sm-7" style="margin-left:-17px;">
+                                                    <input type="text"  class="form-control" name="be_referrer_phone" id="be_referrer_phone" placeholder="新公司联系人电话/微信/QQ">
+                                                    <div class="alert alert-danger" id="er_be_referrer_phone" style="margin-top:0px;display:none;"></div>
+                                                </div>
                                             </div>
+
+                                     
                                         </div>
                                     </div>
                               <div class="form-group">
-                                    <div class="col-sm-10">
-                                        <label for="customer_name" id="customer_name_lab">客户姓名</label>
-                                        <input placeholder="客户姓名" class="form-control" name="customer_name" id="customer_name" type="text">
-                          
+                                    <div class="row">
+                                            <div class="col-sm-4">
+                                                    <label for="customer_name" id="customer_name_lab">内部客户姓名:</label><small class="text-danger" style="font-size:15px;">*</small>
+                                                </div>
+                                            <div class="col-sm-7" style="margin-left:-17px;">
+                                                    <div id="link_div2">
+                                                    <input type="radio" name="link_gender" value="1">男 <input  name="link_gender" type="radio" value="2">女
+                                                    </div>
+                                                    <input placeholder="内部客户姓名" class="form-control" name="customer_name" id="customer_name" type="text">
+                                                    <div class="alert alert-danger" id="er_customer_name" style="margin-top:0px;display:none;"></div>
+                                                </div>
                                     </div>
                                     </div>
                                     <div class="form-group">
-                                            <div class="col-sm-10">
-                                                <label for="company" id="company_lab">公司名称</label>
-                                                <input placeholder="公司名称" class="form-control" name="company" id="company" type="text">
-                                                <div class="alert alert-danger" id="er_company" style="margin-top:0px;display:none;"></div>
+                                            <div class="row">
+                                                    <div class="col-sm-4">
+                                                <label for="company" id="company_lab">公司名称:</label><small class="text-danger" id="company_small" style="font-size:15px;">*</small>
                                             </div>
+                                            <div class="col-sm-7" style="margin-left:-17px;">
+                                                    <input placeholder="公司名称" class="form-control" name="company" id="company" type="text">
+                                                    <div class="alert alert-danger" id="er_company" style="margin-top:0px;display:none;"></div>
+                                                </div>
+                                            </div>
+     
                                             </div>
                                             <div class="form-group">
-                                                    <div class="col-sm-10">
-                                                        <label for="phone" id="phone_lab">联系电话</label>
-                                                        <input placeholder="联系电话" class="form-control" name="phone" id="phone" type="text">
-                                          
+                                                    <div class="row">
+                                                            <div class="col-sm-4">
+                                                                    <label for="phone" id="phone_lab">联系电话:</label><small class="text-danger" style="font-size:15px;">*</small>                                                    
+                                                    </div>
+                                            <div class="col-sm-7" style="margin-left:-17px;">
+                                                    <input placeholder="联系电话" class="form-control" name="phone" id="phone" type="text">
+                                                    <div class="alert alert-danger" id="er_phone" style="margin-top:0px;display:none;"></div>
+                                                </div>
                                                     </div>
                                                     </div>
                                                     <div class="form-group">
-                                                            <div class="col-sm-10">
-                                                                <label for="project_request">业务需求</label>
-                                                                <input placeholder="业务需求" class="form-control" name="project_request" id="project_request" type="text">
-                                                  
+                                                            <div class="row">
+                                                                    <div class="col-sm-4">
+                                                                            <label for="project_request">业务需求:</label><small class="text-danger" style="font-size:15px;">*</small>
                                                             </div>
+                                            <div class="col-sm-7" style="margin-left:-17px;">
+                                                    <input placeholder="业务需求" readonly class="form-control" name="project_request" id="project_request"  
+                                                    data-container="body" data-toggle="popover" data-placement="bottom"   data-html="true"
+                                                    data-content="{%for item in t_company_tag_group%}{%if item.tag_category=='咨询（前端）' or item.tag_category=='质量（前端）' or item.tag_category=='特殊业务'%}{{item.tag_category}} ：{%for row in item.gc.split(",")%}  <input type='button'  title='{{row.split("_")[0]}}' value='{{row.split("_")[0]}}' title_name='{{row.split("_")[1]}}_{{row.split("_")[0]}}_{{item.tag_category}}'
+                                                    name='company_tag'
+                                                    class='sj-at1  {%for m in params['customer_tag'].split(',') %}{%if m.split('_')[0]==row.split("_")[1]%}atcur{%end%}{%end%}'
+                                                    >{%end%}<hr style='margin-top:3px;margin-bottom:3px;'>{%end%}{%end%}<a href='javascript:;' style='float:right;margin:2px;' class='btn btn-primary btn-sm close_tag'>确定</a>"  type="text">
+                                                    <div class="alert alert-danger" id="er_project_request" style="margin-top:0px;display:none;"></div>
+                                                    <input type="text" id="project_request_choose" hidden>
+
+                                                </div>
+                                                            </div>
+
+                                             
                                                             </div>
                                         
                             <div id="source_div">
                                     <div class="form-group">
-                                            <div class="col-sm-10">
-                                                <label for="source_keyword">来源关键词</label>
-                                                <input placeholder="来源关键词" class="form-control" name="source_keyword" id="source_keyword" type="text">
-                                  
+                                            <div class="row">
+                                                    <div class="col-sm-4">
+                                                            <label for="source_keyword">来源关键词:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="margin-left:-17px;">
+                                                    <input placeholder="来源关键词" class="form-control" name="source_keyword" id="source_keyword" type="text">
+                                                </div>
                                             </div>
                                             </div>
                               <div class="form-group">
-                                <label for="exampleInputEmail1"  class="col-sm-4 control-label">来源方式: <small class="text-danger">（必填）</small></label>
+                                    <div class="row">
+                                    <div class="col-sm-4">
+                                <label for="exampleInputEmail1" >来源方式: <small class="text-danger">（必填）</small></label>   
+                                    </div>
+                                    <div class="col-sm-7" style="margin-left:-17px;">
+                                            {% for idx, item in enumerate(t_talk_type) %}
+                                            <input type="radio" id="source_way" name="source_way"  value="{{item.id}}|{{item.income_name}}"
+                                            /> &nbsp;{{item.income_name}}
+                                      {% end %}
+                                     <small id="er_source_way" class="text-danger"></small>
+                                        </div>
+                                    </div>
                     
-                               {% for idx, item in enumerate(t_talk_type) %}
-                                     <input type="radio" id="source_way" name="source_way"  value="{{item.id}}|{{item.income_name}}"
-                                     /> &nbsp;{{item.income_name}}
-                               {% end %}
-                              <small id="er_source_way" class="text-danger"></small>
+
                               </div>
                        
                         <div class="form-group">
-                            <label for="exampleInputEmail1"  class="col-sm-4 control-label">来源渠道: <small class="text-danger">（必填）</small></label>
+                                <div class="row">
+                                        <div class="col-sm-4">
+                            <label for="exampleInputEmail1">来源渠道: <small class="text-danger">（必填）</small></label>
+                                </div>
+                                <div class="col-sm-7" style="margin-left:-17px;">
+                                        {% for idx, item in enumerate(t_business_channel) %}
+                                        <input type="radio" name="source_place" id="source_place"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
+                                {% end %}
+        
+        
+                        <small id="er_source_place" class="text-danger">
+                                
+                                </small>
+                                    </div>
+                                </div>
 
-                        {% for idx, item in enumerate(t_business_channel) %}
 
-                                <input type="radio" name="source_place" id="source_place"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
+
+                        </div>
+                        <div class="form-group">
+                                <div class="row">
+                                        <div class="col-sm-4">
+
+                                <label for="exampleInputEmail1">来源端口: <small class="text-danger">（必填）</small></label>
+                                </div>
+                                <div class="col-sm-7" style="margin-left:-17px;">
+
+                                {% for idx, item in enumerate(t_port_type) %}
+    
+                                <input type="radio" id="source_port" name="source_port"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
                         {% end %}
-
-
-                <small id="er_source_place" class="text-danger">
+                <small id="er_source_port" class="text-danger">
                         
                         </small>
                         </div>
-                        <div class="form-group">
-                                <label for="exampleInputEmail1"  class="col-sm-4 control-label">来源端口: <small class="text-danger">（必填）</small></label>
-    
-                            {% for idx, item in enumerate(t_port_type) %}
-    
-                                    <input type="radio" id="source_port" name="source_port"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
-                            {% end %}
-    
-    
-                    <small id="er_source_port" class="text-danger">
-                            
-                            </small>
-                            </div>
+                                </div>
+
+
+                          
+                           
                         </div>
+                    </div>
                             <div class="form-group" id="referrer_div">
-                                    <div class="col-sm-10">
-                                        <label for="referrer">推荐人</label>
-                                        <input type="text" name="referrer" id="referrer" placeholder="推荐人"  class="form-control">
+                                    <div class="row">
+                                            <div class="col-sm-4">
+                                                    <label for="referrer">商机反馈员工:</label>                                    
+                                            </div>
+                                <div class="col-sm-7" style="margin-left:-17px;">
+                                    <div class="row">
+                                            <div class="col-sm-7">
+                                        <input type="text" name="referrer" id="referrer" placeholder="反馈员工"  class="form-control">
+                                        
                                     </div>
+                                    <div class="col-sm-5" style="margin-top: 6px;">
+                                    <input type="radio" name="choose_referrer" value="{{name}}">本人
+                                        <input type="radio"  name="choose_referrer" value="无">无
+                                    </div>
+                                </div>
+                                    </div>
+                                    </div>
+                                    
+                         
                                 </div>
                             
                             <div class="form-group">
-                                <div class="col-sm-10">
-                                    <label for="arrange_date">备注</label>
-                                    <textarea placeholder="备注" class="form-control" name="remark" id="remark" type="text"></textarea>
-                                    <div class="alert alert-danger" style="margin-top:0px;display:none;" role="alert"  id="er_arrange_date">
-                                        
+                                    <div class="row">
+                                    <div class="col-sm-4">
+                                            <label for="arrange_date">备注:</label>
                                     </div>
+                                <div class="col-sm-7" style="margin-left:-17px;">
+                                        <textarea placeholder="备注" class="form-control" name="remark" id="remark" type="text"></textarea>
+                                        <div class="alert alert-danger" style="margin-top:0px;display:none;" role="alert"  id="er_arrange_date">  
+                                        </div>
                                 </div>
+                                </div>
+
+
                             </div>
                               
-                                     
+                                
                         </div>
                 
                 
@@ -272,7 +848,281 @@ background-color: #9ec6ef;
                       </div>
                     </div>
                   </div>
+        
+</div>
+    
+                    <style>
+                        .sjdabg {width: 30%;  margin: 0 auto;}
+                        .sjxml {overflow: hidden; margin-top: 2%;}
+                        .sjbiaot {width: 25%; float: left; line-height: 32px;}
+                        .sjbiao {display: block; width: 33%; float: left;}
+                    </style>
+                    <div id="genjin_modal" class="modal modal-ku fade bgaa" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                        <div class="modal-dialog modal-dialog1" style="min-width:800px;" role="document">
+                            <div class="modal-content  sjdabg" >
+                                <div class="modal-header">
+                                    <h5 id="myModalLabel_linkman">跟进情况
+                                        <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                                        <i class="btn-icon-only icon-remove">×</i>
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div class="modal-body form-horizontal" id="site_mod">
+                                    <div class="sjxml">
+                                        <div class="sjbiaot" >
+                                            <label for="">跟进天数:</label>
+                                        </div>
+                                        <div class="sjbiao" style="margin-right: 5%">
+                                            <input {%if params['genjin_days_start']%} value="{{params['genjin_days_start']}}"{%end%} class="form-control" type="text" placeholder="跟进天数起" name="genjin_days_start1">
+                                        </div>
+                                        <div class="sjbiao">
+                                            
+                                            <input {%if params['genjin_days_end']%} value="{{params['genjin_days_end']}}"{%end%} class="form-control" type="text" placeholder="跟进天数止" name="genjin_days_end1">
+                                        </div>
+                                    </div>
+                                        
+                                    <div class="sjxml">
+                                        <div class="sjbiaot">
+                                            <label for="">跟进次数:</label>
+                                        </div>
+                                        <div class="sjbiao" style="margin-right: 5%">
+                                            <input {%if params['genjin_count_start']%} value="{{params['genjin_count_start']}}"{%end%} class="form-control" type="text" placeholder="跟进次数起" name="genjin_count_start1">
+                                        </div>
+                                        <div class="sjbiao">
+                                            <input {%if params['genjin_count_end']%} value="{{params['genjin_count_end']}}"{%end%} class="form-control" type="text" placeholder="跟进次数止" name="genjin_count_end1">
+                                        </div>
+                                    </div>
 
+                                    <div class="sjxml">
+                                            <div class="sjbiaot">
+                                                <label for="">未跟进天数:</label>
+                                            </div>
+                                            <div class="sjbiao" style="margin-right: 5%">
+                                                <input disabled class="form-control" type="text" placeholder="未跟进天数起" name="">
+                                            </div>
+                                            <div class="sjbiao">
+                                                <input disabled class="form-control" type="text" placeholder="未跟进天数止" name="">
+                                            </div>
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                                    <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">保存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>           
+    <div id="update_business_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="gendan_checked_h5">分配跟单人
+    
+    
+                    </h5>
+                </div>
+                <div class="modal-body form-horizontal" id="site_mod">
+                
+                    <div class="form-group" id="gedan_name_div">
+                        <div class="row">
+                        <div class="col-md-9">
+                            <label class="control-label" for="username">跟单人</label>
+                            <input type="text" placeholder="跟单人" id="gendan_name" class="form-control">
+                        </div>
+                        {%if step=='1'%}
+                        <div class="col-md-3" style="margin-top:27.5px;padding-left:0;">
+                                <button is_invalid_business='1' class="btn btn-dark btn-sm btn_save_update">商机无效</button>
+                        </div>
+                        {%end%}
+                    </div>
+                        <!-- /controls -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    <button class="btn btn-primary btn_save_update">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+            .sj-at,.sj-at1 {width: 100px; height: 26px; border-radius: 5px;color: #6f6f6f; background-color: #fff; border: 1px solid #6f6f6f; cursor: pointer; margin-top: 10px;  }
+            .atcur {background-color: #007bff; color: #fff;}
+            .modal-dialog1 {width: 1138px; max-width:none;}
+            </style>
+            <div id="add_tag_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog1" style="min-width:800px;"role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 id="myModalLabel_linkman">选择标签
+            
+                                <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                                    <i class="btn-icon-only icon-remove">×</i>
+                                    </i>
+                                </a>
+            
+                            </h5>
+                        </div>
+                        <div class="modal-body form-horizontal" id="site_mod">
+            
+            {%for item in t_company_tag_group%} <h6>{{item.tag_category}} :</h6>
+            {%if item.tag_category=='成交（业务）'%}
+                            {%for row in t_projects_type %}
+                            <input type="button" value="{{row.income_name}}" id="{{row.id}}"
+                            search_title='{{row.id}}_{{row.income_name}}_{{item.tag_category}}'  title="{{row.income_name}}" parent_name="{{item.tag_category}}" name="company_tag"
+                       class="sj-at
+                       {% if params["customer_tag"] %}
+                        {%for citem in params["customer_tag"].split(",")[:-1]%}{%if citem.split("_")[1]==row.income_name%} atcur{%end%}
+                        {%end%}
+                       {%end%}
+                        ">
+                            {%end%}
+            {%else%}
+            {%for row in item.gc.split(",")%}
+                     <input type="button" value="{{row.split("_")[0]}}" id="{{row.split("_")[1]}}"
+                     search_title='{{row.split("_")[1]}}_{{row.split("_")[0]}}_{{item.tag_category}}'  title="{{row.split("_")[1]}}" parent_name="{{item.tag_category}}" name="company_tag"
+                class="sj-at
+                {% if params["customer_tag"] %}
+                 {%for citem in params["customer_tag"].split(",")[:-1]%}{%if citem.split("_")[1]==row.split("_")[0]%} atcur{%end%}
+                 {%end%}
+                {%end%}
+                 ">
+            {%end%}
+            {%end%}
+            <hr>
+            {%end%}
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                            <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    <div class="modal fade" id="manage_group_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+
+            <div class="modal-dialog" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle_license">管理分组
+                    <a class="btn btn-primary" id="add_category" href="javascript:void(0)">新增</a>
+                  </h5>
+                  
+        
+                  <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+        
+                <div class="modal-body form-horizontal" id="site_mod">
+                    <table class="table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:12px;">
+                        <thead>
+                            <tr>
+                              
+                               <th width="20">
+                                编号 
+                                </th>
+                                 <th width="200">分组</th>
+                                 <th width="20">排序</th>
+                                 <th width="20"></th>
+      
+                            </tr>
+                        </thead>
+                        <tbody class="fayetbody" id="my_allgroups">
+                            {%for item in t_categories%}
+                            <tr id="{{item.id}}" class='my_allgroup hh' category_id="{{item.id}}">
+                              <td>{{item.id}}</td>
+                              <td><input type="text"  id="{{item.id}}" value="{{item.category_name}}" class="form-control"></td>
+                              <td><input type="text"  value="{{item.order_int}}" class="form-control"></td>
+                              <td><a class="btn btn-danger delete_group l" href="javascript:void(0)" id='{{item.id}}'>删除</a></td>
+                            </tr>
+                            {%end%}
+                        </tbody>
+                    </table>
+        
+                </div>
+                <div class="modal-footer">
+        
+        
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+        
+                       <button class="btn btn-primary" id="btn_save_group">保 存</button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="modal fade" id="manager_category" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+
+                <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLongTitle_license">增加分组</h5>
+            
+            
+                      <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+            
+                    <div class="modal-body form-horizontal" id="site_mod">
+            
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"  class="col-sm-6 control-label">名称:</label>
+                            <input class="form-control" type="text" name="category_name" id="category_name"  placeholder="">
+            
+                          </div>
+                                      <div class="form-group">
+                            <label for="exampleInputEmail1"  class="col-sm-6 control-label">排序:</label>
+                            <input class="form-control"  type="text" name="order_int" id="order_int"  placeholder="数值大排前面" value="0">
+                          </div>
+                    </div>
+            
+            
+                    
+                    <div class="modal-footer">
+            
+            
+                          <button type="button" class="btn btn-secondary showdown" data-dismiss="modal">关闭</button>
+            
+                           <button class="btn btn-primary" id="btn_save_category">保 存</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal fade" id="set_group_category" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+
+                    <div class="modal-dialog" role="document" >
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLongTitle_group">设置分组</h5>
+                
+                
+                          <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                
+                        <div class="modal-body form-horizontal" id="site_mod">
+                                {%for item in t_categories%}
+                           <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="rt{{item.id}}" name="rt_category" class="custom-control-input" value="{{item.id}}" cname="{{item.category_name}}">
+                            <label class="custom-control-label" for="rt{{item.id}}">{{item.category_name}}</label>
+                            </div>
+                                            
+                                 
+                                {%end%}
+                
+                        </div>
+                        <div class="modal-footer">
+                
+                
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                
+                               <button class="btn btn-primary" id="btn_save_project_category">保 存</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
   {%end%}
 
   {%block js%}
@@ -291,6 +1141,10 @@ language: 'zh-CN',initialDate: new Date()});
 $("#supply_js_date").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
 language: 'zh-CN',initialDate: new Date()});
 
+$("#created_name_start").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+$("#created_name_end").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
 $('#company').typeahead({
       source: function (query, process) {
         return $.post('/api', { query: query ,"_xsrf":_xsrf,"tag":"customer_company"}, function (data) {
@@ -298,36 +1152,210 @@ $('#company').typeahead({
         });
     }
     });
+    
+    $('#genjin_name').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    }); 
+$('#gendan_name').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+$('#referrer').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+$('#referrer_name').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+$('#created_name').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
 $('#add_cb_addr').click(function () { 
+  
     $("#add_business_develop_manage").modal('show')
  })
- if($('input[name=busniess_from]:checked').val().split('|')[0]=='2'){
+//  原来
+//  if($('input[name=busniess_from]:checked').val().split('|')[0]=='2'){
+//     $('#source_div').show()
+//     $('#referrer_div').hide()
+//     $('#be_referrer_div').hide()
+
+//  }else if($('input[name=busniess_from]:checked').val().split('|')[0]=='81'){
+//     $('#source_div').hide()
+//     $('#referrer_div').show()
+//     $('#be_referrer_div').hide()
+//  }else if($('input[name=busniess_from]:checked').val().split('|')[0]=='3'){
+//     $('#source_div').hide()
+//     $('#referrer_div').show()
+//     $('#be_referrer_div').show()
+//  }
+//  修改
+if($('input[name=busniess_from]:checked').val().split('|')[0]=='294'){
+    $("#link_div2").show()        
+    $("#link_div1").hide()
+    $("input[name=link_gender]").prop('checked',false)
+    $('#customer_name_lab').text('新客户姓名:')
+    $('#customer_name').attr('placeholder','新客户姓名')
+    $('#company_lab').text('新公司名称:')
+    $('#company').attr('placeholder','新公司名称')
+    $('#phone_lab').text('新联系电话:')
+    $('#phone').attr('placeholder','新联系电话')
+    $(".feedback_hide_div").show()
     $('#source_div').show()
     $('#referrer_div').hide()
     $('#be_referrer_div').hide()
+    $(".feedback_div").hide()
+    $("#company_small").hide()
+ }else if($('input[name=busniess_from]:checked').val().split('|')[0]=='295'){
+    $("input[name=link_gender]").prop('checked',false)
+    feedback_type=$('input[name=feedback_type]:checked').val()
+    feedback_type_id='0'
+    if(feedback_type!=undefined){
+        feedback_type_id=feedback_type.split('|')[0]
+           $(".feedback_div").show()
+           $(".feedback_hide_div").show()
+    }
+  
+ 
+    if(feedback_type_id=='0'){
+            $(".feedback_hide_div").hide()
+    }    
+    else if(feedback_type_id=='1' || feedback_type_id=='4'){
+        $("#link_div2").show()        
+        $("#link_div1").hide()
+        $('#referrer_div').show()
+         $('#source_div').hide()
+         $('#be_referrer_div').hide()
+         if(feedback_type_id=='4'){
+            $('#customer_name_lab').text('新客户姓名:')
+            $('#customer_name').attr('placeholder','新客户姓名')
+            $('#company_lab').text('新公司名称:')
+            $('#company').attr('placeholder','新公司名称')
+            $('#phone_lab').text('新联系电话:')
+            $('#phone').attr('placeholder','新联系电话')
+            $("#company_small").hide()
+         }
+    }
 
- }else if($('input[name=busniess_from]:checked').val().split('|')[0]=='81'){
-    $('#source_div').hide()
-    $('#referrer_div').show()
-    $('#be_referrer_div').hide()
- }else if($('input[name=busniess_from]:checked').val().split('|')[0]=='3'){
-    $('#source_div').hide()
-    $('#referrer_div').show()
-    $('#be_referrer_div').show()
+    else if(feedback_type_id=='3' || feedback_type_id=='2'){
+        $("#be_referrer_company_lab").text('新公司名称:')
+        $("#be_referrer_company").attr('placeholder','新公司名称')
+        $("#be_referrer_name_lab").text('新公司联系人姓名:')
+        $("#be_referrer_name").attr('placeholder','新公司联系人')
+        $("#link_div1").show()        
+        $("#link_div2").hide()
+        $("#be_referrer_phone_lab").text('新公司联系人电话:')
+        $("#be_referrer_phone").attr('placeholder','新公司联系人电话/微信/QQ')
+        $('#customer_name_lab').text('内部客户姓名:')
+         $('#customer_name').attr('placeholder','内部客户姓名')
+         $('#company_lab').text('内部客户公司名称:')
+         $('#company').attr('placeholder','内部客户公司名称')
+         $('#phone_lab').text('内部客户联系电话:')
+         $('#phone').attr('placeholder','内部客户联系电话')
+        $('#referrer_div').show()
+        $('#source_div').hide()
+        $('#be_referrer_div').show()
+    }
  }
 
- $('input[name=busniess_from]').on('change',function () {
+//  $('input[name=busniess_from]').on('change',function () {
+//     $('#er_source_way').text('')
+//     $('#er_source_place').text('')
+//     $('#er_source_port').text('')
+//     $('#er_company').text('')
+//     $('#er_company').hide()
+//     $('#customer_name_lab').text('客户姓名')
+//     $('#customer_name').attr('placeholder','客户姓名')
+//     $('#company_lab').text('公司名称')
+//     $('#company').attr('placeholder','公司名称')
+//     $('#phone_lab').text('联系电话')
+//     $('#phone').attr('placeholder','联系电话')
+//     $('#customer_name').val('')
+//     $('#company').val('')
+//     $('#phone').val('')
+//     $('#project_request').val('')
+//     $('#source_keyword').val('')
+//     $('#remark').val('')
+//     $('#referrer').val('')
+//     $('#be_referrer_company').val('')
+//     $('#be_referrer_name').val('')
+//     $('#be_referrer_phone').val('')
+//     $('input[name=source_way]').prop('checked',false);
+//     $('input[name=source_place]').prop('checked',false);
+//     $('input[name=source_port]').prop('checked',false);
+//     $("#company_lab small").remove()
+//      bf_id=$(this).val().split('|')[0]
+//      if(bf_id=='2'){
+//         $('#source_div').show()
+//         $('#referrer_div').hide()
+//         $('#be_referrer_div').hide()
+//      }else if(bf_id=='81'){
+//          $("#company_lab").append('<small class="text-danger" ><input type="checkbox" id="friend_introduce" value="1">朋友内部</small>')
+//          $('#source_div').hide()
+//          $('#referrer_div').show()
+//          $('#be_referrer_div').hide()
+//      }
+//      else if(bf_id=='3'){
+//          $('#customer_name_lab').text('推荐客户姓名')
+//          $('#customer_name').attr('placeholder','推荐客户姓名')
+//          $('#company_lab').text('推荐客户公司名称')
+//          $('#company').attr('placeholder','推荐客户公司名称')
+//          $('#phone_lab').text('推荐客户联系电话')
+//          $('#phone').attr('placeholder','推荐客户联系电话')
+//         $('#source_div').hide()
+//         $('#referrer_div').hide()
+//         $('#be_referrer_div').show()
+//      }
+//   })
+
+$('input[name=busniess_from]').on('change',function () {
+    $("input[name=link_gender]").prop('checked',false)
     $('#er_source_way').text('')
     $('#er_source_place').text('')
     $('#er_source_port').text('')
     $('#er_company').text('')
     $('#er_company').hide()
-    $('#customer_name_lab').text('客户姓名')
-    $('#customer_name').attr('placeholder','客户姓名')
-    $('#company_lab').text('公司名称')
-    $('#company').attr('placeholder','公司名称')
-    $('#phone_lab').text('联系电话')
-    $('#phone').attr('placeholder','联系电话')
+    $("#company_small").show()
+    feedback_type_id=''
+    feedback_type=$('input[name=feedback_type]:checked').val()
+    if(feedback_type!=undefined){
+        feedback_type_id=feedback_type.split('|')[0]
+    }else{
+        $(".feedback_hide_div").hide()
+    }
+    if(feedback_type_id=='1'){
+        $('#customer_name_lab').text('内部客户姓名:')
+    $('#customer_name').attr('placeholder','内部客户姓名')
+    $('#company_lab').text('内部公司名称:')
+    $('#company').attr('placeholder','内部公司名称')
+    $('#phone_lab').text('内部联系电话:')
+    $('#phone').attr('placeholder','内部联系电话')
+    }else{
+        $('#customer_name_lab').text('新客户姓名:')
+    $('#customer_name').attr('placeholder','新客户姓名')
+    $('#company_lab').text('新公司名称:')
+    $('#company').attr('placeholder','新公司名称')
+    $('#phone_lab').text('新联系电话:')
+    $('#phone').attr('placeholder','新联系电话')
+    }
     $('#customer_name').val('')
     $('#company').val('')
     $('#phone').val('')
@@ -341,36 +1369,143 @@ $('#add_cb_addr').click(function () {
     $('input[name=source_way]').prop('checked',false);
     $('input[name=source_place]').prop('checked',false);
     $('input[name=source_port]').prop('checked',false);
-
-     bf_id=$(this).val().split('|')[0]
-     if(bf_id=='2'){
+    $("#company_lab small").remove()
+    bf_id=$(this).val().split('|')[0]
+     if(bf_id=='294'){
+    $('#customer_name_lab').text('新客户姓名:')
+    $('#customer_name').attr('placeholder','新客户姓名')
+    $('#company_lab').text('新公司名称:')
+    $('#company').attr('placeholder','新公司名称')
+    $('#phone_lab').text('新联系电话:')
+    $('#phone').attr('placeholder','新联系电话')
+        $(".feedback_hide_div").show()
         $('#source_div').show()
         $('#referrer_div').hide()
         $('#be_referrer_div').hide()
-     }else if(bf_id=='81'){
+        $(".feedback_div").hide()
+        $("#company_small").hide()
+     }else if(bf_id=='295'){
+        $('#referrer_div').show()        
+        $(".feedback_div").show()    
+    if(feedback_type_id=='1' || feedback_type_id=='4'){
          $('#source_div').hide()
          $('#referrer_div').show()
          $('#be_referrer_div').hide()
-     }
-     else if(bf_id=='3'){
-         $('#customer_name_lab').text('客户推荐人')
-         $('#customer_name').attr('placeholder','客户推荐人')
-         $('#company_lab').text('推荐客户公司名称')
-         $('#company').attr('placeholder','推荐客户公司名称')
-         $('#phone_lab').text('客户推荐人电话')
-         $('#phone').attr('placeholder','客户推荐人电话')
+         if(feedback_type_id=='4'){
+            $("#company_small").hide()
+         }
+    }
+
+    else if(feedback_type_id=='3' || feedback_type_id=='2'){
+        $("#link_div1").show()        
+        $("#link_div2").hide()
+        $("#be_referrer_company_lab").text('新公司名称:')
+        $("#be_referrer_company").attr('placeholder','新公司名称')
+        $("#be_referrer_name_lab").text('新公司联系人姓名:')
+        $("#be_referrer_name").attr('placeholder','新公司联系人')
+        $("#be_referrer_phone_lab").text('新公司联系人电话:')
+        $("#be_referrer_phone").attr('placeholder','新公司联系人电话/微信/QQ')
+        $('#customer_name_lab').text('内部客户姓名:')
+         $('#customer_name').attr('placeholder','内部客户姓名')
+         $('#company_lab').text('内部客户公司名称:')
+         $('#company').attr('placeholder','内部客户公司名称')
+         $('#phone_lab').text('内部客户联系电话:')
+         $('#phone').attr('placeholder','内部客户联系电话')
         $('#source_div').hide()
-        $('#referrer_div').hide()
+        $('#referrer_div').show()
         $('#be_referrer_div').show()
+    }
      }
+
+
   })
 
+$('input[name=feedback_type]').on('change',function () { 
+    $("input[name=link_gender]").prop('checked',false)
+
+    $('#er_source_way').text('')
+    $('#er_source_place').text('')
+    $('#er_source_port').text('')
+    $('#er_company').text('')
+    $('#er_company').hide()
+    if($("input[name=feedback_type]:checked").val().split('|')[0]=='1'){
+        $('#customer_name_lab').text('内部客户姓名:')
+    $('#customer_name').attr('placeholder','内部客户姓名')
+    $('#company_lab').text('内部公司名称:')
+    $('#company').attr('placeholder','内部公司名称')
+    $('#phone_lab').text('内部联系电话:')
+    $('#phone').attr('placeholder','内部联系电话')
+    }else{
+        $('#customer_name_lab').text('新客户姓名:')
+    $('#customer_name').attr('placeholder','新客户姓名')
+    $('#company_lab').text('新公司名称:')
+    $('#company').attr('placeholder','新公司名称')
+    $('#phone_lab').text('新联系电话:')
+    $('#phone').attr('placeholder','新联系电话')
+    }
+    $('#customer_name').val('')
+    $('#company').val('')
+    $('#phone').val('')
+    $('#project_request').val('')
+    $('#source_keyword').val('')
+    $('#remark').val('')
+    $('#referrer').val('')
+    $('#be_referrer_company').val('')
+    $('#be_referrer_name').val('')
+    $('#be_referrer_phone').val('')
+    $('input[name=source_way]').prop('checked',false);
+    $('input[name=source_place]').prop('checked',false);
+    $('input[name=source_port]').prop('checked',false);
+    $("#company_lab small").remove()
+    $("#company_small").show()
+    feedback_type_id=''
+    feedback_type=$(this).val()
+    if(feedback_type!=undefined){
+        feedback_type_id=feedback_type.split('|')[0]
+        $(".feedback_hide_div").show()    
+    }
+    if(feedback_type_id=='1' || feedback_type_id=='4'){
+        $("#link_div2").show()        
+        $("#link_div1").hide()
+         $('#source_div').hide()
+         $('#referrer_div').show()
+         $('#be_referrer_div').hide()
+         if(feedback_type_id=='4'){
+            $("#company_small").hide()
+         }
+    }
+ 
+    else if(feedback_type_id=='3' || feedback_type_id=='2'){
+        $("#link_div1").show()        
+        $("#link_div2").hide()
+        $("#be_referrer_company_lab").text('新公司名称:')
+        $("#be_referrer_company").attr('placeholder','新公司名称')
+        $("#be_referrer_name_lab").text('新公司联系人姓名:')
+        $("#be_referrer_name").attr('placeholder','新公司联系人')
+        $("#be_referrer_phone_lab").text('新公司联系人电话:')
+        $("#be_referrer_phone").attr('placeholder','新公司联系人电话/微信/QQ')
+        $('#customer_name_lab').text('内部客户姓名:')
+         $('#customer_name').attr('placeholder','内部客户姓名')
+         $('#company_lab').text('内部客户公司名称:')
+         $('#company').attr('placeholder','内部客户公司名称')
+         $('#phone_lab').text('内部客户联系电话:')
+         $('#phone').attr('placeholder','内部客户联系电话')
+        $('#referrer_div').show()
+        $('#source_div').hide()
+        $('#be_referrer_div').show()
+    }
+
+
+ })
+$('input[name="choose_referrer"]').change(function () { 
+    $("#referrer").val($(this).val())
+ })
 $('#btn_save').click(function () { 
     busniess_from=$('input[name=busniess_from]:checked').val()
     customer_name=$('#customer_name').val()
     company=$('#company').val()
     phone=$('#phone').val()
-    project_request=$('#project_request').val()
+    project_request=$('#project_request_choose').val()
     source_keyword=$('#source_keyword').val()
     source_way=$('input[name=source_way]:checked').val()
     source_place=$('input[name=source_place]:checked').val()
@@ -380,26 +1515,70 @@ $('#btn_save').click(function () {
     be_referrer_company=$('#be_referrer_company').val()
     be_referrer_name=$('#be_referrer_name').val()
     be_referrer_phone=$('#be_referrer_phone').val()
-    if(source_way==undefined && busniess_from.split('|')[0]=='2'){
+    friend_introduce=$("#friend_introduce:checked").val()
+    feedback_type_id=''
+    feedback_type=$('input[name=feedback_type]:checked').val()
+    link_gender=$("input[name=link_gender]:checked").val()
+    if(feedback_type!=undefined){
+        feedback_type_id=feedback_type.split('|')[0]
+    }
+    if(source_way==undefined && busniess_from.split('|')[0]=='294'){
             $('#er_source_way').text('请选择')
-        }else if(source_place==undefined && busniess_from.split('|')[0]=='2'){
+            return false
+        }else if(source_place==undefined && busniess_from.split('|')[0]=='294'){
             $('#er_source_place').text('请选择')
-        }else if(source_port==undefined && busniess_from.split('|')[0]=='2'){
+            return false
+        }else if(source_port==undefined && busniess_from.split('|')[0]=='294'){
             $('#er_source_port').text('请选择')
+            return false
         }
-    else if((busniess_from.split('|')[0]=='3' || busniess_from.split('|')[0]=='81')&& company==''){
+    else if(busniess_from.split('|')[0]=='295' && feedback_type==undefined ){
+        alert('未选择类别')
+        return false
+    }
+    if(busniess_from.split('|')[0]=='295' && (feedback_type_id=='2' || feedback_type_id=='3' )){
+        if(be_referrer_name==''){
+            $('#er_be_referrer_name').text('请填写联系人姓名')
+            $('#er_be_referrer_name').show()
+            return false
+        }
+        else if(be_referrer_phone==''){
+            $('#er_be_referrer_phone').text('请填写联系人电话')
+            $('#er_be_referrer_phone').show()
+            return false
+        }
+    }
+
+    if(customer_name==''){
+        $('#er_customer_name').text('请填写新客户姓名')
+        $('#er_customer_name').show()
+        return false
+    }
+    else if(company=='' && busniess_from.split('|')[0]=='295' && feedback_type_id!='4' ){
             $('#er_company').text('请填写公司名')
             $('#er_company').show()
-        
-    }else{
-        $(this).attr('disabled','disabled')
+            return false
+    }else if(phone==''){
+            $('#er_phone').text('请填写电话')
+            $('#er_phone').show()
+            return false
+    }
+    else if(project_request==''){
+        $('#er_project_request').text('请填写业务需求')
+        $('#er_project_request').show()
+        return false 
+    }
+        if(confirm('请确认信息填写无误?')){
+            $(this).attr('disabled','disabled')
         $(this).text('保存中...')
         $.post('/company?tag=business_develop_manage',{
             '_xsrf':_xsrf,
+            'link_gender':link_gender,
             'busniess_from':busniess_from,
             'customer_name':customer_name,
             'company':company,
             'phone':phone,
+            'feedback_type':feedback_type,
             'project_request':project_request,
             'source_keyword':source_keyword,
             'source_way':source_way,
@@ -409,7 +1588,8 @@ $('#btn_save').click(function () {
             'referrer':referrer,
             'be_referrer_company':be_referrer_company,
             'be_referrer_name':be_referrer_name,
-            'be_referrer_phone':be_referrer_phone
+            'be_referrer_phone':be_referrer_phone,
+            'friend_introduce':friend_introduce
         },function (data) {
              if(data=='-1'){
                 $('#btn_save').attr('disabled',false)
@@ -420,14 +1600,330 @@ $('#btn_save').click(function () {
              }
             
          })
+        }
+
+    
+ })
+ $("#allcheck_business").on("change",function(){         
+    $('input[name=businessid_milepostid_company]').not(this).prop('checked', this.checked);
+    $("#exampleModalLongTitle_group").text("设置分组"+"("+$("input[name=businessid_milepostid_company]:checked").length+")")
+                 $("#btn_group_action").text("选中操作("+$("input[name=businessid_milepostid_company]:checked").length+")")
+  })
+  $(".business_distribution").click(function () {
+    $(".btn_save_update").removeAttr('reallocate')
+    $(".btn_save_update").attr('reallocate',$(this).attr('reallocate'))
+    $('#gendan_checked_h5').text('分配跟单人')
+    if($(this).attr('reallocate')=='1'){
+    $('#gendan_checked_h5').text('重新分配跟单人')
+    }
+    $('#update_business_modal').modal('show')
+   })
+   $("#business_transfer").click(function () { 
+       var is_jedan=true
+       $(".btn_save_update").removeAttr('reallocate')
+    if($("input[name=businessid_milepostid_company]:checked").val()==undefined){
+        alert('未选择')
+    }else{
+
+    
+    $("input[name=businessid_milepostid_company]:checked").each(function () {
+       if($.inArray("{{uid}}", $(this).val().split('_')[4].split('|'))<0 ){
+        is_jedan=false
+       }
+   
+     })
+     if(is_jedan){
+        $(".btn_save_update").attr('is_transfer',1)
+        $("#gendan_checked_h5").text('商机转让')
+        $('#update_business_modal').modal('show')
+       }else{
+           alert('你选择了跟单员不是自己的商机')
+       }
+    }
+    })
+   $('.btn_save_update').click(function () {
+    gendan_name=$('#gendan_name').val()
+    reallocate=$(this).attr('reallocate')
+    is_invalid_business=$(this).attr('is_invalid_business')
+    businessid_milepostid_company=[]
+    $("input[name=businessid_milepostid_company]:checked").each(function () { 
+        businessid_milepostid_company.push($(this).val())
+     })
+     businessid_milepostid_company=businessid_milepostid_company.join(',')
+    if(gendan_name=='' && is_invalid_business==undefined){
+        alert('请填写跟进人')
+    }else if(businessid_milepostid_company==''){
+        alert('未选择需要分配的商机')
+    }
+    else{
+        if(is_invalid_business=='1'){
+            if(confirm('是否设置为反馈无效商机?')){
+            $.post('company?tag=business_develop_manage_milepost',{
+                '_xsrf':_xsrf,
+                'step':1,
+                'gendan_name':gendan_name,
+                'is_invalid_business':is_invalid_business,
+                'businessid_milepostid_company':businessid_milepostid_company
+        },function (data) {
+     
+            location.reload()
+            
+         })
+            }
+        }else{
+
+            $(this).attr('disabled','disabled')
+            $(this).text('保存中...')
+        $.post('company?tag=business_develop_manage_milepost',{
+            '_xsrf':_xsrf,
+            'step':1,
+            'gendan_name':gendan_name,
+            'reallocate':reallocate,
+            'businessid_milepostid_company':businessid_milepostid_company,
+            'is_transfer':$(this).attr('is_transfer')
+        },function (data) {
+            location.reload()
+         })
+        }
+    }
+   })
+   $("#manage_group").on("click",function () { 
+      $('#manage_group_modal').modal('show')
+     })
+     $("#add_category").on("click",function(){
+      $('#manage_group_modal').modal('hide')
+      setTimeout(function () {$('#manager_category').modal('show')},450);
+    })
+    $("#btn_save_category").on("click",function(){
+        var category_name = $("#category_name").val()
+        var order_int = $("#order_int").val()
+        if (category_name==""){
+            alert("名称不能为空")
+
+        }else{
+            $.post(
+            "/category?tag=add",
+            {
+                "_xsrf":_xsrf,
+                'is_business':'1',
+                'category_name':category_name,
+                "order_int":order_int
+            },function (result) {
+              location.reload()
+
+                 }
+            )
+            }
+    })
+    $("#btn_save_group").on('click',function () { 
+      var numArr = []; // 定义一个空数组
+        var txt = $('.my_allgroup').find(':text'); // 获取所有文本框
+        for (var i = 0; i < txt.length; i++) {
+             var id=txt.eq(i).attr('id')
+             if(typeof(id)!='undefined'){
+              numArr.push([id,txt.eq(i).val()]);
+             }else{
+              numArr.push(txt.eq(i).val());
+             }
+        }
+        numArr=numArr.join(',')
+        $.post(
+          "/category?tag=update_category",
+          {
+            "numarr":numArr,
+            "_xsrf":_xsrf
+          },function (result) { 
+            location.reload()
+           }
+        )
+     })
+
+
+    $("input[name=businessid_milepostid_company]").on("change",function(){
+
+             $("#btn_group_action").text("选中操作("+$("input[name=businessid_milepostid_company]:checked").length+")")
+
+                $("#exampleModalLongTitle_group").text("设置分组"+"("+$("input[name=businessid_milepostid_company]:checked").length+")")
+
+
+    })
+    $("#btn_set_group").on("click",function(){
+          $("#exampleModalLongTitle_group").text("设置分组"+"("+$("input[name=cbProject]:checked").length+")")
+           $('#set_group_category').modal('show')
+
+    })
+    $("#btn_save_project_category").click(function () { 
+        category_id=$("input[name=rt_category]:checked").val()
+        category_name=$("input[name=rt_category]:checked").attr('cname')
+        businessid_milepostid_company=[]
+    $("input[name=businessid_milepostid_company]:checked").each(function () { 
+        businessid_milepostid_company.push($(this).val())
+     })
+     businessid_milepostid_company=businessid_milepostid_company.join(',')
+
+     if(businessid_milepostid_company==''){
+        alert('未选择需要分组的商机')
+    }else if(category_id==undefined){
+        alert('未选择分组')
+    }
+    else{
+        $(this).attr('disabled','disabled')
+        $(this).text('保存中...')
+        $.post('/company?tag=business_group_category',{
+            '_xsrf':_xsrf,
+            'businessid_milepostid_company':businessid_milepostid_company,
+            'category_id':category_id,
+            'category_name':category_name
+        },function (data) { 
+            location.reload()
+         })
+    }
+     })
+     $('body').on('click',".sj-at",function(){
+	$(this).toggleClass("atcur")
+})
+$('body').on('click',".sj-at1",function(){
+	$(this).toggleClass("atcur")
+ 
+    if($(this).hasClass('atcur')){
+        $("#project_request").val($("#project_request").val()+$(this).val()+',')
+        
+        $("#project_request_choose").val($("#project_request_choose").val()+$(this).attr('title_name')+',')
+    }else{
+        $("#project_request").val($("#project_request").val().replace($(this).val()+',',''))
+        $("#project_request_choose").val($("#project_request_choose").val().replace($(this).attr('title_name')+',',''))
+
     }
 
+})
 
 
+     $("body").on('click','.close_tag',function () { 
+        $("[data-toggle='popover']").popover('hide');
+      })
 
+    $('body').on('click','input[name=company_tag]',function () {
+        var str = ""; 
+        $('input[name=customer_tag]').remove()
+        $('input[name=company_tag]').each(function () {
+                if($(this).hasClass('atcur')){
+                    str += $(this).attr('search_title')+',';
 
+                }
+                
+            });
+        if(str!=''){
+            $('input[name=step]').after('<input type="hidden" name="customer_tag" value="'+str+'">')
+        }
+     })
+    // $('body').on('click','.customer_btn',function () { 
+    //     customer_tag=$('input[name=customer_tag]').val()
+    //     for(var i=0;i<customer_tag.split(',').length;i++){
+    //         $('.sj-at[title='+customer_tag.split(',')[i]+']').addClass('atcur')
+    //     }
+    //  })
+  $(".customer_btn").click(function () { 
+    $("#add_tag_modal").modal("show")
+   })
+   $(".genjin_btn").click(function () { 
+    $("#genjin_modal").modal("show")
+   })
+   $("[data-toggle='popover']").popover();
+   $("#project_request").click(function () { 
+    project_request=$(this).val().split(',')
+    for(var i=0;i<project_request.length;i++){
 
- })
+        $('.sj-at1[title='+project_request[i]+']').addClass('atcur')
+    }
+    })
+    $(".delete_group").click(function () {
+        if(confirm('确认删除?')){
+            category_id=$(this).attr('id')
+            $.post('/category?tag=delete_category',{
+                '_xsrf':_xsrf,
+                'id':category_id,
+                'is_business':'1'
+            },function (data) { 
+                location.href='?tag=business_develop_manage{%if step%}&step={{step}}{%end%}'
+             })
+        } 
+    
+     })
+     $("#business_claim").click(function () { 
+        businessid_milepostid_company=[]
+    $("input[name=businessid_milepostid_company]:checked").each(function () { 
+        businessid_milepostid_company.push($(this).val())
+     })
+     businessid_milepostid_company=businessid_milepostid_company.join(',')
+     if(businessid_milepostid_company==''){
+         alert('未选择认领商机')
+     }else{
+         if(confirm('确定认领商机?')){
+            $.post('company?tag=business_develop_manage_milepost',{
+                '_xsrf':_xsrf,
+                'step':6,
+                'businessid_milepostid_company':businessid_milepostid_company
+        },function (data) {
+                alert('已认领,进入处理中')
+            location.reload()
+         })
+         }
+     }
+      })
+     $('input[name=genjin_days_start1]').keyup(function () { 
+        $('input[name=genjin_days_start]').val($(this).val())
+      })
+      $('input[name=genjin_days_end1]').keyup(function () { 
+        $('input[name=genjin_days_end]').val($(this).val())
+      })
+      $('input[name=genjin_count_start1]').keyup(function () { 
+        $('input[name=genjin_count_start]').val($(this).val())
+      })
+      $('input[name=genjin_count_end1]').keyup(function () { 
+        $('input[name=genjin_count_end]').val($(this).val())
+      })
+      $("#created_at_ul").click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+  })
+  $("#close_time").click(function () { 
+    $("#created_at_ul").removeClass('show')
+   })
+  $('.create_time').click(function () { 
+    $('.create_time').removeClass('choose_time')
+      $(this).toggleClass('choose_time')
+      $("#btn_drop_time").text($(this).val())
+      if($(this).val()!='自定义'){
+        $("#created_at_ul").removeClass('show')
+      }
+   })
+   $(".create_time").click(function () {
+       $("input[name=create_time]").val($(this).val()) 
+       if($(this).val()=='自定义'){
+           $('.time_box').show()
+       }else{
+        $('.time_box').hide()
+
+       }
+    })
+    if($('.choose_time').val()=='自定义'){
+        $('.time_box').show()
+
+    }
+    $("#search_btn").click(function () { 
+        $('input[name=created_name_start]').val($("#created_name_start").val())
+        $('input[name=created_name_end]').val($("#created_name_end").val())
+
+     })
+    //  $('.detail').click(function () {
+    //      params=$(this).attr('params') 
+    //      $.get('?tag=show_business',{
+    //         'params':params
+    //      },function (data) { 
+
+    //       })
+    //   })
 })
 </script>
 {%end%}

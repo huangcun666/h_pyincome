@@ -8,11 +8,17 @@
    </li>
    <li class="breadcrumb-item g1">用户管理
    {% if is_admin_user=='1' or role=='14'%}
+{%if tag%}
+<a class="btn btn-primary btn-sm"  id="add_kj" style="margin-left: 20px;" href="javascript:;">添加会计</a>
+<a href="manageuser" style="margin-left: 20px;" class="btn btn-primary btn-sm">用户管理</a>
+{%else%}
 <a class="btn btn-primary btn-sm"  style="margin-left: 20px;" href="/insertuser?member_page={{page1}}">新增用户</a>
+<a href="manageuser?tag=kj_manage" style="margin-left: 20px;" class="btn btn-primary btn-sm">会计管理</a>
+{%end%}
 </li>
 {%end%}
  </ol>
-
+{%if not tag%}
 <form >
   <table>
     <tbody>
@@ -30,12 +36,25 @@
     </tbody>
   </table>
 </form>
+{%end%}
 <div class="card mb-3">
    <div class="card-body">
      <div class="table-responsive">
              <table class="table table-bordered" id="dataTable"  cellspacing="0">
                <thead class="table_class">
-                   <tr>
+                {%if tag%}
+                <tr>
+                  <th width="60">部门</th>
+                  <th width="60">用户名</th>
+              
+                  <th width="60">工作电话</th>
+                
+                  <th width="60">个人电话</th>
+                  <th width="60">职位</th>
+                  <th width="60"></th>
+                </tr>
+                {%else%}
+                <tr>
                     <th width="60">用户名</th>
                      <th width="50">邮箱</th>
                     <th width="50">电话</th>
@@ -52,8 +71,26 @@
                                     <th width="50">操作</th>
                                 {%end%}
                    </tr>
+                   {%end%}
                </thead>
                <tbody>
+                 {%if tag%}
+                 {% for user in all_users%}
+                <tr>
+                  <td>{{user.department_name}}</td>
+                  <td>{{user.uid_name}}</td>
+                  <td>{%if user.work_tel%}{{user.work_tel}}{%end%}</td>
+                  <td>{%if user.per_tel%}{{user.per_tel}}{%end%}</td>
+                  <td>{{user.title_name}}</td>
+                  <td>
+                    <a href="javascript:;" class="btn btn-sm btn-primary edit_kj"
+                    id="{{user.id}}" title_name="{{user.title_name}}" department_id="{{user.department_id}}"
+                    kj_name="{{user.uid_name}}"
+                    >修改</a>
+                  </td>
+                </tr>
+                 {%end%}
+                 {%else%}
                     {% for user in all_users%}
                     <tr id={{user.id}}>
                         <td>{{user.name}}</td>
@@ -108,6 +145,7 @@
                         {%end%}
                         </tr>
                     {%end%}
+                    {%end%}
                </tbody>
            </table>
            </div>
@@ -116,7 +154,7 @@
  <ul class="pagination"  style="float: left;" >
 {% if pagination.has_prev %}
     <li class="paginate_button page-item previous " id="dataTable_previous">
-    <a href="?page={{ pagination.page - 1}}{%if params['user_name']%}&user_name={{params['user_name']}}{%end%}{%if params['phone']%}&phone={{params['phone']}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+    <a href="?page={{ pagination.page - 1}}{%if tag%}&tag={{tag}}{%end%}{%if params['user_name']%}&user_name={{params['user_name']}}{%end%}{%if params['phone']%}&phone={{params['phone']}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
 
 
@@ -124,7 +162,7 @@
    {%for page in pagination.iter_pages() %}
     {% if page %}
     {% if page != pagination.page %}
-    <li class="paginate_button page-item "><a href="?page={{page}}{%if params['user_name']%}&user_name={{params['user_name']}}{%end%}{%if params['phone']%}&phone={{params['phone']}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+    <li class="paginate_button page-item "><a href="?page={{page}}{%if tag%}&tag={{tag}}{%end%}{%if params['user_name']%}&user_name={{params['user_name']}}{%end%}{%if params['phone']%}&phone={{params['phone']}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
     {% else %}
      <li class="paginate_button page-item active">
        <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -132,7 +170,7 @@
      {% end %} {%end %}
 
     {% if pagination.has_next %}
-    <li class="paginate_button page-item next" id="dataTable_next"><a href="/manageuser?page={{pagination.page+1}}{%if params['user_name']%}&user_name={{params['user_name']}}{%end%}{%if params['phone']%}&phone={{params['phone']}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+    <li class="paginate_button page-item next" id="dataTable_next"><a href="/manageuser?page={{pagination.page+1}}{%if tag%}&tag={{tag}}{%end%}{%if params['user_name']%}&user_name={{params['user_name']}}{%end%}{%if params['phone']%}&phone={{params['phone']}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
 {% end %} </ul>
 </div>
 </div>
@@ -145,238 +183,44 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="new_project_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+<div class="modal fade" id="add_kj_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
 
 <div class="modal-dialog" role="document" >
 <div class="modal-content">
  <div class="modal-header">
-   <h5 class="modal-title" id="exampleModalLongTitle_license">新建业务 </h5>
+   <h5 class="modal-title" id="exampleModalLongTitle_license">添加会计 </h5>
    <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
      <span aria-hidden="true">&times;</span>
    </button>
  </div>
-
- <div class="modal-body form-horizontal" id="site_mod">
-
-  <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-4 control-label">业务来源: <small class="text-danger">（必填）</small></label>
-
-      {% for idx, item in enumerate(t_income_type) %}
-
-            <input type="radio" name="busniess_from"  value="{{item.id}}|{{item.income_name}}" {%if idx==0%}checked{%end%}/> &nbsp;{{item.income_name}}
-      {% end %}
-
-     </div>
-
-     <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-4 control-label">所属公司: <small class="text-danger">（必选）</small></label>
-
-      {% for idx, item in enumerate(t_company) %}
-            <input type="radio" name="company"  id="company" value="{{item.id}}|{{item.income_name}}" /> &nbsp;{{item.income_name}}
-      {% end %}
- <small id="pcompanyHelpInline" class="text-danger">
-     
-     </small>
-     </div>
-
-
- <div id="div_building" class="well">
-
-    <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-4 control-label">所属楼盘: <small class="text-danger">（必填）</small></label>
-   <select name="building_id" id="building_id"  class="form-control">
-        <option value="0">==请选择楼盘==</option>
-      {% for idx, item in enumerate(t_building) %}
-
-         <option
-          value="{{item.id}}|{{item.income_name}}">
-         {{item.income_name}}
-           </option>
-      {% end %}
- </select>
-     <small id="building_idHelpInline" class="text-danger">
-     
-     </small>
-     </div>
- </div>
-
-<div id="div_recommend_by"  style="  border:1px solid #eee; padding:10px;">
-     <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-6 control-label">客户推荐人: <small class="text-danger">（必填）</small></label>
-       <input class="form-control"  type="text" name="recommend_by" id="recommend_by" placeholder="谁帮我们介绍的客户" value="">
-   
-   
-       <small id="recommend_byHelpInline" class="text-danger">
-     
-     </small>
-   
-     </div>
-</div>
-
-
-
-<div id="div_recommend_staff"  style="  border:1px solid #eee; padding:5px;">
-     <div class="form-group">
-       <label for="exampleInputEmail1" class="col-sm-4 control-label">内部推荐人:<small class="text-danger" id="msg_inner_re">（必选）</small></label>
-
-<input type="text" name="recommend_staff" id="recommend_staff"   data-items="8" data-provide="typeahead" />
-<small id="recommend_staffHelpInline" class="text-danger">
-     
-     </small>
-     </div>
-</div>
-
-
-
- <div id="div_from_word"  style="  border:1px solid #eee; padding:5px; margin-bottom:4px;">
-
-
-    <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-6 control-label">在线客服:  <small class="text-danger">（必填）</small></label>
-   <select name="kf_id" id="kf_id"  class="form-control">
-        <option value="0">选择在线客服</option>
-      {% for idx, item in enumerate(t_users_kf) %}
-
-         <option
-          value="{{item.id}}|{{item.name}}">
-         {{item.name}}
-           </option>
-      {% end %}
- </select>
- <small id="kf_idHelpInline" class="text-danger">
-     
-     </small>
-
-     </div>
-
-<div class="form-group" >
-<label for="inputEmail3" class=" control-label">来源关键词 <small class="text-danger">（必填）</small></label>
-
-       <input class="form-control"  type="text" name="from_word" id="from_word" placeholder="没有写无" value=""/>
-
-<small id="from_wordHelpInline" class="text-danger">
-     
-     </small>
-
-</div>
-
-
-    <div class="form-group">
-       <label for="exampleInputEmail1"  class=" control-label">来源渠道: <small class="text-danger">（必填）</small></label>
-
-      {% for idx, item in enumerate(t_business_channel) %}
-
-            <input type="radio" name="business_channel"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
-      {% end %}
-
-
-<small id="business_channelHelpInline" class="text-danger">
-     
-     </small>
-     </div>
+<div class="modal-body form-horizontal">
+<div class="form-group">
+  <div class="row">
+    <div class="col-sm-4">
+        <label for="">会计</label>
+        <input class="form-control" type="text" name="kj_name" id="kj_name" placeholder="会计">
     </div>
+    <div class="col-sm-4">
+        <label for="">职位</label>
+        <input class="form-control" type="text" name="title_name" id="title_name" placeholder="职位">
+    </div>
+    <div class="col-sm-4">
+        <label for="">部门</label>
+      <select class="form-control" name="department_name" id="department_name">
+        <option value="">选择部门</option>
+        {%for item in department_names%}
+        <option value="{{item.department_id}}">{{item.department_name}}</option>
+        {%end%}
+      </select>
+    </div>
+  </div>
 
-  <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-4 control-label">签约方式: <small class="text-danger">（必填）</small></label>
-
-      {% for idx, item in enumerate(t_sign_type) %}
-            <input type="radio" name="sign_type_id"  value="{{item.id}}|{{item.income_name}}"
-             /> &nbsp;{{item.income_name}}
-      {% end %}
-
-     </div>
-  <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-4 control-label">来源方式: <small class="text-danger">（必填）</small></label>
-
-      {% for idx, item in enumerate(t_talk_type) %}
-            <input type="radio" name="talk_type"  value="{{item.id}}|{{item.income_name}}"
-            /> &nbsp;{{item.income_name}}
-      {% end %}
-     <small id="talk_typeHelpInline" class="text-danger"></small>
-     </div>
-            <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-4 control-label">是否记账: <small class="text-danger">（必填）</small></label>
-
-       <input type="radio" name="is_finance"  value="1"
-            /> &nbsp;是
-            <input type="radio" name="is_finance"  value="0"
-            /> &nbsp;否
-
-
-
-            <small id="is_financeHelpInline" class="text-danger"></small>
-     </div>
-                    <div class="form-group">
-<label for="exampleInputEmail1"  class="col-sm-4 control-label">合同情况: <small class="text-danger">（必填）</small></label>
-           {%for idx,item in enumerate(t_rec_contarct_type)%}
-     <input type="radio" name="new_contract_type_id" value="{{item.id}}|{{item.income_name}}"
-      title="{{item.income_name}}"/> {{item.income_name}}
-  {%end%}
-
-   <small id="new_contract_type_idHelpInline" class="text-danger"></small>
-   </div>
-<div class="row" style="margin:10px;">
-
-            <div class=" form-group  span5   " style="margin:10px;">
-       <label for="exampleInputEmail1"  class="control-label">成交周期(天）:  <small class="text-danger">（必填）</small></label>
-
-       <input class="form-control"  type="text" name="deal_day" id="deal_day" placeholder="花了多少天完成了订单" />
-    
-    
-      <small id="deal_dayHelpInline" class="text-danger"></small>
-     </div>
-             <div class="form-group span5" style="margin:10px;"    >
-                   <label for="exampleInputEmail1"  class="control-label">预计合同定金:   <small class="text-danger">（必填）</small></label>
-                   <input class="form-control"  type="text" name="pre_income" id="pre_income" placeholder="预计合同定金金额" value="">
-               
-               <small id="pre_incomeHelpInline" class="text-danger"></small>
-               </div>
 </div>
-         <div class="form-group">
-       <label for="exampleInputEmail1"  class="control-label">地址类型:<small class="text-danger">（必选）</small></label>
-       <input class="form-control"  type="text"  name="addr_type" id="addr_type" placeholder="如果没有写无">
-       <small id="addr_typeHelpInline" class="text-danger"></small>
-     </div>
-           <div class="form-group">
-       <label for="exampleInputEmail1"  class="control-label">业务内容:<small class="text-danger">（必选）</small></label>
-       <input class="form-control"  type="text"  name="project_name" id="project_name" placeholder="业务内容 摘要">
-       <small id="project_nameHelpInline" class="text-danger"></small>
-     </div>
- <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-4 control-label">客户姓名:<small class="text-danger">（必选）</small></label>
-       <input class="form-control"  type="text" name="customer_name" id="customer_name" placeholder="客户姓名 称呼">
-        <small id="customer_nameHelpInline" class="text-danger"></small>
-     </div>
 
-
-     <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-4 control-label">企业名称:</label>
-       <input class="form-control"  type="text" name="customer_company" id="customer_company"  placeholder="企业名称">
-       <small id="customer_companyHelpInline" class="text-danger"></small>
-     </div>
-     <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-4 control-label">联系方式:</label>
-       <input class="form-control"  type="text" name="customer_tel" id="customer_tel" placeholder="手机号码">
-          <small id="customer_telHelpInline" class="text-danger"></small>
-     </div>
-
-       <input class="form-control"  type="hidden" name="all_income" id="all_income" placeholder="" value="0">
-
-
-      <input class="form-control"  type="hidden" name="true_inew_project_modalncome" placeholder="" value="0">
-
-      <input class="form-control"  type="hidden" name="true_income" id="true_income" placeholder="" value="0">
-      <div class="form-group">
-       <label for="exampleInputEmail1"  class="col-sm-4 control-label">备注</label>
-       <textarea class="form-control"  type="textarea" name="remark" id="remark"  placeholder=""></textarea>
-     </div>
-
-
-
- </div>
+</div>
  <div class="modal-footer">
    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-            <button class="btn btn-primary" id="btn_save_project">保 存</button>
+            <button class="btn btn-primary" id="btn_save_kj">保 存</button>
  </div>
 </div>
 </div>
@@ -389,11 +233,24 @@
 
 
 {%block js%}
-<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
 $(function () {
 _xsrf =  getCookie("_xsrf")
-
+$("#add_kj").click(function () { 
+  $("#kj_name").val('')
+  $("#title_name").val('')
+  $("#btn_save_kj").removeAttr('relation_id')
+  $("#kj_name").attr('readonly',false)
+  $("#add_kj_modal").modal('show')
+ })
+ $(".edit_kj").click(function () { 
+  $("#btn_save_kj").attr('relation_id',$(this).attr('id'))
+   $("#kj_name").attr('readonly',true)
+   $("#kj_name").val($(this).attr('kj_name'))
+   $("#title_name").val($(this).attr('title_name'))
+   $("#department_name option[value='"+$(this).attr('department_id')+"']").prop('selected',true)
+   $("#add_kj_modal").modal('show')
+  })
 $('.l').click(function(){
   var id=$(this).attr('id');
   var lock_user=$(this);
@@ -422,7 +279,7 @@ $('.l').click(function(){
       )
 }
     })
-$('#recommend_staff').typeahead({
+$('#kj_name').typeahead({
  source: function (query, process) {
    return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
        return process(JSON.parse(data));
@@ -488,7 +345,34 @@ $("#div_recommend_staff").hide()
 
      })
 
-
+$("#btn_save_kj").click(function () { 
+  kj_name=$("#kj_name").val()
+  department_id=$("select[name=department_name]").val()
+  department_name=$("select[name=department_name]").find("option:selected").text()
+  title_name=$("#title_name").val()
+  if(kj_name==''|| department_id=='' ){
+    alert('未填写会计或部门')
+    return false
+  }
+  $.post('/manageuser?tag=kj_manage',{
+    '_xsrf':_xsrf,
+    'kj_name':kj_name,
+    'department_id':department_id,
+    'department_name':department_name,
+    'title_name':title_name,
+    'relation_id':$(this).attr('relation_id')
+  },function (data) { 
+    if(data=='-1'){
+      alert('会计不存在')
+    }
+    else if(data=='-2'){
+      alert('会计已存在')
+    }
+    else{
+      location.reload()
+    }
+   })
+ })
 
 
        $("#btn_save_project").on("click",function(){

@@ -1,0 +1,187 @@
+
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>反馈意见</h3>
+</div> 
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+
+<fieldset>
+        <ul class="nav nav-tabs" id="myTab">
+                <li {%if not step %} class="active"{%end%}>
+                <a href="/customer?tag=customer_feedback" id="customer_tab">未审核</a>
+                </li>
+                <li {%if step=='1'%} class="active"{%end%}>
+                <a href="/customer?tag=customer_feedback&step=1" id="customer_tab">通过</a>
+                </li>
+                <li  {%if step=='2'%} class="active"{%end%}>
+                <a href="/customer?tag=customer_feedback&step=2" id="customer_tab">驳回</a>
+                </li>
+                </ul>
+
+                        {%if feedbacks%}
+              <table class="table" style="margin:5px;">
+                     <thead>
+                                <tr style="background-color: black; color:#fff;">
+                                <th style="min-width:60px;">公司名称</th>
+                                <th style="min-width:120px;">反馈内容</th>
+                            
+                                <th style="min-width:60px;">状态</th>
+                                <th style="min-width:60px;">反馈人</th>
+                                <th style="min-width:60px;">反馈时间</th>
+                                {%if role=='3' or role=='8'%}
+                                <th style="min-width:20px;"></th>
+                                {%end%}
+                                </tr>
+                            </thead>
+                <tbody>
+    
+     {%for item in feedbacks%}
+                        <tr>
+                            <td>
+                                <a href="/customer?tag=show&id={{item.customer_id}}&guid={{item.customer_guid}}">
+                                    {{item.customer_company}}
+                                </a>
+                             </td>
+                            <td>{{item.feedback_msg}}</td>
+                            <td>{% if item.checked_status==1%}{{item.checked_name}}审核通过{%elif item.checked_status==2%}{{item.checked_name}}驳回{%else%}待审核{%end%}</td>
+                            <td>{{item.uid_name}}</td>
+                            <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
+                            {%if (role=='3' or role=='8') and not item.checked_at%}
+                             <td><a href="javascript:void(0);" class="btn btn-info btn-sm check_feedback" feedback_id='{{item.id}}' >审核</a></td>
+                            {%elif  (role=='3' or role=='8') and step=='1' %}
+                            
+                            <td>
+                                {%if not item.is_deal%}
+                                <a href="javascript:void(0);" class="btn btn-info btn-sm check_feedback_deal" feedback_id='{{item.id}}' >确认处理</a>
+                                {%elif item.is_deal==1%}
+                                已处理
+                            {%end%}
+                            </td>
+                             {%end%}
+                        </tr>
+                    {%end%}
+
+              
+                
+                </tbody>
+              </table>
+       
+                    {%else%}
+                        还没有客户哦。
+                               
+                    {%end%}
+                              <div class="pagination">
+                        <ul>
+                            {% if pagination.has_prev %}
+                            <li><a href="/customer?tag={{tag}}{%if step%}&step={{step}}{%end%}&page={{ pagination.page - 1}}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li>
+                                <a href="/customer?tag={{tag}}{%if step%}&step={{step}}{%end%}&page={{ page }}">{{ page }}</a></li>
+                            {% else %}
+                            <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                            {% end %} {% else %}
+                            <li><span class="active"><a href="#">....</a></span></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li><a href="/customer?tag={{tag}}{%if step%}&step={{step}}{%end%}&page={{pagination.page+1}}">下页 &raquo;</a></li>
+                            {% end %}
+                        </ul>
+                    </div>    
+                    <div id="check_feedback_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                              <h3 id="myModalLabel_linkman">反馈
+                              </h3>
+                            </div>
+                            <div class="modal-body">
+                              <div class="control-group">
+                            <div class="control-group">
+                                <label class="control-label" for="lastname">审核反馈</label>
+                                <div class="controls">
+                                <input type="radio" name="checked_status" id="checked_status" value="1">通过
+                                <input type="radio" name="checked_status" id="checked_status" value="0">驳回                            </div>
+                        
+                          
+                          
+                            </div>
+                            </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+                              <button class="btn btn-primary" id="btn_save_check_feedback">确定</button>
+                            </div>
+                          </div>   
+</fieldset>
+
+</div>
+   
+
+               
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+ 
+
+    {%end%} 
+
+    {%block js%}
+
+<script>
+
+$(function () {
+    _xsrf = getCookie("_xsrf")
+	$(".check_feedback").click(function () { 
+        $("#btn_save_check_feedback").attr('feedback_id',$(this).attr('feedback_id'))
+        $("#check_feedback_modal").modal('show')
+     })
+    $("#btn_save_check_feedback").click(function () { 
+        checked_status=$("#checked_status:checked").val()
+        feedback_id=$(this).attr('feedback_id')
+        if(checked_status==undefined){
+            alert('未选择')
+        }
+        else{
+            $.post('/customer?tag=customer_feedback',{
+          '_xsrf':_xsrf,
+          'feedback_id':feedback_id,
+          'check_status':checked_status
+
+        },function (data) { 
+          location.reload()
+         })
+        }
+     })
+     $(".check_feedback_deal").click(function () { 
+         if(confirm('确认已处理?')){
+             feedback_id=$(this).attr('feedback_id')
+            $.post('/customer?tag=customer_feedback',{
+          '_xsrf':_xsrf,
+          'feedback_id':feedback_id,
+          'is_deal':'1'
+
+        },function (data) { 
+          location.reload()
+         })
+         }
+      })
+
+});
+
+</script>
+
+
+    {%end%}

@@ -352,29 +352,36 @@ display: -webkit-box;
                                                     {%end%}
                                                     {%end%}
                                                 </td>
-                                             <td title="{%if item.bad_debts_kj_option%}{{item.bad_debts_kj_option}}{%end%}">
-                                                    {%if item.bad_debts_kj_option%}
+                                             <td title=" {%if item.bad_debts_kj_reject_at%}会计驳回 {%if item.bad_debts_kj_reject_reason%}理由:{{item.bad_debts_kj_reject_reason}}{%end%}{%elif item.bad_debts_kj_option%}{{item.bad_debts_kj_option}}{%end%}">
+                                                    {%if item.bad_debts_kj_reject_at%}
+                                                    会计驳回<br>
+                                                    {%if item.bad_debts_kj_reject_reason%}
+                                                    理由:
+                                                    {%if len(item.bad_debts_kj_reject_reason)>20%}
+                                                    {{item.bad_debts_kj_reject_reason[:20]}}...{%else%}{{item.bad_debts_kj_reject_reason}}{%end%}
+                                                    {%end%}
+                                                    {%elif item.bad_debts_kj_option%}
                                                     {%if len(item.bad_debts_kj_option)>20%}
                                                     {{item.bad_debts_kj_option[:20]}}...{%else%}{{item.bad_debts_kj_option}}{%end%}{%end%}
                                              </td>
                                                 <td>
-                                                    {%if item.acc_uid_name==name and not item.bad_debts_kj_at and item.bad_debts_sale_checked_at %}
+                                                    {%if (item.acc_uid_name==name or role=='8' ) and not item.bad_debts_kj_at and item.bad_debts_sale_checked_at and item.bad_debts_sale_checked_status==1 %}
                                                     <a href="javascript:void(0);" style="width: 60px; height: 24px; color: #4aa8cc;" assist_id="{{item.assist_id}}" 
                                                     class="btn btn-sm write_option"
                                                     >填写意见</a>
                                                  
-                                                        {%elif ('285' in role_list and not item.bad_debts_sale_checked_at) or ('286' in role_list and item.bad_debts_sale_checked_status==1 and item.bad_debts_kj_uid  and not item.bad_debts_caiwu_checked_at) 
+                                                        {%elif (('285' in role_list or role=='8') and not item.bad_debts_sale_checked_at) or ( ('286' in role_list or role=='8' ) and item.bad_debts_sale_checked_status==1 and item.bad_debts_kj_at  and not item.bad_debts_caiwu_checked_at) 
                                                     %}
                                                     <a href="javascript:void(0);"
                                                     {%if not item.bad_debts_sale_checked_at  and item.bad_debts_sale_checked_status==0%}
-                                                    step='1'{%elif item.bad_debts_sale_checked_status==1 and item.bad_debts_kj_uid  and not item.bad_debts_caiwu_checked_at %}
+                                                    step='1'{%elif item.bad_debts_sale_checked_status==1 and item.bad_debts_kj_at  and not item.bad_debts_caiwu_checked_at %}
                                                     step='3'{%end%}
                                                     class="btn btn-sm check_debts" customer_id="{{item.customer_id}}" assist_id="{{item.assist_id}}" style="width: 60px; height: 24px; color: #4aa8cc;">审核</a>
                                                     {%elif not item.bad_debts_sale_checked_at  and  item.bad_debts_sale_checked_status==0%}
                                                     待销售部审核
-                                                    {%elif item.bad_debts_sale_checked_status==1 and not item.bad_debts_kj_uid%}
+                                                    {%elif item.bad_debts_sale_checked_status==1 and not item.bad_debts_kj_at%}
                                                     待会计填写意见
-                                                    {%elif item.bad_debts_sale_checked_status==1 and item.bad_debts_kj_uid  and not item.bad_debts_caiwu_checked_at %}
+                                                    {%elif item.bad_debts_sale_checked_status==1 and item.bad_debts_kj_at  and not item.bad_debts_caiwu_checked_at %}
                                                     待财务审核
                                                     {%elif item.bad_debts_caiwu_checked_at and item.bad_debts_caiwu_checked_status==1%}
                                                         通过
@@ -507,11 +514,13 @@ display: -webkit-box;
                 </div>
                 <div class="modal-body">
                     <div class="control-group">
-                      
-                            <label for="">意见:</label>
+                        
+                            <label for="" id="kj_option_lab">意见:</label>
                             <div class="col-10">
                             <textarea id="kj_option" style="margin: 0px 0px 9px; width: 491px; height: 61px;"  class="form-control" placeholder="会计意见"></textarea>
+                            
                         </div>
+                        <input type="checkbox" value="1" id="kj_reject" >驳回
                     </div>
              
              </div>
@@ -569,14 +578,25 @@ display: -webkit-box;
       $("#btn_save_option").click(function () { 
         kj_option=$('#kj_option').val()
         assist_id=$(this).attr('assist_id')
+        kj_reject=$("#kj_reject:checked").val()
         $.post('payment?tag=bad_debts_milepost',{
                 '_xsrf':_xsrf,
                 'assist_id':assist_id,
                 'kj_option':kj_option,
+                'kj_reject':kj_reject,
                 'step':'2'
             },function (data) { 
                 location.reload()
              })
        })
+    $("#kj_reject").click(function () { 
+        if($(this).attr('checked')){
+            $("#kj_option_lab").text('驳回:')
+            $("#kj_option").attr('placeholder','驳回理由')
+        }else{
+            $("#kj_option_lab").text('意见:')
+            $("#kj_option").attr('placeholder','会计意见')
+        }
+     })
    })
 </script> {%end%}

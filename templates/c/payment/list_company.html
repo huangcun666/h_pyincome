@@ -22,7 +22,9 @@
 <fieldset>
 
         <form class="form-search" id="query_form">
-                <input type="text" value="{%if company%}{{company}}{%end%}" name="company" id="company" class="input-medium search-query " placeholder="公司名称" >
+                  <input type="text" value="{%if company%}{{company}}{%end%}" name="company"  placeholder="公司名称/姓名/信用代码/确认单编号">
+
+
                     <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计" class="form-control">
 
                 <button type="submit" class="btn">检 索</button>
@@ -39,7 +41,7 @@
                                 <tr style="background-color: black; color:#fff;">
 
                                 <th style="min-width:180px;">公司名称</th>
-
+ <th style="min-width:180px;">信用代码</th>
 
 
                                 <th style="min-width:350px;">项目名称</th>
@@ -62,8 +64,12 @@
      {%for item in customers%}
                     <tr>
 
-                        <td>{{item.customer_company}}</td>
+                        <td>{{item.customer_company}}
+                            
+                        </td>
+                               <td>{{item.company_uid}}</td>
                    <td>{{item.project_name}}</td>
+                   
                 <td>{{item.service_money}}</td>
 
 

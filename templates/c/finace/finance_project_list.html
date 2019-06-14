@@ -1,0 +1,436 @@
+
+ {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+<style>
+.message-item {
+margin-bottom: 5px;
+margin-left: 40px;
+position: relative;
+}
+.message-item .message-inner {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 10px;
+position: relative;
+}
+.message-item .message-inner:before {
+border-right: 10px solid #ddd;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -20px;
+top: 6px;
+width: 0;
+}
+.message-item .message-inner:after {
+border-right: 10px solid #fff;
+border-style: solid;
+border-width: 10px;
+color: rgba(0,0,0,0);
+content: "";
+display: block;
+height: 0;
+position: absolute;
+left: -18px;
+top: 6px;
+width: 0;
+}
+.message-item:before {
+background: #fff;
+border-radius: 2px;
+bottom: -30px;
+box-shadow: 0 0 3px rgba(0,0,0,0.2);
+content: "";
+height: 100%;
+left: -30px;
+position: absolute;
+width: 3px;
+}
+.message-item:after {
+background: #fff;
+border: 2px solid #ccc;
+border-radius: 50%;
+box-shadow: 0 0 5px rgba(0,0,0,0.1);
+content: "";
+height: 15px;
+left: -36px;
+position: absolute;
+top: 10px;
+width: 15px;
+}
+.clearfix:before, .clearfix:after {
+content: " ";
+display: table;
+}
+.message-item .message-head {
+border-bottom: 1px solid #eee;
+margin-bottom: 8px;
+padding-bottom: 8px;
+}
+.message-item .message-head .avatar {
+margin-right: 20px;
+}
+.message-item .message-head .user-detail {
+overflow: hidden;
+}
+.message-item .message-head .user-detail h5 {
+font-size: 16px;
+font-weight: bold;
+margin: 0;
+}
+.message-item .message-head .post-meta {
+float: left;
+padding: 0 15px 0 0;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item .message-head .post-meta >div {
+color: #333;
+font-weight: bold;
+text-align: right;
+}
+.post-meta > div {
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+.message-item img {
+min-height: 25px;
+max-height: 25px;
+}
+</style><label for=""></label>
+ <div class="main">
+<div class="main-inner">
+<div class="container">
+<div class="row">
+<div class="span12">
+<div class="widget ">
+<div class="widget-header">
+<i class="icon-user"></i>
+<h3>应收管理 
+
+{%if is_manager != "0"%}
+    {%if qtype=="my"%} <a href="/finance?tag=finance_project_list&qtype=all"><span>所有列表</span> </a> {%end%} 
+{%end%}
+{%if qtype=="all"%} <a href="/finance?tag=finance_project_list&qtype=my"><span>我的客户</span> </a> {%end%}</h3>
+</div> <!-- /widget-header -->
+<div class="widget-content">
+<div class="tab-content">
+<div class="tab-pane active" id="formcontrols">
+
+<fieldset>
+        <ul class="nav nav-tabs" id="myTab">
+                <li {%if not state%} class="active" {%end%}>
+                    <a href="/finance?tag=finance_project_list&qtype={{qtype}}" id="customer_tab">全部</a>
+             
+                </li>
+                <li {%if state=='1'%} class="active" {%end%}>
+                        <a href="/finance?tag=finance_project_list&qtype={{qtype}}&state=1" id="customer_tab" >待审核</a>
+                 
+                    </li>
+                    <li {%if state=='2'%} class="active" {%end%}>
+                            <a href="/finance?tag=finance_project_list&qtype={{qtype}}&state=2" id="customer_tab">已达收款条件订单</a>
+                     
+                        </li>
+            </ul>
+
+<form class="form-search" id="query_form">
+  <input type="text" value="{{keyword}}" name="keyword" class="input-medium search-query" placeholder="公司名称/电话/姓名">
+  <input type="text" value="{{start}}" name="start" id="start" class="input-medium search-query" placeholder="订单创建开始时间">
+  <input type="text" value="{{end}}" name="end" id="end" class="input-medium search-query" placeholder="订单创建结束时间">
+
+  <button type="submit" class="btn">检 索</button>
+  <input type="hidden" value="{{tag}}" name="tag"/>
+  <input type="hidden" name="state" value="{{state}}">
+  <input type="hidden" value="{{qtype}}" name="qtype"/>
+  
+
+</form>
+<button class="btn btn-info" id="export_data">数据导出</button>
+
+
+
+
+                        {%if customers%}
+                        <div class="alert fade in">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            数量:{{pagination.total_count}} 总欠款:{{count.sum_qk}}
+            <strong>  共找到 {{pagination.total_count}} 条记录</strong> 
+
+            <b> 欠款计算方法: 总服务费+待收代收款 - (已收款+	已收代收款)</b>
+          </div>
+
+
+              <table class="table table-bordered" style="margin:5px;">
+                     <thead>
+                                <tr style="background-color: black; color:#fff;">
+                                           <th style="min-width:30px;">编号</th>
+                                 <th style="min-width:70px;">创建日期</th>
+                               <th >业务名称</th>
+                                <th style="min-width:180px;">公司名称</th>
+                              
+                                                      <th style="min-width:50px;">联系人</th>
+                             
+                                <th style="min-width:50px;">总服务费</th>
+                                   <th style="min-width:60px;">待收代收款</th>
+                                <th style="min-width:60px;">已收款</th>
+                                 <th style="min-width:60px;">已收代收款</th>
+                         
+                          
+                              
+                                <th style="min-width:55px;">欠款</th>
+                                <th style="min-width:55px;">销售顾问</th>
+                                <th  style="min-width:55px;">客服顾问</th>
+                                <th  style="min-width:50px;">创建人</th>
+                            
+                            <th style="min-width:65px;"></th>         
+                                        </tr>
+                            </thead>
+                <tbody>
+    
+     {%for customer in customers%}
+                    <tr {%if customer.is_finance_project==1%}style="color:red;"{%end%}>    <td>{{customer.id}}</td>
+                    <td>{{customer.created_at.strftime("%Y-%m-%d")}}</td>
+                 <td><a target="_blank" href="/project?tag=show&id={{customer.id}}&guid={{customer.guid}}">{{customer.project_name}}</a></td>
+                        <td>{{customer.customer_company}}</td>
+                                                <td>{{customer.customer_name}}</td>
+
+                   <td>{{customer.all_income}}</td>
+                                    <td>{{customer.other_money}}</td>
+                        <td>{{customer.income_money}}</td>       
+                        
+                            <td>{{customer.daishou_money}}</td>
+                        <td>{{customer.qk}}</td>
+                        <td>{% raw get_member(customer.mbs,u"销售顾问")%}</td>
+  <td>{% raw get_member(customer.mbs,u"客服顾问")%}</td>
+                        <td>{{customer.create_project_name}}</td>
+                     
+                         <td>
+                            {%if role=='3' and state=='1'%}    
+                            <a href="javascript:void(0);" class="btn btn-mini btn-info caiwu_checked" id='{{customer.id}}'>财务审核</a> 
+                            {%end%}
+                            <a href="javascript:void(0);" class="btn btn-mini btn-info rec_record" id='{{customer.id}}' >应收记录</a>
+                        </td>
+                     
+                    </tr>
+                    {%end%}
+
+              
+                
+                </tbody>
+              </table>
+       
+                    {%else%}
+                        还没有客户哦。
+                               
+                    {%end%}
+                              <div class="pagination">
+                        <ul>
+                            {% if pagination.has_prev %}
+                            <li><a href="/finance?tag={{tag}}&page={{ pagination.page - 1}}{%if qtype%}&qtype={{qtype}}{%end%}{%if state%}&state={{state}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li>
+                                <a href="/finance?tag={{tag}}&page={{ page }}{%if qtype%}&qtype={{qtype}}{%end%}{%if state%}&state={{state}}{%end%}">{{ page }}</a></li>
+                            {% else %}
+                            <li><span class="active"><a href="#">{{ page }}</a></span></li>
+                            {% end %} {% else %}
+                            <li><span class="active"><a href="#">....</a></span></li>
+                            {% end %} {%end %} {% if pagination.has_next %}
+                            <li><a href="/finance?tag={{tag}}&page={{pagination.page+1}}{%if qtype%}&qtype={{qtype}}{%end%}{%if state%}&state={{state}}{%end%}">下页 &raquo;</a></li>
+                            {% end %}
+                        </ul>
+                    </div>       
+</fieldset>
+
+<div id="a_handler_modal1" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel_account">应收记录
+
+
+        </h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group">
+
+
+        <div class="control-group">
+            <label class="control-label" for="lastname">应收记录</label>
+            <!-- <div class="controls">
+                <textarea type="text" class="span4" id="wait_pay_remark" name="wait_pay_remark" value="" style="height: 50px;"></textarea>
+            </div> -->
+            <!-- /controls -->
+
+            <div class="controls" id="show_msg_add" >
+                    <textarea class="span4" id="txt_msg" style="margin: 0px 0px 9px; width: 491px; height: 61px;">
+                        </textarea>
+              
+                        <br>
+                        <button id="btn_save_msg" class="btn">确定添加</button>&nbsp;&nbsp;&nbsp;
+                        <!-- <input type="file"  value="上传附件" style=margin-top:10px;" name="record_file" id="record_file" class="form-control "/> -->
+            </div>
+        </div>
+        <div class="control-group" id="txt_msg_box">
+       
+        </div>
+
+</div>
+
+    </div>
+    <div class="modal-footer">
+   
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <!-- <button class="btn btn-primary" id="btn_save_msg">保存</button> -->
+    </div>
+</div>
+<div id="caiwu_checked_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel_account">财务审核
+    
+    
+            </h3>
+        </div>
+        <div class="modal-body">
+            <div class="control-group">
+    
+    
+            <div class="control-group">
+                <label class="control-label" for="lastname">审核</label>
+
+    
+                <div class="controls">
+                    <input type="radio" name="checked_status" value="1">已达
+                    <input type="radio" name="checked_status" value="2">未达
+                </div>
+            </div>
+            <div class="control-group" id="txt_msg_box">
+           
+            </div>
+    
+    </div>
+    
+        </div>
+        <div class="modal-footer">
+       
+            <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            <button class="btn btn-primary" id="btn_save_checked">确定</button>
+        </div>
+    </div>
+</div>
+   
+
+               
+</div>
+</div>
+</div> <!-- /widget-content -->
+</div> <!-- /widget -->
+</div> <!-- /span8 -->
+</div> <!-- /row -->
+</div> <!-- /container -->
+ </div>
+
+ 
+
+    {%end%} 
+
+    {%block js%}
+<script src="/static/moment.js"></script>
+<script>
+
+$(function () {
+    _xsrf = getCookie("_xsrf")
+    laydate.render({
+elem: '#start'//指定元素
+,format: 'yyyy-MM-dd'
+,type: 'date'
+});
+    laydate.render({
+elem: '#end' //指定元素
+,format: 'yyyy-MM-dd',type: 'date'
+});
+    $('.rec_record').click(function () { 
+        id=$(this).attr('id')
+        $("#btn_save_msg").attr('customer_id',id)
+        $.get('/finance?tag=show_customer_exchange',
+               {"customer_id":id},function (result) { 
+                   $('#txt_msg_box').html(result)
+                })
+        $("#a_handler_modal1").modal("show")
+     })
+     $("#btn_save_msg").on("click", function () {
+                customer_id=$(this).attr('customer_id')
+                msg = $("#txt_msg").val()
+                if (msg == "") {
+                    alert("交流记录不能为空哦.")
+                    return false
+                } else {
+                    var formData = new FormData();
+                    formData.append('_xsrf', _xsrf)
+                    formData.append('msg', msg)
+                    formData.append('customer_id', customer_id)
+                    formData.append('etype', 3)
+
+                    $.ajax({
+                        url: '/finance?tag=customer_exchange',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,  // tell jQuery not to set contentType
+                        success: function (data) {
+                            $('#txt_msg_box').html(data)
+                  
+                        }
+                    })
+                }
+            })
+    $(".caiwu_checked").click(function () { 
+        $("#btn_save_checked").attr('project_id',$(this).attr('id'))
+        $("#caiwu_checked_modal").modal("show")
+     })
+     $("#btn_save_checked").click(function () { 
+         project_id=$(this).attr('project_id')
+         checked_status=$("input[name=checked_status]:checked").val()
+         if(checked_status==undefined){
+             alert('未选择')
+         }else{
+            $.post('/finance?tag=checked_finance',{
+             "_xsrf":_xsrf,
+            "project_id":project_id,
+            "checked_status":checked_status
+         },function (data) { 
+             location.reload()
+          })
+         }
+      })
+      $("#export_data").click(function () { 
+          if(confirm('确定导出?')){
+              $.get('?tag=finance_project_list',{
+                  'qtype':'{{qtype}}',
+                  'state':'{{state}}',
+                  'keyword':'{{keyword}}',
+                  'start':'{{start}}',
+                  'end':'{{end}}',
+                  'export_data':'export'
+              },function (data){ 
+                  location.href=data['file_path']
+               })
+          }
+       })
+});
+
+</script>
+
+
+    {%end%}

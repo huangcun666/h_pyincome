@@ -51,24 +51,24 @@ ul li {list-style-type:none; }
 
 
 
-{%if t_user_relation and check_under %}其他会计{%elif kj and  kj=="100000"%}待分配{%elif my%}{{name}}{%else%}全部{%end%}的客户
+{%if t_user_relation and check_under %}下属会计{%elif kj and  kj=="100000"%}待分配{%elif my%}{{name}}{%else%}全部{%end%}的客户
     {%if t_user_relation %}
     {%if check_under%}
-    <a class="btn btn-primary btn-sm  customer_new "  href="/customer?my=1" >返回我的客户</a>
+    <a class="btn btn-info btn-sm  customer_new "  href="/customer?my=1" >返回我的客户</a>
     {%else%}
-    <a class="btn btn-primary btn-sm  customer_new "  href="/customer?check_under=1" >查看部门客户</a>
+    <a class="btn btn-info  customer_new "  href="/customer?check_under=1" >查看部门客户</a>
     {%end%}
     {%end%}
-    {%if department_name=='销售部'%}
+    {%if department_name=='销售部' or '302' in role_list%}
 
-      <a class="btn btn-primary btn-sm"  href="/payment?tag=assist_list">协助列表</a>
+      <a class="btn btn-primary btn-sm"  href="/payment?tag=assist_list">应收协助</a>
 
   {%end%}
 
 
-     <a class="btn {%if not tag_parent_id%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1&tag_parent_id=0{%if my%}&my={{my}}{%end%}">全部</a>
-     <a class="btn {%if  tag_parent_id==1%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1&tag_parent_id=1{%if my%}&my={{my}}{%end%}">记账</a>
-          <a class="btn {%if  tag_parent_id==2%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1&tag_parent_id=2{%if my%}&my={{my}}{%end%}">非记账</a>
+     <a class="btn {%if not   tag_parent_id%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1{%if my%}&my={{my}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">全部</a>
+     <a class="btn {%if  tag_parent_id=="1"%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1&tag_parent_id=1{%if my%}&my={{my}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">记账</a>
+          <a class="btn {%if  tag_parent_id=="2"%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1&tag_parent_id=2{%if my%}&my={{my}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">非记账</a>
 
 </h3>
 </div> <!-- /widget-header -->
@@ -79,7 +79,8 @@ ul li {list-style-type:none; }
     <ul class="nav nav-tabs" id="myTab">
 
         <li {%if  not by_tag%} class="active" {%end%}>
-            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&show_tag=1{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}" id="customer_tab">全部<span class="badge badge-danger">{{type_count_map[0][1]}}</span></a>
+            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&show_tag=1{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}" id="customer_tab">全部<span class="badge badge-danger">
+{{type_count_map[0][1]}}</span></a>
         </li>
 
 
@@ -96,7 +97,7 @@ ul li {list-style-type:none; }
     <ul class="nav nav-tabs" id="myTab">
 
         <li {%if  not tag_id%} class="active" {%end%}>
-            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&show_tag=1{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}" id="customer_tab">全部<span class="badge badge-danger">{{type_count_map[0][1]}}</span></a>
+            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&show_tag=1{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}" id="customer_tab">全部<span class="badge badge-primary">{{type_count_map[0][1]}}</span></a>
         </li>
 
 
@@ -112,30 +113,53 @@ ul li {list-style-type:none; }
     
 <fieldset>
 
-<form class="form-search" id="query_form">
-  <input type="text" value="{{keyword}}" name="keyword" class="input-medium search-query" placeholder="公司名称/电话/姓名">
+<form class="form-search" >
+  <input type="text" value="{{keyword}}" name="keyword"  placeholder="公司名称/姓名/信用代码/编号">
 
-  <select name="qtype">
 
-        <option value="company" {%if qtype=="company"%}selected{%end%}>公司名称</option>
-        <option value="lname" {%if qtype=="lname"%}selected{%end%}>联系人姓名</option>
-              <option value="tel" {%if qtype=="tel"%}selected{%end%}>电话</option>
-  </select>
+
+  <input type="text" name="tel"  style="width:150px;"    placeholder="客户电话" value="{%if tel %}{{tel}}{%end%}">
   {%if check_under%}
-  <select name="check_kj" style="width:80px;" >
+  <select name="check_kj" style="width:90px;" >
       <option value="">选择会计</option>
       {%for item in t_user_relation %}
       <option value="{{item.uid_name}}" {%if check_kj==item.uid_name%}selected{%end%}>{{item.uid_name}}</option>
       {%end%}
   </select>
-  {%else%}
-  <input type="text" name="kj" class="input-medium" style="width:80px;" placeholder="会计" value="{%if kj and kj!="100000" %}{{kj}}{%end%}">
+  {%elif not my%}
+  <input type="text" name="kj"  style="width:90px;"  placeholder="会计" value="{%if kj and kj!="100000" %}{{kj}}{%end%}">
  {%end%}
-  <input type="checkbox" value="记账" name="jz" {%if jz%}checked{%end%}/> 记账
-    <input type="checkbox" value="楼盘"  name="lp" {%if lp%}checked{%end%}/> 楼盘客户
+  <input type="hidden" value="{{tag_id}}" name="tag_id"/>
+  <input type="hidden" value="{{new_tag}}" name="new_tag"/>
+  <input type="hidden" value="{{tag_parent_id}}" name="tag_parent_id"/>
+  <select name="s_is_general" style="width:90px;">
+      <option value="" {%if s_is_general==""%}selected{%end%}>纳税类型</option>
+    <option value="1" {%if s_is_general=="1"%}selected{%end%}>一般纳税人</option>
+    <option value="0" {%if s_is_general=="0"%}selected{%end%}>小规模</option>
+
+  </select>
+    <select name="s_is_check" style="width:90px;">
+      <option value="" {%if s_is_check==""%}selected{%end%}>有无税种</option>
+
+    <option value="1" {%if s_is_check=="1"%}selected{%end%}>核定</option>
+    <option value="2" {%if s_is_check=="2"%}selected{%end%}>查账</option>
+    <option value="0" {%if s_is_check=="0"%}selected{%end%}>无</option>
+  </select>
+<select name="s_is_building" style="width:90px">
+<option value="">楼盘客户</option>
+<option value="1" {%if s_is_building=='1'%}selected{%end%} >楼盘</option>
+<option value="0" {%if s_is_building=='0'%}selected{%end%}>非楼盘</option>
+</select>
+
+  
+  
+  
 
 
-  <button type="submit" class="btn">检 索</button>
+
+
+  <button type="submit" class="btn"> <i class="icon-large icon-search
+"></i></button>
   <input type="hidden" value="{{tag}}" name="tag"/>
   {%if page_count%}
   <input type="hidden" name="page_count" value="{{page_count}}">
@@ -146,6 +170,8 @@ ul li {list-style-type:none; }
   {%if my%}
   <input type="hidden" value="{{my}}" name="my"/>
 {%end%}
+
+
 {%if check_under%}
 <input type="hidden" value="{{check_under}}" name="check_under">
 {%end%}
@@ -154,37 +180,44 @@ ul li {list-style-type:none; }
 
 
 
-            {%if is_manager=='1' and not my%}
-                            <a href="/customer?tag=customer_list_uid">信用代码对比</a>
-                            {%end%}
-
-{%if role=='3' or role=='8'%}
-<a href="javascript:void(0);" id="export_data" class="btn btn-info" keyword="{{keyword}}"
-qtype="{{qtype}}" kj="{{kj}}" lp="{{lp}}" jz="{{jz}}">导出excel</a>
-{%end%}
 
 </form>
 
-{%if keyword%}
+
 <div class="alert fade in">
             <button type="button" class="close" data-dismiss="alert">×</button>
-            <strong>  共找到 {{pagination.total_count}} 条记录</strong>
+            <strong>  当前共 {{pagination.total_count}} 条客户记录</strong>
           </div>
 
-{%end%}
+
 
 
 
                         {%if customers%}
                         {%if is_manager=='1' and not my%}
-                        <a class="btn btn-info btn-sm change_kj">批量修改客服会计</a>
+                        <a class="btn btn-info btn-sm change_kj"><i class="icon-large icon-hdd
+"></i> 批量修改客服会计</a>
 
-                        <a href="/customer?kj=100000&jz=记账&tag=all" class="btn btn-info btn-sm change_kj">记账待分配客户</a>
+                        <a href="/customer?kj=100000&jz=记账&tag=all&tag_parent_id=1"   target="_blank" class="btn btn-info btn-sm "><i class="icon-large icon-hdd
+"></i> 记账待分配客户</a>
                       
                       
-                        <a href="/customer?tag=customer_list_except" target="_blank" class="btn btn-info btn-sm change_kj">异常分配会计客户</a>
+                        <a href="/customer?tag=customer_list_except" target="_blank" class="btn btn-info btn-sm "><i class="icon-large icon-hdd
+"></i> 异常分配会计客户</a>
                       
-                      
+                             {%if is_manager=='1' and not my%}
+                            <a href="/customer?tag=customer_list_uid"  target="_blank" class="btn btn-info btn-sm "><i class="icon-large icon-hdd
+"></i> 信用代码异常客户</a>
+                            {%end%}
+     
+
+{%if role=='3' or role=='8'%}
+<a href="javascript:void(0);" id="export_data" class="btn btn-primary" keyword="{{keyword}}"
+qtype="{{qtype}}" kj="{{kj}}" lp="{{lp}}" jz="{{jz}}"><i class="icon-large icon-arrow-down
+"></i> 
+导出当前记录</a>
+{%end%}
+
                         {%end%}
                    
                         <div class="es-table">
@@ -201,7 +234,7 @@ qtype="{{qtype}}" kj="{{kj}}" lp="{{lp}}" jz="{{jz}}">导出excel</a>
                                     <li style="width: 66px;">客服会计</li>
                                     <li style="width: 66px;">有无税种</li>
                                     <li style="width: 41px;">社保</li>
-                                    <li style="width: 86px;">本年收入</li>
+                                    <li style="width: 86px;">2018年收入</li>
                                     <li style="width: 107px;">首要联系人</li>
                                     <li style="width: 77px;">注备</li>
                                     <li style="width: 66px;">跟进记录</li>
@@ -300,8 +333,8 @@ qtype="{{qtype}}" kj="{{kj}}" lp="{{lp}}" jz="{{jz}}">导出excel</a>
                                         </li>
                                         <li style="width: 66px;">{{customer.addr_type}}</li>
                                         <li style="width: 66px;"> {%if customer.acc_uid_name%}{{customer.acc_uid_name}}{%end%}</li>
-                                        <li style="width: 66px;">{%if customer.is_check%}{%if customer.is_check==0%}否{%elif customer.is_check==1%}是({{customer.btype_id_name}}){%end%}{%end%}</li>
-                                        <li style="width: 41px;">{%if customer.ss_num%}{{customer.ss_num}}{%end%}</li>
+                                        <li style="width: 66px;">{%if customer.is_check1%}{%if customer.is_check1==0%}否{%elif customer.is_check1==1%}是({%if customer.btype_id%}核定{%else%}查账{%end%}){%end%}{%end%}</li>
+                                        <li style="width: 41px;">{%if customer.ss_num1%}{{customer.ss_num1}}{%end%}</li>
                                         <li style="width: 86px;">{%if customer.income%}{{customer.income}}{%end%}</li>
                                         <li style="width: 107px;">{%if customer.tel%}{{customer.name}}<br>{{customer.tel}}{%end%}</li>
                                         <li style="width: 77px;"></li>
@@ -346,17 +379,17 @@ qtype="{{qtype}}" kj="{{kj}}" lp="{{lp}}" jz="{{jz}}">导出excel</a>
                            
                                     {% if pagination.has_prev %}
                                     {%if kj%}
-                                    <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">&laquo; 上页</a>
+                                    <a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}">&laquo; 上页</a>
                                     {%else%}
-                                    <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%} {%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">&laquo; 上页</a> {% end %}
+                                    <a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}">&laquo; 上页</a> {% end %}
                                     {%end%}
                                     {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                                     {%if kj%}
                                   
-                                            <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">[{{ page }}]</a>
+                                            <a href="/customer?tag={{tag}}&page={{ page }}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}">[{{ page }}]</a>
                                     {%else%}
                                     
-                                        <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">[{{ page }}]</a>
+                                        <a href="/customer?tag={{tag}}&page={{ page }}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}">[{{ page }}]</a>
                                     {%end%}
                                     {% else %}
                                    <span class="active"><a href="#">{{ page }}</a></span>
@@ -364,9 +397,9 @@ qtype="{{qtype}}" kj="{{kj}}" lp="{{lp}}" jz="{{jz}}">导出excel</a>
                                     <span class="active"><a href="#">....</a></span>
                                     {% end %} {%end %} {% if pagination.has_next %}
                                     {%if kj%}
-                                    <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">下页 &raquo;</a>
+                                    <a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}">下页 &raquo;</a>
                                     {%else%}
-                                    <a href="/customer?tag={{tag}}{%if page_count%}&page_count={{page_count}}{%end%}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">下页 &raquo;</a>
+                                    <a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}">下页 &raquo;</a>
                                     {%end%}
                                     {% end %}
                                
@@ -534,8 +567,11 @@ $(function () {
             'kj':kj,
             'lp':lp,
             'jz':jz,
+            'tag_id':"{{tag_id}}",
+            'new_tag_id':"{{new_tag}}",
             'by_tag':"{{by_tag}}",
-            'my':"{{my}}"
+            'my':"{{my}}",
+            "tag_parent_id":"{{tag_parent_id}}"
         },function (data) {
             location.href=data['output_path']
          })
@@ -565,7 +601,7 @@ $(function () {
                     alert('页数过大')
                 }else{
            
-                    location.href='/customer?tag={{tag}}&page='+input_page+'{%if page_count%}&page_count={{page_count}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}'
+                    location.href='/customer?tag={{tag}}&page='+input_page+'{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}'
                 }
             }
   }

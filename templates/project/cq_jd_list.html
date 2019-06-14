@@ -226,15 +226,36 @@
                   {% if t_projects%}
                   <tr>
                       <td>合计</td>
+                      {%if params['show_tag']=='2' and params['count_type']=='gs'%}
+                      <td>
+                          <a href="javascript:void(0);" 
+                          bj_check="{{params['bj_check']}}" way="{{params['way']}}"
+                           class="bj_detail">
+                           {{count.ssc}}</a>
+                      </td>
+                      {%else%}
                       <td>{{count.ssc}}</td>
+                      {%end%}
                       {%if params['count_type']=='gs' %}
                       {%for item in t_projects_type%}
                       <td>
                       {%for row in count.every_count.split(',') %}
                         {%if row.split('|')[0]==str(item.id)%}
+                      
+
+                        {%if params['show_tag']=='2' and   params['count_type']=='gs'%}
+                        <a href="javascript:void(0);" 
+                         bj_check="{{params['bj_check']}}" type_id="{{row.split('|')[0]}}" way="{{params['way']}}"
+                          class="bj_detail">
+                          {{row.split('|')[1]}}</a>
+                        {%else%}
                         {{row.split('|')[1]}}
                         {%end%}
+                        {%end%}
+
                       {%end%}
+
+
                     </td>
                       {%end%}
                       {%elif params['count_type']=='project_name'%}
@@ -252,14 +273,28 @@
                   {% for item in t_projects %}
                   <tr>
                       <td>{{item.df_confirm_at}}</td>
-                      <td>{{item.sc}}</td>
+                      <td>
+                          {%if params['show_tag']=='2' and params['count_type']=='gs'%}
+                          <a href="javascript:void(0);" 
+                           bj_check="{{params['bj_check']}}"  confirm_at="{{item.df_confirm_at}}"
+                            class="bj_detail" way="{{params['way']}}">
+                            {{item.sc}}</a>
+                          {%else%}
+                        {{item.sc}}{%end%}</td>
                       {%if params['count_type']=='gs' %}
                       {%for m in t_projects_type%}
                       
                       <td>
                             {%for row in item.gc.split(',')%}
                           {%if row.split('|')[0]==str(m.id)%}
+                          {%if params['show_tag']=='2'  and params['count_type']=='gs'%}
+                          <a href="javascript:void(0);" confirm_at="{{item.df_confirm_at}}"
+                           bj_check="{{params['bj_check']}}" type_id="{{row.split('|')[0]}}"
+                            name="{{params['name']}}" class="bj_detail" way="{{params['way']}}">
+                            {{row.split('|')[1]}}</a>
+                          {%else%}
                           {{row.split('|')[1]}}
+                          {%end%}
                           {%end%}
                           {%end%}
                     
@@ -474,7 +509,33 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
+  <div class="modal fade" id="modal_bj" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document" >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="projects_note">办结</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+  
+    <div class="modal-body form-horizontal" id="site_mod_bj">
+  
+  
+        
+          </div>
+          <div class="modal-footer">
+          
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+  
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
 {%end%}
 {%block js%}
 <script>
@@ -511,6 +572,31 @@ $(function () {
       }
     
 
+ })
+ $('.bj_detail').click(function () { 
+   $.get('?tag=cq_bj_list',{
+     'name':$(this).attr('name'),
+     'type_id':$(this).attr('type_id'),
+     'bj_check':$(this).attr('bj_check'),
+     'confirm_at':$(this).attr('confirm_at'),
+     'way':$(this).attr('way')
+   },function (data) { 
+    $("#site_mod_bj").html(data)
+    $('#modal_bj').modal('show')
+    })
+  })
+$('body').on('click','.page_btn',function () { 
+  $.get('?tag=cq_bj_list',{
+     'name':$(this).attr('name'),
+     'type_id':$(this).attr('type_id'),
+     'bj_check':$(this).attr('bj_check'),
+     'confirm_at':$(this).attr('confirm_at'),
+     'way':$(this).attr('way'),
+     'page':$(this).attr('page')
+   },function (data) { 
+    $("#site_mod_bj").html(data)
+    $('#modal_bj').modal('show')
+    })
  })
  })
 </script>

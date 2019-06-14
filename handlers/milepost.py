@@ -6,6 +6,7 @@ import uuid, os, datetime
 from tornado.options import define, options
 import msg
 import json
+import events
 
 class MilePostHandler(BaseHandler):
     def get(self):
@@ -57,6 +58,7 @@ class MilePostHandler(BaseHandler):
             is_close = self.get_argument("is_close")
             btype_id_name=self.get_argument('btype_id_name','')
             milepost = self.db.get("select * from t_projects_milepost where id=%s",mp_id)
+            customer_id=self.get_argument('customer_id','0')
             bresult = 1
             # print "milepost===============",
             if not milepost:
@@ -132,13 +134,15 @@ class MilePostHandler(BaseHandler):
                                          dt,
                                          milepost.member_id,
                                          project_id)
+                                
+                              
                             return self.write(str(bresult))
                 elif milepost.type_name == u'仓管确认交接完成':
                     if mid :
                         self.db.execute("""
                                 update t_projects_transition set rec_by_uid_at=%s where project_id=%s and mid=%s and is_customer=1
                             """,dt,project_id,mid)
-
+                    
                 # elif milepost.type_name==u"销售顾问接受交接":
                 #     t_projects_transfile = self.db.get('''
                 #     select * from t_projects_transfile where project_id=%s and pm_id=%s and mtype=2 and cq_uid != 0
@@ -146,10 +150,35 @@ class MilePostHandler(BaseHandler):
                 #     if not t_projects_transfile:
                 #         return self.write("not_confirm_sales")
 
+                t_project1=self.db.get('''
+                  select aa.* from (
+                                    select 
+                                    ifnull(((all_income+ifnull(other_money,0)) -( ifnull(b.income_money,0)+ifnull(daishou_money,0))),0) qk
+                                    from t_projects a 
+                                    left join (select b1.project_id,ifnull(sum(income_money),0) income_money from t_projects_income b1 ,t_projects_income_title b2 where
+                                    b1.parent_id=b2.id and income_id <=43 and  income_uid > 0   group by b1.project_id) b 
+                                    on a.id=b.project_id 
+                                    left join (select project_id,ifnull(sum(income_money),0) other_money from t_projects_income_other  group by project_id) c 
+                                    on a.id=c.project_id 
+                                    left join (select e1.project_id,ifnull(sum(income_money),0) daishou_money from t_projects_income e1,t_projects_income_title e2 where 
+                                    e1.parent_id=e2.id and 
+                                    income_id >43  and  income_uid > 0  group by e1.project_id) e 
+                                    on a.id=e.project_id  where a.id=%s
+                                    group by a.id) aa where  qk <> 0
+                
+                ''',project_id)
 
                 bresult = self.db.execute("""
                     update t_projects_milepost set confirm_at=%s,uid=%s,uid_name=%s where id=%s 
                 """, dt, uid, uid_name, mp_id)
+              
+                if t_project1 and milepost.type_name=='办结':
+                    if t_project1.qk!=0:
+                        self.db.execute('''
+                        update t_projects  set is_finance_project=1 where id=%s
+                        ''',project_id)
+                events.add_project_event(self, project_id,'订单流转('+milepost.btype_name+')',milepost.type_name,
+                                         uid, uid_name,customer_id)
 
                 if bresult == 0:
                     bresult = self.db.execute(
@@ -157,16 +186,16 @@ class MilePostHandler(BaseHandler):
                         last_milepost_id_name=%s , last_milepost_id_at=%s where mid=%s and project_id=%s""",
                         milepost.type_id, milepost.type_name, dt,
                         milepost.member_id, project_id)
-
+               
                 t_projects_member = self.db.get(
                     " select * from t_projects_member where mid=%s and project_id=%s",
                     milepost.member_id, project_id)
                 if t_projects_member:
                     if milepost.type_name != u'待接单' or  milepost.type_name != u'办理中' and  t_projects_member.btype_id_name==u"公司注册" :
-
                         self.db.execute(
                             "update t_projects set reg_state=2 where id=%s",
                             project_id)
+       
 
                 return self.write(str(bresult))
         elif tag == "group_confirm": #批量接单

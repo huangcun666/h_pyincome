@@ -145,21 +145,20 @@ max-height: 25px;
                      
                         </li>
             </ul>
-<!--
+
 <form class="form-search" id="query_form">
   <input type="text" value="{{keyword}}" name="keyword" class="input-medium search-query" placeholder="公司名称/电话/姓名">
-
-  <select name="qtype">
-    
-        <option value="company" {%if qtype=="company"%}selected{%end%}>公司名称</option>
-        <option value="lname" {%if qtype=="lname"%}selected{%end%}>联系人姓名</option>
-              <option value="tel" {%if qtype=="tel"%}selected{%end%}>电话</option>
-  </select>
+  <input type="text" value="{{start}}" name="start" class="input-medium search-query" placeholder="订单创建开始时间">
+  <input type="text" value="{{end}}" name="end" class="input-medium search-query" placeholder="订单创建结束时间">
 
   <button type="submit" class="btn">检 索</button>
   <input type="hidden" value="{{tag}}" name="tag"/>
+
+  <input type="hidden" value="{{qtype}}" name="qtype"/>
+  
+  
 </form>
--->
+
 
 
 
@@ -182,13 +181,14 @@ max-height: 25px;
                              
                                 <th style="min-width:150px;">总服务费</th>
                                 <th style="min-width:60px;">已收款</th>
-                             
+                               <th style="min-width:60px;">代收款</th>
                          
                           
                               
                                 <th>欠款</th>
                                 <th>销售顾问</th>
-                                <th>客服会计</th>
+                                <th>客服顾问</th>
+                                <th>创建人</th>
                                 <th></th>
                             <th></th>                
                                         </tr>
@@ -198,14 +198,14 @@ max-height: 25px;
      {%for customer in customers%}
                     <tr>
                
-                        <td>{{customer.customer_company}}</td>
+                        <td><a target="_blank" href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}">{{customer.customer_company}}</a></td>
                    <td>{{customer.all_income}}</td>
                         <td>{{customer.dd}}</td>
-             
-                        <td>{{(customer.all_income-customer.dd)}}</td>
+                        <td>{{customer.sim}}</td>
+                        <td>{{customer.all_income-customer.dd+customer.sim-customer.aa}}</td>
                         <td>{{customer.sale_name}}</td>
-  <td>{{(customer.acc_uid_name)}}</td>
-                        
+  <td>{{(customer.kf_name)}}</td>
+                        <td>{{customer.create_project_name}}</td>
                         <td><a class="btn customer_detail btn-sm control"  type='button'
                          href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}&to_tag=finance_tab">查看</a></td>
                          <td><a href="javascript:void(0);" class="btn btn-sm rec_record" id='{{customer.id}}' >应收记录</a></td>

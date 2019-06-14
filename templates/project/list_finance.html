@@ -1,12 +1,12 @@
 
- {% extends "../base.html" %} {%block title%}{%if role=="3"%}业务到款审核{%elif role=="5"%}业务合同确认{%elif role=="2"%}业务到款审核{%end%}{%end%} {% block body %}
+ {% extends "../base.html" %} {%block title%}{%if state=="3"%}财务审核{%elif state=="5"%}合同审核{%elif state=="2"%}出纳审核{%end%} {%end%}{% block body %}
 
 
       <ol class="breadcrumb">
         <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item g1">{%if role=="3"%}业务到款审核{%elif role=="5"%}业务合同确认{%elif role=="2"%}业务到款审核{%end%}
+        <li class="breadcrumb-item g1">{%if state=="3"%}财务审核{%elif state=="5"%}合同审核{%elif state=="2"%}出纳审核{%end%}
 
 
         <!--<a href="" class="btn btn-info">只看需要确认的</a>-->
@@ -19,15 +19,15 @@
     <div class="nav faye-a nav-tabs" id="nav-tab" role="tablist">
 
         <a class="btn btn-light  nav_padding {%if  show=='1'%}active{%end%}" id="nav-home-tab"
-            href="/project?tag=list_finance&show=1">待审核<span class="badge badge-danger">{{count_wait.count}}</span></a>
+            href="/project?tag=list_finance&show=1{%if state%}&state={{state}}{%end%}">待审核<span class="badge badge-danger">{{count_wait.count}}</span></a>
         <a class="btn btn-light  nav_padding {%if show=='2'%}active{%end%}"
-            href="/project?tag=list_finance&show=2" style="font-size:13px;">
+            href="/project?tag=list_finance&show=2{%if state%}&state={{state}}{%end%}" style="font-size:13px;">
             已审核
             <span class="badge badge-danger">{{count_compl.count}}</span>
         </a>
     <a class="btn btn-light  nav_padding {%if  show=='3'%}active{%end%}" id="nav-home-tab"
-        href="/project?tag=list_finance&show=3">待打印<span class="badge badge-danger">{{count_print_wait.count}}</span></a>
-    <a class="btn btn-light  nav_padding {%if show=='4'%}active{%end%}" href="/project?tag=list_finance&show=4"
+        href="/project?tag=list_finance&show=3{%if state%}&state={{state}}{%end%}">待打印<span class="badge badge-danger">{{count_print_wait.count}}</span></a>
+    <a class="btn btn-light  nav_padding {%if show=='4'%}active{%end%}" href="/project?tag=list_finance&show=4{%if state%}&state={{state}}{%end%}"
         style="font-size:13px;">
         已打印
         <span class="badge badge-danger">{{count_print_compl.count}}</span>
@@ -37,7 +37,7 @@
 
 
 
-   <div class="card mb-3">
+<div class="table-responsive">
 
 
 
@@ -57,7 +57,7 @@
                               <th width="80">创建者</th>
                             <th width="100">创建时间</th>
 
-                            <th width="100"></th>
+                           
                         </tr>
                     </thead>
                     <tbody class="fayetbody">
@@ -124,10 +124,7 @@
                             {{item.uid_name}}
                             </td>
                           <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
-                            <td>
-                                <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}" class="btn btn-primary btn-sm " title="{{item.id}}">查看</a>
-
-                            </td>
+                        
                         </tr>
                         {%end%}
                     </tbody>
@@ -137,7 +134,7 @@
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=list_finance{%if show%}&show={{show}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="?tag=list_finance{%if show%}&show={{show}}{%end%}&page={{ pagination.page - 1}}{%if state%}&state={{state}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
 
 
@@ -145,7 +142,7 @@
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=list_finance{%if show%}&show={{show}}{%end%}&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="?tag=list_finance{%if show%}&show={{show}}{%end%}&page={{page}}{%if state%}&state={{state}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -155,7 +152,7 @@
           {% end %} {%end %}
 
          {% if pagination.has_next %}
-         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=list_finance{%if show%}&show={{show}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=list_finance{%if show%}&show={{show}}{%end%}&page={{pagination.page+1}}{%if state%}&state={{state}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>

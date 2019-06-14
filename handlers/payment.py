@@ -1,4 +1,4 @@
-# encoding=utf8
+#encoding=utf8
 from handlers.base import BaseHandler
 import logging
 import json
@@ -21,7 +21,15 @@ class PaymentHandler(BaseHandler):
             return True
         else:
             return False
-
+    def show_sb(self,customer_id):
+        return self.db_customer.get('''
+            select ss_num from t_customer_other_data where
+             customer_id=%s
+        ''',customer_id)
+    def adjusted_option(self,customer_id):
+        return self.db_customer.get('''
+        select adjusted_option from t_customer_other_data where customer_id=%s
+        ''',customer_id)
     @tornado.web.authenticated
     def get(self):
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -69,24 +77,6 @@ class PaymentHandler(BaseHandler):
                 by_tag_sql = " and a.id not in  (select id from t_customer where  customer_type_name  like '%%解约%%' or customer_type_name  like '%%停账%%' or customer_type_name  like '%%注销%%' or customer_type_name  like '%%取消%%' or customer_type_name  like '%%逾期%%') "
             elif by_tag:
                 by_tag_sql = " and  customer_type_name like '%%" + by_tag + "%%'"
-                # order_by_colunm = " c.wait_pay_amount "
-            #                customers = self.db_customer.query("""
-            #         SELECT  *,c.updated_at pay_updated_at,c.uid_name pay_uid_name,c.wait_pay_amount,
-            #         c.pay_typeid_name pay_pay_typeid_name,c.service_amount pay_service_amount,c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount,
-            #         a.acc_uid_name
-            #         FROM  t_customer a
-            #             INNER JOIN t_customer_payment c
-            #                 ON a.id = c.customer_id
-            #             INNER JOIN
-            #             (
-            #                 SELECT `customer_id`, MAX(id) max_id
-            #                 FROM t_customer_payment
-            #                 GROUP BY customer_id
-            #             ) b ON c.customer_id = b.customer_id AND
-            #                     b.max_id = c.id """ + sql + by_tag_sql + """
-            #             order by """ + order_by_colunm + """ desc
-            #             limit %s,%s
-            # """, startpage, pre_page)
             customers = self.db_customer.query("""
                     SELECT  *,c.updated_at pay_updated_at,c.uid_name pay_uid_name,c.wait_pay_amount,
                     c.pay_typeid_name pay_pay_typeid_name,c.service_amount pay_service_amount,c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount,
@@ -101,7 +91,7 @@ class PaymentHandler(BaseHandler):
                             GROUP BY customer_id
                         ) b ON c.customer_id = b.customer_id AND
                                 b.max_id = c.id  where 1=1 """ + sql + by_tag_sql + """
-                      order by """ + order_by_colunm + """  """)
+                      order by id""")
             wb = xlwt.Workbook()
             # 新增一个表单
             sh = wb.add_sheet(u'业绩表')
@@ -378,7 +368,7 @@ class PaymentHandler(BaseHandler):
                         DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,
                         DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
                         DATE_ADD(c.acc_book_end, INTERVAL a.fee MONTH) next_pay_acc_book_end, c.*,
-                        a.guid,a.company,c.updated_at pay_updated_at,c.uid_name pay_uid_name,
+                        a.guid,a.company,c.updated_at pay_updated_at,c.uid_name pay_uid_name,a.remark customer_remark,
                         c.pay_typeid_name pay_pay_typeid_name,c.service_amount pay_service_amount,
                                                                 c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount
                                                                 FROM  t_customer a
@@ -405,6 +395,7 @@ class PaymentHandler(BaseHandler):
             t_customer_payment_max_assist=self.db_customer.get('''
                 select id from t_customer_payment_assist where customer_id=%s and sale_id=%s  order by id desc limit 1
                 ''',customer_id,uid)
+            
             self.render(
                 'c/payment/customer.html',
                 t_customer_payment_max_assist=t_customer_payment_max_assist,
@@ -516,12 +507,12 @@ where customer_type_name like '%%记账%%'
             is_general=self.get_argument('is_general','')
             small_amount=self.get_argument('small_amount','')
             big_amount=self.get_argument('big_amount','')
-            print is_manager
+            output = self.get_argument("output","")
             if is_manager=="1":
                 pass
             elif role!="8" or role!="3" or role!="5" :
                 kf=uid_name
-            order_by_colunm = " req_at "
+            order_by_colunm = " req_at desc"
             pre_page = 20
             params={
                 'company':company,
@@ -535,7 +526,12 @@ where customer_type_name like '%%记账%%'
                 "big_amount":big_amount
             }
             if company:
-                sql = ' and a.company like "%%' + company + '%%" '
+                sql += """ 
+                        and (a.id = '""" + company + """'
+                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' )
+                
+                
+                """
             if kf:
                 sql += ' and a.acc_uid_name like "%%' + kf + '%%" '
             if small_amount and big_amount:
@@ -548,10 +544,15 @@ where customer_type_name like '%%记账%%'
                 sql+=' and a.is_general=1 '
             if by_tag =="正常":
                 by_tag_sql = " and a.id not in  (select id from t_customer where  customer_type_name  like '%%解约%%' or customer_type_name  like '%%停账%%' or customer_type_name  like '%%注销%%' or customer_type_name  like '%%取消%%' or customer_type_name  like '%%逾期%%') "
+            elif by_tag=='楼盘':
+                by_tag_sql=' and a.is_building=1 '
+            elif by_tag=='汇算清缴':
+                by_tag_sql=' and a.is_clearly=1 '
+            elif by_tag=='工商年检':
+                by_tag_sql=' and a.is_year=1 '
             elif by_tag:
-                by_tag_sql = " and  customer_type_name like '%%" + by_tag + "%%'"
-                order_by_colunm = " c.wait_pay_amount "
-
+                by_tag_sql = " and  tag_id_name='%s' "%by_tag
+                order_by_colunm = " c.wait_pay_amount  desc"
 
             count = self.db_customer.get('''
                     select count(*) count
@@ -584,9 +585,51 @@ where customer_type_name like '%%记账%%'
 
             pagination = Pagination(page, pre_page, count.count, self.request)
             startpage = (page - 1) * pre_page
-            customers = self.db_customer.query("""
-                    SELECT  *,c.id payment_id,
+            limit_sql=""
+            if   output:
+                order_by_colunm = " a.id "
+            else:
+                limit_sql=" limit {},{}".format(startpage, pre_page)
 
+                
+            # print """
+            #         SELECT  *,c.id payment_id,
+
+            #         c.updated_at pay_updated_at,c.uid_name pay_uid_name,c.wait_pay_amount,
+            #         c.pay_typeid pay_pay_typeid_id, c.pay_typeid_name pay_pay_typeid_name,
+            #         c.service_amount pay_service_amount,c.service_month_amount pay_service_amount_month,
+            #          c.book_amount pay_book_amount,
+            #         a.acc_uid_name,a.remark t_remark
+            #         FROM  t_customer a
+            #             INNER JOIN t_customer_payment c
+            #                 ON a.id = c.customer_id
+            #             INNER JOIN
+            #             (
+            #                 SELECT `customer_id`, MAX(id) max_id
+            #                 FROM t_customer_payment
+            #                 GROUP BY customer_id
+            #             ) b ON c.customer_id = b.customer_id AND
+            #                     b.max_id = c.id """ + sql + by_tag_sql + """
+            #             order by """ + order_by_colunm + """ desc
+                      
+            # """+limit_sql
+            customers = self.db_customer.query("""
+                    SELECT *, a.company , c.id payment_id,a.id a_customer_id,guid,
+                    a.paytype_id_name customer_paytype_id_name,
+                    a.promo_id_name customer_promo_id_name,
+                    a.promo_id customer_promo_id,
+                    a.is_general customer_is_general,
+                    a.service_amount customer_service_amount,
+                    a.service_amount_month customer_service_amount_month,
+                    a.book_amount customer_book_amount,
+                    a.customer_type customer_customer_type,
+                    a.tag_id customer_tag_id,
+                    a.tag_id_name customer_tag_id_name,
+                    a.tag_parent_id customer_tag_parent_id,
+                    a.tag_parent_id_name customer_tag_parent_id_name,
+                    a.is_building customer_is_building,
+                    a.is_clearly customer_is_clearly,
+                    a.is_year customer_is_year,
                     c.updated_at pay_updated_at,c.uid_name pay_uid_name,c.wait_pay_amount,
                     c.pay_typeid pay_pay_typeid_id, c.pay_typeid_name pay_pay_typeid_name,
                     c.service_amount pay_service_amount,c.service_month_amount pay_service_amount_month,
@@ -602,27 +645,107 @@ where customer_type_name like '%%记账%%'
                             GROUP BY customer_id
                         ) b ON c.customer_id = b.customer_id AND
                                 b.max_id = c.id """ + sql + by_tag_sql + """
-                        order by """ + order_by_colunm + """ desc
-                        limit %s,%s
-            """, startpage, pre_page)
+                        order by """ + order_by_colunm +limit_sql)
             t_payment_type = self.db_customer.query(
                 "select * from t_type where tag='付费方式'")
-            t_customer_type = self.db_customer.query("select * from t_type where tag='客户类型' and is_show=1 order by  order_int desc")
+            t_customer_type = self.db_customer.query(
+                "select * from t_type where tag='客户标签' and is_show=1  order by `order` ")
 
             t_promo_types = self.db.query(
                 """select * from t_projects_type where income_category='套餐' order by order_int  """
             )
+            t_type_new_parents=self.db_customer.query('''
+                    select * from t_type where tag='客户标签1'
+                    ''')
+            t_type_new=self.db_customer.query('''
+                    select * from t_type where tag='客户标签' and parent_id in (1,2) and name!='楼盘'
+                    ''')
+            if output:
+                wb = xlwt.Workbook()
+                # 新增一个表单
+                sh = wb.add_sheet(u'业绩表')
+                # 按位置添加数据a
+                sh.write(0, 0, u"客户编号")
+                sh.write(0, 1, u"公司")
+                sh.write(0, 2, u"会计")
+                sh.write(0, 3, u"付款方式")
+                sh.write(0, 4, u"服务费")
+                sh.write(0, 5, u"月服务费")
+                sh.write(0, 6, u"标签")
+                sh.write(0, 7, u"账册费")
+                sh.write(0, 8, u"成立日期")
+                sh.write(0, 9, u"记账费到期时间")
+                sh.write(0, 10, u"账册费到期时间")
+                sh.write(0, 11, u"已收明细")
+                sh.write(0, 12, u"未收明细")
+                sh.write(0, 13, u"待收金额")
+                sh.write(0,14,u'备注')
+
+
+                for idx, item in enumerate(customers):
+                    idx = idx + 1
+                    sh.write(idx, 0, item.customer_id)
+                    sh.write(idx, 1, item.company)
+                    sh.write(idx, 2, item.acc_uid_name)
+                    sh.write(idx, 3, item.pay_pay_typeid_name)
+                    sh.write(idx, 4, item.pay_service_amount)
+                    sh.write(idx, 5, item.pay_service_amount_month)
+                    tags=""
+                    if item.tag_parent_id_name!=item.tag_id_name:
+                        tags=item.tag_parent_id_name+","
+                    if item.tag_id_name:
+                        tags+=item.tag_id_name+","
+                    if item.is_building:
+                        tags+=u"楼盘,"
+                    if item.is_year:
+                        tags+=u"工商年检,"
+                    if item.is_clearly:
+                        tags+=u"汇算清缴,"
+                    sh.write(idx,6,tags)                            
+                    sh.write(idx, 7, item.pay_book_amount)
+                    if item.reg_date:
+                        sh.write(idx, 8, item.reg_date.strftime("%Y-%m"))
+                    else:
+                        sh.write(idx, 8, "")
+
+                    if item.acc_end:
+                        sh.write(idx, 9, item.acc_end.strftime("%Y-%m"))
+                    else:
+                        sh.write(idx, 9, "")
+                    if item.acc_book_end:
+                        sh.write(idx, 10, item.acc_book_end.strftime("%Y-%m"))
+                    else:
+                        sh.write(idx, 10, "")
+                    sh.write(idx, 11, item.al_remark)
+                    sh.write(idx, 12, item.pb_remark)
+                    sh.write(idx, 13, item.wait_pay_amount)
+                    if item.t_remark:
+                        sh.write(idx,14,item.t_remark)
+                    else:
+                        sh.write(idx,14,u'')
+
+                # sh.write(idx, 1, item.created_at.strftime("%Y-%m-%d"))
+
+                # sh.write(0, 18+af_num, u"在线客服")
+                # 保存文件
+                wb.save('media/output/payment_%s.xls' % (dt))
+                return self.write(
+                    "<a href='%s'>下载</a>" % ('static/output/payment_%s.xls' % (dt)))
 
             self.render(
                 'c/payment/payment_list.html',
                 t_promo_types=t_promo_types,
                 t_customer_type=t_customer_type,
+                # \
+                t_type_new_parents=t_type_new_parents,
+                t_type_new=t_type_new,
                 by_tag=by_tag,
                 total=total,
                 customers=customers,
                 pagination=pagination,
                 t_payment_type=t_payment_type,
                 params=params,
+                adjusted_option=self.adjusted_option,
                 tag=tag)
 
         elif tag == "list_company":
@@ -638,7 +761,12 @@ where customer_type_name like '%%记账%%'
             else:
                 sql = " and b.order_int <=2  "
             if company:
-                sql1 = ' and c.customer_company like "%%' + company + '%%" '
+                sql1 += """ 
+                        and (a.project_id = '""" + company + """'
+                         or c.customer_company like '%%""" + company + """%%' or c.company_uid like '%%""" + company + """%%' )
+                
+                
+                """
             if kf:
                 sql1 += ' and a.acc_uid_name like "%%' + kf + '%%" '
 
@@ -664,7 +792,7 @@ where customer_type_name like '%%记账%%'
             pagination = Pagination(page, pre_page, count.count, self.request)
             startpage = (page - 1) * pre_page
             customers = self.db.query("""
-                select  d.service_id,service_name,customer_company,service_money,project_name,d.created_at,
+                select  d.service_id,service_name,customer_company,service_money,project_name,d.created_at,company_uid,
                 a.project_id project_id,
                 c.guid project_guid,
                 b.order_int ,b.income_name,
@@ -730,7 +858,12 @@ where customer_type_name like '%%记账%%'
 
 
             if company:
-                sql += ' and a.company like "%%' + company + '%%" '
+                sql += """ 
+                        and (a.id = '""" + company + """'
+                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' )
+                
+                
+                """
 
             if kf:
                 sql += ' and a.acc_uid_name like "%%' + kf + '%%" '
@@ -763,7 +896,24 @@ where customer_type_name like '%%记账%%'
             startpage = (page - 1) * pre_page
             customers = self.db.query(
                 """
-                    select a.remark customer_remark,customer_type_name, a.id customer_id,a.promo_id,a.promo_id_name,a.is_general,a.paytype_id_name
+                    select 
+                    a.*,
+                     a.paytype_id_name customer_paytype_id_name,
+                      a.promo_id customer_promo_id,
+                    a.promo_id_name customer_promo_id_name,
+                    a.is_general customer_is_general,
+                    a.service_amount customer_service_amount,
+                    a.service_amount_month customer_service_amount_month,
+                    a.book_amount customer_book_amount,
+                    a.customer_type customer_customer_type,
+                    a.tag_id customer_tag_id,
+                    a.tag_id_name customer_tag_id_name,
+                    a.tag_parent_id customer_tag_parent_id,
+                    a.tag_parent_id_name customer_tag_parent_id_name,
+                    a.is_building customer_is_building,
+                    a.is_clearly customer_is_clearly,
+                    a.is_year customer_is_year,
+                    company_reguid,a.remark customer_remark,customer_type_name, a.id customer_id,a.promo_id,a.promo_id_name,a.is_general,a.paytype_id_name
                      pay_pay_typeid_name,a.service_amount pay_service_amount,service_amount_month
                      pay_service_amount_month,a.book_amount pay_book_amount,a.guid,customer_type ,"""
                 + add_column +
@@ -772,8 +922,8 @@ where customer_type_name like '%%记账%%'
                     a.id a_customer_id,a.paytype_id customer_pay_type_id, a.service_amount customer_service_amount,a.service_amount_month customer_service_amount_month,
 
 
-                    a.book_amount customer_book_amount,a.guid a_customer_guid, a.paytype_id_name customer_paytype_id_name
-
+                    a.book_amount customer_book_amount,a.guid a_customer_guid, a.paytype_id_name customer_paytype_id_name,
+                    a.tag_id,a.tag_id_name,a.tag_parent_id,a.tag_parent_id_name,a.is_building,a.is_clearly,a.is_year
 
                     from  """ + options.mysql_database_customer +
                 """.`t_customer` a
@@ -798,6 +948,31 @@ where customer_type_name like '%%记账%%'
                     order by """ + order_by_colunm +o+ """ 
                         limit %s,%s
             """, startpage, pre_page)
+            print  """  select company_reguid,a.remark customer_remark,customer_type_name, a.id customer_id,a.promo_id,a.promo_id_name,a.is_general,a.paytype_id_name
+                     pay_pay_typeid_name,a.service_amount pay_service_amount,service_amount_month
+                     pay_service_amount_month,a.book_amount pay_book_amount,a.guid,customer_type ,"""+ add_column + """ a.acc_uid_name,income_list ,pay_list,e.is_handler_uid_name is_handler_uid_name,is_handler_at,
+                    customer_company,b.project_name,income_num,b.id project_id,e.id cp_title_id,e.created_at title_created_at,
+                    a.id a_customer_id,a.paytype_id customer_pay_type_id, a.service_amount customer_service_amount,a.service_amount_month customer_service_amount_month,
+
+
+                    a.book_amount customer_book_amount,a.guid a_customer_guid, a.paytype_id_name customer_paytype_id_name,
+                    a.tag_id,a.tag_id_name,a.tag_parent_id,a.tag_parent_id_name,a.is_building,a.is_clearly,a.is_year
+
+                    from  """ + options.mysql_database_customer +  """.`t_customer` a
+                    inner join t_projects b on a.company = b.customer_company   """  + sql_reg + """
+                    inner join t_projects_income_title e  on e.project_id=b.id and fi_confirm_uid > 0  """ + hand_sql + """
+                					inner join
+                     (select parent_id,income_num,
+                      GROUP_CONCAT(concat( income_name,"|",income_money))
+                      income_list from t_projects_income dd
+
+                     group by parent_id,income_num
+
+                     ) c on c.parent_id=e.id
+                    inner join (select title_id, GROUP_CONCAT(concat( service_name,"|",service_money)) pay_list from t_projects_income_detail d where
+                    (d.`service_id`=10 or d.service_id=204 or d.service_id=131)
+                    group by title_id) d on e.id=d.title_id and b.id=e.project_id
+            """ +pay_sql+ sql 
             t_payment_type = self.db_customer.query(
                 "select * from t_type where tag='付费方式'")
             t_customer_type = self.db_customer.query(
@@ -809,17 +984,25 @@ where customer_type_name like '%%记账%%'
 
             t_customer_type = self.db_customer.query(
                 "select * from t_type where tag='客户类型' and is_show=1")
-
+            t_type_new_parents=self.db_customer.query('''
+                    select * from t_type where tag='客户标签1'
+                    ''')
+            t_type_new=self.db_customer.query('''
+                    select * from t_type where tag='客户标签' and parent_id in (1,2) and name!='楼盘'
+                    ''')
             self.render(
                 'c/payment/list_company_in_customer.html',
                 customers=customers,
                 kf=kf,
+                t_type_new_parents=t_type_new_parents,
+                t_type_new=t_type_new,
                 t_promo_types=t_promo_types,
                 company=company,
                 t_customer_type=t_customer_type,
                 pagination=pagination,
                 t_payment_type=t_payment_type,
                 pay_project_id=pay_project_id,
+                adjusted_option=self.adjusted_option,
                 state=state,
                 tag=tag,
                 o=o)
@@ -841,7 +1024,12 @@ where customer_type_name like '%%记账%%'
                 order_by_colunm = "payment_confirm_at"
 
             if company:
-                sql += ' and a.company like "%%' + company + '%%" '
+                sql += """ 
+                        and (a.id = '""" + company + """'
+                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' )
+                
+                
+                """
             if kf:
                 sql += ' and a.acc_uid_name like "%%' + kf + '%%"'
             sql += " and payment_confirm_state=" + str(state)
@@ -882,7 +1070,22 @@ where customer_type_name like '%%记账%%'
             startpage = (page - 1) * pre_page
             customers = self.db.query(
                 """
-                  select  a.remark customer_remark,customer_type_name,payment_confirm_remark,payment_confirm_at,payment_confirm_uid_name, pb_remark , al_remark,wait_pay_amount e_wait_pay_amount ,g.acc_end e_acc_end,g.acc_book_end e_acc_book_end,g.id payment_id,a.id customer_id,a.promo_id,a.promo_id_name,a.is_general,a.paytype_id_name
+                    SELECT a.company , 
+                    a.paytype_id_name customer_paytype_id_name,
+                    a.promo_id_name customer_promo_id_name,
+                    a.is_general customer_is_general,
+                    a.service_amount customer_service_amount,
+                    a.service_amount_month customer_service_amount_month,
+                    a.book_amount customer_book_amount,
+                    a.customer_type customer_customer_type,
+                    a.tag_id customer_tag_id,
+                    a.tag_id_name customer_tag_id_name,
+                    a.tag_parent_id customer_tag_parent_id,
+                    a.tag_parent_id_name customer_tag_parent_id_name,
+                    a.is_building customer_is_building,
+                    a.is_clearly customer_is_clearly,
+                     a.promo_id customer_promo_id,
+                    a.is_year customer_is_year,  company_reguid,a.remark customer_remark,customer_type_name,payment_confirm_remark,payment_confirm_at,payment_confirm_uid_name, pb_remark , al_remark,wait_pay_amount e_wait_pay_amount ,g.acc_end e_acc_end,g.acc_book_end e_acc_book_end,g.id payment_id,a.id customer_id,a.promo_id,a.promo_id_name,a.is_general,a.paytype_id_name
                      pay_pay_typeid_name,a.service_amount pay_service_amount,service_amount_month
                      pay_service_amount_month,a.book_amount pay_book_amount,a.guid,customer_type ,
 pfi_confirm_remark,payment_confirm_at,
@@ -896,7 +1099,8 @@ pfi_confirm_remark,payment_confirm_at,
                     a.id customer_id,a.paytype_id customer_pay_type_id, a.service_amount customer_service_amount,
                     a.service_amount_month customer_service_amount_month,
                     a.book_amount customer_book_amount,a.guid a_customer_guid, a.paytype_id_name customer_paytype_id_name,
-                    g.acc_end,g.acc_book_end,g.id payment_id,g.al_remark,g.pb_remark,g.payment_confirm_remark
+                    g.acc_end,g.acc_book_end,g.id payment_id,g.al_remark,g.pb_remark,g.payment_confirm_remark,
+                    a.tag_id,a.tag_id_name,a.tag_parent_id,a.tag_parent_id_name,a.is_building,a.is_clearly,a.is_year
                     from  """ + options.mysql_database_customer +
                 """.`t_customer` a
                     inner join """ + options.mysql_database_customer +
@@ -936,10 +1140,18 @@ pfi_confirm_remark,payment_confirm_at,
 
             t_customer_type = self.db_customer.query(
                 "select * from t_type where tag='客户类型' and is_show=1")
-
+            t_type_new_parents=self.db_customer.query('''
+                    select * from t_type where tag='客户标签1'
+                    ''')
+            t_type_new=self.db_customer.query('''
+                    select * from t_type where tag='客户标签' and parent_id in (1,2) and name!='楼盘'
+                    ''')
             self.render(
                 'c/payment/list_company_in_customer_req.html',
                 customers=customers,
+                adjusted_option=self.adjusted_option,
+                t_type_new_parents=t_type_new_parents,
+                t_type_new=t_type_new,
                 t_customer_type=t_customer_type,
                 t_promo_types=t_promo_types,
                 from_customer=from_customer,
@@ -968,9 +1180,15 @@ pfi_confirm_remark,payment_confirm_at,
             order_by_colunm = " c.acc_end "
             if by_tag =="正常":
                 by_tag_sql = " and a.id not in  (select id from t_customer where  customer_type_name  like '%%解约%%' or customer_type_name  like '%%停账%%' or customer_type_name  like '%%注销%%' or customer_type_name  like '%%取消%%' or customer_type_name  like '%%逾期%%') "
+            elif by_tag=='楼盘':
+                by_tag_sql=' and a.is_building=1 '
+            elif by_tag=='汇算清缴':
+                by_tag_sql=' and a.is_clearly=1 '
+            elif by_tag=='工商年检':
+                by_tag_sql=' and a.is_year=1 '
             elif by_tag:
-                by_tag_sql = " and  customer_type_name like '%%" + by_tag + "%%'"
-                order_by_colunm = " wait_pay_amount "
+                by_tag_sql = " and  tag_id_name='%s' "%by_tag
+                order_by_colunm = " c.wait_pay_amount "
 
             show_sql = ""
             if show_tag == "2":
@@ -997,7 +1215,12 @@ or
                  """ + show_sql
 
             if company:
-                sql += ' and a.company like "%%' + company + '%%"'
+                sql += """ 
+                        and (a.id = '""" + company + """'
+                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' )
+                
+                
+                """
             if kf:
                 sql += ' and a.acc_uid_name like "%%' + kf + '%%"'
 
@@ -1039,8 +1262,24 @@ or
 
 
             customers = self.db_customer.query("""
-                       SELECT  a.remark customer_remark,customer_type_name,DATE_ADD(c.acc_end, INTERVAL 1 MONTH) next_pay_acc_start , a.acc_uid_name,cp_title_id,a.promo_id,is_general,
-            customer_type,promo_id_name,
+                       SELECT  a.company , c.id payment_id,
+                    a.paytype_id_name customer_paytype_id_name,
+                    a.promo_id_name customer_promo_id_name,
+                    a.is_general customer_is_general,
+                    a.service_amount customer_service_amount,
+                    a.service_amount_month customer_service_amount_month,
+                    a.book_amount customer_book_amount,
+                    a.customer_type customer_customer_type,
+                     a.promo_id customer_promo_id,
+                    a.tag_id customer_tag_id,
+                    a.tag_id_name customer_tag_id_name,
+                    a.tag_parent_id customer_tag_parent_id,
+                    a.tag_parent_id_name customer_tag_parent_id_name,
+                    a.is_building customer_is_building,
+                    a.is_clearly customer_is_clearly,
+                    a.is_year customer_is_year,
+                     company_reguid,a.remark customer_remark,customer_type_name,DATE_ADD(c.acc_end, INTERVAL 1 MONTH) next_pay_acc_start , a.acc_uid_name,cp_title_id,a.promo_id,is_general,
+            customer_type,promo_id_name,a.tag_id,a.tag_id_name,a.tag_parent_id,a.tag_parent_id_name,a.is_building,a.is_clearly,a.is_year,
                         DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,
                         DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
                         DATE_ADD(c.acc_book_end, INTERVAL 12 MONTH) next_pay_acc_book_end, c.*,
@@ -1094,13 +1333,22 @@ or
             )
 
             t_customer_type = self.db_customer.query(
-                "select * from t_type where tag='客户类型' order by order_int desc")
+                "select * from t_type where tag='客户标签' and is_show=1  order by `order` ")
+            t_type_new_parents=self.db_customer.query('''
+                    select * from t_type where tag='客户标签1'
+                    ''')
+            t_type_new=self.db_customer.query('''
+                    select * from t_type where tag='客户标签' and parent_id in (1,2) and name!='楼盘'
+                    ''')
             self.render(
                 'c/payment/expire_customer.html',
                 from_expire=from_expire,
+                t_type_new_parents=t_type_new_parents,
+                t_type_new=t_type_new,
                 date=date,
                 total=total,
                 kf=kf,
+                adjusted_option=self.adjusted_option,
                 t_customer_type=t_customer_type,
                 t_promo_types=t_promo_types,
                 by_tag=by_tag,
@@ -1157,9 +1405,13 @@ or
             #                    )
 
             #                  """ + show_sql
-
             if company:
-                sql += ' and a.company like "%%' + company + '%%"'
+                sql += """ 
+                        and (a.id = '""" + company + """'
+                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' )
+                
+                
+                """
             if kf:
                 sql += ' and a.acc_uid_name like "%%' + kf + '%%"'
             if req_uid_name:
@@ -1198,15 +1450,31 @@ or
             startpage = (page - 1) * pre_page
 
             customers = self.db_customer.query("""
-                       SELECT a.remark customer_remark,customer_type_name, DATE_ADD(c.acc_end, INTERVAL 1 MONTH)
+                         SELECT a.company , c.id payment_id,
+                    a.paytype_id_name customer_paytype_id_name,
+                    a.promo_id_name customer_promo_id_name,
+                    a.is_general customer_is_general,
+                    a.service_amount customer_service_amount,
+                    a.service_amount_month customer_service_amount_month,
+                    a.book_amount customer_book_amount,
+                    a.customer_type customer_customer_type,
+                    a.tag_id customer_tag_id,
+                    a.tag_id_name customer_tag_id_name,
+                    a.tag_parent_id customer_tag_parent_id,
+                    a.tag_parent_id_name customer_tag_parent_id_name,
+                    a.is_building customer_is_building,
+                    a.is_clearly customer_is_clearly,
+                    a.is_year customer_is_year,
+                        a.promo_id customer_promo_id,
+                        company_reguid,a.remark customer_remark,customer_type_name, DATE_ADD(c.acc_end, INTERVAL 1 MONTH)
                        next_pay_acc_start , a.acc_uid_name,cp_title_id,a.promo_id,is_general,
-            customer_type,promo_id_name,
+            customer_type,promo_id_name,a.tag_id,a.tag_id_name,a.tag_parent_id,a.tag_parent_id_name,a.is_building,a.is_clearly,a.is_year,
                         DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,
                         DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
                         DATE_ADD(c.acc_book_end, INTERVAL 12 MONTH) next_pay_acc_book_end, c.*,
                         a.guid,a.company,c.updated_at pay_updated_at,c.uid_name pay_uid_name,
                         c.pay_typeid_name pay_pay_typeid_name,c.service_amount pay_service_amount,
-                      c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount,
+                      c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount,c.fee payment_fee,
                       c.id pay_id1,pfi_confirm_state,pfi_confirm_remark
                                                                 FROM  t_customer a
                                                                     INNER JOIN t_customer_payment c
@@ -1231,12 +1499,21 @@ or
 
             t_customer_type = self.db_customer.query(
                 "select * from t_type where tag='客户类型'")
+            t_type_new_parents=self.db_customer.query('''
+                    select * from t_type where tag='客户标签1'
+                    ''')
+            t_type_new=self.db_customer.query('''
+                    select * from t_type where tag='客户标签' and parent_id in (1,2) and name!='楼盘'
+                    ''')
             self.render(
                 'c/payment/expire_customer_req.html',
                 date=date,
+                t_type_new_parents=t_type_new_parents,
+                t_type_new=t_type_new,
                 from_expire=from_expire,
                 total=total,
                 kf=kf,
+                adjusted_option=self.adjusted_option,
                 req_uid_name=req_uid_name,
                 t_customer_type=t_customer_type,
                 t_promo_types=t_promo_types,
@@ -1252,12 +1529,11 @@ or
 
         elif tag=="assist_list":
             sql=''
-            search_sql=''
             page = int(self.get_argument("page", 1))
             pre_page = 20
             show_tag=self.get_argument('show_tag','')
             dt_next = datetime.date.today() - relativedelta(months=-1)
-            order_int=' d.created_at '
+            order_int=' d.created_at desc '
             department_name=self.get_secure_cookie("department_name")
             count_sql=''
             company_sql=self.get_argument('company_sql','')
@@ -1273,6 +1549,10 @@ or
             ass_num_end=self.get_argument('ass_num_end','')
             ssql=''
             sql_bad=''
+            if show_tag=='-1000' or show_tag=='-2000':
+                search_sql=' and a.id not in (select customer_id from t_customer_payment_assist where customer_id=a.id  and is_bad_debts=1 )  '
+            else: 
+                search_sql=' and d.is_bad_debts=0 '
             if company_sql:
                 search_sql+=' and a.company like "%%'+company_sql+'%%" '
 
@@ -1303,7 +1583,7 @@ or
                 'ass_day':ass_day,
                 'ass_day_end':ass_day_end
             }
-            if department_name=='销售部' and '250' not in role_list:
+            if department_name=='销售部' and '250' not in role_list or '302' in role_list:
                 sql=' where d.sale_id=%s and d.is_bad_debts=0 '%uid
                 sql_bad=' and sale_id=%s '%uid
                 count_sql=' and d.sale_id=%s '%uid
@@ -1326,13 +1606,13 @@ or
                     sql+=' and d.distribute_at is null '
                 elif show_tag=='2':
                     sql+=' and d.distribute_at  is not null and d.jd_at is null '
-                    order_int=' d.distribute_at '
+                    order_int=' d.distribute_at desc '
                 elif show_tag=='3':
                     sql+='  and d.jd_at is not null and d.sale_end_at is null '
-                    order_int=' d.jd_at '
+                    order_int=' d.jd_at desc '
                 elif show_tag=='4':
                     sql+=' and d.sale_end_at is not null and  d.is_check=0 '
-                    order_int=' d.sale_end_at '
+                    order_int=' d.sale_end_at desc '
                 elif show_tag=='5':
                     sql+=' and d.is_check=2  and d.jd_at is not null and d.sale_end_at is not null '
                 elif show_tag=='6':
@@ -1340,6 +1620,8 @@ or
                      and (TIMESTAMPDIFF(MONTH,c.acc_end, DATE_FORMAT(now(), "%%Y-%%m-%%d"))<1
                       or  datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORMAT(d.check_at, '%%Y-%%m-%%d'))<=14)
                       '''
+                    order_int=' pb_remark desc,req_close '
+
             if (show_tag=='-1000' or show_tag=='-2000' or not show_tag) and ((department_name=='销售部' and '250' in role_list) or '250' in role_list or role=='3'):
                 sel_sql=''
                 if show_tag=='-1000':
@@ -1355,16 +1637,16 @@ or
                     from t_customer_payment_assist hh where h.customer_id=hh.customer_id)
 
                     """
-                    order_int=' c.acc_end '
+                    order_int=' c.acc_end desc '
                 elif show_tag=='-2000':
                     ssql=""" 
                         and a.id not in ( select customer_id from t_customer_payment_assist) 
                         and TIMESTAMPDIFF(MONTH,c.acc_end, DATE_FORMAT(now(), '%%Y-%%m-%%d'))<=0 
                         """
                     
-                    order_int=' c.acc_end '
+                    order_int=' c.acc_end desc '
                 elif not show_tag:
-                    sel_sql=''' d.is_check,d.id assist_id,d.summary,
+                    sel_sql=''' d.is_check,d.id assist_id,d.summary,d.sale_id assist_sale_id,
                     TIMESTAMPDIFF(MONTH,c.acc_end, DATE_FORMAT(now(), "%%Y-%%m-%%d")) tsm,
                      datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORMAT(d.check_at, '%%Y-%%m-%%d')) wj_day,
                      if(d.sale_end_at,datediff(DATE_FORMAT(d.sale_end_at, '%%Y-%%m-%%d'),DATE_FORMAT(d.distribute_at,'%%Y-%%m-%%d')),
@@ -1376,7 +1658,7 @@ or
                             from t_customer_payment_assist dd where d.customer_id=dd.customer_id )
                      '''
         
-                    order_int=order_int+' desc,c.acc_end  '
+                    order_int=order_int+',c.acc_end desc '
                 count = self.db_customer.get('''
                         select count(*) count ,ifnull(sum(c.wait_pay_amount),0) sw,
                         (select count(*)
@@ -1478,7 +1760,6 @@ or
                 '''+search_sql)
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page - 1) * pre_page
-                print(ssql)
                 customers = self.db_customer.query("""
                         SELECT  *,"""+sel_sql+""" c.id payment_id,a.id customer_id,
                         g.id sale_cuikuan_id,
@@ -1486,7 +1767,7 @@ or
                         c.pay_typeid pay_pay_typeid_id, c.pay_typeid_name pay_pay_typeid_name,
                         c.service_amount pay_service_amount,c.service_month_amount pay_service_amount_month,
                         c.book_amount pay_book_amount,c.sale_man sale_man1,c.kf_man kf_man1,
-                        a.acc_uid_name,f.member_name sale_man,e.member_name kf_man,
+                        a.acc_uid_name,f.member_name sale_man,e.member_name kf_man,a.remark customer_remark,
                         DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,
                                 DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
                                 DATE_ADD(c.acc_book_end, INTERVAL a.fee MONTH) next_pay_acc_book_end,
@@ -1512,12 +1793,12 @@ or
                                     wait_pay_amount<>0.00
                                      
                                      """+search_sql+"""
-                            order by """+order_int+""" desc
+                            order by """+order_int+"""
                             limit %s,%s
                 """, startpage, pre_page)
 
             else:
-                if department_name=='销售部' and '250' not in role_list :
+                if department_name=='销售部' and '250' not in role_list or '302' in role_list :
                     ssql='''
                          (select count(*) from t_customer_payment_assist a
                             INNER JOIN(
@@ -1549,6 +1830,7 @@ or
                     from t_customer_payment_assist ii where i.customer_id=ii.customer_id)
                                         ) )
                                         and TIMESTAMPDIFF(MONTH,c.acc_end, DATE_FORMAT(now(), '%%Y-%%m-%%d'))>=1
+                                        and a.id not in (select customer_id from t_customer_payment_assist where customer_id=a.id  and is_bad_debts=1 )
                                         )ff,
                       (select count(*)
                          FROM  t_customer a
@@ -1562,6 +1844,7 @@ or
                                 ) b ON c.customer_id = b.customer_id AND
                                         b.max_id = c.id where TIMESTAMPDIFF(MONTH,c.acc_end, DATE_FORMAT(now(), '%%Y-%%m-%%d'))<=0 and  wait_pay_amount<>0.00
                                          and a.id not in ( select customer_id from t_customer_payment_assist)
+
                                         )fff
 
 
@@ -1660,7 +1943,7 @@ or
                 startpage = (page - 1) * pre_page
                 customers = self.db_customer.query("""
                         SELECT d.*,d.sale_id assist_sale_id,d.id assist_id, DATE_ADD(c.acc_end, INTERVAL 1 MONTH) next_pay_acc_start , a.acc_uid_name a_acc_uid_name ,
-                            DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,
+                            DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,a.remark customer_remark,
                              if(d.sale_end_at,datediff(DATE_FORMAT(d.sale_end_at, '%%Y-%%m-%%d'),DATE_FORMAT(d.distribute_at,'%%Y-%%m-%%d')),
                              datediff(DATE_FORMAT(now(), '%%Y-%%m-%%d'),DATE_FORMAT(d.distribute_at,'%%Y-%%m-%%d'))) genjin_day,
                             DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
@@ -1692,11 +1975,11 @@ or
                                                                                 b.max_id = c.id
                                                                                
                                                                         """ + sql +search_sql+ """
-                                                                                        order by """+order_int+""" desc
+                                                                                        order by """+order_int+"""
                                                                                                 limit %s,%s
                                                                                     """, startpage, pre_page)
             t_user_sales=self.db.query('''
-                select * from t_user where department_name='销售部'
+                select * from t_user where department_name='销售部' or find_in_set('302',role_list) 
             ''')
             acc_uid_names=self.db_customer.query('''
             select a.acc_uid_name FROM  t_customer a
@@ -1745,6 +2028,7 @@ or
                 sale_mans=sale_mans,
                 count=count,
                 params=params,
+                show_sb=self.show_sb,
                 t_user_sales=t_user_sales,
                 acc_uid_names=acc_uid_names,
                 kf_mans=kf_mans,
@@ -1766,8 +2050,8 @@ or
             other_tag=self.get_argument('other_tag','')
             page = int(self.get_argument("page", 1))
             pre_page = 20
-            ssql=''
-            sql_count=''
+            sql=' and (d.sale_id=%s or a.acc_uid=%s )'%(uid,uid)
+            sql_count=' and (sale_id=%s or acc_uid=%s) '%(uid,uid)
             if company_sql:
                 search_sql+=' and a.company like "%%'+company_sql+'%%" '
             if kf_kuaiji:
@@ -1788,16 +2072,16 @@ or
                 'bad_debts':bad_debts,
                 'other_tag':other_tag
             }
-            if department_name=='销售部' and '250' not in role_list or '285' not in role_list and '286' not in role_list:
-                sql=' and (d.sale_id=%s or a.acc_uid=%s )'%(uid,uid)
-                sql_count=' and (sale_id=%s or acc_uid=%s) '%(uid,uid)
+            if  '250'  in role_list or '285'  in role_list or '286'  in role_list:
+                sql=''
+                sql_count=''
 
             if bad_debts=='1':
-                sql+=' and  d.bad_debts_sale_checked_at is null and d.bad_debts_sale_checked_status=0 '
+                sql+=' and  d.bad_debts_sale_checked_at is null and (d.bad_debts_sale_checked_status=0 or d.bad_debts_kj_reject_at is not null) '
             elif bad_debts=='2':
-                sql+=' and d.bad_debts_sale_checked_status=1 and d.bad_debts_kj_uid is null '
+                sql+=' and d.bad_debts_sale_checked_status=1 and d.bad_debts_kj_at is null '
             elif bad_debts=='3':
-                sql+=' and d.bad_debts_sale_checked_status=1 and d.bad_debts_kj_uid is not null and d.bad_debts_caiwu_checked_at is null '
+                sql+=' and d.bad_debts_sale_checked_status=1 and d.bad_debts_kj_at is not null and d.bad_debts_caiwu_checked_at is null '
             elif bad_debts=='4':
                 sql+=' and d.bad_debts_caiwu_checked_at is not null and d.bad_debts_caiwu_checked_status=1 '
             elif bad_debts=='5':
@@ -1812,15 +2096,15 @@ or
                             ) a,
                                  (select count(*)
                                 FROM  t_customer_payment_assist
-                               where is_bad_debts=1 and  bad_debts_sale_checked_at is null and bad_debts_sale_checked_status=0
+                               where is_bad_debts=1 and  bad_debts_sale_checked_at is null and (bad_debts_sale_checked_status=0  or bad_debts_kj_reject_at is not null)
                             """+sql_count+""") b,
                                 (select count(*)
                                 FROM  t_customer_payment_assist
-                               where is_bad_debts=1 and bad_debts_sale_checked_status=1 and bad_debts_kj_uid is null
+                               where is_bad_debts=1 and bad_debts_sale_checked_status=1 and bad_debts_kj_at is null 
                             """+sql_count+""") c,
                                 (select count(*)
                                 FROM  t_customer_payment_assist
-                               where is_bad_debts=1 and bad_debts_sale_checked_status=1 and bad_debts_kj_uid is not null and bad_debts_caiwu_checked_at is null
+                               where is_bad_debts=1 and bad_debts_sale_checked_status=1 and bad_debts_kj_at is not null and bad_debts_caiwu_checked_at is null
                             """+sql_count+""") d,
                                 (select count(*)
                                 FROM  t_customer_payment_assist
@@ -2329,6 +2613,13 @@ or
             pfi_confirm_state = self.get_argument("pfi_confirm_state", 0)
             pfi_confirm_remark= self.get_argument("pfi_confirm_remark","")
             wait_pay_amount = self.get_argument("wait_pay_amount",0)
+            fee=self.get_argument('fee','')
+            pay_typeid=self.get_argument('pay_typeid','')
+            pay_typeid_name=self.get_argument('pay_typeid_name','')
+            service_amount=self.get_argument('service_amount','0')
+            service_amount_month=self.get_argument('service_amount_month','0')
+            book_amount=self.get_argument('book_amount','0')
+            is_review = self.get_argument("is_review","")
             result = 0
 
             if pay_id1:
@@ -2345,20 +2636,25 @@ or
                 if acc_book_end:
                     acc_book_end = acc_book_end + "-01"
                     # acc_book_end=' acc_book_end="%s",'%acc_book_end
+                update_not_review_sql =""
+                if  not is_review:
+                    update_not_review_sql = " ,fee=%s,pay_typeid=%s,pay_typeid_name='%s', service_amount=%s,service_month_amount=%s,book_amount=%s "%(
+                        fee,pay_typeid,pay_typeid_name,
+                                         service_amount,service_amount_month,book_amount,
+                    )
 
 
 
                 self.db_customer.execute("""
                 update t_customer_payment set acc_end=%s,
-               acc_book_end=%s,
+                  acc_book_end=%s,
 
                updated_at=%s,pfi_confirm_uid=%s,pfi_confirm_uid_name=%s,
                pfi_confirm_at=%s,pfi_confirm_remark=%s,pfi_confirm_state=%s
-               ,pb_remark=%s,al_remark=%s,wait_pay_amount=%s where id=%s
+               ,pb_remark=%s,al_remark=%s,wait_pay_amount=%s """+update_not_review_sql+""" where id=%s
                 """, acc_end, acc_book_end, dt, uid, uid_name, dt,
                                          pfi_confirm_remark, pfi_confirm_state,
-                                         pb_remark, al_remark, wait_pay_amount,
-                                         pay_id1)
+                                         pb_remark, al_remark, wait_pay_amount,pay_id1)
             elif pay_id2:
                 if not acc_end:
                     acc_end = None
@@ -2493,13 +2789,20 @@ or
             service_amount_month=self.get_argument('service_amount_month','')
             book_amount=self.get_argument('book_amount','')
             fee=self.get_argument('fee','')
+            tag_parent_id=self.get_argument('tag_parent_id','')
+            tag_parent_name=self.get_argument('tag_parent_name','')
+            tag_id=self.get_argument('tag_id','')
+            tag_name=self.get_argument('tag_name','')
+            is_building=self.get_argument('is_building','0')
+            is_clearly=self.get_argument('is_clearly','0')
+            is_year=self.get_argument('is_year','0')
+            adjusted_option=self.get_argument('adjusted_option','')
             # print service_amount,service_amount_month,book_amount
             promo_id =0,
             promo_id_name =""
             if promo_id_str and promo_id_str!="0":
                 promo_id = promo_id_str.split("|")[0]
                 promo_id_name = promo_id_str.split("|")[1]
-
             self.db_customer.execute(
                             """
                         update  `t_customer`
@@ -2508,14 +2811,30 @@ or
                                 `updated_at`=%s,
                                promo_id=%s,promo_id_name=%s,
                                 service_amount_month=%s,service_amount=%s,book_amount=%s,paytype_id=%s,paytype_id_name=%s,fee=%s
+                                ,tag_id=%s,tag_id_name=%s,
+                tag_parent_id=%s,tag_parent_id_name=%s,is_building=%s,is_clearly=%s,is_year=%s
                                 where id=%s and guid=%s;
 
                         """,is_general,customer_type,customer_type_name,dt
-                        ,promo_id,promo_id_name,service_amount_month,service_amount,book_amount,pay_type_id,pay_typeid_name,fee,customer_id,guid)
-            self.db_customer.execute('''
-                update t_customer_payment set pay_typeid=%s,pay_typeid_name=%s,
-                service_month_amount=%s,service_amount=%s,book_amount=%s where customer_id=%s
-            ''',pay_type_id,pay_typeid_name,service_amount_month,service_amount,book_amount,customer_id)
+                        ,promo_id,promo_id_name,service_amount_month,service_amount,book_amount,pay_type_id,pay_typeid_name,fee,
+                        tag_id,tag_name,tag_parent_id,tag_parent_name,is_building,is_clearly,is_year,
+                        customer_id,guid)
+            t_customer_other_data=self.db_customer.get('''
+            select * from t_customer_other_data where customer_id=%s
+            ''',customer_id)
+            if t_customer_other_data:
+                self.db_customer.execute('''
+                    update t_customer_other_data set adjusted_option=%s where customer_id=%s
+                ''',adjusted_option,customer_id)
+            else:
+                self.db_customer.execute('''
+                    insert into t_customer_other_data(adjusted_option,customer_id,update_at)
+                    values(%s,%s,%s)
+                ''',adjusted_option,customer_id,dt)
+            # self.db_customer.execute('''
+            #     update t_customer_payment set pay_typeid=%s,pay_typeid_name=%s,
+            #     service_month_amount=%s,service_amount=%s,book_amount=%s where customer_id=%s
+            # ''',pay_type_id,pay_typeid_name,service_amount_month,service_amount,book_amount,customer_id)
         elif tag == "delete_payment":
             payment_id = self.get_argument("payment_id")
             if payment_id:
@@ -2613,7 +2932,9 @@ or
                     where id=%s
                     ''',is_check,check_remark,dt,uid_name,uid,assist_id)
             elif step=='6':
+
                 if assist_ids_and_sales:
+                    print(assist_ids_and_sales)
                     t_remind1=self.db.get('''
                                 select * from t_remind where uid=%s
                             ''',sale_id)
@@ -2621,9 +2942,11 @@ or
                         t_remind=self.db.get('''
                                 select * from t_remind where uid=%s
                             ''',item.split('|')[1])
-
+                      
                         self.db_customer.execute('''
-                        update t_customer_payment_assist set sale_name=%s,sale_id=%s,distribute_at=%s,is_manage=1,jd_at=null where id=%s
+                        update t_customer_payment_assist set sale_name=%s,sale_id=%s,distribute_at=%s,summary=null,
+                        status=0,sale_end_at=null,is_check=0,check_remark=null,check_at=null,check_name=null,
+                        check_id=null,is_manage=1,jd_at=null where id=%s
                         ''',sale_name,sale_id,dt,item.split('|')[0])
                         if t_remind:
                             self.db.execute('''
@@ -2690,16 +3013,24 @@ or
             assist_id=self.get_argument('assist_id')
             kj_option=self.get_argument('kj_option','')
             customer_id=self.get_argument('customer_id','')
+            kj_reject=self.get_argument('kj_reject','')
             if step=='1':
                 self.db_customer.execute('''
                 update  t_customer_payment_assist set  bad_debts_sale_checked_name=%s,bad_debts_sale_checked_uid=%s,
                 bad_debts_sale_checked_at=%s,bad_debts_sale_checked_status=%s where  id=%s
             ''',uid_name,uid,dt,check_status,assist_id)
             elif step=='2':
+                sql=''
+                if kj_reject:
+                    sql+=',bad_debts_sale_checked_status=0,bad_debts_sale_checked_at=NULL,bad_debts_kj_reject="%s",bad_debts_kj_reject_reason="%s",bad_debts_kj_reject_at="%s" '%(kj_reject,kj_option,dt)
+                else:
+                    sql+=''' ,bad_debts_kj_at="%s",bad_debts_kj_option='%s' '''%(dt,kj_option)
                 self.db_customer.execute('''
-                update  t_customer_payment_assist set  bad_debts_kj_option=%s,bad_debts_kj_name=%s,
-                bad_debts_kj_uid=%s,bad_debts_kj_at=%s where  id=%s
-            ''',kj_option,uid_name,uid,dt,assist_id)
+                update  t_customer_payment_assist set  bad_debts_kj_name="%s",
+                bad_debts_kj_uid=%s '''+sql+''' where  id=%s
+            ''',uid_name,uid,assist_id)
+
+
             elif step=='3':
                 t_type=self.db_customer.get('''
                 select * from t_type where tag='客户类型' and name='坏账' and is_show=1

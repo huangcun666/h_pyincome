@@ -85,7 +85,7 @@
                     <tr>
                         <td>{{item.ca}}</td>
                         <td>{{item.ssim}}</td>
-
+                        {%if count.every_sum%}
                         {%for t in count.every_sum.split(',')%}
                         <td>
                             {%set sum=float(0)%}
@@ -98,6 +98,7 @@
                             {%end%}
                             {%if sum!=0.0%}{{sum}}{%end%}
                         </td>
+                        {%end%}
                         {%end%}
                     </tr>
                     {%end%}
@@ -135,7 +136,7 @@
     _xsrf = getCookie("_xsrf");
     $(function () {
 
-            $("#m_statis").click()
+            
         $("#start").datetimepicker({
             minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
             language: 'zh-CN', initialDate: new Date()

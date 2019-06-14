@@ -4,7 +4,6 @@
         font-size:100%;
     }
     </style>
-
       <ol class="breadcrumb">
         <li class="breadcrumb-item g1">
          主面板
@@ -103,7 +102,8 @@
        {
          '_xsrf':_xsrf,
          'all_is_check':all_is_check,
-         "project_id":{{t_project_id}}
+         "project_id":'{{t_project_id}}',
+         'customer_id':'{%if t_customer%}{{t_customer.id}}{%end%}'
        },function () { 
          location.reload()
         }
@@ -117,7 +117,9 @@
        "/project?tag=check_note",
        {
          '_xsrf':_xsrf,
-         "check_id_pass":check_id
+         "check_id_pass":check_id,
+         "project_id":'{{t_project_id}}',
+         'customer_id':'{%if t_customer%}{{t_customer.id}}{%end%}'
        },function () { 
          location.reload()
         }
@@ -132,7 +134,9 @@
        "/project?tag=check_note",
        {
          '_xsrf':_xsrf,
-         "check_id_bouhui":check_id
+         "check_id_bouhui":check_id,
+         "project_id":'{{t_project_id}}',
+         'customer_id':'{%if t_customer%}{{t_customer.id}}{%end%}'
        },function () { 
          location.reload()
         }

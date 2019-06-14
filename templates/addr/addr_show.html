@@ -291,7 +291,16 @@ background-color: #007bff;
   <ul>
     <li>
       <div class="fayet">公司名称</div>
-      <div class="fayet3">{{t_addr_manager.company}}
+      <div class="fayet3">
+      {%if t_customer%}
+      <a href="/customer?tag=show&id={{t_customer.id}}&guid={{t_customer.guid}}&to_tag=finance_tab" target="_blank">
+      {{t_addr_manager.company}}</a>
+      {%else%}
+      
+      {{t_addr_manager.company}}
+      {%end%}
+
+
       {%if role=="7" or role=="8"%}
         <a href="javascript:void(0)" class="a_modify" req_id="{{t_addr_manager.req_id}}" addr_id="{{t_addr_manager.id}}">
         <img src="/static/ico/web_icon_035.png" height="20"/>修改

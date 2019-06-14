@@ -9,7 +9,14 @@
 <div class="widget ">
 <div class="widget-header">
 <i class="icon-user"></i>
-<h3>{{name}}的客户 <a class="btn btn-primary btn-sm  customer_new "  href="customer?tag=add" >新建客户</a> </h3>
+<h3>信用异常代码客户 
+
+<a class="btn {%if not mmtag%}btn-primary {%end%} btn-sm  customer_new  "  href="/customer?tag=customer_list_uid" >采集对比异常列表</a> 
+<a class="btn {%if  mmtag=="1"%}btn-primary {%end%} btn-sm  customer_new  "  href="/customer?tag=customer_list_uid&mmtag=1" >无社会信用代码</a> 
+<a class="btn {%if  mmtag=="2"%}btn-primary {%end%} btn-sm  customer_new  "  href="/customer?tag=customer_list_uid&mmtag=2" >社会信用代码非18位</a> 
+<a class="btn {%if  mmtag=="2"%}btn-primary {%end%} btn-sm  customer_new  "  href="/customer?tag=customer_list_uid&mmtag=3" >社会信用代码重复</a> 
+<a class="btn {%if  mmtag=="2"%}btn-primary {%end%} btn-sm  customer_new  "  href="/customer?tag=customer_list_uid&mmtag=5" >公司名称重复</a> 
+</h3>
 </div> <!-- /widget-header -->
 <div class="widget-content">
 <div class="tab-content">
@@ -32,7 +39,7 @@
 
     
   <select name="tyctype">
-     <option value="1" {%if tyctype=="0"%}selected{%end%}>请选择状态类型</option>
+     <option value="0" {%if tyctype=="0"%}selected{%end%}>请选择状态类型</option>
         <option value="1" {%if tyctype=="1"%}selected{%end%}>已采集</option>
         <option value="3" {%if tyctype=="3"%}selected{%end%}>公司名不一致, 可能异常</option>
 
@@ -40,8 +47,7 @@
         <option value="6" {%if tyctype=="6"%}selected{%end%}>已二次核名称可能不一致</option>
         <option value="7" {%if tyctype=="7"%}selected{%end%}>已二次核名称失败,等待重新核对</option>
         <option value="8" {%if tyctype=="8"%}selected{%end%}> 天眼差没有代码</option>
-
-
+    <option value="9" {%if tyctype=="9"%}selected{%end%}> 人工标记代码正确</option>
   </select>
 
 
@@ -50,7 +56,7 @@
   {%if my%}
   <input type="hidden" value="{{my}}" name="my"/>
 {%end%}
-
+ <input type="hidden" value="{{mmtag}}" name="mmtag"/>
 </form>
 
 {%if keyword%}
@@ -61,9 +67,35 @@
 
 {%end%}
 
+{%if mmtag=="3"%}
+<table class="table">
+<tr>
+    <th>信用代码</th>    <th>重复数量</th>
+</tr>
+{%for item in t_customer_some_group%}
+    <tr>
+        <td><a href ="?tag=customer_list_uid&mmtag=4&show_tag={{item.company_reguid}}" target="_blank">{{item.company_reguid}}</a></td>   <td> {{item.count}}</td>
+    </tr>
 
+{%end%}
+</table>
+{%end%}
 
-                        {%if customers%}
+{%if mmtag=="5"%}
+<table class="table">
+<tr>
+    <th>信用代码</th>    <th>重复数量</th>
+</tr>
+{%for item in t_customer_some_group%}
+    <tr>
+        <td><a href ="?tag=customer_list_uid&mmtag=6&show_tag={{item.company}}" target="_blank">{{item.company}}</a></td>   <td> {{item.count}}</td>
+    </tr>
+
+{%end%}
+</table>
+{%end%}
+
+ {%if customers  and mmtag!="3" and mmtag!="5"%}
                     
               <table class="table" style="margin:5px;">
                      <thead>
@@ -79,7 +111,7 @@
                                       <th>采集社会信用代码</th>
                               
                                 <th style="min-width:100px;">状态</th>
-                                <th></th>
+                             
                                 </tr>
                             </thead>
                 <tbody>
@@ -88,11 +120,29 @@
                     <tr>
                            
                        <td>{{customer.id}}</td>
-                        <td>{{customer.company}}</td>
+                        <td><a  target="_blank" href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}">{{customer.company}}</a>
+                        
+                        
+                             <a href="https://www.tianyancha.com/search?key={{customer.company}}" target="_blank" style="height:16px;line-height:20px;display: inline-block;
+                                           border-radius: 5px;
+                                           background-color: #4db0d2;
+                                           color: #fff;
+                                           width: 40px;
+                                          
+                                           border: 1px solid #439bb9;
+                                     
+                                           text-align: center;">天眼查</a>
+                        </td>
   <td>{{customer.tyc_name}}</td>
 
                               <td>
-                          {{customer.company_reguid}}
+                         <input type="text" onkeyup="this.value=this.value.toUpperCase()" value="{%if customer.company_reguid%}{{customer.company_reguid}}{%end%}" id="company_uid_{{customer.id}}" customer_id="{{customer.id}}" class="company_reguid"/>
+                        <a href='javascript:void(0)' id="btn_company_uid_{{customer.id}}"  customer_id="{{customer.id}}"  class=" btn btn-primary btn_company_uid" style="margin-bottom:9px;">保存</a>
+                          
+                      <button customer_id="{{customer.id}}"  class=" btn_ok btn btn-primary" style="margin-bottom:9px;">标记已处理</button>
+                        <span style="color:green" id="company_uid_msg_{{customer.id}}"></span>
+
+
                         </td>
                         <td>
                           {{customer.company_reguid_new}}
@@ -111,18 +161,20 @@
                             {%elif customer.is_get==6%}
                                 已二次核名称可能不一致
                {%elif customer.is_get==7%}
-                                已二次核名称失败,tyctype重新核对
+                                已二次核名称失败,天眼差重新核对
     {%elif customer.is_get==8%}
                                 天眼差没有代码,
+    {%elif customer.is_get==9%}
+                                人工标记代码正确
+
                             {%else%}
                                     待采集
                           
 
                             {%end%}
-                        
+                    
                         </td>
-                        <td><a class="btn customer_detail btn-sm control"  type='button' href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}">查看</a></td>
-
+                       
                      
                     </tr>
                     {%end%}
@@ -132,27 +184,24 @@
                 </tbody>
               </table>
        
-                    {%else%}
-                        还没有客户哦。
-                               
-                    {%end%}
+          
                     
             
                               <div class="pagination">
                         <ul>
                             {% if pagination.has_prev %}
                             {%if kj%}
-                            <li><a href="/customer?tag={{tag}}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">&laquo; 上页</a></li>
+                            <li><a href="/customer?tag={{tag}}{%if mmtag%}&mmtag={{mmtag}}{%end%}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">&laquo; 上页</a></li>
                             {%else%}
-                            <li><a href="/customer?tag={{tag}}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">&laquo; 上页</a></li> {% end %}
+                            <li><a href="/customer?tag={{tag}}{%if mmtag%}&mmtag={{mmtag}}{%end%}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">&laquo; 上页</a></li> {% end %}
                             {%end%}
                             {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             {%if kj%}
                             <li>
-                                    <a href="/customer?tag={{tag}}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">{{ page }}</a></li>
+                                    <a href="/customer?tag={{tag}}{%if mmtag%}&mmtag={{mmtag}}{%end%}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">{{ page }}</a></li>
                             {%else%}
                             <li> 
-                                <a href="/customer?tag={{tag}}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">{{ page }}</a></li>
+                                <a href="/customer?tag={{tag}}{%if mmtag%}&mmtag={{mmtag}}{%end%}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">{{ page }}</a></li>
                             {%end%}
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
@@ -160,13 +209,15 @@
                             <li><span class="active"><a href="#">....</a></span></li>
                             {% end %} {%end %} {% if pagination.has_next %}
                             {%if kj%}
-                            <li><a href="/customer?tag={{tag}}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/customer?tag={{tag}}{%if mmtag%}&mmtag={{mmtag}}{%end%}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">下页 &raquo;</a></li>
                             {%else%}
-                            <li><a href="/customer?tag={{tag}}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/customer?tag={{tag}}{%if mmtag%}&mmtag={{mmtag}}{%end%}{%if tyctype%}&tyctype={{tyctype}}{%end%}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}">下页 &raquo;</a></li>
                             {%end%}
                             {% end %}
                         </ul>
-                    </div>  
+                    </div>         
+                               
+                    {%end%}
 </fieldset>
 <div id="a_add_trans_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-header">
@@ -227,6 +278,45 @@ $(function () {
             $("#all_customer").attr('class',"active")
     {%end%}
 
+
+    $(".btn_company_uid").on("click",function(){
+  
+        customer_id = $(this).attr('customer_id')
+        company_uid = $("#company_uid_"+customer_id).val()
+
+
+       
+     $.post(
+            'customer?tag=modify_company_uid',
+            {
+                "_xsrf":_xsrf,
+                "customer_id":customer_id,
+                     "company_uid":company_uid,
+            },function (result) { 
+                 $("#company_uid_msg_"+customer_id).text(result)
+               
+             }
+        )  
+
+
+    })
+
+    $(".btn_ok").on("click",function(){
+         customer_id = $(this).attr('customer_id')
+
+        $.post(
+            'customer?tag=set_ok9',
+            {
+                "_xsrf":_xsrf,
+                "customer_id":customer_id
+            },function (result) { 
+                location.reload()
+             }
+        )  
+         
+
+
+    })
     $('#submit_check').on('click',function (param) { 
         var id_array=new Array();  
         $('input[id="check"]:checked').each(function(){  
