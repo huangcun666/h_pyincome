@@ -41,7 +41,7 @@
 
 <a href="/project?tag=projects_state&team_id=205&department_id=1&from_tag_where=1" class="btn btn-sm {%if params["department_id"]=="1"%}btn-primary {%else%} btn-default {%end%}">会计部</a>
 
-<a href="/project?tag=projects_state&department_id=0&from_tag_where=1"  class="btn btn-sm {%if params["department_id"]=="0"%}btn-primary  {%else%} btn-default{%end%}">工商部</a>
+<a href="/project?tag=projects_state&department_id=0"  class="btn btn-sm {%if params["department_id"]=="0"%}btn-primary  {%else%} btn-default{%end%}">工商部</a>
 
 
 
@@ -199,6 +199,36 @@
     </a>
 
 
+    <a class="btn btn-light  nav_padding   {%if  ntag=="dis_banjie"%}active{%end%}" 
+    href="/project?tag=projects_state&&ntag=dis_banjie{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
+    {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
+    {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
+    {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
+    {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
+    {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
+    {%if params["end"]%}&end={{params["end"]}}{%end%}
+    {%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}
+    {%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}
+    {%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}
+    {%if params["start"]%}&start={{params["start"]}}{%end%}
+    {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}" style="font-size:13px;">
+    注册未办结<span class="badge badge-danger">{{dis_banjie_count.count}}</span></a>
+
+    <a class="btn btn-light  nav_padding   {%if  ntag=="is_banjie"%}active{%end%}" 
+    href="/project?tag=projects_state&&ntag=is_banjie{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}
+    {%if params["sales"]%}&sales={{params["sales"]}}{%end%}
+    {%if params["cq"]%}&cq={{params["cq"]}}{%end%}
+    {%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}
+    {%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}
+    {%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}
+    {%if params["end"]%}&end={{params["end"]}}{%end%}
+    {%if params["from_tag_where"]%}&from_tag_where={{params["from_tag_where"]}}
+    {%if params["team_id"]%}&team_id={{params["team_id"]}}{%end%}
+    {%if params["department_id"]%}&department_id={{params["department_id"]}}{%end%}{%end%}
+    {%if params["start"]%}&start={{params["start"]}}{%end%}
+    {%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}
+    {%if params["btype_id"]%}&btype_id={{params["btype_id"]}}{%end%}" style="font-size:13px;">注册已办结
+    <span class="badge badge-danger">{{is_banjie_count.count}}</span></a>
 
 </div>
 
@@ -414,11 +444,15 @@
    
                    
 
-
+                                {%if ntag=="not_transition"%}
+不流转
+                                {%else%}
                             {%if item.wait_set_state==1%}
                                      <font color='green'>请设置跟单员</font>
                             {%else%}
                                       <font color='red'>待客户到款确认,可设置跟单</font>
+                             {%end%}
+
                              {%end%}
 
 

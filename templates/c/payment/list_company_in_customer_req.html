@@ -42,9 +42,13 @@ margin-right:auto;
     <li {%if pay_project_id==0%} class="active" {%end%}>
         <a href="/payment?tag=list_company_in_customer&pay_project_id=0" id="customer_tab">待处理</a>
     </li>
+    <li>
+        <a href="/payment?tag=list_company_in_customer&pay_project_id=0&special=1" id="tab_confirm">待处理(注销-解约)</a>
+    </li>
     <li {%if pay_project_id> 0 and state==0%} class="active" {%end%}>
         <a href="/payment?tag=list_company_in_customer&pay_project_id=1" id="tab_confirm">已处理</a>
     </li>
+ 
 
     <li {%if pay_project_id> 0 and state==2 %} class="active" {%end%}>
         <a href="/payment?tag=list_company_in_customer_req&pay_project_id=1&state=2&from_customer=1" id="tab_confirm">已审核</a>
@@ -203,7 +207,12 @@ margin-right:auto;
 
 
 
-             <td>{%if item.al_remark%}{{item.al_remark}}{%end%}</td>
+             <td>
+                    <a href="/project?tag=show&guid={{item.guid}}&id={{item.project_id}}&from_mod=payment" target="_blank"> 
+                {%if item.al_remark%}{{item.al_remark}}{%end%}
+            
+            </a>
+            </td>
   <td>{%if item.pb_remark%}{{item.pb_remark}}{%end%}</td>
 
 

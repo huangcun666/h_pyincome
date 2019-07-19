@@ -154,23 +154,34 @@ class StatisHandler(BaseHandler):
             step=self.get_argument('step','')
             type=self.get_argument('type','')
             date_type=self.get_argument('date_type','')
+            busniess_name=self.get_argument('busniess_name','')
             page = int(self.get_argument("page", 1))
             pre_page=20
             params={
                 'step':step,
                 'type':type,
-                'date_type':date_type
+                'date_type':date_type,
+                'busniess_name':busniess_name
             }
             sql=''
+            busniess_sql=''
             if type:
                 sql=' where  service_name="%s" '%type
+            if busniess_name:
+                busniess_sql=' where busniess_from_id_name="%s" '%busniess_name
+                if type:
+                    sql+=' and busniess_from_id_name="%s" '%busniess_name
+                else:
+                    sql+=' where busniess_from_id_name="%s" '%busniess_name
             t_projects_type=self.db.query('''
                 select income_name from t_projects_type where income_category='业务类型'
              ''')
             t_account_names=self.db.query('''
                 select uid_name,sum(all_money) ta,sum(all_count) ac from t_account_project_detail '''+sql+''' group by uid_name
             ''')
-
+            t_projects_type_busniess=self.db.query('''
+            select income_name from t_projects_type where income_category='业务来源' order by order_int desc
+            ''')
             if step in ['2','3']:
                 count=self.db.get('''
                     select count(*) count
@@ -188,9 +199,10 @@ class StatisHandler(BaseHandler):
                     dd=" DATE_FORMAT(created_at,'%%Y-%%m') "
                 elif date_type=='day':
                     dd=" DATE_FORMAT(created_at,'%%Y-%%m-%%d') "
+           
                 count=self.db.get('''
                     select count(*) count
-                    from  (select count(*) from t_account_project_detail  group by '''+dd+''' )  count
+                    from  (select count(*) from t_account_project_detail '''+busniess_sql+''' group by '''+dd+''' )  count
                 ''')
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page-1) * pre_page
@@ -199,9 +211,10 @@ class StatisHandler(BaseHandler):
                      sum(all_moneys) am,sum(all_counts) ac
                     from(select service_name,sum(all_money) all_moneys,'''+dd+''' ct ,
                     sum(all_count) all_counts
-                    from t_account_project_detail group by '''+dd+''',service_name) bb
+                    from t_account_project_detail '''+busniess_sql+''' group by '''+dd+''',service_name) bb
                     group by ct order by ct desc limit %s,%s
                 ''',startpage,pre_page)
+
             t_account_project_detail_type_all=self.db.query('''
                     select sum(all_money) am,sum(all_count) ac,service_name
                 from t_account_project_detail group by service_name
@@ -214,6 +227,7 @@ class StatisHandler(BaseHandler):
                 'statis/statis_project_detail.html',
                 search_key="",
                 params=params,
+                t_projects_type_busniess=t_projects_type_busniess,
                 t_account_project_detail_type_all=t_account_project_detail_type_all,
                 t_projects_type=t_projects_type,
                 t_account_names=t_account_names,
@@ -1274,13 +1288,13 @@ class StatisHandler(BaseHandler):
 
             count=self.db.get('''
                 select count(*) count
-                from t_projects_income_title a
+       from t_projects_income_title a
                 inner join t_projects b on a.project_id=b.id
-                inner join t_projects_member c on b.id=c.project_id and c.team_id=34 and c.member_name <>''
-                inner join t_projects_member d on b.id=d.project_id and d.team_id=36 and d.member_name <>''
+                left join 
+                 (select project_id,group_concat(team_name,"|",member_name)  mbs   from t_projects_member where member_id > 0 group by project_id) b
+                 on b.id= b.project_id 
                 inner join t_projects_income e on a.id=e.parent_id and a.project_id=e.project_id
-                where a.fi_confirm_at is not null
-            '''+sql)
+                where a.fi_confirm_at is not null '''+sql)
 
             pagination=Pagination(page,pre_page,count.count,self.request)
             start_page=(page-1)*pre_page
@@ -1294,7 +1308,7 @@ class StatisHandler(BaseHandler):
                 mbs
                 from t_projects_income_title a
                 inner join t_projects b on a.project_id=b.id
-                inner join 
+                left join 
                  (select project_id,group_concat(team_name,"|",member_name)  mbs   from t_projects_member where member_id > 0 group by project_id) b
                  on b.id= b.project_id 
                 inner join t_projects_income e on a.id=e.parent_id and a.project_id=e.project_id

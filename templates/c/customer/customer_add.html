@@ -203,18 +203,30 @@
                                                 <label class="control-label" for="is_general">客户类型
 </label>
 <div class="controls">
-      <div style="border:none;display: inline;">
+      <div style="border:none;display:inline;">
 {%for item in t_type_new_parents%}
 <input  {%if item.order==2%}checked{%end%} type="radio" name="tag_parent_id" value="{{item.order}}" title="{{item.name}}"/>{{item.name}}
 {%end%}
       </div>
-<div id='tag_box' style="border:none;" hidden>
+      <div id='tag_box' style="border:none;display:none;">
+        &nbsp;&nbsp;(
+    {%for item in t_type_new%}
+    {%if item.parent_id==1%}
+    <input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="radio" name="tag_id" value="{{item.order_int}}" title="{{item.name}}" />{{item.name}}
+    {%end%}
+    {%end%}
+      )
+      <span id="msg_tag" style="color:red"></span>
+</div>
+<div id='tag_box1' style="border:none;display: inline;">
     &nbsp;&nbsp;(
 {%for item in t_type_new%}
-<input  type="radio" name="tag_id" value="{{item.order_int}}" title="{{item.name}}" />{%if item.parent_id==1%}{{item.name}}{%end%}
+{%if item.parent_id==2 and item.order_int!=11%}
+<input parent_id="{{item.parent_id}}" {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="radio" name="tag_id" value="{{item.order_int}}" title="{{item.name}}"/>{{item.name}}
+{%end%}
 {%end%}
   )
-  <span id="msg_tag" style="color:red"></span>
+  <span id="msg_tag1" style="color:red"></span>
 </div>
 
 <input  type="checkbox" name='is_building' value="1" >楼盘
@@ -569,6 +581,8 @@ function intToFloat(val){
             tag_parent_name=$('input[name=tag_parent_id]:checked').attr('title')
             tag_id=$("input[name=tag_id]:checked").val()
             tag_name=$("input[name=tag_id]:checked").attr('title')
+            tag_id_parent=$("input[name=tag_id]:checked").attr('parent_id')
+
 
             $("input[name=customer_type]").each(function(){
                  if (this.checked) {
@@ -590,9 +604,12 @@ function intToFloat(val){
             var is_clearly=$('input[name=is_clearly]:checked').val()
             var is_year=$('input[name=is_year]:checked').val()
             if(tag_parent_id=='2'){
-            tag_id=$("input[name=tag_id][value=11]").val()
-            tag_name=$("input[name=tag_id][value=11]").attr('title')
-            }
+                if(tag_id!='12' && tag_id_parent!='2'){
+                    tag_id='11'
+                tag_name='非记账'
+                }
+                
+                }
 
             $("#msg_company").text("")
             $("#msg_is_general").text("")
@@ -717,11 +734,16 @@ $('body').on('click','#more_projects',function () {
  })
  $('input[name=tag_parent_id]').on('change',function () {
     if($(this).val()=='1'){
-     $("#tag_box").css('display','inline');
       $("#tag_box").show()
+      $("#tag_box1").hide()
+      $("#tag_box").css('display','inline')
+      if($('input[name=tag_id]:checked').val()=='12' || $('input[name=tag_id]:checked').val()=='13'){
+        $('input[name=tag_id]').prop('checked',false)
+      }
     }else if($(this).val()=='2'){
-        $("#tag_box").css('display','none');
       $("#tag_box").hide()
+      $("#tag_box1").css('display','inline')
+      $("#tag_box1").show()
     }
    })
 

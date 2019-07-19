@@ -14,17 +14,18 @@
 <ul class="list-group">
 {%if not t_projects.rec_by_uid_at%}
 <li class="list-group-item" style="background-color:#D6EAF8;"><h4>当前待({{t_projects.rec_by}})确认</h4>
-
+{% if t_projects.rec_by==name %}
 <button class="btn btn-primary btn-sm confirm_btn"  rec_by_uid_at="{%if t_projects.rec_by_uid_at%}{{t_projects.rec_by_uid_at}}{%end%}">
   确认已收到</button>
+  {%end%}
 </li>
 {%else%}
-<li class="list-group-item" ><h4>确认状态:</h4><span class="alert alert-info">({{t_projects.rec_by}})已确认 {{t_projects.rec_by_uid_at}} {{t_projects.uid_name}}</span></li>
+<li class="list-group-item" ><h4>确认状态:</h4><span class="alert alert-info">({{t_projects.rec_by}})已确认 {{t_projects.rec_by_uid_at}} {%if t_projects.uid_name%}{{t_projects.uid_name}}{%end%}</span></li>
 {%end%}
-  <li class="list-group-item ">订单编号:{{t_projects.id}}</li>
-  <li class="list-group-item"><h4>发起人:</h4>{{t_projects.uid_name}}</li>
-  <li class="list-group-item"><h4>公司名称:</h4>{{t_projects.customer_company}}</li>
-  <li class="list-group-item"><h4>业务内容:</h4>{{t_projects.project_name}}</li>
+  <li class="list-group-item ">订单编号:{%if t_projects.id%}{{t_projects.id}}{%else%}无{%end%}</li>
+  <li class="list-group-item"><h4>发起人:</h4>{{t_projects.post_by_name}}</li>
+  <li class="list-group-item"><h4>公司名称:</h4>{%if t_projects.customer_company%}{{t_projects.customer_company}}{%else%}{{t_projects.company_name}}{%end%}</li>
+  <li class="list-group-item"><h4>业务内容:</h4>{%if t_projects.project_name%}{{t_projects.project_name}}{%end%}</li>
   <li class="list-group-item"><h4>交接明细:</h4>{{t_projects.type_names}}</li>
   <li class="list-group-item"><h4>其他资料:</h4>{{t_projects.remark}}</li>
   <li class="list-group-item"><h4>资料用途:</h4>{%if t_projects.use_type%}{{t_projects.use_type}}{%end%}</li>
@@ -35,12 +36,14 @@
 {%end%}</li>
 {%if not t_projects.rec_by_uid_at%}
 <li class="list-group-item" style="background-color:#D6EAF8;"><h4>当前待({{t_projects.rec_by}})确认</h4>
+  {% if t_projects.rec_by==name %}
 
 <button class="btn btn-primary btn-sm confirm_btn" rec_by_uid_at="{%if t_projects.rec_by_uid_at%}{{t_projects.rec_by_uid_at}}{%end%}">
   确认已收到</button>
+  {%end%}
 </li>
 {%else%}
-<li class="list-group-item"><h4>确认状态:</h4><span class="alert alert-info">已确认 {{t_projects.rec_by_uid_at}} {{t_projects.uid_name}}</span></li>
+<li class="list-group-item"><h4>确认状态:</h4><span class="alert alert-info">已确认 {{t_projects.rec_by_uid_at}} {%if t_projects.uid_name%}{{t_projects.uid_name}}{%end%}</span></li>
 {%end%}
 
 </ul>

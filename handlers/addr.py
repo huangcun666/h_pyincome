@@ -53,7 +53,9 @@ class AddrHandler(BaseHandler):
        
 
             if company:
-                if add_ctype_sql or add_ctype_sql:
+                if ctype=='biangeng' or ctype=='zhuxiao':
+                    company_sql=" and "
+                elif add_ctype_sql or add_ctype_sql:
                     company_sql = " and "
                 else:
                     company_sql = " where "
@@ -61,6 +63,8 @@ class AddrHandler(BaseHandler):
                 if cq_uid:
                     company_sql+=' and a.cq_uid=%s '%cq_uid
             if cq_uid and not company:
+                if ctype=='biangeng' or ctype=='zhuxiao':
+                    company_sql=" and "
                 if add_ctype_sql or add_ctype_sql:
                     company_sql = " and "
                 else:
@@ -155,7 +159,6 @@ class AddrHandler(BaseHandler):
                     sql=' and is_new=1 '
                 else:
                     sql=' where is_new=1 '
-
                 count=self.db_company.get('''
                     select count(*) count from t_addr_manager a
                 '''+company_sql +gs_sql+sql+new_sql)
@@ -165,17 +168,20 @@ class AddrHandler(BaseHandler):
                     select * from t_addr_manager a '''+company_sql +gs_sql+sql+new_sql+a_follow_uid_name_sql+''' order by created_at desc limit %s,%s
                 ''',startpage,pre_page)
             else:
+                print('''  select count(*) count from t_addr_manager a ''' + left_sql
+                    + ''' join t_addr_manager_req b on a.id =b.addr_id ''' +
+                    add_ctype_sql + act_id_sql +new_addr_sql+company_sql+gs_sql+a_follow_uid_name_sql)
                 count = self.db_company.get(
                     '''  select count(*) count from t_addr_manager a ''' + left_sql
                     + ''' join t_addr_manager_req b on a.id =b.addr_id ''' +
-                    add_ctype_sql + act_id_sql + company_sql+gs_sql+new_addr_sql+a_follow_uid_name_sql)
+                    add_ctype_sql + act_id_sql +new_addr_sql+company_sql+gs_sql+a_follow_uid_name_sql)
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page-1) * pre_page
                 t_addr_manager = self.db_company.query(
                     '''select a.*,b.req_act_id_name,b.req_now_addr,b.req_remark,created_by,b.created_at bcreated_at
                     from t_addr_manager a ''' + left_sql +
                     ''' join t_addr_manager_req b on a.id =b.addr_id   ''' +
-                    add_ctype_sql + act_id_sql + company_sql +gs_sql+new_addr_sql+a_follow_uid_name_sql+''' order by ''' +
+                    add_ctype_sql + act_id_sql +new_addr_sql+company_sql +gs_sql+a_follow_uid_name_sql+''' order by ''' +
                     order_column + '''  
                     limit %s,%s 
                     ''', startpage, pre_page)

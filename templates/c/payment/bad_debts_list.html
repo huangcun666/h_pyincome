@@ -266,6 +266,7 @@ display: -webkit-box;
     <input type="hidden" name="tag" value="{{tag}}">
     <button type="submit" class="btn">检 索</button>
 </form>
+<div class="alert alert-info" style="font-size: 16px;">总待收金额:{{count.sw}}</div>
 
                                    <fieldset>
                         
@@ -298,7 +299,7 @@ display: -webkit-box;
                                                     
                                                    <td>
    
-                                                       <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
+                                                       <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or item.req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
                                                     </td>
                                              
                                                   
@@ -365,6 +366,12 @@ display: -webkit-box;
                                                     {{item.bad_debts_kj_option[:20]}}...{%else%}{{item.bad_debts_kj_option}}{%end%}{%end%}
                                              </td>
                                                 <td>
+                                                    {%if item.add_business==0  and role=='8' %}
+                                                    <a href="javascript:;" style="width: 60px; height: 24px; color: #4aa8cc;" assist_id="{{item.assist_id}}" customer_id="{{item.customer_id}}" class="btn btn-sm add_business">添加商机</a>
+                                                    {%elif item.add_business==1 and role=='8'%}
+                                                    <a href="javascript:;" style="width: 60px; height: 24px; color: #dc3545;" class="btn btn-sm">已添加</a>
+
+                                                    {%end%}
                                                     {%if (item.acc_uid_name==name or role=='8' ) and not item.bad_debts_kj_at and item.bad_debts_sale_checked_at and item.bad_debts_sale_checked_status==1 %}
                                                     <a href="javascript:void(0);" style="width: 60px; height: 24px; color: #4aa8cc;" assist_id="{{item.assist_id}}" 
                                                     class="btn btn-sm write_option"
@@ -589,6 +596,20 @@ display: -webkit-box;
                 location.reload()
              })
        })
+    $(".add_business").click(function () {
+        if(confirm('确认添加到商机?')){
+            assist_id=$(this).attr('assist_id')
+            customer_id=$(this).attr('customer_id')
+            $.post('payment?tag=add_business',{
+                '_xsrf':_xsrf,
+                'assist_id':assist_id,
+                'customer_id':customer_id
+
+            },function (data) { 
+                location.reload()
+             })
+        } 
+     })
     $("#kj_reject").click(function () { 
         if($(this).attr('checked')){
             $("#kj_option_lab").text('驳回:')

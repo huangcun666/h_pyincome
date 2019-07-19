@@ -14,8 +14,8 @@
 <div class="nav nav-tabs" id="nav-tab" role="tablist">
 <a class="btn btn-light  nav_padding {%if not launch and not params['status']%}active{%end%}" href="/project?tag=projects_transition">资料交接</a>
 
-<a class="btn btn-light  nav_padding {%if params['status']=='0'%}active{%end%}" href="/project?status=0&tag=projects_transition">资料交接(待确认)</a>
-
+<a class="btn btn-light  nav_padding {%if params['is_inner']=='1'%}active{%end%}" href="/project?status=0&tag=projects_transition&is_inner=1">资料交接内部(待确认)</a>
+<a class="btn btn-light  nav_padding {%if params['is_inner']=='0'%}active{%end%}" href="/project?status=0&tag=projects_transition&is_inner=0">资料交接外部</a>
 <a class="btn btn-light  nav_padding {%if launch%}active{%end%}" id="a_add_trans" href="/project?tag=projects_transition&launch=1" >发起交接</a>
 
 
@@ -39,6 +39,9 @@
       </td>
       <td>
         <input type="hidden" name="tag" value="{{tag}}"/>
+        {% if params['is_inner'] %}
+        <input type="hidden" name="is_inner" value="{{params['is_inner']}}"/>
+        {%end%}
         <input type="submit" value="检索" class="btn btn-primary btn-sm">
       </td>
       </tr>
@@ -53,6 +56,8 @@
                      
                             <th width="80">订单编号</th>
                      <th width="100">发起人</th>
+                     <th width="100">签收人</th>
+
                         <th width="180">公司名称</th>
                           <th>交接明细</th>
                           <th width="100">确认状态</th>
@@ -68,14 +73,20 @@
                         <tr >
  
                          <td>
-           
-                        {{item.id}}
+                          {%if item.project_id!=0%}
+                        {{item.project_id}}
+                        {%else%}
+                            无
+                        {%end%}
                          </td>
                                           <td>
                           {{item.post_by_name}}
                             </td>
+                            <td>
+                              {{item.rec_by}}
+                            </td>
                          <td>
-                                  {{item.customer_company}}
+                                  {%if item.customer_company%}{{item.customer_company}}{%elif item.company_name%}{{item.company_name}}{%end%}
                             </td>
    <td>
                          {{item.type_names}}
@@ -124,7 +135,7 @@
          <li class="paginate_button page-item previous " id="dataTable_previous">
          <a href="?tag=projects_transition{%if params['id']%}&id={{params['id']}}{%end%}{%if params['fq_name']%}&
          fq_name={{params['fq_name']}}{%end%}{%if params['company']%}&company={{params['company']}}{%end%}
-         {%if params['status']%}&status={{params['status']}}{%end%}
+         {%if params['status']%}&status={{params['status']}}{%end%}{%if params['is_inner']%}&status={{params['is_inner']}}{%end%}
          &page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
         {% end %}
@@ -133,7 +144,7 @@
          {% if page != pagination.page %}
          <li class="paginate_button page-item "><a href="?tag=projects_transition{%if params['id']%}&id={{params['id']}}{%end%}{%if params['fq_name']%}&
           fq_name={{params['fq_name']}}{%end%}{%if params['company']%}&company={{params['company']}}{%end%}
-          {%if params['status']%}&status={{params['status']}}{%end%}&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+          {%if params['status']%}&status={{params['status']}}{%end%}{%if params['is_inner']%}&status={{params['is_inner']}}{%end%}&page={{page}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -148,7 +159,7 @@
          <li class="paginate_button  page-item next" id="dataTable_next"><a href="/project?tag=projects_transition
           {%if params['id']%}&id={{params['id']}}{%end%}{%if params['fq_name']%}&
           fq_name={{params['fq_name']}}{%end%}{%if params['company']%}&company={{params['company']}}{%end%}
-          {%if params['status']%}&status={{params['status']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+          {%if params['status']%}&status={{params['status']}}{%end%}{%if params['is_inner']%}&status={{params['is_inner']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>

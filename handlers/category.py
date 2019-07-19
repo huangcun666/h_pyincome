@@ -10,8 +10,9 @@ import re
 import hashlib
 from Pagination import Pagination
 from datetime import datetime
+import datetime
 logger = logging.getLogger('boilerplate.' + __name__)
-
+dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 class CategoryHandler(BaseHandler):
     @tornado.web.authenticated
@@ -23,9 +24,19 @@ class CategoryHandler(BaseHandler):
             category_name = self.get_argument('category_name')
             order_int = self.get_argument('order_int',0)
             is_business=self.get_argument('is_business','0')
-
+            assist=self.get_argument('assist','')
             if not category_name:
                 self.write("not category name")
+            elif assist:
+                assist_category=self.db_customer.get(' select id from t_customer_payment_assist_category where category_name=%s and uid=%s',category_name,uid)
+                if assist_category:
+                    return self.write('-1')
+                result = self.db_customer.execute("insert into t_customer_payment_assist_category(category_name,uid,order_int) values(%s,%s,%s)",
+                category_name,uid, order_int)
+                all_categorys=self.db_customer.query('''
+           select * from  t_customer_payment_assist_category  where uid=%s  order by order_int desc,id desc 
+        ''',uid)
+                self.write({'all_categorys':all_categorys,'id':result})
             else:
                 result = self.db.execute("insert into t_projects_category(category_name,uid,order_int,is_business) values(%s,%s,%s,%s)",
                 category_name,uid, order_int,is_business)
@@ -36,27 +47,40 @@ class CategoryHandler(BaseHandler):
 
         elif tag=='update_category':
             numarr=self.get_argument('numarr')
+            assist=self.get_argument('assist','')
             numarr=numarr.split(',')
-            for item in numarr[::3]:
-                self.db.execute('''
-                    update t_projects_category set category_name=%s,order_int=%s where id=%s
-                ''',numarr[numarr.index(item)+1],numarr[numarr.index(item)+2],int(item))
+
+            if assist:
+                for item in numarr[::3]:
+                    self.db_customer.execute('''
+                        update t_customer_payment_assist_category set category_name=%s,order_int=%s where id=%s
+                    ''',numarr[numarr.index(item)+1],numarr[numarr.index(item)+2],int(item))                
+            else:
+                for item in numarr[::3]:
+                    self.db.execute('''
+                        update t_projects_category set category_name=%s,order_int=%s where id=%s
+                    ''',numarr[numarr.index(item)+1],numarr[numarr.index(item)+2],int(item))
 
         elif tag=='delete_category':
             id=self.get_argument('id')
             is_business=self.get_argument('is_business','')
+            assist=self.get_argument('assist','')
 
-            self.db.execute('''
-                    delete from t_projects_category where id=%s
-                ''',id)
-            if is_business:
-                self.db.execute('''
-                delete from business_develop_manage_category where  category_id=%s
-                ''',id)
+            if assist:
+                self.db_customer.execute(' delete from t_customer_payment_assist_category where id=%s ',id)
+                self.db_customer.execute(' delete from t_customer_payment_assist_group where category_id=%s ',id)
             else:
-                self.db.execute(
-                            "update t_projects_member set b_category_id=0 , b_category_id_name=null where member_id=%s and  b_category_id=%s",
-                            uid,id)
+                self.db.execute('''
+                        delete from t_projects_category where id=%s
+                    ''',id)
+                if is_business:
+                    self.db.execute('''
+                    delete from business_develop_manage_category where  category_id=%s
+                    ''',id)
+                else:
+                    self.db.execute(
+                                "update t_projects_member set b_category_id=0 , b_category_id_name=null where member_id=%s and  b_category_id=%s",
+                                uid,id)
 
 
 
@@ -64,25 +88,42 @@ class CategoryHandler(BaseHandler):
         elif tag == "set_project_category":
             category_name = self.get_argument('category_name')
             category_id = self.get_argument("category_id")
-            mid = self.get_argument("mid")
-            project_ids=self.get_argument('project_ids')
- 
-            if not category_id:
-                self.write("not category_id")
-            elif not mid:
-                self.write("not mid ")
+            mid = self.get_argument("mid",'')
+            project_ids=self.get_argument('project_ids','')
+            assist_id=self.get_argument('assist_id','')
+            if assist_id:
+                if category_id=='ungroup':
+                    self.db_customer.execute('''
+                    delete from t_customer_payment_assist_group where assist_id=%s and uid=%s
+                    ''',assist_id,uid)
+                else:
+                    assist_group=self.db_customer.get(' select * from  t_customer_payment_assist_group where assist_id=%s and uid=%s',assist_id,uid) 
+                    if assist_group:
+                        self.db_customer.execute(''' 
+                        update t_customer_payment_assist_group 
+                        set category_id=%s,category_name=%s,created_at=%s 
+                        where assist_id=%s and uid=%s ''',category_id,category_name,dt,assist_id,uid)
+                    else:       
+                        self.db_customer.execute('''
+                    insert into t_customer_payment_assist_group values(%s,%s,%s,%s,0,%s)
+                    ''',assist_id,uid,category_id,category_name,dt)
             else:
-                result = 1
-                for item in project_ids.split(","):
-                    result =self.db.execute(
-                "update t_projects set category_id=%s , category_id_name=%s where id=%s and guid=%s",
-                category_id, category_name, item.split('|')[0],item.split('|')[1])
+                if not category_id:
+                    self.write("not category_id")
+                elif not mid:
+                    self.write("not mid ")
+                else:
+                    result = 1
+                    for item in project_ids.split(","):
+                        result =self.db.execute(
+                    "update t_projects set category_id=%s , category_id_name=%s where id=%s and guid=%s",
+                    category_id, category_name, item.split('|')[0],item.split('|')[1])
 
-                for item in mid.split(","):
-                    result = self.db.execute(
-                        "update t_projects_member set b_category_id=%s , b_category_id_name=%s where mid=%s ",
-                        category_id, category_name, item)
-                self.write(str(result))
+                    for item in mid.split(","):
+                        result = self.db.execute(
+                            "update t_projects_member set b_category_id=%s , b_category_id_name=%s where mid=%s ",
+                            category_id, category_name, item)
+                    self.write(str(result))
 
 
 class InsertCategoryHandler(BaseHandler):

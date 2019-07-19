@@ -6,7 +6,7 @@
 .mexbox {font-size:12px;display: inline-block; line-height: 18px;margin-top:14px;}
 .sj-table ul li.xiaolei {height: 40px;}
 .xiaolei .sj-table-left {height: 40px; line-height: 40px;}
-.xiaolei .sj-table-right {height: 40px; line-height: 40px;}
+.xiaolei .sj-table-right {height: 40px; line-height: 40px;font-family:"黑体";}
 /* .form-group {margin-bottom: 0.5rem;}
 .col-sm-10 {overflow: hidden;}
 .col-sm-10 label {float: left; display: inline-block; width: 31%; margin-right: 5%; line-height: 32px;}
@@ -29,7 +29,7 @@
         <li class="breadcrumb-item g1">商机开发管理
         </li>
         <li class="g1 g1-left">
-            {%if business_develop_manage.uid==int(uid)%}
+            {%if business_develop_manage.uid==int(uid) or  business_develop_manage.uid_name==name%}
                 <a href="javascript:void(0)" id="btn_modify"> 
                     <img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
                     {%end%}
@@ -724,6 +724,9 @@ background-color: #007bff;
             {%elif business_develop_manage.is_invalid_business==1%}    
                                 {{business_develop_manage.assigner_name}}设置为反馈无效商机
             {%end%}
+            {%if  business_develop_manage.jiedan_at%}
+            {%if business_develop_manage.gen_jin_days %}
+            ({{int(business_develop_manage.gen_jin_days)+1}}天{%end%}/{%if business_develop_manage.genjin_count%}{{business_develop_manage.genjin_count}}{%else%}0{%end%}次){%end%}
                             </span>
                         </div>
                     </div>
@@ -770,6 +773,158 @@ background-color: #007bff;
                             </div>
                 </div>
     </div>
+    {%if customers%}
+    <div class="card-columns">
+        <div class="card mb-12">
+                <div class="card-body">
+                        <h6 class="card-title mb-1">坏账</h6>
+                    </div>
+            <hr class="my-0">
+            <div style="padding:5px; margin-left:5px; font-size:18px;">
+
+                <div class="sjgl-table">
+                        <table class="sjgl-table-big">
+                                <thead>
+                                    <tr>
+
+                                    <th style="width:10%;">公司名称</th>
+                                  
+                                    <th style="width:10%;">销售</th>
+                                    <th style="width:10%;">客服</th>
+                         
+                                    <th style="width:10%;">跟进人</th>
+
+                                    <th style="width:10%;">最新收款明细</th>
+                                    <th style="width:10%;">待收明细</th>
+                                    <th style="width:10%;">待收金额</th>
+                               
+                                    <th style="width:10%;">最新动态</th>
+                                    <th style="width:10%;">会计意见</th>
+                                    <th style="width:10%;"></th>
+                                    </tr>
+                                    </thead>
+                                <tbody>
+
+                                    {%for item in customers%}
+                                    <tr>
+                                         
+                                        <td>
+
+                                            <a href="/payment?company_sql={{item.company}}&tag=bad_debts_list" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
+                                         </td>
+                                  
+                                       
+                                        <td  style="font-size:11px;">{%if item.sale_man%}{{item.sale_man}}{%elif item.sale_man1%}{{item.sale_man1}}{%end%}</td>
+                                        <td  style="font-size:11px;">{%if item.kf_man%}{{item.kf_man}}{%elif item.kf_man1%}{{item.kf_man1}}{%end%}</td>
+                                        {%if '250' in role_list or role=='3' %}
+                                        
+                                        <td  style="font-size:11px;">{%if item.sale_name%}{{item.sale_name}}{%if item.tsm>=1 and item.is_check==1 and item.wj_day>14%}<p style="color: red;font-size:smaller;">(上次跟进人)</p>{%end%}{%end%}</td>
+                                 
+                                   
+                                        {% else%}
+                                        <td  style="font-size:11px;">{%if item.sale_name%}{{item.sale_name}}{%end%}</td>
+                                        {%end%}
+                                        <td 
+                                        
+                                        style="word-break: break-all;font-size:11px;width: 180px;" title="{%if item.al_remark%}{{item.al_remark}}{%end%}">
+
+{%if item.al_remark%} {{item.al_remark[:45]}}{%if len(item.al_remark)>45%}...{%end%}{%end%}
+
+
+                                        </td>
+                                        <td style="width: 170px;word-break: break-all;font-size:11px;" title="{%if item.pb_remark%}{{item.pb_remark}}{%end%}">
+                                            
+                                            {%if item.pb_remark%}
+                                            {{item.pb_remark[:45]}}{%if len(item.pb_remark)>45%}...{%end%}
+                                            {%end%}
+                                        </td>
+                                        <td  style="width: 60px;  color: red;">{%if item.wait_pay_amount%}{{item.wait_pay_amount}}{%end%}</td>
+                                    
+                                        <td id='{{item.customer_id}}'  style="width: 150px; " 
+                                        title="{%if item.sale_cuikuan_id  and role!='8' %}{%if department_name=='销售部' and '250' not in role_list and item.sale_last_cuikuan_at%}{%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg}}{%end%}{%else%}{%if item.last_cuikuan_at%}{{item.last_cuikuan_msg}}{%end%}{%end%}{%else%}{%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}{%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}}{%else%}{{item.last_cuikuan_msg}}{%end%}{%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}}{%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}{{item.last_cuikuan_msg}}{%end%}{%end%}">
+                                        {%if item.sale_cuikuan_id and role!='8' %}
+                                        {%if department_name=='销售部' and '250' not in role_list and item.sale_last_cuikuan_at%}
+                                        {%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}{%end%}
+                                        {%else%}
+                                        {%if item.last_cuikuan_at%}{{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}{%end%}
+                                        {%end%}
+                                        {%else%}
+                                 
+                                         {%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+
+                                        {%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}
+                                        {{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                         {%else%}
+                                         {{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
+                                        {%end%}
+                                        {%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}
+                                        {{item.sale_last_cuikuan_msg[:20]}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                        {%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                        {{item.last_cuikuan_msg[:20]}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
+                                         {%end%}
+                                         {%end%}
+                                     </td>
+                                  <td title=" {%if item.bad_debts_kj_reject_at%}会计驳回 {%if item.bad_debts_kj_reject_reason%}理由:{{item.bad_debts_kj_reject_reason}}{%end%}{%elif item.bad_debts_kj_option%}{{item.bad_debts_kj_option}}{%end%}">
+                                         {%if item.bad_debts_kj_reject_at%}
+                                         会计驳回<br>
+                                         {%if item.bad_debts_kj_reject_reason%}
+                                         理由:
+                                         {%if len(item.bad_debts_kj_reject_reason)>20%}
+                                         {{item.bad_debts_kj_reject_reason[:20]}}...{%else%}{{item.bad_debts_kj_reject_reason}}{%end%}
+                                         {%end%}
+                                         {%elif item.bad_debts_kj_option%}
+                                         {%if len(item.bad_debts_kj_option)>20%}
+                                         {{item.bad_debts_kj_option[:20]}}...{%else%}{{item.bad_debts_kj_option}}{%end%}{%end%}
+                                  </td>
+                                     <td>
+
+                                         {%if not item.bad_debts_sale_checked_at  and  item.bad_debts_sale_checked_status==0%}
+                                         待销售部审核
+                                         {%elif item.bad_debts_sale_checked_status==1 and not item.bad_debts_kj_at%}
+                                         待会计填写意见
+                                         {%elif item.bad_debts_sale_checked_status==1 and item.bad_debts_kj_at  and not item.bad_debts_caiwu_checked_at %}
+                                         待财务审核
+                                         {%elif item.bad_debts_caiwu_checked_at and item.bad_debts_caiwu_checked_status==1%}
+                                             通过
+                                         {%elif item.bad_debts_sale_checked_at and item.bad_debts_sale_checked_status==2%}
+                                         销售部驳回
+                                         {%elif  item.bad_debts_caiwu_checked_at and item.bad_debts_caiwu_checked_status==2 %}
+                                         财务驳回
+                                         {%end%}
+                                     </td>
+
+
+                                     
+                                
+
+                                                
+
+                                    </tr>
+                                    <tr style="font-size:11px;">
+
+
+                                    <td colspan="15" style="text-align:right;border-top:1px solid #fff; ">
+                                    会计:{{item.acc_uid_name}}&nbsp;
+                                    {{item.pay_pay_typeid_name}}
+                                    &nbsp; 总费{{item.pay_service_amount}}
+                                    &nbsp; 月费:{{item.pay_service_amount_month}}
+
+                                    &nbsp; 账册费{{item.pay_book_amount}}
+
+                                    </td>
+                                    </tr>
+                                    {%end%}
+
+
+
+                                </tbody>
+                            </table>
+                        </div> 
+                    
+                </div>       
+        </div>
+    </div>
+    {%end%}
         <div class="card-columns">
             <div class="card mb-12">
                 <div class="card-body">
@@ -1513,6 +1668,9 @@ background-color: #007bff;
                                         <label for="company" id="company_lab">公司名称:</label><small class="text-danger" id="company_small" style="font-size:15px;">*</small>
                                     </div>
                                     <div class="col-sm-7" style="margin-left:-17px;">
+                                        <div id="not_company_div" style=" display:none;">
+                                            <input type="checkbox" id="not_company" value="1" {%if business_develop_manage.not_company==1%}checked{%end%}>未成立公司
+                                        </div>
                                             <input value="{{business_develop_manage.company}}" placeholder="公司名称" class="form-control" name="company" id="company" type="text">
                                             <div class="alert alert-danger" id="er_company" style="margin-top:0px;display:none;"></div>
                                         </div>
@@ -2236,7 +2394,8 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
 
      })
 
-     if("{{business_develop_manage.business_from_id}}"=='294'){
+    if("{{business_develop_manage.business_from_id}}"==294){
+    $('input[value="294|推广商机"]').prop('checked',true)    
     $('#customer_name_lab').text('新客户姓名')
     $('#customer_name').attr('placeholder','新客户姓名')
     $('#company_lab').text('新公司名称:')
@@ -2249,32 +2408,36 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
     $('#be_referrer_div').hide()
     $(".feedback_div").hide()
     
- }else if("{{business_develop_manage.business_from_id}}"=='295'){
+ }else if("{{business_develop_manage.business_from_id}}"==295){
+     $('input[value="295|反馈商机"]').prop('checked',true)
 
     feedback_type_id="{{business_develop_manage.feedback_type_id}}"
+  
     $(".feedback_div").show()
     $(".feedback_hide_div").show()
-     if(feedback_type_id=='1' || feedback_type_id=='4'){
+    $("#not_company_div").show()
+     if(feedback_type_id==1 || feedback_type_id==4){
         $('#referrer_div').show()
          $('#source_div').hide()
          $('#be_referrer_div').hide()
-         if(feedback_type_id=='1'){
+         if(feedback_type_id==1){
         $('#customer_name_lab').text('内部客户姓名:')
             $('#customer_name').attr('placeholder','内部客户姓名')
             $('#company_lab').text('内部公司名称:')
             $('#company').attr('placeholder','内部公司名称')
             $('#phone_lab').text('内部联系电话:')
             $('#phone').attr('placeholder','内部联系电话')
-            }else if(feedback_type_id=='4'){
+            }else if(feedback_type_id==4){
                 $('#customer_name_lab').text('新客户姓名:')
                 $('#customer_name').attr('placeholder','新客户姓名')
                 $('#company_lab').text('新公司名称:')
                 $('#company').attr('placeholder','新公司名称')
                 $('#phone_lab').text('新联系电话:')
                 $('#phone').attr('placeholder','新联系电话')
+                $("#not_company_div").hide()
                 }
             }
-    else if(feedback_type_id=='2' || feedback_type_id=='3'){
+    else if(feedback_type_id==2 || feedback_type_id==3){
         $("#be_referrer_company_lab").text('新公司名称:')
         $("#be_referrer_company").attr('placeholder','新公司名称')
         $("#be_referrer_name_lab").text('新公司联系人姓名:')
@@ -2301,6 +2464,7 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
     $('#er_company').text('')
     $('#er_company').hide()
     $("#company_small").show()
+    $("#not_company_div").hide()
     feedback_type_id=''
     feedback_type=$('input[name=feedback_type]:checked').val()
     if(feedback_type!=undefined){
@@ -2351,6 +2515,9 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
          $('#be_referrer_div').hide()
          if(feedback_type_id=='4'){
             $("#company_small").hide()
+         }else if(feedback_type_id=='1'){
+            $("#not_company_div").show()
+
          }
     }
     else if(feedback_type_id=='3' || feedback_type_id=='2'){
@@ -2369,6 +2536,7 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
         $('#source_div').hide()
         $('#referrer_div').show()
         $('#be_referrer_div').show()
+        $("#not_company_div").show()
     }
      }
      else if(bf_id=='81'){
@@ -2400,6 +2568,7 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
     $('#er_source_port').text('')
     $('#er_company').text('')
     $('#er_company').hide()
+    $("#not_company_div").show()
     if($("input[name=feedback_type]:checked").val().split('|')[0]=='1'){
         $('#customer_name_lab').text('内部客户姓名:')
     $('#customer_name').attr('placeholder','内部客户姓名')
@@ -2433,6 +2602,7 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
          $('#be_referrer_div').hide()
          if(feedback_type_id=='4'){
             $("#company_small").hide()
+            $("#not_company_div").hide()
          }
     }
     else if(feedback_type_id=='2'){
@@ -2490,6 +2660,7 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
     be_referrer_phone=$('#be_referrer_phone').val()
     feedback_type_id=''
     feedback_type=$('input[name=feedback_type]:checked').val()
+    not_company=$("#not_company:checked").val()
     if(feedback_type!=undefined){
         feedback_type_id=feedback_type.split('|')[0]
     }
@@ -2525,7 +2696,7 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
         $('#er_customer_name').show()
         return false
     }
-    else if(company=='' && busniess_from.split('|')[0]=='295' && feedback_type_id!='4' ){
+    else if(company=='' && busniess_from.split('|')[0]=='295' && feedback_type_id!='4' && not_company==undefined ){
             $('#er_company').text('请填写公司名')
             $('#er_company').show()
             return false
@@ -2564,7 +2735,8 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
             'be_referrer_name':be_referrer_name,
             'be_referrer_phone':be_referrer_phone,
             'business_id':business_id,
-            'business_guid':business_guid
+            'business_guid':business_guid,
+            'not_company':not_company
         },function (data) { 
             if(data=='-1'){
                 $("#btn_save").attr('disabled',false)

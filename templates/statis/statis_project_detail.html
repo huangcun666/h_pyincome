@@ -58,8 +58,22 @@
             </a>
         </div>
     </nav>
+    <nav>
 
 {%end%}
+<div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="btn btn-light  nav_padding  {%if not params['busniess_name']%}active {%end%}" id="nav-home-tab" 
+        href="/statis?tag=statis_project_detail{%for k,v in params.items()%}{%if v and k!='busniess_name'%}&{{k}}={{v}}{%end%}{%end%}">
+            全部
+        </a>
+        {%for item in t_projects_type_busniess%}
+        <a class="btn btn-light  nav_padding  {%if params['busniess_name']==item.income_name %}active {%end%}" id="nav-home-tab" 
+        href="/statis?tag=statis_project_detail{%for k,v in params.items()%}{%if v and k!='busniess_name'%}&{{k}}={{v}}{%end%}{%end%}&busniess_name={{item.income_name}}">
+        {{item.income_name}}
+        </a>
+        {%end%}
+    </div>
+        </nav>
 <div class="table-responsive">
 
         <table class="table table-bordered fayetable"  style="width:2700px">
@@ -161,16 +175,16 @@
                         <ul class="pagination">
                             {% if pagination.has_prev %}
                             <li class="paginate_button page-item previous " id="dataTable_previous">
-                                <a href="/statis?tag=statis_project_detail{%if params['step']%}&step={{params['step']}}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                                <a href="/statis?tag=statis_project_detail{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}&page={{ pagination.page - 1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li class="paginate_button page-item ">
-                                <a href="/statis?tag=statis_project_detail{%if params['step']%}&step={{params['step']}}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+                                <a href="/statis?tag=statis_project_detail{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}&page={{ page }}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                             {% else %}
                             <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
                             {% end %} {% else %}
                             <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">....</a></li>
                             {% end %} {%end %} {% if pagination.has_next %}
                             <li class="paginate_button page-item next" id="dataTable_next">
-                            <a href="/statis?tag=statis_project_detail{%if params['step']%}&step={{params['step']}}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
+                            <a href="/statis?tag=statis_project_detail{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}&page={{pagination.page+1}}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>

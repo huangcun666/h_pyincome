@@ -5,7 +5,7 @@ from Pagination import Pagination
 logger = logging.getLogger('boilerplate.' + __name__)
 from tornado.options import define, options
 import tornado,json,os,uuid,events
-import uuid
+import uuid,xlwt
 
 class  ClearlyHandler(BaseHandler):
     def get_project_info(self,project_id):
@@ -148,6 +148,12 @@ class  ClearlyHandler(BaseHandler):
                             )                            
                     strs+="</td>"
         return strs
+    def get_project_clearly(self,project_id):
+        service_income=self.db.get(' select service_money from t_projects_service_income where project_id=%s and service_id=84 ',project_id)
+        if service_income:
+            return service_income.service_money
+        else:
+            return u''
     @tornado.web.authenticated
     def get(self):
         tag = self.get_argument("tag", "all")
@@ -231,11 +237,16 @@ class  ClearlyHandler(BaseHandler):
             new_tag = self.get_argument("new_tag","")
             tag_parent_id = self.get_argument("tag_parent_id","")
             total_sql=""
+            clearly_tc_count_sql=""
             s_is_general = self.get_argument("s_is_general","")
             s_is_check = self.get_argument("s_is_check","")
             is_except = self.get_argument("is_except","") 
             mbtype_id = int(self.get_argument("mbtype_id",0))
+            year_before=self.get_argument('year_before','')
+            clearly_end_uid_name=self.get_argument('clearly_end_uid_name','')
+            export=self.get_argument('export','')
             params = {
+                "year_before":year_before,
                 "mbtype_id":mbtype_id,
                 "check_under":check_under,
                 "s_is_check":s_is_check,
@@ -272,7 +283,8 @@ class  ClearlyHandler(BaseHandler):
                  "data_check":data_check,
                  "tel":tel,
                  "is_except":is_except,
-                 "need":need
+                 "need":need,
+                 "clearly_end_uid_name":clearly_end_uid_name
             }
             mbtype_id_sql=""
             if mbtype_id:
@@ -346,12 +358,20 @@ class  ClearlyHandler(BaseHandler):
                     sql += " and mstate_id=" + str(state) + " "
                 elif state==6 :
                     inner_sql += " inner join t_customer_clearly_milepost d on b.id=d.clearly_id "
-                    column_sql+=" ,d.id milepost_id "
-                    sql += " and mstate_id=" + str(state) + "  and mbtype_id=1 and clearly_end=%s "%(clearly_type)
+                    column_sql+=" ,b.id  clearly_id,d.id milepost_id "
+                    if clearly_type==3:
+                        sql+=" and output_clearly=1 and mstate_id=" + str(state) + "  and mbtype_id=1 and clearly_end=2 "
+                    else:
+                        sql += " and mstate_id=" + str(state) + "  and mbtype_id=1 and clearly_end=%s "%(clearly_type)
                     if clearly_type==1:
                         orderby_column= " clearly_end_at  "
-                    elif  clearly_type==2:
+                    elif  clearly_type==2 or clearly_type==3:
                         orderby_column= " clearly_end_confirm_at  "
+                        if clearly_end_uid_name:
+                            clearly_tc_count_sql=" ,sum(clearly_tc) sum_clearly_tc,sum(service_money) sum_service_money "
+                            inner_sql+="""
+                            left join """+options.mysql_database+""".t_projects_service_income t on t.project_id=d.project_id and service_id=84
+                            """
                     else:
                         orderby_column= " finance_uid_at  "
                     if need:
@@ -359,7 +379,16 @@ class  ClearlyHandler(BaseHandler):
                 
                 elif state==8 :
                     inner_sql += " inner join t_customer_clearly_milepost d on b.id=d.clearly_id "
-                    column_sql+=" ,d.id milepost_id "
+                    if year_before:
+                        inner_sql="""
+                         left join t_customer_clearly b   on  a.id=b.customer_id 
+                          left join (select clearly_id,curr_year,group_concat(cc.name,'|',cc.tel,'|',cc.remark,'|',cc.gender)
+                        lk from t_linkman cc where clearly_id > 0 group by clearly_id,curr_year)
+                        c on b.id = c.clearly_id and c.curr_year="""+curr_year+""" 
+                        inner join t_customer_clearly_milepost d on b.id=d.clearly_id
+                         and d.year_end_confirm_at is null and a.reg_date<'2019-01-01 00:00:00' 
+                         and tag_parent_id_name='记账' """
+                    column_sql+=" ,b.id  clearly_id,d.id milepost_id "
                     if year_type==1:
                         orderby_column =" year_end_at "
                     elif year_type==2:
@@ -420,7 +449,8 @@ class  ClearlyHandler(BaseHandler):
             acc_uids = []
             if tel:
                 sql+="""  and (a.reg_tel like '%%"""+tel+"""%%' or  a.id in (select customer_id from t_linkman where tel like '%%"""+tel+"""%%'))"""
-
+            if clearly_end_uid_name:
+                sql+=" and clearly_end_uid_name='%s' "%clearly_end_uid_name
             if keyword:
                 id_sql=" "
                 if isinstance(keyword, int):
@@ -441,6 +471,8 @@ class  ClearlyHandler(BaseHandler):
                 sql+=" and a.is_general={} ".format(s_is_general)
             if under_sql:
                 sql+=under_sql
+            elif my=="1" and state==6 and clearly_type==2:
+                sql +=" and  (a.acc_uid=%s or clearly_end_uid_name='%s' ) " %(uid,uid_name)
             elif my=="1":
                 sql +=" and  a.acc_uid=%s " %(uid)
             elif my=="2":
@@ -480,15 +512,164 @@ select company from t_customer a   inner join t_customer_clearly b
             count = 0
 
             count = self.db_customer.get(
-                '''SELECT count(*) count from t_customer a '''+inner_sql+''' where   is_close=0''' + sql)
+                '''SELECT count(*) count '''+clearly_tc_count_sql+''' from t_customer a '''+inner_sql+''' where   is_close=0''' + sql)
             pagination = Pagination(page, pre_page, count.count,
                                     self.request)
             startpage = (page - 1) * pre_page
 
+            export_sql='limit %s,%s'%(startpage, pre_page)
+            if export:
+                export_sql=''
+
             customers = self.db_customer.query(
                 '''select *,a.id a_customer_id '''+column_sql+''' from t_customer a  '''
                 + inner_sql + ''' where  is_close=0 ''' + sql + '''
-            order by '''+orderby_column+''' desc limit %s,%s''', startpage, pre_page)
+            order by '''+orderby_column+''' desc '''+export_sql)
+            if export:
+                if clearly_type==3 and state==6:
+                    wb = xlwt.Workbook()
+                    sh = wb.add_sheet(u'汇算处理')
+                    sh.write(0, 0, u"序号")
+                    sh.write(0, 1, u"订单编号")
+                    sh.write(0, 2, u"创单日期")
+                    sh.write(0, 3, u"客户公司名称")
+                    sh.write(0, 4, u"是否已核定税种")
+                    sh.write(0, 5, u"社保人数")
+                    sh.write(0, 6, u"会计")
+                    sh.write(0, 7, u"执照日期")
+                    sh.write(0, 8, u"当年收入")
+                    sh.write(0, 9, u"报备价")
+                    sh.write(0, 10, u"非报备价")
+                    sh.write(0, 11, u"指导价备注")
+                    sh.write(0, 12, u"跟进人")
+                    sh.write(0, 13, u"汇算清缴")
+                    sh.write(0, 14, u"汇算提成")
+                    sh.write(0, 15, u"发起汇算办结人")
+                    sh.write(0, 16, u"业务内容")
+                    sh.write(0, 17, u"办结备注")
+                    sh.write(0, 18, u"报备/不报备")
+                    sh.write(0, 19, u"是否为钜惠套餐")
+                    for idx,item in enumerate(customers):
+                        t_project=self.db.get("select * from t_projects where id=%s",item.project_id)
+                        idx+=1
+                        sh.write(idx,0,idx)
+                        sh.write(idx,1,item.project_id)
+                        sh.write(idx,2,t_project.created_at.strftime('%Y-%m-%d') if t_project else u'') 
+                        if not item.data_check:
+                            company=item.company
+                        else:
+                            company=item.data_company+u'(原公司名称:'+item.company+u')'
+                        company+=u'('+item.mbtype_id_name+u')'
+                        sh.write(idx,3,company)
+                        if item.is_check:
+                            shuizhong=u'是'
+                            if item.btype_id:
+                                shuizhong+=u'(核定)'
+                            else:
+                                shuizhong+=u'(查帐)'
+                        else:
+                            shuizhong=u'否'
+                        sh.write(idx,4,shuizhong)
+
+                        sh.write(idx,5,item.ss_num)
+                        sh.write(idx,6,item.acc_uid_name)
+                        sh.write(idx,7,item.reg_date.strftime('%Y-%m-%d') if item.reg_date else u'')
+                        sh.write(idx,8,item.income)
+                        sh.write(idx,9,item.g_price)
+                        sh.write(idx,10,item.no_price)
+                        sh.write(idx,11,item.price_remark)
+                        sh.write(idx,12,item.ass_uid_name)
+                        sh.write(idx,13,self.get_project_clearly(item.project_id))
+                        sh.write(idx,14,item.clearly_tc)
+                        sh.write(idx,15,item.clearly_end_uid_name)
+                        sh.write(idx,16,t_project.project_name if t_project else u'')
+                        sh.write(idx,17,item.clearly_end_remark)
+                        if t_project:
+                            if '不报备' in t_project.project_name:
+                                bb=u'不报备'
+                            elif '报备' in t_project.project_name:
+                                bb=u'报备'
+                            else:
+                                bb=u''
+                        else:
+                            bb=u''
+                        sh.write(idx,18,bb)
+                        if t_project:
+                            if t_project.promo_id>0:
+                                pro=u'是'
+                            else:
+                                pro=u'否'
+                        else:
+                            pro=u'否'
+                        sh.write(idx,19,pro)
+                    wb.save('media/output/汇算处理_%s.xls'%uid_name)
+                    return self.write('static/output/汇算处理_%s.xls'%uid_name)
+
+
+                elif year_type==2 and state==8:
+                    wb = xlwt.Workbook()
+                    sh = wb.add_sheet(u'年检处理')
+                    sh.write(0, 0, u"序号")
+                    sh.write(0, 1, u"订单编号")
+                    sh.write(0, 2, u"创单日期")
+                    sh.write(0, 3, u"客户公司名称")
+                    sh.write(0, 4, u"是否已核定税种")
+                    sh.write(0, 5, u"社保人数")
+                    sh.write(0, 6, u"会计")
+                    sh.write(0, 7, u"执照日期")
+                    sh.write(0, 8, u"当年收入")
+                    sh.write(0, 9, u"销售顾问")
+                    sh.write(0, 10, u"报备价")
+                    sh.write(0, 11, u"非报备价")
+                    sh.write(0, 12, u"指导价备注")
+                    sh.write(0, 13, u"跟进人")
+                    sh.write(0, 14, u"业务内容")
+                    sh.write(0, 15, u"是否为钜惠套餐")
+                    for idx,item in enumerate(customers):
+                        idx+=1
+                        t_project=self.db.get("select * from t_projects where id=%s",item.project_id)
+                        t_projects_member=self.db.get(' select member_name from t_projects_member where team_id=34 and project_id=%s ',item.project_id)
+                        sh.write(idx,0,idx)
+                        sh.write(idx,1,item.project_id)
+                        sh.write(idx,2,t_project.created_at.strftime('%Y-%m-%d') if t_project else '')
+                        if not item.data_check:
+                            company=item.company
+                        else:
+                            company=item.data_company+u'(原公司名称:'+item.company+u')'
+                        company+=u'('+item.mbtype_id_name+u')'
+                        sh.write(idx,3,company)
+                        if item.is_check:
+                            shuizhong=u'是'
+                            if item.btype_id:
+                                shuizhong+=u'(核定)'
+                            else:
+                                shuizhong+=u'(查帐)'
+                        else:
+                            shuizhong=u'否'
+                        sh.write(idx,4,shuizhong)
+
+                        sh.write(idx,5,item.ss_num)
+                        sh.write(idx,6,item.acc_uid_name)
+                        sh.write(idx,7,item.reg_date.strftime('%Y-%m-%d') if item.reg_date else u'')
+                        sh.write(idx,8,item.income)
+                        sh.write(idx,9,t_projects_member.member_name if t_project else u'')
+                        sh.write(idx,10,item.g_price)
+                        sh.write(idx,11,item.no_price)
+
+                        sh.write(idx,12,item.price_remark)
+                        sh.write(idx,13,item.ass_uid_name)
+                        sh.write(idx,14,t_project.project_name if t_project else u'')
+                        if t_project:
+                            if t_project.promo_id>0:
+                                pro=u'是'
+                            else:
+                                pro=u'否'
+                        else:
+                            pro=u'否'
+                        sh.write(idx,15,pro)
+                    wb.save('media/output/年检处理_%s.xls'%uid_name)
+                    return self.write('static/output/年检处理_%s.xls'%uid_name)
+
             print('''
             select *,a.id a_customer_id '''+column_sql+''' from t_customer a  '''
                 + inner_sql + ''' where  is_close=0 ''' + sql + '''
@@ -505,7 +686,6 @@ select company from t_customer a   inner join t_customer_clearly b
             t_customer_type = self.db_customer.query(
                 "select * from t_type where tag='客户标签' and is_show=1  order by `order` ")
             t_user = self.db.query("select name from t_user ")
-
             t_sale = self.db_customer.query("select sale name from t_customer_relman where sale is not  null and sale <> '' group by sale ")
             t_kf = self.db_customer.query("select kf name from t_customer_relman where kf is not  null and kf <> '' group by kf ")
             t_gj = self.db_customer.query("select gj  name from t_customer_relman where gj is not  null and gj <> '' group by gj ")
@@ -517,6 +697,8 @@ select company from t_customer a   inner join t_customer_clearly b
                 get_clearly_stat=self.get_clearly_stat,
                 t_clearly_except=t_clearly_except,
                 dt=dt,
+                count=count,
+                get_project_clearly=self.get_project_clearly,
                 get_clearly_info = self.get_clearly_info,
                 t_user=t_user,
                 t_sale=t_sale,
@@ -902,7 +1084,11 @@ select company from t_customer a   inner join t_customer_clearly b
             is_upload = False
             url_fname=""
             
-            if result_id=="3" or (type_end=="clearly_2" or type_end=="year_2" ):
+            if result_id=="3":
+                pass
+            elif type_end=="clearly_2":
+                pass
+            elif  type_end=="year_2":
                 pass
             else:
                 for i in range(len1):    
@@ -936,8 +1122,8 @@ select company from t_customer a   inner join t_customer_clearly b
                 result = self.db_customer.execute(
                     """update t_customer_clearly_milepost set 
                     clearly_end=%s,clearly_end_confirm_at=%s,clearly_end_confirm_uid=%s,
-                    clearly_end_confirm_uid_name=%s ,clearly_end_remark=%s, clearly_end_file=%s where id=%s and clearly_id=%s""",
-                    end_state,dt,uid, uid_name,finish_remark,file_path,milepost_id, clearly_id)
+                    clearly_end_confirm_uid_name=%s where id=%s and clearly_id=%s""",
+                    end_state,dt,uid, uid_name,milepost_id, clearly_id)
             elif type_end=="clearly_1":
                 result = self.db_customer.execute(
                     """update t_customer_clearly_milepost set 
@@ -954,10 +1140,8 @@ select company from t_customer a   inner join t_customer_clearly b
             elif type_end=="year_2":
                 result = self.db_customer.execute(
                     """update t_customer_clearly_milepost set year_end=%s,
-                    year_end_confirm_at=%s,year_end_confirm_uid=%s,year_end_confirm_uid_name=%s ,
-                    year_end_remark=%s,
-                    year_end_file=%s where id=%s and clearly_id=%s""",
-                    end_state,dt,uid, uid_name,finish_remark,file_path,milepost_id, clearly_id)
+                    year_end_confirm_at=%s,year_end_confirm_uid=%s,year_end_confirm_uid_name=%s where id=%s and clearly_id=%s""",
+                    end_state,dt,uid, uid_name,milepost_id, clearly_id)
             elif type_end=='upload_file':
                 if file_type=='year_end_file':
                     sql='year_end_remark="%s",year_end_file=concat(if(year_end_file is not null,year_end_file,""),if(year_end_file is not null and right(year_end_file,1)="|","%s","%s"))'%(finish_remark,file_path,('|'+file_path))
@@ -1204,11 +1388,40 @@ select company from t_customer a   inner join t_customer_clearly b
             milepost_id=self.get_argument('milepost_id','')
             file_type=self.get_argument('file_type','')
             file_path=self.get_argument('file_path','')
-            if file_type=='clearly_end_file':
-                sql='clearly_end_file=replace(clearly_end_file,"%s",""),clearly_end_file=replace(clearly_end_file,"%s","")'%(file_path+'|',file_path)
-            elif file_type=='year_end_file':
-                sql='year_end_file=replace(year_end_file,"%s",""),year_end_file=replace(year_end_file,"%s","")'%(file_path+'|',file_path)
+            clearly_id=self.get_argument('clearly_id','')
+            if clearly_id:
+                sql='file_paths=replace(file_paths,"%s",""),file_paths=replace(file_paths,"%s","")'%(file_path+'|',file_path)
+                self.db_customer.execute('''
+                update t_customer_clearly set '''+sql+''' where id=%s
+                ''',clearly_id)
+            else:
+                if file_type=='clearly_end_file':
+                    sql='clearly_end_file=replace(clearly_end_file,"%s",""),clearly_end_file=replace(clearly_end_file,"%s","")'%(file_path+'|',file_path)
+                elif file_type=='year_end_file':
+                    sql='year_end_file=replace(year_end_file,"%s",""),year_end_file=replace(year_end_file,"%s","")'%(file_path+'|',file_path)
 
-            self.db_customer.execute('''
-            update t_customer_clearly_milepost set '''+sql+''' where id=%s
-            ''',milepost_id)
+                self.db_customer.execute('''
+                update t_customer_clearly_milepost set '''+sql+''' where id=%s
+                ''',milepost_id)
+    
+        elif tag=="output_clearly":
+            milepost_id=self.get_argument('milepost_id','')
+            recall=self.get_argument('recall','')
+            clearly_tc=self.get_argument('clearly_tc','')
+            tc=self.get_argument('tc','')
+            if recall:
+                self.db_customer.execute('''
+            update t_customer_clearly_milepost set 
+             output_clearly=0,output_clearly_name=%s,output_clearly_at=%s  where id=%s
+            ''',uid_name,dt,milepost_id)
+            elif tc:
+                self.db_customer.execute('''
+            update t_customer_clearly_milepost set 
+            clearly_tc=%s,clearly_tc_name=%s,clearly_tc_at=%s
+             where id=%s
+            ''',clearly_tc,uid_name,dt,milepost_id)
+            else:
+                self.db_customer.execute('''
+            update t_customer_clearly_milepost set 
+            output_clearly=1,output_clearly_name=%s,output_clearly_at=%s where id=%s
+            ''',uid_name,dt,milepost_id)

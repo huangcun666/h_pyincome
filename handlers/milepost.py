@@ -177,15 +177,13 @@ class MilePostHandler(BaseHandler):
                         self.db.execute('''
                         update t_projects  set is_finance_project=1 where id=%s
                         ''',project_id)
-                events.add_project_event(self, project_id,'订单流转('+milepost.btype_name+')',milepost.type_name,
-                                         uid, uid_name,customer_id)
 
-                if bresult == 0:
-                    bresult = self.db.execute(
+
+                self.db.execute(
                         """update t_projects_member set last_milepost_id=%s ,
-                        last_milepost_id_name=%s , last_milepost_id_at=%s where mid=%s and project_id=%s""",
+                        last_milepost_id_name=%s , last_milepost_id_at=%s where mid=%s """,
                         milepost.type_id, milepost.type_name, dt,
-                        milepost.member_id, project_id)
+                        milepost.member_id)
                
                 t_projects_member = self.db.get(
                     " select * from t_projects_member where mid=%s and project_id=%s",
@@ -195,7 +193,8 @@ class MilePostHandler(BaseHandler):
                         self.db.execute(
                             "update t_projects set reg_state=2 where id=%s",
                             project_id)
-       
+                events.add_project_event(self, project_id,'订单流转('+milepost.btype_name+')',milepost.type_name,
+                                         uid, uid_name,customer_id)
 
                 return self.write(str(bresult))
         elif tag == "group_confirm": #批量接单

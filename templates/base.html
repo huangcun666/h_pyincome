@@ -208,14 +208,14 @@ padding: 5px;
           </a>
         </li>
 
-  {%if role=="8" or name=="陈莹莹" %}
+
         <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="业务报价">
       <a class="nav-link" href="/trade?tag=list"  style="color:#fff">
           <i class="fa fa-calendar-check-o"></i>
         <span class="nav-link-text">商标管理</span>
       </a>
     </li>
-{%end%}
+
 {%if role=="1" or role=="13" %}
               <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="业务报价">
             <a class="nav-link" href="/addr?tag=addr_list_sales"  style="color:#fff">
@@ -952,6 +952,12 @@ padding: 5px;
       <span class="nav-link-text">快递管理</span>
     </a>
   </li>
+  <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="确认单驳回列表">
+      <a class="nav-link" href="/project?tag=project_reject&my=1" style="color:#fff">
+        <i class="fa fa-envelope-open-o"></i>
+        <span class="nav-link-text">确认单驳回列表</span>
+      </a>
+    </li>
   <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="资料交接">
     <a class="nav-link" href="/project?tag=projects_transition" style="color:#fff">
       <i class="fa fa-sticky-note"></i>

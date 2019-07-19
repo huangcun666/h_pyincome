@@ -20,7 +20,7 @@
                          <th width="70">编号</th>
                             <th>名称</th>
                             <th>公司名</th>
-                     
+                            <th>公司曾用名</th>
                             <th width="100">客户</th>
                               {%if role!="12"%} <th width="120">联系电话</th>{%end%}
                                
@@ -36,34 +36,25 @@
                                 {{item.id}}
                             </td>   
                             <td>
-                                {%if search_key in item.project_name%}
-                                {{item.project_name.split(search_key)[0]}}<span class="text-info">{{search_key}}</span>{{item.project_name.split(search_key)[1]}}
-                                {%else%}
-                                {{item.project_name}}
-                                {%end%}
+                            {%raw item.project_name.replace(search_key,'<span class="text-info">'+search_key+'</span>')%}
                             </td>  
                             <td>
-                                {%if search_key in item.customer_company%}
-                                {{item.customer_company.split(search_key)[0]}}<span class="text-info">{{search_key}}</span>{{item.customer_company.split(search_key)[1]}}
-                                {%else%}
-                                {{item.customer_company}}
-                                {%end%}
+                
+                            {%raw item.customer_company.replace(search_key,'<span class="text-info">'+search_key+'</span>')%}
                             </td>
                    
-                     
                             <td>
-                                {%if search_key in item.customer_name%}
-                                    {{item.customer_name.split(search_key)[0]}}<span class="text-info">{{search_key}}</span>{{item.customer_name.split(search_key)[1]}}
-                                    {%else%}
-                                    {{item.customer_name}}
-                                    {%end%}
+                            {%if item.old_companys%}
+                            {%raw item.old_companys.replace(search_key,'<span class="text-info">'+search_key+'</span>')%}
+                                {%end%}
+                            </td>
+                            <td>
+                            {%raw item.customer_name.replace(search_key,'<span class="text-info">'+search_key+'</span>')%}
+                            
                             </td>
                                        {%if role!="12"%}  <td>
-                                    {% if search_key in item.customer_tel %}
-                                    {{item.customer_tel.split(search_key)[0]}}<span class="text-info">{{search_key}}</span>{{item.customer_tel.split(search_key)[1]}}
-                                    {%else%}
-                                    {{item.customer_tel}}
-                                    {%end%}
+                            {%raw item.customer_tel.replace(search_key,'<span class="text-info">'+search_key+'</span>')%}
+
                             </td>      {%end%}
          
                                    <td>

@@ -41,35 +41,45 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
         <li class="breadcrumb-item g1">
           主面板
         </li>
-        <li class="breadcrumb-item g1">我的订单流转动{%if params["from_tag_where"]%}(会计){%end%}</li>
+        <li class="breadcrumb-item g1">订单流转动态{%if params["from_tag_where"]%}(会计){%end%}</li>
+      {%if t_user_relation%}
+        <li class="g1 g1-left">
+          <a href="/project?tag=projects_qc_milepost&from_tag_where=1{%if not params['check_under']%}&check_under=1{%end%}" class="btn btn-primary btn-sm">{%if not params['check_under']%}部门订单流转动{%else%}我的订单流转动{%end%}</a>
+        </li>
+      {%end%}
       </ol>
 
 
       <nav>
   <div class="nav nav-tabs faye-a" id="nav-tab" role="tablist">
       <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link {%if not last_milepost_id%}active{%end%}" id="nav-home-tab"
-      href="/project?tag=projects_qc_milepost{%if params["from_tag_where"]%}&from_tag_where=1{%end%}""   >全 部</a>
+      href="/project?tag=projects_qc_milepost{%if params["from_tag_where"]%}&from_tag_where=1{%end%}{%if params['check_under']%}&check_under=1{%end%}"  >全 部</a>
 
     {%for idx,item in enumerate(project_btypes)%}
 
-    {%if  item.id  in [165,152,163,153] %}
+    {%if  item.id  in [165,152,163,153] and params["from_tag_where"]%}
       {%continue%}
     {%end%}
     <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link  {%if  last_milepost_id==item.id%}active{%end%}" btype_id="{{item.id}}" btype_name="{{item.income_name}}" id="nav-home-tab{{item.id}}"  
-      href="/project?tag=projects_qc_milepost&last_milepost_id={{item.id}}{%if params["from_tag_where"]%}&from_tag_where=1{%end%}" style="font-size:13px;"> {%if item.id==165%}已填写办结信息,待仓管接单 {%elif params["from_tag_where"] and item.id==154%}上级办结确认 {%else%}{{item.income_name}}{%end%}
+      href="/project?tag=projects_qc_milepost&last_milepost_id={{item.id}}{%if params["from_tag_where"]%}&from_tag_where=1{%end%}{%if params['check_under']%}&check_under=1{%end%}" style="font-size:13px;"> {%if item.id==165%}已填写办结信息,待仓管接单 {%elif params["from_tag_where"] and item.id==154%}上级办结确认 {%else%}{{item.income_name}}{%end%}
       <span class="badge badge-danger">{{item.c}}</span></a>
 
     
     {%end%}
 
 
-        <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link {%if  ntag=="is_cancel"%}active{%end%}"  href="/project?tag=projects_qc_milepost&ntag=is_cancel{%if params["from_tag_where"]%}&from_tag_where=1{%end%}"">取消待审核
+        <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link {%if  ntag=="is_cancel"%}active{%end%}"  href="/project?tag=projects_qc_milepost&ntag=is_cancel{%if params["from_tag_where"]%}&from_tag_where=1{%end%}{%if params['check_under']%}&check_under=1{%end%}"">取消待审核
           <span class="badge badge-danger">{{cancel_wait_count1.count}}</span>
         </a>
-        <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link {%if  ntag=="is_cancel_confirm" %}active{%end%}"  href="/project?tag=projects_qc_milepost&ntag=is_cancel_confirm{%if params["from_tag_where"]%}&from_tag_where=1{%end%}"">取消单
+        <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link {%if  ntag=="is_cancel_confirm" %}active{%end%}"  href="/project?tag=projects_qc_milepost&ntag=is_cancel_confirm{%if params["from_tag_where"]%}&from_tag_where=1{%end%}{%if params['check_under']%}&check_under=1{%end%}"">取消单
           <span class="badge badge-danger">{{cancel_confirm_count1.count}}</span>
         </a>
-
+        <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link {%if  ntag=="dis_banjie" %}active{%end%}"  href="/project?tag=projects_qc_milepost&ntag=dis_banjie{%if params["from_tag_where"]%}&from_tag_where=1{%end%}{%if params['check_under']%}&check_under=1{%end%}"">注册未办结
+          <span class="badge badge-danger">{{dis_banjie_count.count}}</span>
+        </a>
+        <a class="btn btn-light  nav_padding flex-sm-fill text-sm-center nav-link {%if  ntag=="is_banjie" %}active{%end%}"  href="/project?tag=projects_qc_milepost&ntag=is_banjie{%if params["from_tag_where"]%}&from_tag_where=1{%end%}{%if params['check_under']%}&check_under=1{%end%}"">注册已办结
+          <span class="badge badge-danger">{{is_banjie_count.count}}</span>
+        </a>
      </div>
 </nav>
 
@@ -183,6 +193,9 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
 <input type="hidden" name="last_milepost_id" value="{%if params["last_milepost_id"]%}{{params["last_milepost_id"]}}{%end%}"/>
 <input type="hidden" name="ntag" value="{%if ntag%}{{ntag}}{%end%}"/>{%if params["from_tag_where"]%}
 <input type="hidden" name="from_tag_where" value="{{params["from_tag_where"]}}""/>
+{%if params['check_under']%}
+<input type="hidden" name="check_under" value="{{params["check_under"]}}"/>
+{%end%}
 {%end%}
        </td>   
                 <td>
@@ -387,7 +400,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
 
 
 
-{%if last_milepost_id=="167"%}
+{%if last_milepost_id=="167" and not params['check_under']%}
 
 
 
@@ -446,14 +459,14 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
                             </td>
                     
                                <td>
-                               <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}"  title="{{item.id}}" style="font-size:13px;"> {{item.id}}</a>
+                               <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}{%if params["from_tag_where"]%}&from_tag_where=1{%end%}{%if params['check_under']%}&check_under=1{%end%}"  title="{{item.id}}" style="font-size:13px;"> {{item.id}}</a>
                         
                         {%if item.project_department_id and role=="10"%}
                         <span  class="badge badge-pill badge-info ">{{item.project_department_id_name}}</span>
                         {%end%}
                             </td>
                               <td style="word-break: break-all;">
-                                <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}"  title="{{item.project_name}}"
+                                <a target="_blank" href="/project?tag=show&guid={{item.guid}}&id={{item.id}}&mid={{item.mid}}{%if params["from_tag_where"]%}&from_tag_where=1{%end%}{%if params['check_under']%}&check_under=1{%end%}"  title="{{item.project_name}}"
                                   style="font-size:13px;">
                               
                                   {%if len(item.project_name) > 35%} {{item.project_name[:35]}}... {%else%} {{item.project_name}} {%end%}
@@ -484,7 +497,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
                           {%if item.last_milepost_id_name%}
                                 {{item.last_milepost_id_name}}
                             {%else%}
-                                    等待工商接单
+                                    等待接单
 
                             {%end%}
                             </td>
@@ -513,7 +526,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=projects_qc_milepost&page={{ pagination.page - 1}}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if  params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="?tag=projects_qc_milepost&page={{ pagination.page - 1}}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if  params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
 
 
@@ -521,7 +534,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=projects_qc_milepost&page={{page}}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if  params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="?tag=projects_qc_milepost&page={{page}}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if  params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -529,7 +542,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
           {% end %} {%end %}
 
          {% if pagination.has_next %}
-         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_qc_milepost&page={{pagination.page+1}}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_qc_milepost&page={{pagination.page+1}}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>
@@ -561,10 +574,10 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
           <a class="faye-lba-top" style="color: #fff;">菜单管理</a>
 
           <a class="nav-link hh"  id="v-pills-settings-tab"  
-          href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}"  
+          href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}{%if params['check_under']%}&check_under=1{%end%}{%if params["from_tag_where"]%}&from_tag_where=1{%end%}"  
          style="padding-left:15px; height:35px; vertical-align: middle !important; text-align: left;background-color:#fff;color:black;{%if not category_id and ntag!="ungroup"%}background-color: #e7f6f8; color: #16a3b9;border-left:3px solid #16a3c9;border-radius:0;{%end%}"
            aria-selected="false">全部<span class="badge badge-primary badges"  id="v-pills-settings-tab" ></span></a>
-     <a class="nav-link hh "  href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}&ntag=ungroup" 
+     <a class="nav-link hh "  href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}&ntag=ungroup{%if params['check_under']%}&check_under=1{%end%}{%if params["from_tag_where"]%}&from_tag_where=1{%end%}" 
       aria-selected="false" {%if  ntag=="ungroup"%}style="background-color: #e7f6f8; color: #16a3b9;border-left:3px solid #16a3c9;border-radius:0;" {%end%}
      >未分组<span class="badge badge-primary badges" style="font-size:13px;{%if  ntag=="ungroup"%}background-color: #e60012;{%end%}" id="v-pills-settings-tab" >{{wait_group.count}}</span></a>
 
@@ -576,12 +589,14 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
             {%if  category_id==str(item.id)%}style="background-color: #e7f6f8; color: #16a3b9;border-left:3px solid #16a3c9;border-radius:0;" {%end%}
             id="v-pills-settings-tab"
         
-            href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}&category_id={{item.id}}"
+            href="/project?tag=projects_qc_milepost&last_milepost_id={{last_milepost_id}}&category_id={{item.id}}{%if params['check_under']%}&check_under=1{%end%}{%if params["from_tag_where"]%}&from_tag_where=1{%end%}"
            aria-selected="false" category_id={{item.id}}>{{item.category_name}} {%if item.c > 0%}
            <span class="badge badge-primary badges" style="font-size:13px;{%if  category_id==str(item.id)%}background-color: #e60012;{%end%}" >{{item.c}}</span>{%end%}</a>
         {%end%}
+        {%if not params['check_under']%}
        <a class="nav-link"  id="manage_group" href="javascript:void(0)"
      >+管理分组</a>
+     {%end%}
    
         </div>
 
@@ -597,6 +612,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
 <!-- Example single danger button -->
 
 <div class="btn-group" style="margin-top:10px; font-size:12px;">
+  {%if not params['check_under']%}
   <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" id="btn_group_action" aria-haspopup="true" aria-expanded="false" style="font-size:11px;">
     选中操作(0)
 分组用户</a>
@@ -608,7 +624,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
       <a class="dropdown-item" href="javascript:void(0)" id="btn_set_zone_group" bname="办结">设置区域</a>
 
   </div>
-
+{%end%}
 
 
 <span style="padding-top:8px; margin-left:12px; font-size:13px;">
@@ -711,7 +727,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
       <ul class="pagination">
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
-         <a href="?tag=projects_qc_milepost&page={{ pagination.page - 1}}{%if category_id%}&category_id={{category_id}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
+         <a href="?tag=projects_qc_milepost&page={{ pagination.page - 1}}{%if category_id%}&category_id={{category_id}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params['check_under']%}&check_under=1{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
 
 
 
@@ -719,7 +735,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
-         <li class="paginate_button page-item "><a href="?tag=projects_qc_milepost&page={{page}}{%if category_id%}&category_id={{category_id}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
+         <li class="paginate_button page-item "><a href="?tag=projects_qc_milepost&page={{page}}{%if category_id%}&category_id={{category_id}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params['check_under']%}&check_under=1{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
             <a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ page }}</a></li>
@@ -730,7 +746,7 @@ select.form-control:not([size]):not([multiple]) {height: auto;}
           {%end %}
 
          {% if pagination.has_next %}
-         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_qc_milepost&page={{pagination.page+1}}{%if category_id%}&category_id={{category_id}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
+         <li class="paginate_button page-item next" id="dataTable_next"><a href="/project?tag=projects_qc_milepost&page={{pagination.page+1}}{%if category_id%}&category_id={{category_id}}{%end%}{%if params["income_bussniss"]%}&income_bussniss={{params["income_bussniss"]}}{%end%}{%if params["sales"]%}&sales={{params["sales"]}}{%end%}{%if params["kefu"]%}&kefu={{params["kefu"]}}{%end%}{%if params["from_id"]%}&from_id={{params["from_id"]}}{%end%}{%if params["building_id"]%}&building_id={{params["building_id"]}}{%end%}{%if params["p_state"]%}&p_state={{params["p_state"]}}{%end%}{%if params["start"]%}&start={{params["start"]}}{%end%}{%if params["end"]%}&end={{params["end"]}}{%end%}{%if params["last_milepost_id"]%}&last_milepost_id={{params["last_milepost_id"]}}{%end%}{%if params["ntag"]%}&ntag={{params["ntag"]}}{%end%}{%if params["qc_key"]%}&qc_key={{params["qc_key"]}}{%end%}{%if params['check_under']%}&check_under=1{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>
 </div>

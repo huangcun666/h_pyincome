@@ -66,6 +66,7 @@
     <li {%if show_tag=="0" %} class="active" {%end%}>
         <a href="/payment?tag=expire_customer_req&show_tag=0" id="tab_confirm">待审核</a>
     </li>
+    
 
     <li {%if show_tag=="2" %} class="active" {%end%}>
         <a href="/payment?tag=expire_customer_req&show_tag=2" id="customer_tab">已审核</a>
@@ -170,6 +171,7 @@
           tag_parent_id="{{item.customer_tag_parent_id}}"
          tag_parent_id_name="{{item.customer_tag_parent_id_name}}" 
          is_building="{{item.customer_is_building}}"
+         
          is_clearly="{{item.customer_is_clearly}}" is_year="{{item.customer_is_year}}"
          adjusted_option="{% if  adjusted_option(item.customer_id)%}{%if adjusted_option(item.customer_id).adjusted_option%}{{adjusted_option(item.customer_id).adjusted_option}}{%end%}{%end%}"
         >
@@ -199,13 +201,18 @@
     </span>
 
        <br/>
+
+   
     {%if item.company_reguid%}<font color='green'>{{item.company_reguid}}</font>{%end%}
     {% if  adjusted_option(item.customer_id)%}
-    {%if adjusted_option(item.customer_id).adjusted_option%}
-        <br><font color='red' title="{{adjusted_option(item.customer_id).adjusted_option}}" >{{adjusted_option(item.customer_id).adjusted_option[:25]}}{%if len(adjusted_option(item.customer_id).adjusted_option)>25%}..{%end%}</font>
-    {%end%}
-    {%end%}  
+  
+    {%if adjusted_option(item.customer_id).adjusted_option%}  <div class="alert alert-danger">
+    待调整事项: <font color='red' title="{{adjusted_option(item.customer_id).adjusted_option}}" >{{adjusted_option(item.customer_id).adjusted_option[:25]}}{%if len(adjusted_option(item.customer_id).adjusted_option)>25%}..{%end%}</font>
+</div> {%end%}
 
+       
+    {%end%}  
+      
 
     <div class="alert alert-info">
 
@@ -277,7 +284,7 @@ pay_id1 = "{{item.pay_id1}}"
 pfi_confirm_remark ="{%if item.pfi_confirm_remark%}{{item.pfi_confirm_remark}}{%end%}"
 
 is_review = "1"
-
+adjusted_option= "{{adjusted_option(item.customer_id).adjusted_option}}"
 >审核</a></td>
 
 {%end%}
@@ -593,11 +600,17 @@ is_review = "1"
     <td colspan="4">公司名称</td>
     <td colspan="4">客户备注</td>
 </tr>
+
 <tr>
     <td id="customer_company" colspan="4"></td>
     <td id="customer_remark" colspan="4"></td>
 </tr>
+<tr style="background:#ccc;">
+    <td colspan="8">待调整事项</td>
+</tr>
+<tr id="last_adjusted_option">
 
+</tr>
                     <tr style="background:#ccc;">
                         <td colspan="8">当前收款基本信息</td>
                     </tr>
@@ -1094,8 +1107,14 @@ $("#pb_remark1").val(pb_remark)
 customer_id=$(this).attr('customer_id')
     customer_remark = $(this).attr("customer_remark")
     customer_company = $(this).attr("company_name")
+    ao = $(this).attr("adjusted_option")
+    if(ao=="" ||  ao==undefined){
+        $("#last_adjusted_option").text("")
+    }else{
 
-
+        $("#last_adjusted_option").text(ao)
+    }
+    
     $("#btn_save_wai_pay1").attr("pay_id", pay_id1)
     $("#curr_expire1").text("")
     $("#last_payment1").html("")

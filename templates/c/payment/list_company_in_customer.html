@@ -24,6 +24,7 @@
                     <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
 
                 <button type="submit" class="btn">检 索</button>
+                <input type="hidden" value="{{special}}" name="special"/>
                 <input type="hidden" value="{{tag}}" name="tag"/>
                             <input type="hidden" value="{{state}}" name="state" />
 
@@ -33,8 +34,11 @@
               </form>
 <ul class="nav nav-tabs" id="myTab">
 
-    <li {%if pay_project_id==0%} class="active" {%end%}>
+    <li {%if pay_project_id==0  and  not special%} class="active" {%end%}>
         <a href="/payment?tag=list_company_in_customer&pay_project_id=0" id="customer_tab">待处理</a>
+    </li>
+    <li {%if pay_project_id==0 and special%} class="active" {%end%}>
+        <a href="/payment?tag=list_company_in_customer&pay_project_id=0&special=1" id="customer_tab">待处理(注销-解约)</a>
     </li>
     <li {%if pay_project_id > 0   and state==0%} class="active" {%end%}>
         <a href="/payment?tag=list_company_in_customer&pay_project_id=1" id="tab_confirm">已处理</a>
@@ -147,11 +151,15 @@
                                   汇算清缴&nbsp;
                                    {%end%}
                                 </span>
+                                {%if item.company_reguid%}<font color='green'>{{item.company_reguid}}</font>{%end%}
                                 {% if  adjusted_option(item.customer_id)%}
-                                {%if adjusted_option(item.customer_id).adjusted_option%}
-                                    <br><font color='red' title="{{adjusted_option(item.customer_id).adjusted_option}}" >{{adjusted_option(item.customer_id).adjusted_option[:35]}}{%if len(adjusted_option(item.customer_id).adjusted_option)>35%}..{%end%}</font>
-                                {%end%}
-                                {%end%}
+                              
+                                {%if adjusted_option(item.customer_id).adjusted_option%}  <div class="alert alert-danger">
+                                待调整事项: <font color='red' title="{{adjusted_option(item.customer_id).adjusted_option}}" >{{adjusted_option(item.customer_id).adjusted_option[:25]}}{%if len(adjusted_option(item.customer_id).adjusted_option)>25%}..{%end%}</font>
+                            </div> {%end%}
+                            
+                                   
+                                {%end%}  
 
                                 <div class="alert alert-info">
 
@@ -169,10 +177,9 @@
 
 
 
-
     {%if pay_project_id==0%}
 
-                <td>{{item.project_name}}(编号:{{item.project_id}})
+                <td><a href="/project?tag=show&guid={{item.guid}}&id={{item.project_id}}&from_mod=payment" target="_blank">{{item.project_name}}(编号:{{item.project_id}})</a>
                     <br/>
                     <span style="color: red"> 到款: 第{{item.income_num}}笔 {{item.income_list}}</span>
                     <br/>
@@ -206,10 +213,11 @@
             </td>
             {%else%}
                             <td>
-                                {%if item.al_remark%}
+                             
+                                    <a href="/project?tag=show&guid={{item.guid}}&id={{item.project_id}}&from_mod=payment" target="_blank">    {%if item.al_remark%}
                                 {{item.al_remark}}
                                 {%end%}
-
+</a>
                             </td><td>
 
                                                                  {%if item.pb_remark%}
@@ -275,15 +283,15 @@
                 <div class="pagination">
                         <ul>
                             {% if pagination.has_prev %}
-                            <li><a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if kf%}&kf={{kf}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
+                            <li><a href="/payment?tag={{tag}}&page={{ pagination.page - 1}}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if kf%}&kf={{kf}}{%end%}{%if special%}&special={{special}}{%end%}">&laquo; 上页</a></li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             <li>
-                                <a href="/payment?tag={{tag}}&page={{ page }}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if kf%}&kf={{kf}}{%end%}">{{ page }}</a></li>
+                                <a href="/payment?tag={{tag}}&page={{ page }}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if kf%}&kf={{kf}}{%end%}{%if special%}&special={{special}}{%end%}">{{ page }}</a></li>
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
                             {% end %} {% else %}
                             <li><span class="active"><a href="#">....</a></span></li>
                             {% end %} {%end %} {% if pagination.has_next %}
-                            <li><a href="/payment?tag={{tag}}&page={{pagination.page+1}}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if kf%}&kf={{kf}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/payment?tag={{tag}}&page={{pagination.page+1}}{%if pay_project_id%}&pay_project_id={{pay_project_id}}{%end%}{%if kf%}&kf={{kf}}{%end%}{%if special%}&special={{special}}{%end%}">下页 &raquo;</a></li>
                             {% end %}
                         </ul>
                     </div>

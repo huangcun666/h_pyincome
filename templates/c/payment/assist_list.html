@@ -171,7 +171,189 @@ display: -webkit-box;
 .dropdown:hover .dropbtn {
     background-color: #3e8e41;
 }
+.xs-fixed {width: 1170px; height: 200px; position: fixed; top: 0; left: 50%; margin-left: -585px; background-color:#fff;z-index: 999; display: none;}
 </style>
+
+<div class="xs-fixed">
+    <div class="widget-header">
+        <i class="icon-user"></i>
+        <h3>应收协助{%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
+             <input type="checkbox" id="choose_all" style="width: 17px;height: 17px;border: 1px solid #ccc;">
+             <a class="btn btn-primary btn-sm allot_choose" href="javascript:void(0);" style="margin-bottom: 5px;">批量分配</a>
+            
+             {%end%}
+    
+        </h3>
+
+    </div>
+    <div class="widget-content">
+        <div class="tab-content">
+            <div class="tab-pane active" id="formcontrols">
+<ul class="nav nav-tabs" id="myTab">
+
+{%if department_name=='销售部' and '250' not in role_list or '302' in role_list%}
+<li  {%if not show_tag%}class="active" {%end%}>
+<a href="/payment?tag=assist_list" id="tab_confirm">全部
+<span class="badge bg-danger">{%if not show_tag%}{{count.count}}{%else%}{{count.aaa}}{%end%}</span>
+</a>
+
+</li>
+<li  {%if show_tag=='1'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=1">待接单
+<span class="badge bg-danger">{%if  show_tag=='1'%}{{count.count}}{%else%}{{count.cc}}{%end%}</span></a>
+
+</li>
+<li  {%if show_tag=='2'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=2">已接单
+<span class="badge bg-danger">{%if show_tag=='2'%}{{count.count}}{%else%}{{count.dd}}{%end%}</span></a>
+</li>
+<li {%if show_tag=='3'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=3">待审核
+<span class="badge bg-danger">{%if show_tag=='3'%}{{count.count}}{%else%}{{count.ee}}{%end%}</span></a>
+</li>
+<li  {%if show_tag=='4'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=4">异常待处理
+<span class="badge bg-danger">{%if show_tag=='4'%}{{count.count}}{%else%}{{count.gg}}{%end%}</span></a>
+</li>
+<li  {%if show_tag=='5'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=5">已完结
+<span class="badge bg-danger">{%if show_tag=='5'%}{{count.count}}{%else%}{{count.hh}}{%end%}</span></a>
+</li>
+<li >
+<a href="/payment?tag=bad_debts_list&other_tag={{tag}}">坏账
+<span class="badge bg-danger">{{count.ii}}</span></a>
+</li>
+{%else%}
+<li  {%if not show_tag%}class="active" {%end%}>
+<a href="/payment?tag=assist_list" id="tab_confirm">全部
+<span class="badge bg-danger">{%if not show_tag%}{{count.count}}{%else%}{{count.aa}}{%end%}</span>
+</a>
+
+</li>
+<li  {%if show_tag=='1'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=1">应收协助发起
+<span class="badge bg-danger">{%if  show_tag=='1'%}{{count.count}}{%else%}{{count.bb}}{%end%}</span></a>
+</li>
+<li {%if show_tag=='-2000'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=-2000" >未过期
+<span class="badge badge-danger">{%if show_tag=='-2000'%}{{count.count}}{%else%}{{count.fff}}{%end%}</span> 
+</a>
+</li>
+<li {%if show_tag=='-1000'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=-1000" >已过期
+<span class="badge badge-danger">{%if show_tag=='-1000'%}{{count.count}}{%else%}{{count.ff}}{%end%}</span> 
+</a>
+</li>
+<li  {%if show_tag=='2'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=2">销售待接单
+<span class="badge bg-danger">{%if  show_tag=='2'%}{{count.count}}{%else%}{{count.cc}}{%end%}</span></a>
+</li>
+<li {%if show_tag=='3'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=3">销售处理中
+<span class="badge bg-danger">{%if show_tag=='3'%}{{count.count}}{%else%}{{count.dd}}{%end%}</span></a>
+</li>
+<li  {%if show_tag=='4'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=4">待审核
+<span class="badge bg-danger">{%if show_tag=='4'%}{{count.count}}{%else%}{{count.ee}}{%end%}</span></a>
+</li>
+<li  {%if show_tag=='5'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=5">未通过
+<span class="badge bg-danger">{%if  show_tag=='5'%}{{count.count}}{%else%}{{count.gg}}{%end%}</span></a>
+</li>
+<li  {%if show_tag=='6'%}class="active" {%end%}>
+<a href="/payment?tag=assist_list&show_tag=6">已完结
+<span class="badge bg-danger">{%if  show_tag=='6'%}{{count.count}}{%else%}{{count.hh}}{%end%}</span></a>
+</li>
+<li >
+<a href="/payment?tag=bad_debts_list&other_tag={{tag}}">坏账
+<span class="badge bg-danger">{{count.ii}}</span></a>
+</li>
+{%end%}
+</ul>
+<form class="form-search" id="query_form">
+<input type="text" name="company_sql" id="company_sql" class="input-medium search-query" placeholder="公司名称" value="{{params['company_sql']}}" >
+<select name="kf_kuaiji" id="" style="width: 100px;">
+<option value="">客服会计</option>
+{%for item in acc_uid_names%}
+<option value="{{item.acc_uid_name}}" {%if params['kf_kuaiji']==item.acc_uid_name%}selected{%end%}>{{item.acc_uid_name}}</option>
+{%end%}
+</select>
+<select name="sale_man" id="" style="width: 100px;">
+<option value="">销售顾问</option>
+{%for item in sale_mans%}
+<option value="{{item.sale_man}}" {%if params['sale_man']==item.sale_man%}selected{%end%}>{{item.sale_man}}</option>
+{%end%}
+</select>
+<select name="kf_man" id="" style="width: 100px;">
+<option value="">客服顾问</option>
+{%for item in kf_mans%}
+<option value="{{item.kf_man}}" {%if params['kf_man']==item.kf_man%}selected{%end%}>{{item.kf_man}}</option>
+{%end%}
+</select>
+{%if show_tag!='-1000' and show_tag!='-2000' %}
+<select name="genjin_man" id="" style="width: 100px;">
+<option value="">跟进人</option>
+{%for item in t_user_sales%}
+<option value="{{item.name}}" {%if params['genjin_man']==item.name%}selected{%end%}>{{item.name}}</option>
+{%end%}
+</select>
+{%if show_tag=='3' and ('302' in role_list or '250' in role_list or role=='3') \
+    or (department_name=='销售部' and '250' not in role_list or '302' in role_list) and show_tag=='2'%}
+<button data-html="true" type="button" style="width:90px;background-color:white;box-shadow: 0 0 0 0.02rem rgba(40, 44, 48, 0.25);" class="btn btn-sm genjin_btn">跟进情况</button>
+<input type="hidden" name="ass_day" class="input-medium" style="width:80px;" placeholder="跟进天数起" value="{{params['ass_day']}}">
+<input type="hidden"  name="ass_day_end" class="input-medium" style="width:80px;" placeholder="跟进天数止" value="{{params['ass_day_end']}}">
+<input type="hidden"  name="ass_num" class="input-medium" style="width:80px;" placeholder="跟进次数起" value="{{params['ass_num']}}">
+<input type="hidden"  name="ass_num_end" class="input-medium" style="width:80px;" placeholder="跟进次数止" value="{{params['ass_num_end']}}">
+<input type="hidden"  name="no_ass_day" class="input-medium" style="width:80px;" placeholder="未跟进天数起" value="{{params['no_ass_day']}}">
+<input type="hidden"  name="no_ass_day_end" class="input-medium" style="width:80px;" placeholder="未跟进天数起" value="{{params['no_ass_day_end']}}">
+<button data-html="true" type="button" style="width:90px;background-color:white;box-shadow: 0 0 0 0.02rem rgba(40, 44, 48, 0.25);" class="btn btn-sm cost_btn">费用到期</button>
+<input type="hidden"  name="acc_end_start" class="input-medium" style="width:80px;" placeholder="记账到期起" value="{{params['acc_end_start']}}">
+<input type="hidden"  name="acc_end_end" class="input-medium" style="width:80px;" placeholder="记账到期止" value="{{params['acc_end_end']}}">
+<input type="hidden"  name="acc_book_end_start" class="input-medium" style="width:80px;" placeholder="账册到期起" value="{{params['acc_book_end_start']}}">
+<input type="hidden"  name="acc_book_end_end" class="input-medium" style="width:80px;" placeholder="账册到期止" value="{{params['acc_book_end_end']}}">
+{%end%}
+{%end%}
+
+{%if show_tag=='6'%}
+<select name="status"  style="width: 100px;">
+<option value="">选择收款</option>
+<option value="1"  {%if params['status']=='1'%}selected{%end%} >已收款</option>
+<option value="2" {%if params['status']=='2'%}selected{%end%}>未收款</option>
+</select>
+{%end%}
+<input type="hidden" name="tag" value="{{tag}}">
+{%if show_tag%}
+<input type="hidden" name="show_tag" value="{{show_tag}}">
+{%end%}
+<button type="submit" class="btn" id="search_btn">检 索</button>
+</form>
+        </div>
+    </div>
+    {%if show_tag=='3' and ('302' in role_list or '250' in role_list or role=='3') \
+                                       or  (department_name=='销售部' and '250' not in role_list or '302' in role_list) and show_tag=='2'%}
+    <div style="overflow: hidden;">
+        <div class="xs-pilian">
+
+            <a class="btn btn-primary btn-sm " id="manage_group" href="javascript:void(0);" style="margin-bottom: 5px;">管理分组</a></div>
+        <div class="xs-fenzu">
+            <ul>
+                <li {%if not params['category_id']%}style="border:1px solid #1fa1e1;"{%end%}><a {%if not params['category_id']%} style="color:1fa1e1;"{%end%} href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}{%for k,v in params.items()%}{%if v and k!='category_id'%}&{{k}}={{v}}{%end%}{%end%}">全部</a></li>
+                <li {%if params['category_id']=='ungroup'%}style="border:1px solid #1fa1e1;"{%end%}><a {%if params['category_id']=='ungroup'%} style="color:1fa1e1;"{%end%} href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}&category_id=ungroup{%for k,v in params.items()%}{%if v and k!='category_id'%}&{{k}}={{v}}{%end%}{%end%}">未分组</a></li>
+                {%if all_categorys%}
+                {%for item in all_categorys%}
+                <li {%if params['category_id']==str(item.id)%}style="border:1px solid #1fa1e1;"{%end%}><a {%if params['category_id']==str(item.id)%}style="color:1fa1e1;"{%end%} href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}&category_id={{item.id}}{%for k,v in params.items()%}{%if v and k!='category_id'%}&{{k}}={{v}}{%end%}{%end%}">{{item.category_name}}</a></li>
+                {%end%}
+                {%end%}
+               
+            </ul>
+        </div>
+        {%if customers%}                                            
+        <div class="xs-jine">总待收金额: <span>{{count.sw}}</span> </div>
+        {%end%}
+    </div>
+    {%end%}
+</div>
+</div>
 <div class="main">
    <div class="main-inner">
        <div class="container">
@@ -180,7 +362,11 @@ display: -webkit-box;
                    <div class="widget ">
                        <div class="widget-header">
                            <i class="icon-user"></i>
-                           <h3>应收协助
+                           <h3>应收协助{%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
+                                <input type="checkbox" id="choose_all" style="width: 17px;height: 17px;border: 1px solid #ccc;">
+                                <a class="btn btn-primary btn-sm allot_choose" href="javascript:void(0);" style="margin-bottom: 5px;">批量分配</a>
+                               
+                                {%end%}
                        
                            </h3>
 
@@ -273,7 +459,12 @@ display: -webkit-box;
    {%end%}
 </ul>
 <form class="form-search" id="query_form">
-   <input type="text" name="company_sql" id="company_sql" class="input-medium search-query" placeholder="公司名称" value="{{params['company_sql']}}" >
+   <input type="text" name="company_sql" id="company_sql" class="input-medium search-query" 
+   {%if show_tag=='3' and ('302' in role_list or '250' in role_list or role=='3') \
+   or  (department_name=='销售部' and '250' not in role_list or '302' in role_list) and show_tag=='2'%}
+   placeholder="公司名/联系人"
+   {%else%}
+   placeholder="公司名称" {%end%} value="{{params['company_sql']}}" >
     <select name="kf_kuaiji" id="" style="width: 100px;">
         <option value="">客服会计</option>
         {%for item in acc_uid_names%}
@@ -299,13 +490,23 @@ display: -webkit-box;
         <option value="{{item.name}}" {%if params['genjin_man']==item.name%}selected{%end%}>{{item.name}}</option>
            {%end%}
     </select>
+    {%if show_tag=='3' and ('302' in role_list or '250' in role_list or role=='3') \
+        or  (department_name=='销售部' and '250' not in role_list or '302' in role_list) and show_tag=='2'%}
+    <button data-html="true" type="button" style="width:90px;background-color:white;box-shadow: 0 0 0 0.02rem rgba(40, 44, 48, 0.25);" class="btn btn-sm genjin_btn">跟进情况</button>
+    <input type="hidden"  name="ass_day" class="input-medium" style="width:80px;" placeholder="跟进天数起" value="{{params['ass_day']}}">
+    <input type="hidden"  name="ass_day_end" class="input-medium" style="width:80px;" placeholder="跟进天数止" value="{{params['ass_day_end']}}">
+    <input type="hidden"  name="ass_num" class="input-medium" style="width:80px;" placeholder="跟进次数起" value="{{params['ass_num']}}">
+    <input type="hidden"  name="ass_num_end" class="input-medium" style="width:80px;" placeholder="跟进次数止" value="{{params['ass_num_end']}}">
+    <input type="hidden"  name="no_ass_day" class="input-medium" style="width:80px;" placeholder="未跟进天数起" value="{{params['no_ass_day']}}">
+    <input type="hidden"  name="no_ass_day_end" class="input-medium" style="width:80px;" placeholder="未跟进天数起" value="{{params['no_ass_day_end']}}">
+    <button data-html="true" type="button" style="width:90px;background-color:white;box-shadow: 0 0 0 0.02rem rgba(40, 44, 48, 0.25);" class="btn btn-sm cost_btn">费用到期</button>
+<input type="hidden"  name="acc_end_start" class="input-medium" style="width:80px;" placeholder="记账到期起" value="{{params['acc_end_start']}}">
+<input type="hidden"  name="acc_end_end" class="input-medium" style="width:80px;" placeholder="记账到期止" value="{{params['acc_end_end']}}">
+<input type="hidden"  name="acc_book_end_start" class="input-medium" style="width:80px;" placeholder="账册到期起" value="{{params['acc_book_end_start']}}">
+<input type="hidden"  name="acc_book_end_end" class="input-medium" style="width:80px;" placeholder="账册到期止" value="{{params['acc_book_end_end']}}">
     {%end%}
-
-    <input type="text" name="ass_day" class="input-medium" style="width:80px;" placeholder="跟进天数起" value="{{params['ass_day']}}">
-    <input type="text" name="ass_day_end" class="input-medium" style="width:80px;" placeholder="跟进天数止" value="{{params['ass_day_end']}}">
-    <input type="text" name="ass_num" class="input-medium" style="width:80px;" placeholder="跟进次数起" value="{{params['ass_num']}}">
-    <input type="text" name="ass_num_end" class="input-medium" style="width:80px;" placeholder="跟进次数止" value="{{params['ass_num_end']}}">
-   
+    {%end%}
+    
     {%if show_tag=='6'%}
     <select name="status"  style="width: 100px;">
         <option value="">选择收款</option>
@@ -321,18 +522,244 @@ display: -webkit-box;
 </form>
 
                                    <fieldset>
-                        
+
+                                       
+                                       {%if show_tag=='3' and ('302' in role_list or '250' in role_list or role=='3') \
+                                       or  (department_name=='销售部' and '250' not in role_list or '302' in role_list) and show_tag=='2'%}
+                                       <style>
+                                            ul,li {list-style:none;}
+                                            .xs-tabbox {width: 1138px; height: auto; margin: 0 auto; }
+                                            .xs-tabbox a {text-decoration: none;}
+                                            .xs-pilian {width: 114px; height: 28px; border-right: 1px solid #e0e0e0; float: left;}
+                                            .xs-fenzu {float: left; width: 430px; height: 28px;}
+                                            .xs-fenzu ul li {float: left; width: 83px; height: 28px; border:1px solid #7d7d7d;  border-radius: 5px; text-align: center; line-height: 28px; margin-left: 15px; box-sizing: border-box; }
+                                            .xs-fenzu ul li a {text-decoration:none; color: #7d7d7d;display:block;width:100%;height:100%;}
+                                            .xs-fenzu ul li:hover {border:1px solid #1fa1e1;}
+                                            .xs-fenzu ul li:hover a {color: #1fa1e1;}
+                                            .xs-jine {float: right; color:#6b6b6b; font-size: 18px;}
+                                            .xs-jine span {color: #f00000;}
+                                            .xs-lie {width: 1138px; height: 170px; border:1px solid #898989; border-radius: 8px; margin-top: 15px;}
+                                            .xs-lie hr {width: 1100px; margin: 0 auto;}
+                                            .xs-lietop { height: 30px;  margin: 15px 0; overflow: hidden;}
+                                            .xs-lietop ul li {float: left; height: 20px; line-height: 20px;}
+                                            .xs-lietop ul li input{width: 17px; height: 17px; border:1px solid #ccc;}
+                                            .xs-lietop ul li a {font-size: 14px; color:#646464; font-weight: bold; line-height: 20px; margin-left: 20px;}
+                                            .xs-lietop ul li span {margin-left: 5px;  color: #7d7d7d; width: 130px;display: inline-block;}
+                                            .xs-lietop ul li span b {font-weight: 100; color: #7d7d7d;}
+                                            .xs-lietop ul li.xs-box select {width:79px; height: 23px; float:right; font-size: 12px; padding: 0; border-color: #20a4e5; color: #20a4e5; }
+                                            .xs-liemid { overflow: hidden; margin-top: 10px; margin-bottom: 20px;}
+                                            .xs-liemid ul li {float: left;}
+                                            .xs-liemid ul li:nth-child(1){width: 80px; border-right: 1px solid #e0e0e0;}
+                                            .xs-liemid ul li:nth-child(1) span {display: block; color: #7d7d7d; text-align:left;}
+                                            .xs-liemid ul li:nth-child(1) span b {color: #7d7d7d; font-weight: 100;}
+                                            .xs-liemid ul li:nth-child(2){width: 540px ; border-right: 1px solid #e0e0e0;}
+                                            .xs-liemid ul li:nth-child(2) span {display: block; color: #7d7d7d; text-align: left; margin-bottom: 4px; margin-left: 10px;width: 525px; height: 14px; overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+                                            .xs-liemid ul li:nth-child(2) span b {color: #7d7d7d; font-weight: 100; }
+                                            .xs-liemid ul li:nth-child(3){width: 94px ; height: 54px; border-right: 1px solid #e0e0e0;}
+                                            .xs-liemid ul li:nth-child(3) span {display: block; text-align: center; color: #ffa200; font-size: 12px;}
+                                            .xs-liemid ul li:nth-child(4){width: 350px ; margin-left: 10px;}
+                                            .xs-liemid ul li:nth-child(4) span {display: block;}
+                                            .xs-dtai b {float: left; display: block; font-weight: 100;}
+                                            .xs-liebutleft {float: left;}
+                                            .xs-liebutleft span {font-size: 12px; color:#ff0000; line-height: 32px; margin-left: 20px; }
+                                            .xs-liebutright {float: right; margin-right: 20px;} 
+                                            .xs-liebutright ul li {float: left; margin-left: 10px; line-height: 32px;} 
+                                            .xs-liebutright ul li  b {font-weight: 100;}
+                                        </style>
+                                    <div class="xs-tabbox">
+                                        <div style="overflow: hidden;">
+                                            <div class="xs-pilian">
+                                  
+                                                <a class="btn btn-primary btn-sm " id="manage_group" href="javascript:void(0);" style="margin-bottom: 5px;">管理分组</a></div>
+                                            <div class="xs-fenzu">
+                                                <ul>
+                                                    <li {%if not params['category_id']%}style="border:1px solid #1fa1e1;"{%end%}><a {%if not params['category_id']%} style="color:1fa1e1;"{%end%} href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}{%for k,v in params.items()%}{%if v and k!='category_id'%}&{{k}}={{v}}{%end%}{%end%}">全部</a></li>
+                                                    <li {%if params['category_id']=='ungroup'%}style="border:1px solid #1fa1e1;"{%end%}><a {%if params['category_id']=='ungroup'%} style="color:1fa1e1;"{%end%} href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}&category_id=ungroup{%for k,v in params.items()%}{%if v and k!='category_id'%}&{{k}}={{v}}{%end%}{%end%}">未分组</a></li>
+                                                    {%if all_categorys%}
+                                                    {%for item in all_categorys%}
+                                                    <li {%if params['category_id']==str(item.id)%}style="border:1px solid #1fa1e1;"{%end%}><a {%if params['category_id']==str(item.id)%}style="color:1fa1e1;"{%end%} href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}&category_id={{item.id}}{%for k,v in params.items()%}{%if v and k!='category_id'%}&{{k}}={{v}}{%end%}{%end%}">{{item.category_name}}</a></li>
+                                                    {%end%}
+                                                    {%end%}
+                                                   
+                                                </ul>
+                                            </div>
+                                            {%if customers%}                                            
+                                            <div class="xs-jine">总待收金额: <span>{{count.sw}}</span> </div>
+                                        </div>
+                                        {%for item in customers%}
+                                        <div class="xs-lie">
+                                            <div class="xs-lietop">
+                                                <ul>
+                                                        {%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
+                                                        <li><input type="checkbox" name="check" value="{{item.customer_id}}" {%if show_tag!='-1000' and show_tag!='-2000'%}assist_id="{{item.assist_id}}" sale_id="{{item.assist_sale_id}}"{%end%} id="check"></li>
+                                                        {%end%}
+                                                    <li><a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px;" title="{{item.company}}">{{item.company}}</a></li>
+                                                    {%if get_assist_linkman(item.customer_id)%}
+                                                    {%set link_man=get_assist_linkman(item.customer_id)%}
+                                                    <li> <span style="color: #f30000;">联系人:<b style="color: #f30000;">{{link_man.name}}</b></span> <span>电话:<b>{{link_man.tel}}</b></span> <span>备注:<b title="{{link_man.remark}}">{%if link_man.remark%}{{link_man.remark[:6]}}{%if len(link_man.remark)>6%}..{%end%}{%end%}</b></span> <span>记账到期：<b>{%if item.acc_end%}{{item.acc_end.strftime("%Y-%m")}} {%end%}</b></span>
+                                                        <span>{%if item.acc_book_end_expire>0%}<i style="font-style:normal; display: inline-block; width: 15px; height: 15px; color: #fff; background-color:#ff0000; border-radius: 20px; text-align: center; line-height: 17px;margin-right:5px;">!</i>{%end%}账册到期：<b>{%if item.acc_book_end %} {{item.acc_book_end.strftime("%Y-%m")}} {%end%}</b></span></li>
+                                                    {%end%}
+                                                     
+                                                    <li class="xs-box" style="float:right;padding-right:5px;">
+                                                            <select name="operation" id="operation" style="text-align: center;text-align-last: center;">
+                                                                <option value="">查  看</option>
+                                                                {%if department_name=='销售部' and '250' not in role_list or '302' in role_list and item.jd_at!=None and item.sale_end_at==None%}
+                                                                <option value="1" assist_id="{{item.assist_id}}"  customer_id="{{item.customer_id}}">完 结</option>
+                                                                {%end%}
+                                                                <option value="2"  customer_id="{{item.customer_id}}">查看联系人</option>
+                                                                <option value="3"
+                                                                customer_id="{{item.customer_id}}"
+                                                                item_id="{{item.id}}" {%if show_tag!='-1000' and show_tag!='-2000'%} assist_id="{{item.assist_id}}"{%end%}
+                                                                wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})账册费:{{item.pay_book_amount}}元{%end%}"
+                                                                curr_expire_pay="{%if item.acc_end and item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
+                                                                                        {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
+                                                                                        company_name="{{item.company}}" 
+                                                                                        {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  (department_name=='销售部' and '250' not in role_list or '302' in role_list)) %}jd_at="{{item.jd_at}}"  sale_end_at="{{item.sale_end_at}}"{%end%}
+                                                                >催款记录</option>
+                                                            </select>
+                                                        </li>
+                                                    <li class="xs-box" style="float:right;padding-right:5px;">
+                                                        <select name="manage_group" id="manage_group" style="text-align: center;text-align-last: center;">
+                                                            <option assist_id="{{item.assist_id}}" value="ungroup">未分组</option>
+                                                            {%if all_categorys%}
+                                                            {%for row in all_categorys%}
+                                                            <option assist_id="{{item.assist_id}}" value="{{row.id}}" {%if get_assist_category(item.assist_id)==row.id%}selected{%end%}>{{row.category_name}}</option>
+                                                            {%end%}
+                                                            {%end%}
+                                                        </select>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="xs-liemid">
+                                                <ul>
+                                                    <li>
+                                                        <span>销售:<b>{%if item.sale_man%}{{item.sale_man}}{%elif item.sale_man1%}{{item.sale_man1}}{%end%}</b></span>
+                                                        <span>客服:<b>{%if item.kf_man%}{{item.kf_man}}{%elif item.kf_man1%}{{item.kf_man1}}{%end%}</b></span>
+                                                        <span>跟进:<b>{%if item.sale_name%}{{item.sale_name}}{%end%}</b></span>
+                                                    </li>
+                                                    <li>
+                                                        <span>待收明细：<b title="{%if item.pb_remark%}{{item.pb_remark}}{%end%}">{%if item.pb_remark%}{{item.pb_remark[:45]}}{%if len(item.pb_remark)>45%}...{%end%}{%end%}</b></span>
+                                                        <span>最新收款明细：<b title="{%if item.al_remark%}{{item.al_remark}}{%end%}">{%if item.al_remark%} {{item.al_remark[:45]}}{%if len(item.al_remark)>45%}...{%end%}{%end%}</b></span>
+                                                        <span>客户备注：<b title="{%if item.customer_remark%}{{item.customer_remark}}{%end%}"> {%if item.customer_remark%}{{item.customer_remark[:45]}}{%if len(item.customer_remark)>45%}...{%end%}{%end%}</b></span>
+                                                    </li>
+                                                    <li>
+                                                        <span>待收金额</span>
+                                                        <span style="font-size: 18px; font-weight: bold;">{%if item.wait_pay_amount%}{{item.wait_pay_amount}}{%end%}</span>
+                                                    </li>
+                                                    <li>
+                                                        <span class="xs-dtai"><b style="width: 60px; ">最新动态：</b>
+                                                        <b style="width: 290px; height: 54px;overflow:hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;"
+                                                        title="{%if item.sale_cuikuan_id and role!='8' %}
+                                                        {%if (department_name=='销售部' and '250' not in role_list or '302' in role_list) and item.sale_last_cuikuan_at%}
+                                                            {%if item.sale_last_cuikuan_at%}
+                                                                {%if item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                                    {{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}
+                                                                {%end%}
+                                                            {%end%}
+                                                        {%else%}
+                                                            {%if item.last_cuikuan_at%}
+                                                                {%if item.last_cuikuan_at>item.assist_created_at%}
+                                                                    {{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}
+                                                                {%end%}
+                                                            {%end%}
+                                                        {%end%}
+                                                    {%else%}
+                                                 
+                                                        {%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                                            {%if item.sale_last_cuikuan_at>item.last_cuikuan_at and item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                                {{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}
+                                                            {%elif item.last_cuikuan_at>item.sale_last_cuikuan_at and item.last_cuikuan_at>=item.assist_created_at%}
+                                            
+                                                            {{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}
+                                                            {%end%}
+                                                        {%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}
+                                                            {%if item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                                {{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}
+                                                            {%end%}
+                                                        {%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                                            {%if item.last_cuikuan_at>=item.assist_created_at%}
+                                                            {{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}
+                                                            {%end%}
+                                                        {%end%}
+                                                    {%end%}"
+                                                        >
+                                                            {%if item.sale_cuikuan_id and role!='8' %}
+                                                                {%if (department_name=='销售部' and '250' not in role_list or '302' in role_list) and item.sale_last_cuikuan_at%}
+                                                                    {%if item.sale_last_cuikuan_at%}
+                                                                        {%if item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                                            {{item.sale_last_cuikuan_msg[:65]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>65%}...{%end%}
+                                                                        {%end%}
+                                                                    {%end%}
+                                                                {%else%}
+                                                                    {%if item.last_cuikuan_at%}
+                                                                        {%if item.last_cuikuan_at>item.assist_created_at%}
+                                                                            {{item.last_cuikuan_msg[:65]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>65%}...{%end%}
+                                                                        {%end%}
+                                                                    {%end%}
+                                                                {%end%}
+                                                            {%else%}
+                                                         
+                                                                {%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                                                    {%if item.sale_last_cuikuan_at>item.last_cuikuan_at and item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                                        {{item.sale_last_cuikuan_msg[:65]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>65%}...{%end%}
+                                                                    {%elif item.last_cuikuan_at>item.sale_last_cuikuan_at and item.last_cuikuan_at>=item.assist_created_at%}
+                                                    
+                                                                    {{item.last_cuikuan_msg[:65]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>65%}...{%end%}
+                                                                    {%end%}
+                                                                {%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}
+                                                                    {%if item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                                        {{item.sale_last_cuikuan_msg[:65]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>65%}...{%end%}
+                                                                    {%end%}
+                                                                {%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                                                    {%if item.last_cuikuan_at>=item.assist_created_at%}
+                                                                    {{item.last_cuikuan_msg[:65]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>65%}...{%end%}
+                                                                    {%end%}
+                                                                {%end%}
+                                                            {%end%}</b></span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <hr> 
+                                            <div class="xs-liebut">
+                                                <div class="xs-liebutleft">
+                                                    <span>跟进状态：{%if item.jd_at%}跟进{{item.genjin_day}}天{{item.sale_genjin_count}}次{%end%}
+                                                       
+                                                            {%if item.sale_created_at%}
+                                                            &nbsp;  &nbsp;  &nbsp;<font style="font-size:20px;">{{time_transition(item.sale_created_at)}}</font>
+                                                            {%end%}
+                                                    </span>
+                                                </div>
+                                                <div class="xs-liebutright">
+                                                    <ul>
+                                                        <li>去年收入：<b></b></li>
+                                                        <li style="color: #7d7d7d">|</li>
+                                                        <li>参保人数：<b>{%if show_sb(item.customer_id)%}{{show_sb(item.customer_id).ss_num}}{%end%}</b></li>
+                                                        <li style="color: #7d7d7d">|</li>
+                                                        <li><b>{%if item.jd_at!=None and item.sale_end_at==None%}
+                                                        销售{{item.sale_name}}处理中{{item.jd_at.strftime('%Y-%m-%d')}}
+                                                        {%end%}</b></li>
+                                                        <li style="color: #7d7d7d">|</li>
+                                                        <li>会计：<b>{{item.acc_uid_name}}</b></li>
+                                                        <li><b>{{item.pay_pay_typeid_name}}</b></li>
+                                                        <li>总费：<b>{{item.pay_service_amount}}</b></li>
+                                                        <li>月费：<b>{{item.pay_service_amount_month}}</b></li>
+                                                        <li>账册费：<b>{{item.pay_book_amount}}</b></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {%end%}
+                                        {%else%} 还没有客户哦。 {%end%}
+                                    </div>
+                                       {%else%}
                                        {%if customers%}
-                                       {%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
-                                       <a class="btn btn-primary btn-sm allot_choose" href="javascript:void(0);" style="margin-bottom: 5px;">批量分配</a>
-                                   {%end%}
                                     <div class="alert alert-info" style="font-size: 16px;">总待收金额:{{count.sw}}</div>
                               
                                     <table class="table" style="margin:1px;">
                                            <thead>
                                                <tr style="background-color: black; color:#fff;">
                                                     {%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
-                                                    <th> <input type="checkbox" id="choose_all"></th>
+                                                    <th></th>
                                                     {%end%}
                                                <th style="width:13px; ">公司名称</th>
                                              
@@ -439,28 +866,77 @@ display: -webkit-box;
                                                    <td  style="width: 60px;  color: red;">{%if item.wait_pay_amount%}{{item.wait_pay_amount}}{%end%}</td>
                                                
                                                    <td id='{{item.customer_id}}'  style="width: 150px; " 
-                                                   title="{%if item.sale_cuikuan_id  and role!='8' %}{%if (department_name=='销售部' and '250' not in role_list or '302' in role_list ) and item.sale_last_cuikuan_at%}{%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%else%}{%if item.last_cuikuan_at%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%end%}{%else%}{%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}{%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%else%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}{{item.sale_last_cuikuan_msg}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}{{item.last_cuikuan_msg}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%end%}{%end%}">
+                                                   title="{%if show_tag!='-1000' and show_tag!='-2000'%}
                                                    {%if item.sale_cuikuan_id and role!='8' %}
                                                    {%if (department_name=='销售部' and '250' not in role_list or '302' in role_list) and item.sale_last_cuikuan_at%}
-                                                   {%if item.sale_last_cuikuan_at%}{{item.sale_last_cuikuan_msg[:20]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}{%end%}
+                                                       {%if item.sale_last_cuikuan_at%}
+                                                           {%if item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                               {{item.sale_last_cuikuan_msg[:65]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>65%}...{%end%}
+                                                           {%end%}
+                                                       {%end%}
                                                    {%else%}
-                                                   {%if item.last_cuikuan_at%}{{item.last_cuikuan_msg[:20]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}{%end%}
+                                                       {%if item.last_cuikuan_at%}
+                                                           {%if item.last_cuikuan_at>item.assist_created_at%}
+                                                               {{item.last_cuikuan_msg[:65]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>65%}...{%end%}
+                                                           {%end%}
+                                                       {%end%}
                                                    {%end%}
-                                                   {%else%}
+                                               {%else%}
                                             
-                                                    {%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}
-
-                                                   {%if item.sale_last_cuikuan_at>item.last_cuikuan_at%}
-                                                   {{item.sale_last_cuikuan_msg[:20]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
-                                                    {%else%}
-                                                    {{item.last_cuikuan_msg[:20]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
-                                                   {%end%}
+                                                   {%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                                       {%if item.sale_last_cuikuan_at>item.last_cuikuan_at and item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                           {{item.sale_last_cuikuan_msg[:65]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>65%}...{%end%}
+                                                       {%elif item.last_cuikuan_at>item.sale_last_cuikuan_at and item.last_cuikuan_at>=item.assist_created_at%}
+                                       
+                                                       {{item.last_cuikuan_msg[:65]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>65%}...{%end%}
+                                                       {%end%}
                                                    {%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}
-                                                   {{item.sale_last_cuikuan_msg[:20]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>20%}...{%end%}
+                                                       {%if item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                           {{item.sale_last_cuikuan_msg[:65]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>65%}...{%end%}
+                                                       {%end%}
                                                    {%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}
-                                                   {{item.last_cuikuan_msg[:20]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>20%}...{%end%}
-                                                    {%end%}
-                                                    {%end%}
+                                                       {%if item.last_cuikuan_at>=item.assist_created_at%}
+                                                       {{item.last_cuikuan_msg[:65]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>65%}...{%end%}
+                                                       {%end%}
+                                                   {%end%}
+                                               {%end%}
+                                                   {%end%}">
+                                                 {%if show_tag!='-1000' and show_tag!='-2000'%}
+                                                 {%if item.sale_cuikuan_id and role!='8' %}
+                                                 {%if (department_name=='销售部' and '250' not in role_list or '302' in role_list) and item.sale_last_cuikuan_at%}
+                                                     {%if item.sale_last_cuikuan_at%}
+                                                         {%if item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                             {{item.sale_last_cuikuan_msg[:65]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>65%}...{%end%}
+                                                         {%end%}
+                                                     {%end%}
+                                                 {%else%}
+                                                     {%if item.last_cuikuan_at%}
+                                                         {%if item.last_cuikuan_at>item.assist_created_at%}
+                                                             {{item.last_cuikuan_msg[:65]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>65%}...{%end%}
+                                                         {%end%}
+                                                     {%end%}
+                                                 {%end%}
+                                             {%else%}
+                                          
+                                                 {%if item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                                     {%if item.sale_last_cuikuan_at>item.last_cuikuan_at and item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                         {{item.sale_last_cuikuan_msg[:65]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>65%}...{%end%}
+                                                     {%elif item.last_cuikuan_at>item.sale_last_cuikuan_at and item.last_cuikuan_at>=item.assist_created_at%}
+                                     
+                                                     {{item.last_cuikuan_msg[:65]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>65%}...{%end%}
+                                                     {%end%}
+                                                 {%elif item.sale_last_cuikuan_at and not item.last_cuikuan_at%}
+                                                     {%if item.sale_last_cuikuan_at>=item.assist_created_at%}
+                                                         {{item.sale_last_cuikuan_msg[:65]}} {{item.sale_last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.sale_last_cuikuan_msg)>65%}...{%end%}
+                                                     {%end%}
+                                                 {%elif not item.sale_last_cuikuan_at and item.last_cuikuan_at%}
+                                                     {%if item.last_cuikuan_at>=item.assist_created_at%}
+                                                     {{item.last_cuikuan_msg[:65]}} {{item.last_cuikuan_at.strftime('%Y-%m-%d')}}{%if len(item.last_cuikuan_msg)>65%}...{%end%}
+                                                     {%end%}
+                                                 {%end%}
+                                             {%end%}
+                                                 {%end%}
+
                                                 </td>
                                              
                                                    {% if show_tag!='-1000' and show_tag!='-2000' or (show_tag=='-1000' and  (department_name=='销售部' and '250' not in role_list or '302' in role_list)) %}
@@ -661,36 +1137,20 @@ display: -webkit-box;
 
                                            </tbody>
                                        </table>
-
                                        {%else%} 还没有客户哦。 {%end%}
+                                        {%end%}
+                                      
                                        <div class="pagination">
                                            <ul>
                                                {% if pagination.has_prev %}
                                                <li>
                                                    <a href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}
-                                                   {%if params['company_sql']%}&company_sql={{params['company_sql']}}{%end%}
-                                                   {%if params['kf_kuaiji']%}&kf_kuaiji={{params['kf_kuaiji']}}{%end%}
-                                                   {%if params['sale_man']%}&sale_man={{params['sale_man']}}{%end%}
-                                                   {%if params['kf_man']%}&kf_man={{params['kf_man']}}{%end%}
-                                                   {%if params['genjin_man']%}&genjin_man={{params['genjin_man']}}{%end%}
-
-                                                   {%if params['ass_num']%}&ass_num={{params['ass_num']}}{%end%}
-                                                   {%if params['ass_num_end']%}&ass_num_end={{params['ass_num_end']}}{%end%}
-                                                   {%if params['ass_day']%}&ass_day={{params['ass_day']}}{%end%}
-                                                   {%if params['ass_day_end']%}&ass_day_end={{params['ass_day_end']}}{%end%}
+                                                   {%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}
                                                    &page={{ pagination.page - 1}}">&laquo; 上页</a>
                                                </li> {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                                                <li>
                                                    <a href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}
-                                                   {%if params['company_sql']%}&company_sql={{params['company_sql']}}{%end%}
-                                                   {%if params['kf_kuaiji']%}&kf_kuaiji={{params['kf_kuaiji']}}{%end%}
-                                                   {%if params['sale_man']%}&sale_man={{params['sale_man']}}{%end%}
-                                                   {%if params['kf_man']%}&kf_man={{params['kf_man']}}{%end%}
-                                                   {%if params['genjin_man']%}&genjin_man={{params['genjin_man']}}{%end%}
-                                                   {%if params['ass_num']%}&ass_num={{params['ass_num']}}{%end%}
-                                                   {%if params['ass_num_end']%}&ass_num_end={{params['ass_num_end']}}{%end%}
-                                                   {%if params['ass_day']%}&ass_day={{params['ass_day']}}{%end%}
-                                                   {%if params['ass_day_end']%}&ass_day_end={{params['ass_day_end']}}{%end%}
+                                                   {%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}
                                                    &page={{ page }}">{{ page }}</a>
                                                </li>
                                                {% else %}
@@ -708,15 +1168,7 @@ display: -webkit-box;
                                                {% end %} {%end %} {% if pagination.has_next %}
                                                <li>
                                                    <a href="/payment?tag={{tag}}{%if show_tag%}&show_tag={{show_tag}}{%end%}
-                                                   {%if params['company_sql']%}&company_sql={{params['company_sql']}}{%end%}
-                                                   {%if params['kf_kuaiji']%}&kf_kuaiji={{params['kf_kuaiji']}}{%end%}
-                                                   {%if params['sale_man']%}&sale_man={{params['sale_man']}}{%end%}
-                                                   {%if params['kf_man']%}&kf_man={{params['kf_man']}}{%end%}
-                                                   {%if params['genjin_man']%}&genjin_man={{params['genjin_man']}}{%end%}
-                                                   {%if params['ass_num']%}&ass_num={{params['ass_num']}}{%end%}
-                                                   {%if params['ass_num_end']%}&ass_num_end={{params['ass_num_end']}}{%end%}
-                                                   {%if params['ass_day']%}&ass_day={{params['ass_day']}}{%end%}
-                                                   {%if params['ass_day_end']%}&ass_day_end={{params['ass_day_end']}}{%end%}
+                                                   {%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}
                                                    &page={{pagination.page+1}}">下页 &raquo;</a>
                                                </li>
                                                {% end %}
@@ -980,19 +1432,220 @@ display: -webkit-box;
             
                     </div>
                  </div>
+
+                 <div class="modal hide fade" id="manage_group_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+
+                            <div class="modal-header">
+                              <h5 id="exampleModalLongTitle_license">管理分组
+                                <a class="btn btn-primary" id="add_category" href="javascript:void(0)">新增</a>
+                              </h5>
+                              
+                    
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                    
+                            <div class="modal-body form-horizontal" id="site_mod">
+                                <table class="table table-bordered fayetable" id="dataTable" cellspacing="0" style="font-size:12px;">
+                                    <thead>
+                                        <tr>
+                                          
+                                           <th width="20">
+                                            编号 
+                                            </th>
+                                             <th width="200">分组</th>
+                                             <th width="20">排序</th>
+                                             <th width="20"></th>
+                  
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fayetbody" id="my_allgroups">
+                                        {%for item in all_categorys%}
+                                        <tr id="{{item.id}}" class='my_allgroup hh' category_id="{{item.id}}">
+                                          <td>{{item.id}}</td>
+                                          <td><input type="text"  id="{{item.id}}" value="{{item.category_name}}" class="form-control"></td>
+                                          <td><input type="text"  value="{{item.order_int}}" class="form-control"></td>
+                                          <td><a class="btn btn-danger delete_group l" href="javascript:void(0)" id='{{item.id}}'>删除</a></td>
+                                        </tr>
+                                        {%end%}
+                                    </tbody>
+                                </table>
+                    
+                            </div>
+                            <div class="modal-footer">
+                    
+                    
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    
+                                   <button class="btn btn-primary" id="btn_save_group">保 存</button>
+                            </div>
+                          
+                        
+                      </div>
+                  
+                  
+                  <div class="modal hide fade" id="manager_category" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                          <div class="modal-header">
+                            <h5  id="exampleModalLongTitle_license">增加分组</h5>
+                  
+                  
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              x
+                            </button>
+                          </div>
+                  
+                          <div class="modal-body form-horizontal" id="site_mod">
+                  
+                              <div class="control-group">
+                                  <label for="exampleInputEmail1"  class="col-sm-6 control-label">名称:</label>
+                                  <input class="form-control" type="text" name="category_name" id="category_name"  placeholder="">
+                  
+                                </div>
+                                            <div class="control-group">
+                                  <label for="exampleInputEmail1"  class="col-sm-6 control-label">排序:</label>
+                                  <input class="form-control"  type="text" name="order_int" id="order_int"  placeholder="数值大排前面" value="0">
+                                </div>
+                          </div>
+                  
+                  
+                          
+                          <div class="modal-footer">
+                  
+                                <button type="button" class="btn btn-secondary showdown" data-dismiss="modal">关闭</button>
+                  
+                                 <button class="btn btn-primary" id="btn_save_category">保 存</button>
+                          </div>
+                    
+                    </div>
+
+                    <div id="genjin_modal" class="modal fade bgaa" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                                <div class="modal-header">
+                                    <h5 id="myModalLabel_linkman">跟进情况
+                                        <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                                        <i class="btn-icon-only icon-remove">×</i>
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div class="modal-body ">
+                             
+                                    <div class=" control-group">
+                                            
+                                        
+                                        <div class="controls">
+                                                <label style="display: inline-block;width:68.63px;">跟进天数:</label>
+                                            <input type="text" placeholder="跟进天数起" name="ass_day" value="{{params['ass_day']}}">
+                                            <input type="text" placeholder="跟进天数止" name="ass_day_end" value="{{params['ass_day_end']}}">
+                                        </div>
+                                </div>
+
+                                <div class=" control-group">
+                                            
+                                        
+                                        <div class="controls">
+                                                <label style="display: inline-block;width:68.63px;">跟进次数:</label>
+                                                <input type="text" placeholder="跟进次数起" name="ass_num"  value="{{params['ass_num']}}">
+                                                <input type="text" placeholder="跟进次数止" name="ass_num_end"  value="{{params['ass_num_end']}}">
+                                        </div>
+                                </div>
+                                <div class=" control-group">
+                                            
+                                        
+                                        <div class="controls">
+                                                <label style="display: inline-block;">未跟进天数:</label>
+                                                <input   type="text" placeholder="未跟进天数起" name="no_ass_day"  value="{{params['no_ass_day']}}">
+                                                <input  type="text" placeholder="未跟进天数止" name="no_ass_day_end"  value="{{params['no_ass_day_end']}}">
+
+                                        </div>
+                                </div>
+
+
+
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                                    <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">保存</button>
+                                </div>
+                            
+                        
+                    </div> 
+                    <div id="cost_modal" class="modal fade bgaa" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                            <div class="modal-header">
+                                <h5 id="myModalLabel_linkman">费用到期
+                                    <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                                    <i class="btn-icon-only icon-remove">×</i>
+                                    </a>
+                                </h5>
+                            </div>
+                            <div class="modal-body ">
+                         
+                                <div class=" control-group">
+                                        
+                                    
+                                    <div class="controls">
+                                            <label style="display: inline-block;width:68.63px;">记账到期:</label>
+                                        <input type="text" id="acc_end_start" name="acc_end_start"  placeholder="记账到期起" value="{{params['acc_end_start']}}">
+                                        <input type="text" id="acc_end_end" name="acc_end_end"  placeholder="记账到期止" value="{{params['acc_end_end']}}">
+                                    </div>
+                            </div>
+                            <div class=" control-group">
+                                        
+                                    
+                                    <div class="controls">
+                                            <label style="display: inline-block;width:68.63px;">账册到期:</label>
+                                            <input type="text" id="acc_book_end_start" name="acc_book_end_start"  placeholder="账册到期起" value="{{params['acc_book_end_start']}}">
+                                            <input type="text" id="acc_book_end_end" name="acc_book_end_end"  placeholder="账册到期止" value="{{params['acc_book_end_end']}}">
+                                    </div>
+                            </div>
+
+
+
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                                <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">保存</button>
+                            </div>
+                        
+                    
+                </div> 
 {%end%} {%block js%}
 
 
 <script>
-
+$(window).scroll(
+function () {
+var scrollValue = $(window).scrollTop();
+console.log(scrollValue);
+scrollValue > 60 ? $(".xs-fixed").show(): $(".xs-fixed").hide();
+}
+)
     $(function () {
         _xsrf = getCookie("_xsrf")
 
         
         laydate.render({
-                   elem: '#txt_time' //指定元素
+            elem: '#txt_time' //指定元素
           });
-        
+          laydate.render({
+                   elem: '#acc_end_start'
+                   ,type: 'month'
+
+          });        
+          laydate.render({
+            elem: '#acc_end_end' //指定元素
+            ,type: 'month'
+          });        
+          laydate.render({
+            elem: '#acc_book_end_start' //指定元素
+            ,type: 'month'
+          });        
+          laydate.render({
+            elem: '#acc_book_end_end' //指定元素
+            ,type: 'month'
+          });
           $('#choose_all').on('change',function () { 
          $('input[name=check]').not(this).prop('checked',this.checked);
       })
@@ -1354,5 +2007,235 @@ display: -webkit-box;
                     $("#linkman_modal").modal('show')
                   })
               })
+        $("select[name=operation]").change(function () {
+            this_op=$(this).find('option:checked') 
+            if($(this).val()=='1'){
+                assist_id=this_op.attr('assist_id')
+                customer_id=this_op.attr('customer_id')
+                $("#btn_save_summay").attr('assist_id',assist_id)
+                $("#btn_save_summay").attr('customer_id',customer_id)
+                $("#a_handler_finish_modal").modal('show')
+            }
+            else if($(this).val()=='2'){
+                customer_id=this_op.attr('customer_id')
+                 $.post('/payment?tag=assist_linkman',
+                 {
+                     '_xsrf':_xsrf,
+                     'customer_id':customer_id
+                 }
+                 ,function (data) { 
+                    data=data['linkman']
+                    txt=''
+                    $("#linkman_box").children().remove()
+                 
+                    if(data!=''){
+                    for(var i=0;i<data.length;i++){
+                    txt+='<tr><td>'+data[i].name+'</td><td >'+data[i].tel+'</td><td>'+data[i].remark+'</td><td>'+data[i].acc_uid_name+'</td><td>'+data[i].df+'</td></tr>'
+                    }
+                    $("#linkman_box").append(txt)
+                    }else{
+                        $("#linkman_box").append('<tr><td colspan="5">还没有哦~</td></tr>')
+                    }
+                    $("#linkman_modal").modal('show')
+                  })
+                 
+            }
+            
+            else if($(this).val()=='3'){
+                wait_pay = this_op.attr("wait_pay")
+                curr_expire_pay = this_op.attr("curr_expire_pay")
+               customer_id = this_op.attr("customer_id")
+               company_name =this_op.attr("company_name")
+               sale_end_at=this_op.attr('sale_end_at')
+               assist_id=this_op.attr('assist_id')
+               $('#btn_save_msg').attr('customer_id',customer_id)
+               $('#btn_save_msg').attr('sale_end_at',sale_end_at)
+               $('#btn_save_msg').attr('assist_id',assist_id)
+               $("#btn_save_wai_pay").attr("payment_id", "0")
+               $("#curr_expire").text("")
+               $("#last_payment").html("")
+               $("#curr_last_payment").html("")
+               $("#service_price").html("")
+                $("#account_remark").val("")
+               $("#company_name").text("")
+               jd_at=$(this).attr('jd_at')
+               $.get("/payment?tag=get_last_payment", { "customer_id": customer_id }, function (result) {
+                   if (result.code == 1) {
+               
+                       
+                       html = "<td>付款方式</td><td>" + result.customer.customer_paytype_id_name + "</td>"
+                       html += "<td>总服务费</td><td>" + result.customer.customer_service_amount + "</td>"
+                       html += "<td>月服务费</td><td>" + result.customer.customer_service_amount_month + "</td>"
+  
+                       html += "<td>账册费</td><td>" + result.customer.customer_book_amount + "</td>"
+                       $("#service_price").html(html)
+                       // $("#msg_service_amount").text("上一次总服务费:" +  result.customer.service_amount)
+
+                       $("#msg_acc_end").text("(上期记账费到期时间:" + result.customer.acc_end + ")")
+                       $("#msg_acc_book_end").text("(上期账册费到期时间:" + result.customer.acc_book_end + ")")
+
+                       if (result.customer.al_remark == undefined || result.customer.al_remark == "") {
+                           $("#last_payment").html("<td colspan='8'>没有上期收款明细哦</td>")
+
+                       } else {
+                           $("#last_payment").html("<td colspan='8'>" + result.customer.al_remark + "</td>")
+                       }
+                       if (result.customer.pb_remark == undefined || result.customer.pb_remark == "") {
+                           $("#curr_last_payment").html("<td colspan='8'>没有待收款明细哦</td>")
+
+                       } else {
+                           $("#curr_last_payment").html("<td colspan='8'>" + result.customer.pb_remark + "</td>")
+                       }
+                       
+                      $("#curr_expire").html("<td colspan='8'>" + curr_expire_pay + "</td>")
+                       $("#company_name").html("<td colspan='8'>" + company_name + "</td>")
+
+                       $("#btn_save_wai_pay").attr("payment_id", result.customer.payment_id)
+
+                       
+                       $("#wait_pay_remark").val(wait_pay)
+                       $("#a_handler_modal1").modal("show")
+                   } else {
+
+
+                   }
+               }, "json")
+               
+               {%if  '250' not in role_list%}
+               if(jd_at=='None'){
+                   $("#show_msg_add").hide()
+               } 
+               else{$("#show_msg_add").show()}
+               {%end%}
+               $.get('/customer?tag=show_customer_exchange',
+               {"customer_id": customer_id,'department_name':"{{department_name}}",'jd_at':jd_at},function (result) { 
+                   $('#txt_msg_box').html(result)
+                })
+            }
+            $(this).find('option:first').prop("selected", 'selected');
+         })
+         $("#add_category").on("click",function(){
+      $('#manage_group_modal').modal('hide')
+      setTimeout(function () {$('#manager_category').modal('show')},450);
+    })
+    $("#manage_group").on("click",function () { 
+      $('#manage_group_modal').modal('show')
+     })
+     $("#btn_save_group").on('click',function () { 
+      var numArr = []; // 定义一个空数组
+        var txt = $('.my_allgroup').find(':text'); // 获取所有文本框
+        for (var i = 0; i < txt.length; i++) {
+             var id=txt.eq(i).attr('id')
+             if(typeof(id)!='undefined'){
+              numArr.push([id,txt.eq(i).val()]);
+             }else{
+              numArr.push(txt.eq(i).val());
+             }
+        }
+        numArr=numArr.join(',')
+        $.post(
+          "/category?tag=update_category",
+          {
+            "numarr":numArr,
+            'assist':'1',            
+            "_xsrf":_xsrf
+          },function (result) { 
+            location.reload()
+           }
+        )
+     })
+     $("#btn_save_category").on("click",function(){
+        var category_name = $("#category_name").val()
+        var order_int = $("#order_int").val()
+        if (category_name==""){
+            alert("名称不能为空")
+
+        }else{
+            $.post(
+            "/category?tag=add",
+            {
+                "_xsrf":_xsrf,
+                'category_name':category_name,
+                'assist':'1',
+                "order_int":order_int
+            },function (result) {
+                if(result=='-1'){
+                    alert('你已创建该分组')
+                }else{
+              location.reload()
+                }
+
+                 }
+            )
+            }
+            $('body').on('click','.l',function () { 
+       var id=$(this).attr('id');
+       if(confirm('确定删除编号为'+id+'的分组?')){
+        $.post(
+         '/category?tag=delete_category',
+         {
+           'id':id,
+           'assist':'1',
+           '_xsrf':_xsrf
+         },function (result) {
+           location.reload() 
+          $('.hh[category_id='+id+']').remove();
+
+          }
+       )
+       }
+   
+      })
+    })
+    $("select[name=manage_group]").change(function () { 
+        category_name=$(this).find('option:checked').text()
+        category_id=$(this).val()
+        assist_id=$(this).find('option:checked').attr('assist_id')
+        if(confirm('确定设置分组为'+category_name+'?')){
+            $.post('/category?tag=set_project_category',{
+                "_xsrf":_xsrf,
+                'category_name':category_name,
+                'category_id':category_id,
+                'assist_id':assist_id
+            },function (data) { 
+                location.reload()
+             })
+        }
+     })
+    $(".genjin_btn").click(function () { 
+    $("#genjin_modal").modal("show")
+     })
+    
+    $(".cost_btn").click(function () { 
+        $("#cost_modal").modal("show")
+     })
+
+     $("input[name=ass_day]").blur(function () { 
+        $("input[name=ass_day]").val($(this).val())
+      })
+      $("input[name=ass_day_end]").blur(function () { 
+        $("input[name=ass_day_end]").val($(this).val())
+      })
+      $("input[name=ass_num]").blur(function () { 
+        $("input[name=ass_num]").val($(this).val())
+      })
+      $("input[name=ass_num_end]").blur(function () { 
+        $("input[name=ass_num_end]").val($(this).val())
+      })
+      $("input[name=no_ass_day]").blur(function () { 
+        $("input[name=no_ass_day]").val($(this).val())
+      })
+      $("input[name=no_ass_day_end]").blur(function () { 
+        $("input[name=no_ass_day_end]").val($(this).val())
+      })
+       $('#cost_modal').on('hidden.bs.modal',function () { 
+        $("input[name=acc_end_start]").val($("#acc_end_start").val())
+        
+        $("input[name=acc_end_end]").val($("#acc_end_end").val())
+
+        $("input[name=acc_book_end_start]").val( $("#acc_book_end_start").val())
+
+        $("input[name=acc_book_end_end]").val($("#acc_book_end_end").val())
+        }) 
    })
 </script> {%end%}

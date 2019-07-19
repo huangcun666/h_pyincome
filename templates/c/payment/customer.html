@@ -155,178 +155,346 @@ margin: auto;
                               </li>
 
               <li ><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=finance_tab" id="a_finance_tab" >财务信息</a></li>
-              <li><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=exchange_tab" id="a_exchange_tab" >联系记录</a></li>
+              <!-- <li><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=exchange_tab" id="a_exchange_tab" >联系记录</a></li> -->
               <li class="active"><a href="#payment_tab" id="a_payment_tab" data-toggle="tab">应收记录</a></li>
 
 						</ul>
 
-						<br>
+                        <style>
+                                .xws-biashi ul li a {float: left; margin-right: 25px; padding:5px 10px; background-color: #20a4e5; border-radius: 6px; color: #fff; text-decoration: none; cursor: pointer; margin-bottom: 10px;}
+                                .xws-biashi ul li a:hover {color: #ff0000}
+                            </style>
+                            <div class="xws-biashi">
+                                <ul>
+                                    <li><a href="#linkman_div">联系人管理</a></li>
+                                    <li><a href="#payment_div">应收记录</a></li>
+                                    <li><a href="#cuikuan_div">催款记录/会计建议</a></li>
+                                </ul>
+                            </div>
+                        <br>
+
+                        <style> 
+                            ul,li {list-style: none;}
+                            .xs-run li {width: 530px; height: 77px; border:1px solid #898989; float: left; margin-right: 22px; margin-top: 22px; }
+                            .xs-run li div {float: left;}
+                            .xs-run li:last-child {border: 1px solid #1fa1e1; text-align: center; line-height: 77px; color: #1fa1e1;}
+                            .xs-name {width: 80px; height: 77px; }
+                            .xs-name h5 {font-size: 14px; text-align: center; margin-top: 23px; }
+                            .xs-name span {text-align: center; display: block; color: #ff0000;}
+                            .xs-nameone {width: 170px; height: 77px; }
+                            .xs-nameone span {display: block; margin-left: 10px; margin-top: 15px;}
+                            .xs-nameone span b {font-weight: 100;width: 123px; height: 14px; overflow:hidden;white-space:nowrap;text-overflow:ellipsis;display: inline-block; }
+                            .xs-tell {width: 180px; height: 77px; }
+                            .xs-tell span {display: block; margin-left: 10px; margin-top: 15px;}
+                            .xs-two {width: 100px; height: 77px; }
+                            .xs-two button {display: block;font-size: 12px; margin-left: 15px; margin-top: 8px; width: 72px; height: 28px; background-color: transparent; }
+                            .xs-btn1 {border:1px solid #1fa1e1; color: #1fa1e1;}
+                            .xs-btn2 {border:1px solid #d60000; color: #d60000;}
+                            .xs-lie {width: 1138px; height: 155px; border:1px solid #898989; border-radius: 8px; margin-top: 15px;}
+                            .xs-lie hr {width: 1100px; margin: 0 auto;}
+                            .xs-lietop { height: 30px;  margin: 15px 0; overflow: hidden;}
+                            .xs-lietop ul li {float: left; height: 20px; line-height: 20px;}
+                            .xs-lietop ul li input{width: 17px; height: 17px; border:1px solid #ccc;}
+                            .xs-lietop ul li a {font-size: 14px; color:#646464; font-weight: bold; line-height: 20px; margin-left: 20px;}
+                            .xs-lietop ul li span {margin-left: 30px;  color: #7d7d7d;}
+                            .xs-lietop ul li span b {font-weight: 100; color: #7d7d7d;}
+                            .xs-lietop ul li.xs-box button {width:79px; height: 23px; font-size: 12px; padding: 0; border:1px solid #20a4e5; color: #20a4e5; background-color: transparent;}
+                            .xs-liemid { overflow: hidden; margin-top: 10px; margin-bottom: 5px;}
+                            .xs-liemid ul li {float: left;}
+                            .xs-liemid ul li:nth-child(1){width: 355px ; margin-left: 10px; border-right: 1px solid #e0e0e0;}
+                            .xs-liemid ul li:nth-child(1) span {display: block;}
+                            .xs-liemid ul li:nth-child(1) span b i { font-style:normal;display: block; width: 269px; height:100%;overflow:hidden;text-overflow:ellipsis;}
+                            .xs-liemid ul li:nth-child(2){width: 355px ; margin-left: 10px; border-right: 1px solid #e0e0e0;}
+                            .xs-liemid ul li:nth-child(2) span {display: block;}
+                            .xs-liemid ul li:nth-child(2) span b i { font-style:normal;display: block; width:287px; height:100%;overflow:hidden;text-overflow:ellipsis;}
+                            .xs-liemid ul li:nth-child(3){width: 350px ; margin-left: 10px;}
+                            .xs-liemid ul li:nth-child(3) span {display: block;}
+                            .xs-dtai b {float: left; display: block; font-weight: 100;}
+                            .xs-liebutleft {float: left;}
+                            .xs-liebutleft span {font-size: 12px; color:#ff0000; line-height: 32px; margin-left: 20px; }
+                            .xs-liebutright {float: right; margin-right: 20px;} 
+                            .xs-liebutright ul li {float: left; margin-left: 20px; line-height: 32px;} 
+                            .xs-liebutright ul li  b {font-weight: 100;}
+                            .ys_fixed {width: 1170px; height: 150px; background-color: red; position: fixed; left: 50%; top: 0px; margin-left: -585px; z-index: 999; display: none;}
+                        </style>  
+        
+        <div class="ys_fixed">
+                <div class="widget-header">
+                <i class="icon-user"></i>
+                <h3>客户详情 - {{customer.company}}
+                </h3>
+                </div>
+                <div class="widget-content"> 
+						<ul class="nav nav-tabs" id="myTab">
+                                <li>
+                                  <a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=customer_tab" id="a_customer_tab" >基础信息</a>
+                                </li>
+                                <li>
+                                      <a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=payment_tab" >动态跟进</a>
+                                    </li>
+      
+                    <li ><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=finance_tab" id="a_finance_tab" >财务信息</a></li>
+                    <li><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=exchange_tab" id="a_exchange_tab" >联系记录</a></li>
+                    <li class="active"><a href="#payment_tab" id="a_payment_tab" data-toggle="tab">应收记录</a></li>
+      
+                              </ul>
+                    <div class="xws-biashi">
+                            <ul>
+                                <li><a href="#linkman_div">联系人管理</a></li>
+                                <li><a href="#payment_div">应收记录</a></li>
+                                <li><a href="#cuikuan_div">催款记录/会计建议</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>       
 
 <div class="tab-content">
     <div class="tab-pane active " id="payment_tab ">
-
-        <div class="widget widget-table action-table">
-
-
-
-
-                    <div class="widget-content">
-
-
-
-
-
-
-
-<div class="widget widget-table action-table">
-<div class="widget-header"> <i class="icon-th-list"></i>
-<h3>应收记录 </h3>
-</div>
-<div class="widget-content">
- {%if customers%}
-<table class="table table-striped table-bordered">
-    <thead>
-        <tr style="background-color: black; color:#fff;">
-
-            <th style="min-width:10px;"></th>
-            <th style="min-width:130px;">公司名称</th>
-
-
-
-            <th style="min-width:50px;">付款方式</th>
-            <th style="min-width:60px;">总服务费</th>
-            <th style="min-width:60px;">月服务费</th>
-
-
-
-
-            <th>帐册费</th>
-            <th>记账费到期时间</th>
-            <th>账册费到期时间</th>
-            <th>本期收款明细</th>
-            <th>未收明细</th>
-            <th>更新时间</th>    <th>更新人</th>
-             <th>客户备注</th>
-        
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {%for idx,item in enumerate(customers)%}
-
-        <tr>
-            <td><input type="checkbox" name="merege_payment" value="{{item.id}}" ></td>
-            <td>{{item.company}}</td>
-            <td>{{item.pay_pay_typeid_name}}</td>
-            <td>{{item.pay_service_amount}}</td>
-            <td>{{item.pay_service_amount_month}}</td>
-
-            <td>{{item.pay_book_amount}}</td>
-            <td>
-
-                {%if item.acc_end%} {{item.acc_end.strftime("%Y-%m")}} {%end%}
-
-
-            </td>
-            <td> {%if item.acc_book_end %} {{item.acc_book_end.strftime("%Y-%m")}} {%end%}</td>
-            <td>
-     {%if item.al_remark%} {{(item.al_remark)}} {%end%}
-
-            </td>
-            <td>
-
-                {%if item.pb_remark%}
-                {{(item.pb_remark)}}
-                {%end%}
-
-            </td>
-            <td>{%if item.created_at%} {{item.created_at.strftime("%Y-%m-%d")}} {%end%}</td>
-            <td>
-
-                {%if item.pay_uid_name%}
-                {{(item.pay_uid_name)}}
-                {%end%}
-
-            </td>
-            <td>{{item.customer_remark}}</td>
-            <td>{%if idx==0 and( role=="8" or role=="5" or role=="3")%}
-             <a class="btn handler_detail btn-sm control" type='button'
-        customer_id="{{item.customer_id}}"
-        item_id="{{item.id}}"
-        wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})账册费:{{item.pay_book_amount}}元{%end%}"
-            href="javascript:void(0)"
-     curr_expire_pay="{%if item.acc_end and item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
-    {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
-    href="javascript:void(0)"
-    company_name="{{item.company}}"
-    acc_end ="{%if item.acc_end%}{{item.acc_end.strftime("%Y-%m")}}{%end%}"
-    acc_book_end = "{%if item.acc_book_end%}{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
-    pb_remark = "{%if item.pb_remark%}{{item.pb_remark}}{%end%}"
-    al_remark="{%if item.al_remark%}{{item.al_remark}}{%end%}"
-    pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
-    pay_service_amount="{{item.pay_service_amount}}"
-    pay_service_amount_month="{{item.pay_service_amount_month}}"
-    pay_book_amount="{{item.pay_book_amount}}"
-    >编辑</a>{%end%}</td>
-        </tr>
-        {%end%}
-
-
-
-    </tbody>
-</table>
-
-{%else%} 还没有客户哦。 {%end%}
-
-</div>
-<!-- /widget-content -->
-</div>
-
-
+        <div class="widget widget-table action-table" id="linkman_div">
+            <div class="widget-content">
+                <div class="widget widget-table action-table">
+                    <div class="widget-header"> <i class="icon-th-list"></i>
+                        <h3>联系人管理</h3>
                     </div>
-                    <!-- /widget-content -->
-</div>
+                    <div class="widget-content" style="border:none;">
+                        <ul class="xs-run">
+                            {%if t_linkman%}
+                            {%for item in t_linkman%}
+                            <li>
+                                <div class="xs-name">
+                                    <h5 style="color: #ff0000;">{{item.name}}</h5>
+                                    {%if item.is_first==1%}<span>(首要)</span>{%end%}
+                                </div>
+                                <div class="xs-nameone">
+                                    <span>备注：<b title="{{item.remark}}">{{item.remark}}</b></span>
+                                    <span>创建：<b>{{item.acc_uid_name}}</b></span>
+                                </div>
+                                <div class="xs-tell">
+                                    <span>联系电话：<b>{{item.tel}}</b></span>
+                                    <span>创建时间：<b>{{item.created_at.strftime("%Y-%m-%d")}}</b></span>
+                                </div>
+                                <div class="xs-two">
+                                    <button class="xs-btn1 modify_linkman"
+                                    tel="{{item.tel}}"
+                                    remark="{{item.remark}}"
+                                    title="{{item.name}}"
+                                    gender="{{item.gender}}"
+                                    linkman_guid="{{item.guid}}"
+                                    is_first="{{item.is_first}}"
+                                    linkman_id="{{item.id}}"
+                                    >编辑</button>
+                                    <button class="xs-btn2 delete_linkman"
+                                      linkman_id="{{item.id}}"
+                                      linkman_guid="{{item.guid}}"
+                                    >删除</button>
+                                </div>
+                            </li>
+                            {%end%}
+                            {%end%}
+                            <li title="{{customer.id}}" id="a_add_linkman">
+                                    
+                                +增加新联系人
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div class="widget widget-table action-table">
+        <div class="widget widget-table action-table" id="payment_div">
+            <div class="widget-content">
+                <div class="widget widget-table action-table">
+                    <div class="widget-header"> <i class="icon-th-list"></i>
+                        <h3>应收记录 </h3>
+                    </div>
+                    <div class="widget-content" style="border:none;">
+                        {%if customers%}
+                        {%for idx,item in enumerate(customers)%}
+                            <div class="xs-lie">
+                                <div class="xs-lietop">
+                                    <ul>
+                                        <li><input type="checkbox" name="merege_payment" value="{{item.id}}"></li>
+                                        <li> <a href="javascript:void(0);">{{item.company}}</a></li>
+                                        <li>
+                                            <span>付款方式:<b>{{item.pay_pay_typeid_name}}</b></span>
+                                            <span>总费:<b>{{item.pay_service_amount}}</b></span>
+                                            <span>月费:<b>{{item.pay_service_amount_month}}</b></span>
+                                            <span>账册费:<b>{{item.pay_book_amount}}</b></span>
+                                            <span>记账费到期时间：<b>{%if item.acc_end%} {{item.acc_end.strftime("%Y-%m")}} {%end%}</b></span>
+                                            <span>账册费到期时间：<b>{%if item.acc_book_end %} {{item.acc_book_end.strftime("%Y-%m")}} {%end%}</b></span>
+
+                                        </li>
+                                     
+                                            <li class="xs-box" style="margin-right:10px;float:right;">
+                                                    {%if  role=="8" or role=="5" or role=="3" %}
+                                                    <button class="handler_detail" 
+                                                    customer_id="{{item.customer_id}}"
+                                                    item_id="{{item.id}}"
+                                                    wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})账册费:{{item.pay_book_amount}}元{%end%}"
+                                                   
+                                                 curr_expire_pay="{%if item.acc_end and item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
+                                                {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
+                                          
+                                                company_name="{{item.company}}"
+                                                acc_end ="{%if item.acc_end%}{{item.acc_end.strftime("%Y-%m")}}{%end%}"
+                                                acc_book_end = "{%if item.acc_book_end%}{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
+                                                pb_remark = "{%if item.pb_remark%}{{item.pb_remark}}{%end%}"
+                                                al_remark="{%if item.al_remark%}{{item.al_remark}}{%end%}"
+                                                pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
+                                                pay_service_amount="{{item.pay_service_amount}}"
+                                                pay_service_amount_month="{{item.pay_service_amount_month}}"
+                                                pay_book_amount="{{item.pay_book_amount}}"
+                                                    >编辑</button>{%end%}
+                                                </li>
+                                    </ul>
+                                </div>
+                                <div class="xs-liemid">
+                                    <ul>
+                                        <li>
+                                            <span class="xs-dtai"><b style="width: 85px; color: #1fa1e1; ">本期收款明细：</b>
+                                            <b style="width: 269px; height: 54px;overflow:hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;">
+                                                <i title="{%if item.al_remark%} {{(item.al_remark)}} {%end%}">{%if item.al_remark%} {{(item.al_remark)}} {%end%}</i></b></span>
+                                        </li>
+                                        <li>
+                                            <span class="xs-dtai"><b style="width: 68px; color: #19bc9c; ">未收明细：</b>
+                                                <b style="width:287px; height: 54px;overflow:hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;">
+                                                    <i title="{%if item.pb_remark%}{{(item.pb_remark)}}{%end%}">{%if item.pb_remark%}{{(item.pb_remark)}}{%end%}</i>
+</b></span>
+                                        </li>
+                                        
+                                        <li>
+                                            <span class="xs-dtai"><b style="width: 60px; ">客户备注：</b>
+                                        <b style="width: 290px; height: 54px;overflow:hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;">{{item.customer_remark}}</b></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <hr> 
+                                <div class="xs-liebut">
+                                    <div class="xs-liebutleft">
+                                        
+                                    </div>
+                                    <div class="xs-liebutright">
+                                        <ul>
+                                            <li> 更新人:<b>{%if item.pay_uid_name%}{{(item.pay_uid_name)}}{%end%}</b></li>
+                                             <li>更新时间:<b>{%if item.created_at%} {{item.created_at.strftime("%Y-%m-%d")}} {%end%}</b></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            {%end%}
+                        {%else%} 
+                         还没有客户哦。
+                          {%end%}
+             
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<div style="overflow: hidden;">
+<div style="float: left; width: 49%;">       
+<div class="widget widget-table action-table" id="cuikuan_div">
+
     <div class="widget-header">
         <i class="icon-th-list"></i>
         <h3>催款记录 </h3>
     </div>
-    <div class="widget-content">
-        <textarea class="form-control" id="txt_msg" style="width:80%">
+    <div class="widget-content" style="overflow:hidden;">
+        {%if customer.acc_uid!=int(uid)%}
+        <textarea class="form-control" id="txt_msg" style="width:98%;height:70px;" >
                                                                       </textarea>
          <input type="text" id="txt_time" placeholder="催款时间"/>
                                                                       <br/>
-        <button id="btn_save_msg">确定添加</button>&nbsp;&nbsp;&nbsp;
+        <button class="btn_save_msg">确定添加</button>&nbsp;&nbsp;&nbsp;
         <input type="file" value="上传附件" style=margin-top:10px;" name="record_file" id="record_file" class="form-control "/>
-                                                                      <hr class="my-0">
-                                                                      {%for item in t_customer_exchange%}
-                                                                      <div class="message-item" id="msg_{{item.id}}">
-                                                                          <div class="message-inner">
-                                                                              <div class="message-head clearfix">
-                                                                                  <div class="avatar pull-left">
-                                                                                      <img src="/static/images/avatar.jpeg">
-                                                                                  </div>
-                                                                                  <div class="user-detail">
-                                                                                      <h5 class="handle">{{item.uid_name}}
-                                                                                          <span style="font-size:13px;"> {{item.created_at}}
-                                                                                            <span style="color:red;">{%if item.msg_time%}({{item.msg_time}}){%end%}</span>
-                                                                                          </span>
-                                                                                          {%if item.file_path%}
-                                                                                          <a href="{{item.file_path}}" target="_blank"> 查看附件</a>
-                                                                                          {%end%}
-                                                                                      </h5>
-                                                                                  </div>
-                                                                              </div>
-                                                                              {{item.msg}}<span style="color:red;">{%if item.summary%}(总结:{{item.summary}}){%end%}</span>
-                                                                          </div>
-                                                                      </div>
-                                                                      {%end%}
-                                                                    </div>
-                                                                    <a id="merege_ys" href="javascript:void(0);" class="btn btn-info btn-sm" style="margin-top:10px;">转移</a>
+                             {%end%}                                         
+        <hr class="my-0">
+        {%set has_exchange=0%}
+        {%for item in t_customer_exchange%}
+        {%if item.etype==2%}
+        {%set has_exchange=1%}
+        <div class="message-item" id="msg_{{item.id}}">
+            <div class="message-inner">
+                <div class="message-head clearfix">
+                    <div class="avatar pull-left">
+                        <img src="/static/images/avatar.jpeg">
+                    </div>
+                    <div class="user-detail">
+                        <h5 class="handle">{{item.uid_name}}
+                            <span style="font-size:13px;"> {{item.created_at}}
+                            <span style="color:red;">{%if item.msg_time%}({{item.msg_time}}){%end%}</span>
+                            </span>
+                            {%if item.file_path%}{%for idx,row in enumerate(item.file_path.split('|'))%}{%if row%}
+                            <a href="{{row}}" class="btn btn-mini" target="_blank"><i class=" icon-share icon-large"></i>附件{{idx+1}}</a>
+   
+                            {%end%}{%end%}{%end%}
+                        </h5>
+                    </div>
+                </div>
+                {{item.msg}}<span style="color:red;">{%if item.summary%}(总结:{{item.summary}}){%end%}</span>
+            </div>
+        </div>
+        {%end%}
+        {%end%}
+        {%if has_exchange==0%}
+        还没有哦~
+        {%end%}
+    </div>
+    <a id="merege_ys" href="javascript:void(0);" class="btn btn-info btn-sm" style="margin-top:10px;">转移</a>
 
     <!-- /widget-content -->
+</div>
+</div>
+<div style="float: right; width: 49%;">
+        <div class="widget widget-table action-table">
+            <div class="widget-header">
+                <i class="icon-th-list"></i>
+                <h3>会计建议</h3>
+            </div>
+        <div class="widget-content">
+        {%if customer.acc_uid==int(uid)%}
 
+            <textarea class="form-control" id="txt_msg_kj" style="width:98%;height:70px;"></textarea>
+            <br>
+            <button class="btn_save_msg" is_kj='1'>确定添加</button>&nbsp;&nbsp;&nbsp;
+            <input type="file" value="上传附件" style=margin-top:10px;" name="record_file" id="record_file" class="form-control "/>
+            {%end%}
+            <hr class="my-0">
+            {%set has_exchange=0%}
+            {%for item in t_customer_exchange%}
+            {%if item.etype==4%}
+            {%set has_exchange=1%}
+            <div class="message-item" id="msg_{{item.id}}">
+                <div class="message-inner">
+                    <div class="message-head clearfix">
+                        <div class="avatar pull-left">
+                            <img src="/static/images/avatar.jpeg">
+                        </div>
+                        <div class="user-detail">
+                            <h5 class="handle">{{item.uid_name}}
+                                <span style="font-size:13px;"> {{item.created_at}}
+                                        {%if item.file_path%}{%for idx,row in enumerate(item.file_path.split('|'))%}{%if row%}
+                                        <a href="{{row}}" class="btn btn-mini" target="_blank"><i class=" icon-share icon-large"></i>附件{{idx+1}}</a>
+               
+                                        {%end%}{%end%}{%end%}
+                            </h5>
+                        </div>
+                    </div>
+                    {{item.msg}}<span style="color:red;">{%if item.summary%}(总结:{{item.summary}}){%end%}</span>
+                </div>
+            </div>
+            {%end%}
+            {%end%}
+            {%if has_exchange==0%}
+            还没有哦~
+            {%end%}
+        </div>
+
+        </div>
+    </div>
+</div>
+</div>
 </div>
 
 
@@ -484,13 +652,83 @@ margin: auto;
 
     </div>
     </div>
-
+    <div id="add_linkman_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              <h3 id="myModalLabel_linkman">增加客户联系人
+              </h3>
+            </div>
+            <div class="modal-body">
+              <div class="control-group">
+                                                          <label class="control-label" for="username">名字/称呼</label>
+                                                          <div class="controls">
+                                                              <input type="text" class="span4 " id="name" name="name" value="">
+                                                              <p id="msg_name" class="help-block" style="color:red"></p>
+                                                          </div>
+                                                          <!-- /controls -->
+                                                      </div>
+                                                      <!-- /control-group -->
+          
+          
+                                                      <div class="control-group">
+                                                          <label class="control-label" for="firstname">性别</label>
+                                                          <div class="controls">
+                                                              <input type="radio" name="gender" value="1" /> 先生
+                                                              <input type="radio" name="gender" value="0" /> 女士
+                                                               <p id="msg_gender" class="help-block" style="color:red"></p>
+                                                          </div>
+                                                          <!-- /controls -->
+                                                      </div>
+          
+                                                      <div class="control-group">
+                                                          <label class="control-label" for="username">电话</label>
+                                                          <div class="controls">
+                                                              <input type="text" class="span4 " id="tel" name="tel" value="">
+                                                              <p id="msg_company" class="help-block" style="color:red"></p>
+                                                          </div>
+                                                          <!-- /controls -->
+                                                      </div>
+                                                      <!-- /control-group -->
+          
+          
+          
+                                                <div class="control-group">
+                                                    <label class="control-label" for="lastname">备注</label>
+                                                    <div class="controls">
+                                                        <textarea type="text" class="span4" id="linkman_remark" name="linkman_remark" value="" style="height: 50px;"></textarea>
+                                                    </div>
+                                                    <!-- /controls -->
+                                                </div>
+                                                <div class="control-group">
+                                                    
+                                                    <div class="controls">
+                                                        <label for="is_first"><input type="checkbox" id="is_first" style="display: inline;" value="1">添加为首要联系人</label>
+                                                        
+                                                    </div>
+                                                    <!-- /controls -->
+                                                </div>
+          
+          
+          
+            </div>
+            <div class="modal-footer">
+              <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
+              <button class="btn btn-primary" id="btn_save_linkman">保存</button>
+            </div>
+          </div>
     {%end%}
 
     {% block  js %}
     <script src="http://momentjs.com/downloads/moment.js"></script>
 <script src="/static/combodate.js"></script>
     <script>
+$(window).scroll(
+function () {
+var scrollValue = $(window).scrollTop();
+console.log(scrollValue);
+scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
+}
+)
         $(function(){
 
            var customer_id = {{ customer.id }}
@@ -572,7 +810,7 @@ margin: auto;
             pay_service_amount=$(this).attr("pay_service_amount")
             pay_service_amount_month=$(this).attr("pay_service_amount_month")
             pay_book_amount=$(this).attr("pay_book_amount")
-
+            pay_id=$(this).attr('item_id')
            $("#al_remark").val(al_remark)
             $("#pb_remark").val(pb_remark)
 
@@ -587,7 +825,7 @@ margin: auto;
             $("#company_name").text("")
             $("#btn_save_wai_pay").attr('acc_end',$(this).attr('acc_end'))
             $("#btn_save_wai_pay").attr('acc_book_end',$(this).attr('acc_book_end'))
-            $.get("/payment?tag=get_last_payment", { "customer_id": customer_id }, function (result) {
+            $.get("/payment?tag=get_last_payment", { "customer_id": customer_id,'pay_id':pay_id }, function (result) {
                 if (result.code == 1) {
 
                     html = "<td>付款方式</td><td>" + result.customer.customer_paytype_id_name + "</td>"
@@ -658,23 +896,36 @@ margin: auto;
 
 
             });
-                $("#btn_save_msg").on("click", function () {
-                msg = $("#txt_msg").val()
+                $(".btn_save_msg").on("click", function () {
+                is_kj=$(this).attr('is_kj')
+                if(is_kj=='1'){
+                    msg = $("#txt_msg_kj").val()
+                }else{
+                    msg = $("#txt_msg").val()
+                }
+                
                 if (msg == "") {
-                    alert("交流记录不能为空哦.")
+                    alert("还没有填写哦.")
                     return false
                 } else {
                     $(this).attr("disabled", "disabled")
                     var formData = new FormData();
-                    formData.append('file', $('#record_file')[0].files[0])
+
+                 
                     formData.append('_xsrf', _xsrf)
                     formData.append('msg', msg)
+                    if(is_kj=='1'){
+                        formData.append('etype', 4)
+                    }else{
                     {%if t_customer_payment_max_assist%}
                     formData.append('assist_id',{{t_customer_payment_max_assist.id}})
                     {%end%}
+                    formData.append('etype', 2)
+                    }
+                    formData.append('file', $('#record_file')[0].files[0])
                     formData.append('customer_id', customer_id)
                     formData.append('msg_time',$('#txt_time').val())
-                    formData.append('etype', 2)
+
 
                     $.ajax({
                         url: '/customer?tag=customer_exchange',
@@ -795,6 +1046,83 @@ margin: auto;
         function intToFloat(val){
           return new Number(val).toFixed(2);
    }
+
+   $(".modify_linkman").on("click",function(){
+          var linkman_guid  = $(this).attr("linkman_guid")
+
+          var linkman_id = $(this).attr("linkman_id")
+
+          var linkman_remark = $(this).attr("remark")
+          var tel = $(this).attr('tel')
+          var name = $(this).attr("title")
+          var gender = $(this).attr('gender')
+          var is_first=$(this).attr('is_first')
+
+          $("#btn_save_linkman").attr("linkman_id",linkman_id)
+          $("#tel").val(tel)
+          $("input[type=radio]").filter('[value="'+gender+'"]').attr("checked",true)
+          $("#name").val(name)
+          $("#linkman_remark").val(linkman_remark)
+          $("#is_first").prop('checked',false)
+          if(is_first=='1'){
+            $("#is_first").prop('checked',true)
+          }
+          $("#add_linkman_modal").modal('show')
+        })
+        $("#btn_save_linkman").on("click",function(){
+            var gender = $("input[name=gender]:checked").val()
+            var name = $("#name").val()
+            var tel = $("#tel").val()
+            var remark = $("#linkman_remark").val()
+            var is_first=$('#is_first:checked').val()
+            var linkman_id=$(this).attr('linkman_id')
+            if (name==""){
+              $("#msg_name").text("客户的名字必须要填写哦。")
+               $("#name").focus()
+              return false
+
+            }else if(gender==undefined){
+              $("#msg_gender").text("请选择客户的性别")
+               $("input[name=gender]").focus()
+              return false
+            }
+
+            else{
+                $.post("/linkman?tag=add",
+                {"_xsrf":_xsrf,"customer_id":"{{customer.id}}",
+                "tel":tel,"name":name,"remark":remark,
+                "gender":gender,"is_first":is_first,
+                "linkman_id":linkman_id},function(result){
+
+                  location.reload()
+
+                })
+
+            }
+
+
+        })
+        $("#a_add_linkman").on("click", function () {
+              $("#btn_save_linkman").removeAttr('linkman_id')
+              $("#tel").val("")
+              $("input[type=radio]").filter('[value="1"]').attr("checked",true)
+              $("#is_first").prop('checked',false)
+              $("#name").val(name)
+              $("#add_linkman_modal").modal('show')
+            })
+    
+            $(".delete_linkman").on("click",function(){
+           var linkman_id = $(this).attr('linkman_id')
+           var linkman_guid = $(this).attr('linkman_guid')
+
+            if(confirm("确认删除吗？")){
+                $.post("linkman?tag=delete",{"_xsrf": _xsrf,"id": linkman_id,"guid":linkman_guid},function(result){
+                    alert("删除成功！")
+                    location.reload()
+                })
+
+            }
+        })
       });
 
     </script>

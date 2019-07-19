@@ -253,6 +253,7 @@ class CompanyHandler(BaseHandler):
             project_id=self.get_argument('project_id','')
             customer_name=self.get_argument('customer_name','')
             customer_tel=self.get_argument('customer_tel','')
+            show_tag=self.get_argument('show_tag','')
             pre_page=20
             params={
                 'business_from_id':business_from_id,
@@ -276,8 +277,33 @@ class CompanyHandler(BaseHandler):
                 'project_id':project_id,
                 'customer_name':customer_name,
                 'customer_tel':customer_tel,
-                'ntag':ntag
+                'ntag':ntag,
+                'show_tag':show_tag
             }
+            business_from_name=''
+            if business_from_id=='294':
+                business_from_name='推广商机'
+            elif business_from_id=='295':
+                business_from_name='反馈商机'
+            customer_tag_name=''
+            if customer_tag:
+                for item in customer_tag.split(','):
+                    customer_tag_name+=item.split('_')[1]+',' if item else ''
+            search_created_time=create_time
+            if create_time=='自定义':
+                search_created_time=created_name_start+'至'+created_name_end
+            search_params={
+                '反馈人':referrer_name,
+                '创建时间:':search_created_time,
+                '创建人:':created_name,
+                '业务标签:':customer_tag_name,
+                '联系方式:':customer_tel,
+                '客户姓名:':customer_name,
+                '确认单:':project_id,
+                '编号/客户/电话/公司:':search_key,
+                '商机类型:':business_from_name
+            }
+          
             sql=' and a.is_invalid_business=0 '
             count_sql=''
             count_sql1=''
@@ -370,13 +396,37 @@ class CompanyHandler(BaseHandler):
                 sql+=' and a.referrer="%s" '%referrer_name
             if created_name:
                 sql+=' and a.uid_name="%s" '%created_name
-            if '283' not in role_list and '284' not in role_list and '300' not in role_list:
-                sql+=' and (a.uid=%s or find_in_set(%s,b.be_assigner_ids)) '%(uid,uid)
+            
+            
+            t_user_relation=self.db.get('''
+                select group_concat(a.uid) gc from t_user_relation a
+                inner join t_user_relation b on
+                    find_in_set(a.department_name,b.department_name)
+                and b.uid=%s and b.is_leader<>0
+                where a.uid!=b.uid and a.is_leader=0
+            ''',uid)
+            if uid=='161':
+                t_user_relation=self.db.get('''
+                select group_concat(id) gc from t_user where role=10 and id!=%s 
+            ''',uid)
+            if show_tag=="subordinate" and t_user_relation.gc!=None:
+                if step!='7':
+                    sql+=' and find_in_set(a.uid,"%s") '%str(t_user_relation.gc)
+                count_sql=' and find_in_set(a.uid,"%s") '%str(t_user_relation.gc)
+                count_sql1=' and find_in_set(a.uid,"%s") '%str(t_user_relation.gc)
+                
+                if step!='2' and step and step!='1' and step!='7':
+                    sql+=' and find_in_set(a.uid,"%s") '%str(t_user_relation.gc)
+        
+            elif '283' not in role_list and '284' not in role_list and '300' not in role_list:
+                if step!='7':
+                    sql+=' and (a.uid=%s or find_in_set(%s,b.be_assigner_ids)) '%(uid,uid)
                 count_sql=' and (a.uid='+uid+' or find_in_set('+uid+',b.be_assigner_ids)) and if(a.uid='+uid+',a.uid='+uid+', find_in_set("'+uid+'_'+uid_name+'",b.be_assigner_confirm_ids) ) '
                 count_sql1=' and (a.uid=%s or find_in_set(%s,b.be_assigner_ids)) '%(uid,uid)
                 
-                if step!='2' and step and step!='1':
+                if step!='2' and step and step!='1' and step!='7':
                     sql+=' and if(a.uid='+uid+',a.uid='+uid+', find_in_set("'+uid+'_'+uid_name+'",b.be_assigner_confirm_ids) )  ' 
+            
             # else:
             #     if step=='2':
             #         sql+=' or (find_in_set(%s,b.be_assigner_ids) and not find_in_set("%s",b.be_assigner_confirm_ids)) '%(uid,(uid+'_'+uid_name))
@@ -386,7 +436,7 @@ class CompanyHandler(BaseHandler):
                 )
             t_business_channel = self.db.query("""
                 select * from t_projects_type where income_category='推广来源渠道'
-                 and (id=64 or id=65 or id=67 or id=66 or id=311)
+                
                  order by id 
                 """)
             t_income_type = self.db.query("""
@@ -472,7 +522,7 @@ class CompanyHandler(BaseHandler):
             select count(*) from business_develop_manage a
             inner join business_develop_manage_milepost b on a.id=b.business_id 
             and a.is_invalid_business=0 and b.assigner_at is not null and b.jiedan_at is not null 
-            and b.banjie_at is not null and b.checked_at is not null and b.checked_status=1 and b.banjie_typle=2 '''+count_sql+'''
+            and b.banjie_at is not null and b.checked_at is not null  and b.banjie_typle=2
             )count8,
             (
                 select count(*) from business_develop_manage a
@@ -499,7 +549,6 @@ class CompanyHandler(BaseHandler):
             ''',uid,uid,uid)
             pagination = Pagination(page, pre_page, count.count, self.request)
             startpage = (page-1) * pre_page
-        
             business_develop_manage=self.db.query('''
             select a.*,b.be_assigner_ids,concat(if(a.project_request is not null and a.project_request!='',concat(a.project_request,','),'')
             ,if(ts.service_names is not null and ts.service_names!='',ts.service_names,'') ,if(a.customer_tag is not null and a.customer_tag!='',a.customer_tag,'')) customer_tag,b.id business_milepost_id,
@@ -516,9 +565,7 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
              from t_projects_service_income where service_money <> 0 or is_free=1  group by project_id) ts on a.project_id=ts.project_id 
              left join business_develop_manage_msg  c
              on c.business_id=a.id
-            and c.id=
-                 (select max(id) id from  business_develop_manage_msg where business_id=a.id group by business_id  
-             ) 
+            and c.id=(select max(id) id from  business_develop_manage_msg where business_id=a.id ) 
             left join business_develop_manage_category g on a.id=g.business_id and g.uid=%s
                 
              left join (
@@ -541,6 +588,7 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             self.render('company/business_develop_manage.html',
             search_key="",
             tag=tag,
+            t_user_relation=t_user_relation,
             step=step,
             ntag=ntag,
             count=count,
@@ -555,7 +603,8 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             t_business_channel=t_business_channel,
             t_income_type=t_income_type,
             t_port_type=t_port_type,
-            params=params
+            params=params,
+            search_params=search_params
             )
 
         elif tag=="show_business":
@@ -609,9 +658,17 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             select *,a.id business_id,b.id business_milpost_id,b.jiedan_name,b.banjie_at,
             concat(if(a.project_request is not null and a.project_request!='',concat(a.project_request,','),''),
             if(a.customer_tag is not null and a.customer_tag!='',a.customer_tag,'')) customer_tags,
-            find_in_set(%s,be_assigner_ids) is_be_assigner,find_in_set(%s,be_assigner_confirm_ids) is_be_assigner_confirm
+            find_in_set(%s,be_assigner_ids) is_be_assigner,find_in_set(%s,be_assigner_confirm_ids) is_be_assigner_confirm,
+            if(assigner_at,
+            datediff(DATE_FORMAT(if(banjie_at is null,now(),banjie_at), '%%Y-%%m-%%d'),DATE_FORMAT(assigner_at,'%%Y-%%m-%%d')),
+            '') gen_jin_days,ee.genjin_count
              from business_develop_manage a
              inner join business_develop_manage_milepost b on a.id=b.business_id
+              left join (
+            select count(*) genjin_count,e.business_id,e.uid from 
+             ( select uid,business_id from business_develop_manage_msg where btype_id=3 group by 
+             DATE_FORMAT(created_at,'%%Y-%%m-%%d'),uid,business_id
+              ) e  group by business_id,uid) ee on ee.uid=b.jiedan_id and ee.business_id=a.id
               where a.id=%s and a.guid=%s
             ''',uid,uid+'_'+uid_name,id,guid)
 
@@ -791,8 +848,39 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             if(a.business_from_id=295 and a.feedback_type_id in (2,3),a.be_referrer_phone,a.phone)=if(c.business_from_id=295 and c.feedback_type_id in (2,3),c.be_referrer_phone,c.phone)  where c.id=%s and a.id!=c.id and if(c.business_from_id=295 and c.feedback_type_id in (2,3),c.be_referrer_phone<>'',c.phone<>'')
             ''',id)
             business_develop_manage_linkman=self.db.query(' select * from business_develop_manage_linkman where business_id=%s order by is_first desc',id)
+            customers=self.db_customer.query("""
+                SELECT  d.is_check,d.id assist_id,d.summary,
+                    TIMESTAMPDIFF(MONTH,c.acc_end, DATE_FORMAT(now(), "%%Y-%%m-%%d")) tsm,
+                     datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORMAT(d.check_at, '%%Y-%%m-%%d')) wj_day,
+                        d.*,d.sale_id assist_sale_id,d.id assist_id, DATE_ADD(c.acc_end, INTERVAL 1 MONTH) next_pay_acc_start , a.acc_uid_name a_acc_uid_name ,
+                            DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,
+                            DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
+                            DATE_ADD(c.acc_book_end, INTERVAL a.fee MONTH) next_pay_acc_book_end, c.*,
+                            a.id customer_id,a.guid,a.company,c.updated_at pay_updated_at,c.uid_name pay_uid_name,
+                            c.pay_typeid_name pay_pay_typeid_name,c.service_amount pay_service_amount,
+                            a.last_cuikuan_at,a.last_cuikuan_msg,a.sale_last_cuikuan_at,a.sale_last_cuikuan_msg,
+                                c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount,
+                                f.member_name sale_man,e.member_name kf_man,c.sale_man sale_man1,c.kf_man kf_man1, g.id sale_cuikuan_id
+                                                                    FROM  t_customer_payment_assist d
+                                                                      inner join t_customer a on d.customer_id=a.id
+                                                                        INNER JOIN t_customer_payment c
+                                                                            ON a.id = c.customer_id
+                                                                        left join """+options.mysql_database+""".t_projects_member f on
+                                                                        c.project_id=f.project_id and f.team_id=34
+                                                                        left join """+options.mysql_database+""".t_projects_member e on
+                                                                                c.project_id=e.project_id and e.team_id=36
+                                                                   left join t_customer_exchange g on a.id=g.customer_id and  g.isvisible=2
+                                                                    and g.id=(select MAX(gg.id) g_id from t_customer_exchange gg where a.id=gg.customer_id and gg.isvisible=2 )
+                                                                        INNER JOIN
+                                                                        (
+                                                                            SELECT `customer_id`, MAX(id) max_id,acc_end
+                                                                            FROM t_customer_payment
+                                                                            GROUP BY customer_id
+                                                                        ) b ON c.customer_id = b.customer_id AND
+                                                                                b.max_id = c.id where d.is_bad_debts=1 and d.id=%s""",business_develop_manage.assist_id)
             if not business_develop_manage:
                 self.write('订单'+id+'不存在')
+            
             else:
                 self.render('company/show_business.html',
                 params=params,
@@ -801,6 +889,7 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                 t_type=t_type,
                 t_plan=t_plan,
                 t_project=t_project,
+                customers=customers,
                 business_develop_manage_linkman=business_develop_manage_linkman,
                 t_company_tag_group=t_company_tag_group,
                 t_business_channel=t_business_channel,
@@ -820,18 +909,36 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             statistics_type=self.get_argument('statistics_type','fankui')
             invalid=self.get_argument('invalid','')
             fenpei_type=self.get_argument('fenpei_type','new_tuiguang')
+            start_time=self.get_argument('start_time','')
+            end_time=self.get_argument('end_time','')
+            way=self.get_argument('way','')
             pre_page=20
             sql=''
+            sql_date=''
             params={
                 'my':my,
                 'search_referrer':search_referrer,
                 'statistics_type':statistics_type,
                 'invalid':invalid,
-                'fenpei_type':fenpei_type
+                'fenpei_type':fenpei_type,
+                'start_time':start_time,
+                'end_time':end_time,
+                'way':way
             }
             select_name=''
             inner_sql=''
             date_sql=' created_at '
+            if start_time and end_time:
+                sql_date= ' and created_at between "%s" and "%s" '%(start_time,end_time)
+            
+            date_format_sql="'%%Y-%%m-%%d'"
+            if way=='day':
+                date_format_sql="'%%Y-%%m-%%d'"
+            elif way=='month':
+                date_format_sql="'%%Y-%%m'"
+            elif way=='week':
+                date_format_sql="'%%Y-%%m-%%u'"
+
             if statistics_type=='fankui':
                 if my:
                     sql+=' and referrer_id="%s" '%uid
@@ -860,6 +967,9 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                         sql+=' and substring_index(b.be_assigner_names,",",1)="%s" '%search_referrer
                     select_name=' substring_index(b.be_assigner_names,",",1) '
                     date_sql=' assigner_at '
+                    if start_time and end_time:
+                        sql_date= ' and assigner_at between "%s" and "%s" '%(start_time,end_time)
+
                     if fenpei_type=='new_tuiguang':
                         sql+=' and  a.business_from_id=294 '
                     elif fenpei_type=='new_fankui':
@@ -872,6 +982,8 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                         sql+=' and banjie_name="%s" '%search_referrer
                     select_name=' banjie_name '
                     date_sql=' banjie_at '
+                    if start_time and end_time:
+                        sql_date= ' and banjie_at between "%s" and "%s" '%(start_time,end_time)
                     if fenpei_type=='fq_tuiguang':
                         sql+=' and a.business_from_id=294 '
                     elif fenpei_type=='fq_fankui':
@@ -884,6 +996,9 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                         sql+=' and raw_jiedan_name="%s" '%search_referrer
                     select_name=' raw_jiedan_name '
                     date_sql=' b.created_at '
+                    if start_time and end_time:
+                        sql_date= ' and b.created_at between "%s" and "%s" '%(start_time,end_time)
+
                     if fenpei_type=='transfer_tuiguang':
                         sql+=' and a.business_from_id=294 '
                     elif fenpei_type=='transfer_fankui':
@@ -898,22 +1013,22 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                 ) every_count
                 from (
                 select group_concat(name,'|',count),df,sum(count) sc from (
-                select '''+select_name+''' name,date_format('''+date_sql+''','%%Y-%%m-%%d') df,count(*)  count
-                from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+''' group by '''+select_name+''',df)aa
+                select '''+select_name+''' name,date_format('''+date_sql+''','''+date_format_sql+''') df,count(*)  count
+                from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+sql_date+''' group by '''+select_name+''',df)aa
                 group by df)aaa
             ''')
             pagination=Pagination(page,pre_page,count.count,self.request)
             startpage=(page-1)*pre_page
             datas=self.db.query('''
                 select group_concat(name,'|',count) gc,df,sum(count) sc from (
-                select '''+select_name+''' name,date_format('''+date_sql+''','%%Y-%%m-%%d') df,count(*)  count
-                from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+''' group by name,df)aa
+                select '''+select_name+''' name,date_format('''+date_sql+''','''+date_format_sql+''') df,count(*)  count
+                from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+sql_date+''' group by name,df)aa
                 group by df order by df desc limit %s,%s
             ''',startpage,pre_page)
             print('''
               select group_concat(name,'|',count) gc,df,sum(count) sc from (
-                select '''+select_name+''' name,date_format('''+date_sql+''','%%Y-%%m-%%d') df,count(*)  count
-                from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+''' group by name,df)aa
+                select '''+select_name+''' name,date_format('''+date_sql+''','''+date_format_sql+''') df,count(*)  count
+                from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+sql_date+''' group by name,df)aa
                 group by df order by df desc
             ''')
             self.render(
@@ -1195,6 +1310,7 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             business_from_id=busniess_from.split('|')[0]
             business_from_name=busniess_from.split('|')[1]
             link_gender=self.get_argument('link_gender','1')
+            not_company=self.get_argument('not_company','0')
             txt=''
             if source_way:
                 source_way_name=source_way.split('|')[1]
@@ -1225,8 +1341,10 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                 t_customer = self.db_customer.get(
                         "select * from t_customer where company=%s",
                         company)
-                if not t_customer:
+                if not t_customer and  not_company=='0' :
                     return self.write("-1")
+                elif not_company=='1':
+                    company='无'
             t_user=self.db.get(' select * from t_user where name=%s ',referrer)
             if t_user:
                 referrer=t_user.name
@@ -1241,11 +1359,11 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                     feedback_type_name=%s,
                 customer_name=%s,company=%s,phone=%s,project_request=%s,source_keyword=%s,source_way_name=%s,source_way_id=%s,
                     source_place_name=%s,source_place_id=%s,source_port_name=%s,source_port_id=%s,remark=%s,referrer=%s,be_referrer_company=%s,
-                    be_referrer_name=%s,be_referrer_phone=%s,friend_introduce=%s,referrer_id=%s where id=%s and guid=%s
+                    be_referrer_name=%s,be_referrer_phone=%s,friend_introduce=%s,referrer_id=%s,not_company=%s where id=%s and guid=%s
                 ''',business_from_id,business_from_name,feedback_type_id,feedback_type_name,
                 customer_name,company,phone,project_request[:-1],source_keyword,source_way_name,source_way_id,
                     source_place_name,source_place_id,source_port_name,source_port_id,remark,referrer,be_referrer_company,
-                    be_referrer_name,be_referrer_phone,friend_introduce,referrer_id,business_id,business_guid)
+                    be_referrer_name,be_referrer_phone,friend_introduce,referrer_id,not_company,business_id,business_guid)
         
             else:
                 if business_from_id=='295' and feedback_type_id in ['2','3']:
@@ -1259,13 +1377,13 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                     customer_name,company,phone,project_request,source_keyword,source_way_name,source_way_id,
                     source_place_name,source_place_id,source_port_name,source_port_id,remark,referrer,be_referrer_company,
                     be_referrer_name,be_referrer_phone,guid,created_at,uid,uid_name,friend_introduce,feedback_type_id,
-                    feedback_type_name,referrer_id,first_link_name,first_link_phone) 
-                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    feedback_type_name,referrer_id,first_link_name,first_link_phone,not_company) 
+                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ''',business_from_id,business_from_name,
                     customer_name,company,phone,project_request[:-1],source_keyword,source_way_name,source_way_id,
                     source_place_name,source_place_id,source_port_name,source_port_id,remark,referrer,be_referrer_company,
                     be_referrer_name,be_referrer_phone,guid,dt,uid,uid_name,friend_introduce,feedback_type_id,
-                    feedback_type_name,referrer_id,link_name,link_tel)
+                    feedback_type_name,referrer_id,link_name,link_tel,not_company)
                 if result>0:
                     self.db.execute("""
                                     insert into business_develop_manage_msg(uid,uid_name,message,created_at,business_id,tag_type,btype_id)

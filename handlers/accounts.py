@@ -363,56 +363,62 @@ class AllChangePasswordHandler(BaseHandler):
 class ManageUserHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        page = int(self.get_argument("page", 1))
-        user_name=self.get_argument('user_name','')
-        phone=self.get_argument('phone','')
-        tag=self.get_argument('tag','')
-        sql=''
-        department_names=''
-        pre_page = 20
-        params={
-            'user_name':user_name,
-            'phone':phone
-        }
-        id=self.get_secure_cookie('uid')
-        is_admin_user=self.db.get('select is_admin from t_user where id=%s',int(id))
-        if user_name:
-            sql+=' and a.name="%s" '%user_name
-        if phone:
-            sql+=' and a.phone=%s '%phone
-        if tag=='kj_manage':
-            count=self.db.get(' select count(*) count from t_user_relation')
-            pagination = Pagination(page, pre_page, count.count, self.request)
-            startpage = (page - 1) * pre_page
-            all_users=self.db.query(' select * from t_user_relation order by id desc ')
-            department_names=self.db.query(' select department_name,department_id from t_user_relation group by department_name,department_id ')
-        else:
-            count = self.db.get(
-                    '''SELECT count(*) count FROM t_user a  where  0=0
-                    '''+sql)
-            pagination = Pagination(page, pre_page, count.count, self.request)
-            startpage = (page - 1) * pre_page
-            all_users =self.db.query('''SELECT a.*,b.name role_name FROM t_user a 
-            inner join t_user_group b on a.role=b.id  where 0=0 '''+sql+''' order by reg_time desc limit %s,%s''',startpage,pre_page)
-        self.render('accounts/manageuser.html',
-            search_key='',
-            t_income_type='',
-            t_company='',
-            t_building='',
-            t_users_kf='',
-            t_business_channel='',
-            t_sign_type='',
-            t_talk_type='',
-            t_rec_contarct_type='',
-            pagination=pagination,
-            all_users=all_users,
-            params=params,
-            page1=page,
-            tag=tag,
-            department_names=department_names,
-            is_admin_user=str(is_admin_user['is_admin'])
-        )
+        tag=self.get_argument('tag','manageuser')
 
+        if tag=='manageuser' or tag=='kj_manage':
+            page = int(self.get_argument("page", 1))
+            user_name=self.get_argument('user_name','')
+            phone=self.get_argument('phone','')
+            sql=''
+            pre_page = 20
+            params={
+                'user_name':user_name,
+                'phone':phone
+            }
+            id=self.get_secure_cookie('uid')
+            is_admin_user=self.db.get('select is_admin from t_user where id=%s',int(id))
+            department_names=self.db.query(' select department_name,department_id from t_user_relation group by department_name,department_id ')
+            if user_name:
+                sql+=' and a.name="%s" '%user_name
+            if phone:
+                sql+=' and a.phone=%s '%phone
+            if tag=='kj_manage':
+                count=self.db.get(' select count(*) count from t_user_relation')
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page - 1) * pre_page
+                all_users=self.db.query(' select * from t_user_relation order by id desc limit %s,%s ',startpage,pre_page)
+            else:
+                count = self.db.get(
+                        '''SELECT count(*) count FROM t_user a  where  0=0
+                        '''+sql)
+                pagination = Pagination(page, pre_page, count.count, self.request)
+                startpage = (page - 1) * pre_page
+                all_users =self.db.query('''SELECT a.*,b.name role_name FROM t_user a 
+                inner join t_user_group b on a.role=b.id  where 0=0 '''+sql+''' order by reg_time desc limit %s,%s''',startpage,pre_page)
+            self.render('accounts/manageuser.html',
+                search_key='',
+                t_income_type='',
+                t_company='',
+                t_building='',
+                t_users_kf='',
+                t_business_channel='',
+                t_sign_type='',
+                t_talk_type='',
+                t_rec_contarct_type='',
+                pagination=pagination,
+                all_users=all_users,
+                params=params,
+                page1=page,
+                tag=tag,
+                department_names=department_names,
+                is_admin_user=str(is_admin_user['is_admin'])
+            )
+        elif tag=='find_kj':
+            department_id=self.get_argument('department_id','')
+            t_user_relation=self.db.query('''
+            select * from t_user_relation where  department_id=%s order by is_leader desc        
+            ''',department_id)
+            return self.write({'kj':t_user_relation})
     @tornado.web.authenticated
     def post(self):
         tag=self.get_argument('tag','')
@@ -422,18 +428,30 @@ class ManageUserHandler(BaseHandler):
             department_name=self.get_argument('department_name','')
             title_name=self.get_argument('title_name','')
             relation_id=self.get_argument('relation_id','')
+            delete_id=self.get_argument('delete_id','')
             t_user=self.db.get(' select * from t_user where name=%s',kj_name)
-            print(t_user.id)
             t_user_relation=self.db.get(' select * from t_user_relation where uid_name=%s ',kj_name)
-            if not t_user:
+            is_leader=0
+            if not t_user and not relation_id and not delete_id:
                 return self.write('-1')
-            elif t_user_relation:
+            elif t_user_relation and not relation_id and not delete_id:
                 return self.write('-2')
-            self.db.execute(''' 
-            insert into t_user_relation
-            (department_name,department_id,uid_name,uid,work_tel,per_tel,title_name)
-            values(%s,%s,%s,%s,%s,%s,%s)
-             ''',department_name,department_id,t_user.name,t_user.id,t_user.phone,t_user.person_phone,title_name)
+            if '经理' in title_name or  '主管' in title_name:
+                is_leader=1
+            if relation_id:
+                self.db.execute(''' 
+                update t_user_relation set department_name=%s,
+                department_id=%s,title_name=%s,is_leader=%s where id=%s
+                 ''',department_name,department_id,title_name,is_leader,relation_id)
+            elif delete_id:
+                self.db.execute(' delete from t_user_relation where id=%s ',delete_id)
+            else:
+                result=self.db.execute(''' 
+                insert into t_user_relation
+                (department_name,department_id,uid_name,uid,work_tel,per_tel,title_name,is_leader)
+                values(%s,%s,%s,%s,%s,%s,%s,%s)
+                ''',department_name,department_id,t_user.name,t_user.id,t_user.phone,t_user.person_phone,title_name,is_leader)
+                self.write({'result':result})
 class LockUserhandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,id):
@@ -497,27 +515,18 @@ class InsertUserHandler(BaseHandler):
         is_admin_user=self.db.get('select is_admin from t_user where id=%s',int(cur_id))
         guid = uuid.uuid4()
         if tag=='select_child':
-            parent_id=self.get_argument('parent_id')
+            parent_id=self.get_argument('parent_id','')
             t_user_child=self.db.query('''
             select * from t_user_department where parent_id=%s
             ''',parent_id)
             self.write({'data':t_user_child})
         else:
+            member_page=self.get_argument('member_page','')
             if is_admin_user['is_admin']==1 or '277' in role_list:
                 name=self.get_argument('name')
                 exist_user=self.db.get('select * from t_user where name=%s',name)
                 if exist_user:
-                    self.render('accounts/insertuser.html',
-                                error='用户已存在',
-                                search_key='',
-                                t_income_type='',
-                                t_company='',
-                                t_building='',
-                                t_users_kf='',
-                                t_business_channel='',
-                                t_sign_type='',
-                                t_talk_type='',
-                                t_rec_contarct_type='')
+                    return self.write('-1')
                 password=self.get_argument('password')
                 hashPassword=hashlib.md5(password).hexdigest()
                 f_email=self.get_argument('email')
@@ -532,7 +541,6 @@ class InsertUserHandler(BaseHandler):
                 department_childs=self.get_argument('department_childs','')
                 title_name=self.get_argument('title_name','')
                 is_first=self.get_argument('is_first','')
-                member_page=self.get_argument('member_page','')
                 department_id=0
                 department_child=None
                 if department_childs:
@@ -660,11 +668,11 @@ class ChangeUserHandler(BaseHandler):
                     department_child=department_childs.split('_')[1]
                 self.db.execute('''
                     update  t_user set name=%s,email=%s,phone=%s,is_lock=%s,role=%s,
-                    remark=%s,is_admin=%s,qc=%s,person_phone=%s,department_name=%s,department_id=%s,
-                    department_child=%s,title_name=%s,
-                    is_first=%s where id=%s
+                    remark=%s,person_phone=%s,department_name=%s,department_id=%s,
+                    department_child=%s,title_name=%s
+                     where id=%s
                     ''',name,f_email,phone,int(is_lock),int(role),remark,
-                    int(is_admin),int(qc),person_phone,department_name,department_id,department_child,title_name,is_first,user_id)
+                    person_phone,department_name,department_id,department_child,title_name,user_id)
                 self.db.execute('''
                     update t_user_relation set 
                     department_name=%s,department_id=%s,uid_name=%s,work_tel=%s,per_tel=%s,title_name=%s

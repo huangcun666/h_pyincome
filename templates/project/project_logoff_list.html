@@ -77,11 +77,12 @@
                           </div>
                         </div>
                         </li>
-
+                        {%if not params['count_way']%}
                         <li class="g1 g1-left">
 
                           <a href="/project?tag={{tag}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}&output=1" class="btn btn-info">下载当前数据</a>
                         </li>
+                        {%end%}
       </ol>
 
 

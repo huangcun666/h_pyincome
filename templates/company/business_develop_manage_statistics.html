@@ -9,6 +9,37 @@
     position:absolute;
     right:120px;
 }
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    z-index:9999;
+    position: absolute;
+    background-color: #f9f9f9;
+    width: 100%;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
 </style>
 {%end%}
  {%block li%}
@@ -20,6 +51,19 @@
         </li>
         <li class="g1 g1-left">
                 <a href="?tag=business_develop_manage_statistics&statistics_type=fenpei{%if params['my']%}&my={{params['my']}}{%end%}" {%if params['statistics_type']=='fenpei'%}class="btn btn-primary btn-sm"{%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%} >商机分配统计</a> 
+                </li>
+        <li class="g1 g1-left">
+            <div class="dropdown">
+                    <a href="javascript:void(0)" class="btn  btn-primary btn-sm"  id='project_btn'>{%if not params['way'] or params['way']=='day' %}按日统计{%elif params['way']=='month'%}按月统计{%elif params['way']=='week'%}按周统计{%end%}
+                    <span class="fa fa-caret-down"></span>  
+                    </a>
+                    
+                    <div class="dropdown-content">
+                    <a href="?tag=business_develop_manage_statistics{%for k,v in params.items()%}{%if v and k!='way'%}&{{k}}={{v}}{%end%}{%end%}&way=day" >按日统计 </a>
+                    <a href="?tag=business_develop_manage_statistics{%for k,v in params.items()%}{%if v and k!='way'%}&{{k}}={{v}}{%end%}{%end%}&way=month">按月统计 </a>
+                    <a href="?tag=business_develop_manage_statistics{%for k,v in params.items()%}{%if v and k!='way'%}&{{k}}={{v}}{%end%}{%end%}&way=week">按周统计</a>
+                    </div>
+                </div>
                 </li>
  <li class="g1 g1-right1">
         <a href="?tag=business_develop_manage" class="btn btn-primary btn-sm" >商机管理</a>
@@ -88,8 +132,14 @@
         {%end%}
         {%block form_search%}
         <td>
-        <input placeholder="人员" type="text" class="form-control" name="search_referrer" value="{%if params['search_referrer']%}{{params['search_referrer']}}{%end%}" >           
+        <input placeholder="人员" type="text" class="form-control" name="search_referrer" value="{{params['search_referrer']}}" >           
         </td>
+        <td>
+            <input readonly type="text" placeholder="开始时间" class="form-control" id="start_time" name="start_time" value="{{params['start_time']}}"> 
+        </td>
+        <td>
+                <input readonly type="text" placeholder="结束时间" class="form-control" id="end_time" name="end_time" value="{{params['end_time']}}"> 
+            </td>
         {%end%}
         {%block form_tags%}
         {%if params['my']%}
@@ -156,6 +206,11 @@
 <script>
  $(function () {
     _xsrf =  getCookie("_xsrf")
+
+    $("#start_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 00:00:00',
+language: 'zh-CN',initialDate: new Date()});
+    $("#end_time").datetimepicker({ minView: 2, pickTime: false,todayBtn: true,autoclose: true,format: 'yyyy-mm-dd 23:59:59',
+language: 'zh-CN',initialDate: new Date()});
     $('input[name=search_referrer]').typeahead({
       source: function (query, process) {
         return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {

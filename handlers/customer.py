@@ -13,6 +13,7 @@ from tornado.options import define, options
 import qrcode,xlwt
 import concurrent.futures
 import events
+import base64
 reload(sys)
 sys.setdefaultencoding('utf8')
 from Pagination import Pagination
@@ -21,6 +22,9 @@ executor = concurrent.futures.ThreadPoolExecutor(20)
 
 #客户
 class CustomerHandler(BaseHandler):
+    def get_filename_uuid4(self,filepath):
+        pattern=re.compile(r'^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+_')
+        return pattern.sub('',filepath)
     def get_payment_info(self,customer_id):
         payment_info=''
         t_customer_payment=self.db_customer.get('''
@@ -443,6 +447,7 @@ class CustomerHandler(BaseHandler):
             jz = self.get_argument("jz", "")
             lp = self.get_argument("lp", "")
             kj=self.get_argument('kj','')
+            notin_kjs=self.get_argument('notin_kjs','')
             s_is_check = self.get_argument("s_is_check","")
             my = self.get_argument("my",None)
             check_kj=self.get_argument('check_kj','')
@@ -452,6 +457,7 @@ class CustomerHandler(BaseHandler):
             new_tag = self.get_argument("new_tag","1")
             tag_parent_id = self.get_argument("tag_parent_id","")
             s_is_building=self.get_argument('s_is_building','')
+            output = self.get_argument("output","")
             acc_uids=[]
             t_user_relation=''
             t_user = self.db_customer.query("select * from "+  options.mysql_database + ".t_user where role=10 ")
@@ -459,6 +465,7 @@ class CustomerHandler(BaseHandler):
                 'keyword':keyword,
                 'tel':tel,
                 'kj':kj,
+                'notin_kjs':notin_kjs,
                 's_is_general':s_is_general,
                 's_is_check':s_is_check,
                 's_is_building':s_is_building,
@@ -480,9 +487,10 @@ class CustomerHandler(BaseHandler):
                 id_sql=" "
                 if keyword.isdigit():
                     id_sql    =" a.id = " + keyword +" or "
-
                 sql += """ 
-                        and ("""+id_sql+""" a.company like '%%""" + keyword + """%%' or a.company_reguid like '%%""" + keyword + """%%' )
+                        and ("""+id_sql+""" a.company like '%%""" + keyword + """%%' or a.company_reguid like '%%""" + keyword + """%%' or
+                        a.id in (select customer_id  from t_company_name where name like '%%""" + keyword + """%%' )
+                         )
                 
                 
                 """
@@ -509,6 +517,10 @@ class CustomerHandler(BaseHandler):
                      sql +=  sql+" and a.acc_uid=0 "
                 else:
                     sql +=  sql+" and a.acc_uid_name='"+kj+"' "
+            if notin_kjs:
+                notin_kjs=notin_kjs.replace('，',',')
+                sql+=' and not find_in_set(a.acc_uid_name,"%s") '%notin_kjs
+            print(sql)
             if check_kj and check_under and kj!="100000":
                 sql+=" and a.acc_uid_name='"+check_kj+"' "
 
@@ -736,9 +748,9 @@ class CustomerHandler(BaseHandler):
                     sh.write(idx,6,row.acc_uid_name)
                     sh.write(idx,7,row.created_at.strftime('%Y-%m-%d'))
                    # print row
-                wb.save('media/output/customer11111.xls')
-                self.write('<a href="static/output/customer11111.xls">下载</a>')
-                print "lllllll"
+                wb.save('media/output/客户列表_%s.xls'%uid)
+                self.redirect('/static/output/客户列表_%s.xls'%uid)
+            
 
             else:
                 self.render(
@@ -760,6 +772,7 @@ class CustomerHandler(BaseHandler):
                     lp=lp,
                     jz=jz,
                     my=my,
+                    notin_kjs=notin_kjs,
                     s_is_general=s_is_general,
                     s_is_building=s_is_building,
                     new_tag=new_tag,
@@ -1235,11 +1248,6 @@ class CustomerHandler(BaseHandler):
                          )
                          order by creatd_at desc
                     """,t_customer.customer_id)
-                    t_customer_exchange=self.db_customer.query(
-                        """
-                        select * from t_customer_exchange where customer_id=%s and etype=1 order by created_at desc
-                        """,t_customer.customer_id
-                    )
                     
                     express_type=self.db.query('''
                     select * from t_projects_type where income_category='快递类型'
@@ -1284,6 +1292,9 @@ class CustomerHandler(BaseHandler):
                     t_type_new=self.db_customer.query('''
                     select * from t_type where tag='客户标签' and parent_id in (1,2) and name!='楼盘'
                     ''')
+                    t_type_new2=self.db_customer.query('''
+                    select * from t_type where tag='客户标签2' and parent_id=1
+                    ''')
                     t_customer_payment=self.db_customer.get('''
                     select acc_end,id from t_customer_payment where customer_id=%s order by id desc limit 1
                     ''',t_customer.customer_id)
@@ -1312,7 +1323,24 @@ class CustomerHandler(BaseHandler):
                     t_customer_genjin_msg4=self.db_customer.query('''
                         select * from t_customer_genjin_msg where customer_id=%s and genjin_type=4 order by created_at desc
                         ''',t_customer.customer_id)
-                
+                    t_customer_genjin_msg5=self.db_customer.query('''
+                        select * from t_customer_genjin_msg where customer_id=%s and genjin_type=7 order by created_at desc
+                        ''',t_customer.customer_id)
+                    t_customer_exchange=self.db_customer.query(
+                        """
+                        select * from t_customer_exchange where customer_id=%s and etype=1 order by created_at desc
+                        """,t_customer.customer_id
+                    )
+                    t_customer_exchange1 = self.db_customer.query(
+                    """select * from t_customer_exchange 
+                    where customer_id=%s and (etype=2 or etype=4) order by created_at desc"""
+                    ,t_customer.customer_id)
+                    for item in t_customer_genjin_msg:
+                        item['etype']=''
+                    for item in t_customer_exchange1:
+                        item['genjin_type']=''
+                    t_customer_genjin_msg+=t_customer_exchange1
+                    t_customer_genjin_msg=sorted(t_customer_genjin_msg,key=lambda x:x.__getitem__('created_at'),reverse=True)
                     t_projects_events=self.db.query('''
                     select a.*,b.guid project_guid,c.guid customer_guid from t_projects_events a
                     left join t_projects b on a.project_id=b.id
@@ -1325,15 +1353,40 @@ class CustomerHandler(BaseHandler):
                     t_customer_address=self.db_customer.query('''
                     select * from t_customer_address where customer_id=%s order by arrange_at desc
                     ''',id)
+                    t_user = self.db.query("select * from t_user where is_lock=0 order by id desc")
+                    user64=""
+                    if t_customer.rel_name_collect_account and t_customer.rel_name_collect_password:
+                        from urllib import quote
+                        user64 = base64.b64encode(quote(t_customer.rel_name_collect_account.encode("utf8"))+"|"+t_customer.rel_name_collect_password+"|"+quote(t_customer.company.encode("utf8"))+"|"+str(t_customer.customer_id))
+                        print user64
+                    t_user_relation_manage=self.db.get('''
+                        select * from t_user_relation where is_leader>0 and uid=%s
+                        and department_id=(select department_id from t_user_relation where uid=%s)
+                    
+                    ''',uid,t_customer.acc_uid)
+                    t_projects_transitions_file=self.db.query(
+                    """
+                    select a.* from t_projects_transition_upload a
+                     inner join t_projects b on a.project_id=b.id
+                      where b.customer_company=%s and b.company_uid=%s order by created_at desc
+                    """,t_customer.company,t_customer.company_reguid)
+                    t_etax = self.db_customer.query("select * from t_etax where customer_id=%s",id)
                     self.render(
                         "c/customer/customer_show.html",
+                        t_etax=t_etax,
                         dt_today=dt_today,
+                        user64=user64,
+                        get_filename_uuid4=self.get_filename_uuid4,
+                        t_user_relation_manage=t_user_relation_manage,
+                        t_user=t_user,
+                        t_projects_transitions_file=t_projects_transitions_file,
                         t_customer_address=t_customer_address,
                         t_customer_his_income=t_customer_his_income,
                         t_projects_events=t_projects_events,
                         t_acc=t_acc,
                         t_city=t_city,
                         t_zone=t_zone,
+                        t_type_new2=t_type_new2,
                         t_customer_type=t_customer_type,
                         t_payment_type=t_payment_type,
                         t_customer_payment=t_customer_payment,
@@ -1367,11 +1420,13 @@ class CustomerHandler(BaseHandler):
                         tag=tag,
                         to_tag=to_tag,
                         gen_tag=gen_tag,
+                        t_customer_exchange1=t_customer_exchange1,
                         t_customer_genjin_msg=t_customer_genjin_msg,
                          t_customer_genjin_msg1=t_customer_genjin_msg1,
                           t_customer_genjin_msg2=t_customer_genjin_msg2,
                            t_customer_genjin_msg3=t_customer_genjin_msg3,
-                            t_customer_genjin_msg4=t_customer_genjin_msg4,)
+                            t_customer_genjin_msg4=t_customer_genjin_msg4,
+                            t_customer_genjin_msg5=t_customer_genjin_msg5)
 
 
         elif tag == "query_project":
@@ -1957,9 +2012,15 @@ class CustomerHandler(BaseHandler):
             kj_name=self.get_argument('kj_name')
             customer_ids=customer_ids.split(',')
             for item in customer_ids:
+                t_customer=self.db_customer.get(' select acc_uid_name from t_customer where id=%s',item)
                 self.db_customer.execute('''
                 update t_customer set acc_uid=%s,acc_uid_name=%s where id=%s
                 ''',kj_id,kj_name,item)
+                if t_customer.acc_uid_name!=kj_name:
+                    self.db_customer.execute('''
+                        insert into t_acc_his(name,uid,uid_name,created_at,customer_id,remark)
+                        values(%s,%s,%s,%s,%s,%s)
+                        ''',t_customer.acc_uid_name,uid,uid_name,dt,item,'')
         elif tag=="modify_company_uid":
             company_uid=self.get_argument('company_uid')
             customer_id=self.get_argument('customer_id')
@@ -2955,6 +3016,9 @@ class CustomerHandler(BaseHandler):
             is_clearly=self.get_argument('is_clearly','0')
             is_year=self.get_argument('is_year','0')
             reg_money=self.get_argument('reg_money','')
+            other_appoint=self.get_argument('other_appoint','')
+            tag_id2=self.get_argument('tag_id2','0')
+            tag_name2=self.get_argument('tag_name2','')
             t_customer=self.db_customer.get(''' select * from t_customer where id=%s ''',customer_id)
             t_linkman=self.db_customer.get(' select * from t_linkman where id=%s ',link_id)
             t_customer_payment=self.db_customer.get(' select * from t_customer_payment where id=%s ',payment_id)
@@ -2998,8 +3062,9 @@ class CustomerHandler(BaseHandler):
             '''%(pay_type_id,pay_typeid_name,fee,service_amount,service_amount_month,book_amount)
             result2=self.db_customer.execute('''
             update t_customer set  reg_money=%s,company=%s,reg_person=%s,company_reguid=%s,reg_date=%s,is_general=%s,
-            addr_type=%s,city=%s,zone=%s,reg_addr=%s '''+sql+''' where id=%s
-            ''',reg_money,company,reg_person,company_reguid,reg_date,is_general,addr_type,city,zone,reg_addr,customer_id)
+            addr_type=%s,city=%s,zone=%s,reg_addr=%s,other_appoint=%s,tag_id2=%s,tag_id_name2=%s '''+sql+''' where id=%s
+            ''',reg_money,company,reg_person,company_reguid,reg_date,is_general,addr_type,city,zone,reg_addr,
+            other_appoint,tag_id2,tag_name2,customer_id)
             txt=''
             if result==0:
                 if (t_linkman.name if t_linkman.name else '')!=link_name:
@@ -3129,9 +3194,11 @@ class CustomerHandler(BaseHandler):
         elif tag=="dongtai_genjin":
             customer_id=self.get_argument('customer_id')
             dongtai_msg=self.get_argument('dongtai_msg','')
-            genjin_type=self.get_argument('genjin_type')
-            len1=int(self.get_argument('len1'))
-
+            genjin_type=self.get_argument('genjin_type','')
+            len1=int(self.get_argument('len1',0))
+            msg_id=self.get_argument('msg_id','')
+            delete_file_path=self.get_argument('delete_file_path','')
+            delete_msg_id=self.get_argument('delete_msg_id','')
             file_path =''
             is_upload = False
             for i in range(len1):
@@ -3162,10 +3229,28 @@ class CustomerHandler(BaseHandler):
                     output_file = open(save_full_path, 'w')
                     output_file.write(file1["body"])
                     file_path += url_fname+'|'
-            self.db_customer.execute('''
-            insert into t_customer_genjin_msg(customer_id,file_path,created_at,uid_name,uid,msg,genjin_type)
-            values(%s,%s,%s,%s,%s,%s,%s)
-            ''',customer_id,file_path,dt,uid_name,uid,dongtai_msg,genjin_type)
+            if msg_id:
+                self.db_customer.execute('''
+                    update t_customer_genjin_msg set file_path=concat(file_path,%s) where id=%s
+                ''',file_path,msg_id)
+            elif delete_msg_id:
+                self.db_customer.execute('''
+                    update t_customer_genjin_msg set file_path=replace(file_path,%s,''),file_path=replace(file_path,%s,'') where id=%s
+                ''',delete_file_path+'|',delete_file_path,delete_msg_id)
+            else:
+                if genjin_type in ('5','6'):
+                    etype=2
+                    if genjin_type=='6':
+                        etype=4
+                    result=self.db_customer.execute('''
+                    insert into  t_customer_exchange(msg,customer_id,created_at,uid,uid_name,file_path,etype)
+                    values(%s,%s,%s,%s,%s,%s,%s)''', dongtai_msg, customer_id,dt, uid,
+                                        uid_name, file_path, etype)
+                else:
+                    self.db_customer.execute('''
+                    insert into t_customer_genjin_msg(customer_id,file_path,created_at,uid_name,uid,msg,genjin_type)
+                    values(%s,%s,%s,%s,%s,%s,%s)
+                    ''',customer_id,file_path,dt,uid_name,uid,dongtai_msg,genjin_type)
         
         elif tag=="customer_feedback":
             feedback_msg=self.get_argument('feedback_msg','')

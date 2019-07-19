@@ -406,8 +406,12 @@ WshShell.Quit;
       'remark':remark,
       'member_page':"{{member_page}}"
 
-    },function (data) { 
-      location.href=data
+    },function (data) {
+      if(data=='-1'){
+        alert('用户名存在')
+      }else{
+        location.href=data
+      } 
      })
     }
   })

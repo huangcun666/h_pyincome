@@ -1,59 +1,176 @@
 {% extends "../base.html" %} {%block title%}销售计划{%end%} {% block body %}
 
-
+<style>
+.fayetbody tr td{
+    line-height:20px;
+}
+</style>
 <ol class="breadcrumb">
     <li class="breadcrumb-item g1">
         主面板
     </li>
     <li class="breadcrumb-item g1">商标管理
 
-<a href="javascript:void(0)" id="a_new">新建</a>
+<a href="javascript:void(0)" id="a_new" class="btn btn-primary btn-sm">新建</a>
 
-    </li>
+<a href="/trade?tag=list" {%if not paramas['show_tag']%} class="btn btn-primary btn-sm" {%else%} class="btn btn-default btn-sm" style="background-color: #9ec6ef;"{%end%}>我的商标</a>
+
+<a href="/trade?tag=list&show_tag=relation"  {%if paramas['show_tag']=='relation'%} class="btn btn-primary btn-sm" {%else%} class="btn btn-default btn-sm" style="background-color: #9ec6ef;"{%end%} >相关商标</a>
+ 
+</li>
 
 </ol>
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <a class="btn btn-light  nav_padding {%if not todo%}active{%end%}" id="nav-home-tab"
-        href="/trade?tag=list{%if my%}&my=1{%end%}" >全 部
+        <a class="btn btn-light  nav_padding {%if not todo and not paramas["is_end"]%}active{%end%}" id="nav-home-tab"
+        href="/trade?tag=list{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" >全 部<span class="badge badge-danger">{{every_counts.a}}</span>
       </a>
-    <a class="btn btn-light  nav_padding {%if todo=='1'%}active{%end%}"
-      href="/trade?tag=list&todo=1{%if my%}&my=1{%end%}" style="font-size:13px;">待完成
-     </a>
-      <a class="btn btn-light  nav_padding {%if todo=='2'%}active{%end%}"
-      href="/trade?tag=list&todo=2{%if my%}&my=1{%end%}" style="font-size:13px;"> 已完成
-      </a>
-      <a class="btn btn-light  nav_padding {%if todo=='3'%}active{%end%}"
-      href="/trade?tag=list&todo=3{%if my%}&my=1{%end%}" style="font-size:13px;"> 已过期
+      <a class="btn btn-light  nav_padding {%if todo=='pending'%}active{%end%}" id="nav-home-tab"
+      href="/trade?tag=list&todo=pending{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" >待处理<span class="badge badge-danger">{{every_counts.b}}</span>
     </a>
+     {%for item in t_mile_type%}
+  
+        {%if item.order_int==1%}
+             <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and not paramas["status"]%}active{%end%}"
+      href="/trade?tag=list&todo={{item.order_int}}&status=0{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px;"> {{item.income_name}}<span class="badge badge-danger">{{every_counts.c}}</span>
+      </a>
+    <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and paramas["status"]==2%}active{%end%}"
+      href="/trade?tag=list&todo={{item.order_int}}&status=2{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px;color:red;"> 递交不成功<span class="badge badge-danger">{{every_counts.d}}</span>
+      </a>
+     {%elif item.order_int==2%}
+          <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and not paramas["status"]%}active{%end%}"
+      href="/trade?tag=list&todo={{item.order_int}}&status=0{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px;"> {{item.income_name}}<span class="badge badge-danger">{{every_counts.e}}</span>
+      </a>
+        <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and paramas["status"]==2%}active{%end%}"
+        href="/trade?tag=list&todo={{item.order_int}}&status=2{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px;color:red;"> 不受理<span class="badge badge-danger">{{every_counts.f}}</span>
+        </a>
+     {%elif item.order_int==3%}
+          <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and not paramas["status"]%}active{%end%}"
+      href="/trade?tag=list&todo={{item.order_int}}&status=0{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px;"> {{item.income_name}}<span class="badge badge-danger">{{every_counts.g}}</span>
+      </a>
+        <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and paramas["status"]==2%}active{%end%}"
+        href="/trade?tag=list&todo={{item.order_int}}&status=2{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px;color:red;">  部分驳回<span class="badge badge-danger">{{every_counts.h}}</span>
+        </a>
+
+        <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and paramas["status"]==3%}active{%end%}"
+        href="/trade?tag=list&todo={{item.order_int}}&status=3{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px; color:red;"> 全部驳回<span class="badge badge-danger">{{every_counts.i}}</span>
+        </a>
+        <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and paramas["status"]==4%}active{%end%}"
+        href="/trade?tag=list&todo={{item.order_int}}&status=4{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px; color:red;"> 资料补正<span class="badge badge-danger">{{every_counts.i1}}</span>
+        </a>
+        <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and paramas["status"]==6%}active{%end%}"
+        href="/trade?tag=list&todo={{item.order_int}}&status=6{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px; color:red;"> 同日申请补送<span class="badge badge-danger">{{every_counts.i2}}</span>
+        </a>
+        {%elif item.order_int==4%}
+ 
+
+    <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and not paramas["status"]%}active{%end%}"
+    href="/trade?tag=list&todo={{item.order_int}}&status=0{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px;"> 初审<span class="badge badge-danger">{{every_counts.j}}</span>
+    </a>
+    <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and paramas["status"]==2%}active{%end%}"
+    href="/trade?tag=list&todo={{item.order_int}}&status=2{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px; color:red;""> 被异议<span class="badge badge-danger">{{every_counts.k}}</span>
+    </a>
+     {%elif item.order_int==7%}
+            <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and not paramas["status"]%}active{%end%}"
+      href="/trade?tag=list&todo={{item.order_int}}&status=0{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px;"> 待交接<span class="badge badge-danger">{{every_counts.p}}</span>
+      </a>
+
+        <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and paramas["status"]==1%}active{%end%}"
+        href="/trade?tag=list&todo={{item.order_int}}&status=1{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px;"> 已交接<span class="badge badge-danger">{{every_counts.q}}</span>
+        </a>
+    {%else%}
+       <a class="btn btn-light  nav_padding {%if todo==str(item.order_int) and not paramas["status"]%}active{%end%}"
+      href="/trade?tag=list&todo={{item.order_int}}&status=0{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px;"> {{item.income_name}}<span class="badge badge-danger">{%if item.income_name=='电子证书'%}{{every_counts.l}}{%else%}{{every_counts.o}}{%end%}</span>
+      </a>
+    {%end%}
+  
+
+
+
+      {%end%}
+    <a class="btn btn-light  nav_padding {%if  paramas["is_end"]%}active{%end%}"
+      href="/trade?tag=list&is_end=1{%if paramas['show_tag']%}&show_tag={{paramas['show_tag']}}{%end%}" style="font-size:13px; color:red;">已放弃<span class="badge badge-danger">{{every_counts.r}}</span>
+      </a>
+
     </div>
 </nav>
+<form>
+<table>
+        <tbody>
+        <tr>
+      <td style="width:8%">
+                        <input class="form-control" type="text" placeholder="编号" name="trade_id" value="{%if paramas["trade_id"]%}{{ paramas["trade_id"]}}{%end%}">
+      </td>
+        <td style="width:15%">
+        <input class="form-control" type="text" placeholder="申请人/商标名称/申请号" name="key"  value="{%if paramas["key"]%}{{ paramas["key"]}}{%end%}">
+        </td>
+        <td style="width:8%">
+                <input type="text" class="form-control" placeholder="类别" name="trade_regtype"  value="{%if paramas["trade_regtype"]%}{{ paramas["trade_regtype"]}}{%end%}">
+                </td>
+                <td style="width:8%">
+                        <input type="text" class="form-control" placeholder="颜色" name="trade_color"  value="{%if paramas["trade_color"]%}{{ paramas["trade_color"]}}{%end%}">
+                        </td>
+        <td style="width:8%">
+        <input type="text" class="form-control" placeholder="确认单" name="project_id"  value="{%if paramas["project_id"]%}{{ paramas["project_id"]}}{%end%}">
+        </td>
+    
+   
+        
+        <td style="width:8%">
+        <input type="text" class="form-control" id="created_uid_name" name="created_uid_name"  placeholder="创建人"  value="{%if paramas["created_uid_name"]%}{{ paramas["created_uid_name"]}}{%end%}">
+        </td>
 
+       
+        <td>
+        <input id="search_btn" type="submit" class="btn btn-primary btn-sm" value="检索">
+        </td>
+        </tr>
+        </tbody>
+        </table>
+ <input type="hidden"  value='{{paramas["tag"]}}' name="tag"/>
+ {%if paramas["todo"]%}
+ <input type="hidden"  value='{{paramas["todo"]}}' name="todo"/>
+ {%end%}
+ {%if paramas["status"]%}
+ <input type="hidden"  value='{{paramas["status"]}}' name="status"/>
+ {%end%}
+{%if paramas["is_end"]%}
+ <input type="hidden"  value='{{paramas["is_end"]}}' name="is_end"/>
+{%end%}
+{%if paramas['show_tag']%}
+<input type="hidden"  value='{{paramas["show_tag"]}}' name="show_tag"/>
+{%end%}
+ 
+
+    </form>
     <div class="table-responsive">   
     <table class="table table-bordered fayetable" style="width: 100%;" >
         <thead  class="table_class">
             <tr>
                     <th width="60">编号</th>
-                <th >申请人</th>
+                <th width="100" >申请时间</th>
 
-                <th width="120" >申请时间                </th>
-                <th width="120">申请号                </th>
-                <th width="80">类别
+                <th width="160">申请人</th>
+                <th width="160">最新动态</th>
+                <th width="80">确认单号</th>
+                <th width="100">申请号                </th>
+
+                <th width="50">类别
                 </th>
 
-                <th width="160">商标名称
+                <th width="150">商标名称
                 </th>
                 <th width="60">颜色</th>
-                <th width='120'>销售顾问
+                <th width='80'>销售顾问
                 </th>
                 <th width='80'>客服顾问
                 </th>
                 <th width='80'>客户
 
                 </th>
-                <th width='180'>书文记录
+               <!-- <th width='180'>书文记录
                 </th>
-               <!-- <th width='80'>通知业务员时间
+          <th width='80'>通知业务员时间
 
                 </th>
 -->
@@ -69,11 +186,29 @@
                     <td>
                            <a href="/trade?tag=show&id={{item.id}}" target="_blank">{{item.id}}</a> 
                         </td>
+                        <td>
+                            {%if item.trade_reg_at%}
+                          {{item.trade_reg_at.strftime("%Y-%m-%d")}}
+                          {%end%}
+                        </td>
 <td>
         <a href="/trade?tag=show&id={{item.id}}"  target="_blank"> {{item.trade_by}}</a> 
 </td>
+<td>
+  
+    {%if item.cz_created_at%}
+    {{item.cz_name}}:{{item.cz_message}}{{item.cz_created_at.strftime('%Y-%m-%d')}}
+    {%end%}
+    {%if item.gj_created_at%}
+
+    <br>{{item.gj_name}}:{{item.gj_message}}{{item.gj_created_at.strftime('%Y-%m-%d')}}
+    {%end%}
+
+</td>
                 <td>
-                  {{item.trade_reg_at}}
+                    {%if item.project_id>0%}
+                    <a target="_blank" href="/project?tag=show&guid={{item.project_guid}}&id={{item.project_id}}">{{item.project_id}}</a>
+                    {%end%}
                 </td>
                 <td>
                     {{item.trade_number}}
@@ -93,8 +228,7 @@
                             {%if item.mbs%} {%raw get_member(item.mbs,"客服顾问")%}{%end%}
                         </td>            <td>
                                 {{item.customer_name}}
-                            </td>            <td>
-                                </td>
+                            </td>      
             </tr>
             {%end%} {%else%}
             <tr>
@@ -110,14 +244,14 @@
             <ul class="pagination">
                 {% if pagination.has_prev %}
                 <li class="paginate_button page-item previous " id="dataTable_previous">
-                    <a href="?tag=list_plan&page={{ pagination.page - 1}}{% if todo%}&todo={{todo}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a>
+                    <a href="?page={{ pagination.page - 1}}{%for k,v in paramas.items() %}{%if v%}&{{k}}={{v}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a>
                 </li>
 
 
 
                 {% end %} {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                 <li class="paginate_button page-item ">
-                    <a href="?tag=list_plan&page={{page}}{% if todo%}&todo={{todo}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
+                    <a href="?page={{page}}{%for k,v in paramas.items() %}{%if v%}&{{k}}={{v}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a>
                 </li>
                 {% else %}
                 <li class="paginate_button page-item active">
@@ -131,7 +265,7 @@
                 </li>
                 {% end %} {%end %} {% if pagination.has_next %}
                 <li class="paginate_button  page-item next" id="dataTable_next">
-                    <a href="?tag=list_plan&page={{pagination.page+1}}{% if todo%}&todo={{todo}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
+                    <a href="?page={{pagination.page+1}}{%for k,v in paramas.items() %}{%if v%}&{{k}}={{v}}{%end%}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a>
                 </li>
                 {% end %} </ul>
         </div>
@@ -187,6 +321,14 @@
                                 </div>
                                 <!-- /controls -->
                             </div>
+                        <div class="form-group">
+                                <div class="col-md-12">
+                                    <label class="control-label" for="username">商标申请时间</label>
+                                    <input readonly type="text" class="form-control " id="trade_reg_at" name="trade_reg_at"  />
+                                    <div class="alert alert-danger" role="alert" id="trade_reg_at_msg" style="display:none;"></div>
+                                </div>
+                                <!-- /controls -->
+                            </div>    
                             <div class="form-group">
                                     <div class="col-md-12">
                                         <label class="control-label" for="username">申请类别</label>
@@ -196,7 +338,12 @@
                                     <!-- /controls -->
                                 </div>                        <div class="form-group">
                                         <div class="col-md-12">
-                                            <label class="control-label" for="username">申请颜色</label>
+                                            <label class="control-label" for="username">申请颜色
+                                                    {%for item in t_trade_color%}
+                                                    <span style="cursor: pointer;color: #fff;
+                                                    background-color:{{item.color}};" name="{{item.color_name}}" class="badge badge-pill select_color">{{item.color_name}}</span>
+                                                    {%end%}
+                                            </label>
                                             <input type="text" class="form-control " id="trade_color" name="trade_color"  />
                                             <div class="alert alert-danger" role="alert" id="trade_color_msg" style="display:none;"></div>
                                         </div>
@@ -243,12 +390,24 @@
             minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
             language: 'zh-CN', initialDate: new Date()
         });
-
+        
+        $("#trade_reg_at").datetimepicker({
+            minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd 00:00:00',
+            language: 'zh-CN', initialDate: new Date()
+        });
+        $('#created_uid_name').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    });
 
         $("#a_new").on("click",function(){
                 $("#add_modal").modal("show")
 
         })
+
 
 
         $("#btn_save_new").on("click",function(){
@@ -259,13 +418,14 @@
                var trade_regtype = $("#trade_regtype").val()
                var trade_color = $("#trade_color").val()
                var project_id = $("#project_id").val()
+               var trade_reg_at=$("#trade_reg_at").val()
                var trade_remark = $("#trade_remark").val()
            
               if(trade_name==""){
                   $("#trade_name_msg").text("商标名称不能为空.")
                   $("#trade_name_msg").show()
               }              else if(project_id==""){
-                  $("#project_id_msg").text("商标申请人不能为空.")
+                  $("#project_id_msg").text("关联订单不能为空哦.")
                   $("#project_id_msg").show()
               }
               else if(project_id==""){
@@ -276,7 +436,7 @@
               
               else{
 
-                $.post("/trade?tag=add",{"_xsrf":_xsrf,"trade_name":trade_name,"trade_number":trade_number,"trade_by":trade_by,"trade_regtype":trade_regtype,"trade_color":trade_color,"project_id":project_id,"trade_remark":trade_remark},function(result){
+                $.post("/trade?tag=add",{"_xsrf":_xsrf,"trade_reg_at":trade_reg_at,"trade_name":trade_name,"trade_number":trade_number,"trade_by":trade_by,"trade_regtype":trade_regtype,"trade_color":trade_color,"project_id":project_id,"trade_remark":trade_remark},function(result){
 
                         if(result >0){
                             location.reload()
@@ -289,7 +449,9 @@
 
 
         })
-
+        $('.select_color').click(function () { 
+    $("#trade_color").val($(this).attr('name'))
+ })
 
 
     })

@@ -46,6 +46,7 @@
                         <tr>
                          <th width="60">编号</th>
                             <th>业务名称</th>
+                            <th width="180">公司名称</th>
                             <th width="80">客户</th>
 
 
@@ -69,6 +70,9 @@
                             </td>
                             <td  title="{{item.project_name}}">
                              <a href="/project?tag=show&guid={{item.guid}}&id={{item.id}}"  title="{{item.project_name}}">{{item.project_name}}</a>
+                            </td>
+                            <td>
+                                {{item.customer_company}}
                             </td>
                               <td>
                                     {{item.customer_name}}

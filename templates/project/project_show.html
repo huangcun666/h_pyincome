@@ -287,6 +287,11 @@ ul,li {list-style: none;}
             
             办理地址管理</a>
           </li>
+       
+          <li class="g1 g1-left"><a href="javascript:;" id="project_reject" class="btn btn-primary btn-sm" style="font-size:0.6rem;">
+              {%if role in ['2','3','5','8']%}填写错误反馈{%else%}查看错误反馈{%end%}</a>
+          </li>
+   
           {%if '292' in role_list%}
         <li class="g1 g1-left">
           <a href="javascript:void(0)" id="add_to_economic" 
@@ -416,7 +421,16 @@ ul,li {list-style: none;}
 			<div class="fayet" style="border-left: none;">业务内容</div>
 			<div class="fayet3"> {%if  t_project.project_name%}
                     {{t_project.project_name}}
+
                     {%else%}
+                    {%end%}
+                    {%if t_project.gc_request%}
+                    {%for item in t_project.gc_request.split(',')%}
+                    {%if item.split('_')[2]=='特殊业务'%}
+                    <span class="badge badge-pill badge-success"><b>
+                        {{item.split('_')[1]}}</b></span>
+                    {%end%}
+                    {%end%}
                     {%end%}
         </div>
     </li>
@@ -458,26 +472,35 @@ ul,li {list-style: none;}
 
  <span class='badge badge-pill badge-success' style="font-size:13px;">
                   {{t_project.contract_uid_name}}    {{t_project.contract_confirm_at}}  已经确认
-</span>
+</span>          {%if t_project.contract_remark%} (备注： {{t_project.contract_remark}}) {%end%}
                   {%else%}
                     {%if int(role)==5 or role=="3"%}
                 <a href="javascript:void(0)" class="btn btn-info" id="btn_contract_confrim">马上确认</a>
                 {%else%}
-                     <span class='badge badge-pill badge-success'>  <b>待合同岗确认
+                     <span class='badge badge-pill badge-success' style="font-size:13px;" >  <b>待合同岗确认
+
                 </b></span>
+
                 {%end%}
                   {%end%}
 
-                {%if t_project.contract_remark%} 备注： {{t_project.contract_remark}} {%end%}
+
 
               {%else%}
-                {%if int(role)==5 or role=="3"%}
-                <a href="javascript:void(0)" class="btn btn-primary" id="btn_contract_confrim">马上确认</a>
-                {%else%}
-                 <span class='badge badge-pill badge-info ' style="font-size:13px;"  style='font-size:13px;' >  <b>待合同岗确认
-                </b></span>{%end%}
-              {%end%}
 
+                {%if int(role)==5 or role=="3"%}
+                {%if t_project.contract_remark%} (备注： {{t_project.contract_remark}}) {%end%}
+                <span class='badge badge-pill badge-success' style="font-size:13px;">
+                    {{t_project.contract_uid_name}}    {{t_project.contract_confirm_at}}  
+
+  </span>  <a href="javascript:void(0)" class="btn btn-primary btn-sm" id="btn_contract_confrim">马上确认</a>
+                {%else%}
+                 <span class='badge badge-pill badge-info '  style='font-size:13px;' >  <b>待合同岗确认
+                </b></span>{%end%}
+
+                
+              {%end%}
+          
 
                     </div>
 </li>
@@ -1122,15 +1145,23 @@ ul,li {list-style: none;}
                           <div class="card-footer  text-muted"> 合计总服务费  {{t_project.all_income}} 元 </div>
                         </div>
 
-
-
              <div class="card mb-3 topxian" id="banlijindu">
 
                           <div class="card-body ">
                             <h6 class="card-title mb-1 ">
 
-            办理进度更新记录     {%if t_project.business_id%}
-            <a target="_blank" href='/company?tag=show_business&id={{t_project.business_id}}&guid={{t_project.business_guid}}'>商机开发详情</a>
+            办理进度更新记录  {%if t_project.gc_business%}
+            {%for item in t_project.gc_business.split(',') %}
+            <a target="_blank" href='/company?tag=show_business&id={{item.split("|")[0]}}&guid={{item.split("|")[1]}}'>商机开发详情</a>
+            {%end%}
+            {%if t_project.gc_request%}
+            {%for item in t_project.gc_request.split(',')%}
+            {%if item.split('_')[2]=='特殊业务'%}
+            <span class="badge badge-pill badge-success"><b>
+                {{item.split('_')[1]}}</b></span>
+            {%end%}
+            {%end%}
+            {%end%}
             {%end%}
 
             {%if t_project.is_expedited==1%}
@@ -2143,7 +2174,60 @@ ul,li {list-style: none;}
 
 
 
-
+                          {%if t_project_members%}
+                          {%for item in t_project_members%}
+                          {%if item.btype_id_name=='商标'%}
+                          <div class=" card mb-3">
+                            <div class="card-body">
+                              <h6 class="card-title mb-1">
+                                商标申请进度 <a href="javascript:;" id="edit_trade">
+                                <i class="fa fa-fw fa-comment"></i>填入</a>
+                              </h6>
+                              <hr class="my-0">
+                              <div class="card-body">
+                              {%if t_project.trade_nums>0%}
+                                <span class="clearfix z-1" style="font-size:20px;">
+                                  <b>签单商标量：{{t_project.trade_nums}}</b>&nbsp;
+                                  <b> 签单已申请量：{{len(t_trade)}}</b>&nbsp;
+                                  <b> 待申请量：{{t_project.trade_nums-len(t_trade)}} </b>
+                                </span>
+                                <table class="table table-striped fayetable" style="padding:3px; margin:5px;width:50%;">
+                                  <thead>
+                                    <tr>
+                                      <th>商标名称</th>
+                                      <th>申请号</th>
+                                      <th>类别</th>
+                                      <th>最新进度</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {%if t_trade%}
+                                      {%for idx,item in enumerate(t_trade)%}
+                                      <tr>
+                                        <td>{{item.trade_name}}</td>
+                                        <td>{{item.trade_number}}</td>
+                                        <td>{{item.trade_regtype}}</td>
+                                        <td>{%if item.message%}{{item.message}} {{item.created_at.strftime('%Y-%m-%d')}}{%end%}</td>
+                                      </tr>
+                                      {%end%}
+                                    {%else%}
+                                    <tr><td colspan="4">还没哦~</td></tr>
+                                    {%end%}
+                                  </tbody>
+                                    </table>
+                                    {%else%}
+                                    您还没有填写签单商标量哦
+                                    {%end%}
+                              </div>
+                              
+                              
+                            </div>
+                          
+                          </div>
+                          {%break%}
+                          {%end%}
+                          {%end%}
+                          {%end%}
        <div class="card-columns" id="trans_list">
             <!-- Example Social Card-->
                <div class="card mb-12 topxian" id='dingdanliuzhuan'>
@@ -2748,11 +2832,22 @@ ul,li {list-style: none;}
          {%else%}
 
 
-           {%if 11==int(role)%}
+           {%if 11==int(role)  or (item.team_id==205 and is_manager=="1" and confirm_banjie and  confirm_banjie.confirm_banjie==1)%}
           <button class=" btn_cq_rec_order" mid="{{row.member_id}}"  mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order">
           
           {%if item.team_id==205 %}确认已办结 {%else%} 确认已交接完成{%end%}
           </button>
+          {%elif item.team_id==205 and is_manager=="1" and confirm_banjie%}
+          {%if confirm_banjie.confirm_banjie==1%}
+          <button class=" btn_cq_rec_order" mid="{{row.member_id}}"  mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order">
+          
+            {%if item.team_id==205 %}确认已办结 {%else%} 确认已交接完成{%end%}
+            </button>
+          {%else%}
+         <span class="badge badge-pill badge-info" style="font-size:13px;"> 等待订单完成确认</span>
+          
+          {%end%}
+
           {%else%}
 
          <span class="badge badge-pill badge-info" style="font-size:13px;"> 等待订单完成确认</span>
@@ -3106,7 +3201,9 @@ ul,li {list-style: none;}
                         {%if t_projects_transitions_file%}
                         {%for item in t_projects_transitions_file%}
                         <tr>
-                      <td><a href="{{item.file_name}}" download="{{item.file_name.split('/')[-1]}}" style="font-size:13px;">{{item.file_name.split('/')[-1].split('.')[0]}}</a>
+                      <td><a href="{{item.file_name}}" download="{{item.file_name.split('/')[-1]}}" style="font-size:13px;">
+                      {{get_filename_uuid4(item.file_name.split('/')[-1]).rsplit('.',1)[0]}}
+                      </a>
 
 
                         <a href="project?tag=view_img&img={{item.file_name}}" target="_blank" style="font-size:13px;"><img src="/static/ico/web_icon_051.png" height="20"/>查看</a>
@@ -4867,6 +4964,9 @@ ul,li {list-style: none;}
                      <option value="{{m.id}}" {%if item.member_id==m.id%}selected{%end%}>{{m.name}}</option>
                  {%end%}
                  {%end%}
+                 {%for m in t_user_kfs%}
+                 <option value="{{m.id}}" {%if item.member_id==m.id%}selected{%end%}>{{m.name}}</option>
+                 {%end%}
                  </select>
 
 
@@ -5594,6 +5694,116 @@ ul,li {list-style: none;}
 </div>
 </div>
 
+<div id="project_reject_modal" class="modal fade"
+ tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+ <div class="modal-dialog" role="document" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle_mfile">错误反馈 </h5>
+        <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+
+      <div class="modal-body form-horizontal">
+        {%if role in ['2','3','5','8']%}
+        <div class="form-group">
+          <label for="">填写反馈</label>
+          <div class="row">
+            <div class="col-sm-4">
+                <select style="margin-top:13px;" class="form-control" name="reject_select" id="reject_select">
+                    <option value="">需要修改的信息</option>
+                    <option value="yewu">业务收入明细</option>
+                  </select>
+            </div>
+            <div class="col-sm-6" style="padding-left:0px;">
+              <textarea class="form-control" type="text" id="one_reject_msg" placeholder="修改内容">
+                </textarea>
+             
+              </div>
+            <div  class="col-sm-2" style="padding-left:0px;">
+              <a  style="margin-top:13px;" class="btn btn-primary btn-sm" href="javascript:;" id="add_to_reject">添加</a>
+            </div>
+          </div>
+        </div>
+      
+      <div class="form-group">
+          <label for="">反馈内容</label>
+          <div class="col-sm-12">
+            <textarea  readonly id="reject_msg" class="form-control" placeholder="反馈内容"></textarea>
+            <input type="hidden" id="reject_msg_titles">
+          </div>
+        </div>
+        {%end%}
+      <div class="form-group">
+      <label for=""><h6>历史反馈</h6></label>
+      <div class="col-sm-12">
+        {%if t_projects_information_reject%}
+        <table>
+          {%for item in t_projects_information_reject%}
+          <tr>
+            <th width="60">反馈人</th>
+            <th width="240">反馈内容</th>
+            <th width="80">反馈时间</th>
+            <th width='100'></th>
+          </tr>
+          <tr>
+            <td>{{item.uid_name}}</td>
+            <td>{{item.reject_msg}}</td>
+            <td>{{item.created_at.strftime('%Y-%m-%d')}}
+            </td>
+            {%if not item.handler_at%}
+            <td>
+                待{{item.handler_name}}处理
+          
+               
+                {%if item.handler_uid==int(uid) and not item.handler_at%}
+                    <a href="javascript:;" class="btn btn-sm btn-primary hand_btn" step='1' reject_id="{{item.id}}" >确认处理</a>
+                {%end%} 
+        </td>
+                {%elif item.handler_at and not item.confirm_at%}
+                <td>
+                待{{item.uid_name}}审核{{item.handler_at.strftime('%Y-%m-%d')}}
+        
+                {%if item.uid==int(uid) and item.uid==int(uid)%}
+                    <a href="javascript:;" class="btn btn-sm btn-primary hand_btn" step='2' reject_id="{{item.id}}" >审核</a>
+                {%end%} 
+        </td>
+                {%elif item.handler_at and item.confirm_at and item.confirm_status==1%}
+                <td>
+                {{item.uid_name}}审核通过{{item.confirm_at.strftime('%Y-%m-%d')}}</td>
+        
+                {%elif item.handler_at and item.confirm_at and item.confirm_status==2%}
+                <td>
+                {{item.uid_name}}驳回{%if item.confirm_reject_msg%}<br>备注:{{item.confirm_reject_msg}}{%end%}{{item.confirm_at.strftime('%Y-%m-%d')}}
+                
+                {%if item.handler_uid==int(uid) %}
+                    <a href="javascript:;" class="btn btn-sm btn-primary hand_btn" step='3' reject_id="{{item.id}}" >确认处理</a>
+                {%end%} 
+                
+        </td>
+                {%end%}
+          </tr>
+          {%end%}
+        </table>
+        {%else%}
+        还没有哦~
+        {%end%}
+      </div>
+      </div>
+
+</div>
+
+
+
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" id="project_reject_save">保存</button>
+  </div>
+  </div>
+</div>
+</div>
 
 
 <!-- Modal -->
@@ -5745,7 +5955,7 @@ ul,li {list-style: none;}
 
 
 
-     {%if t_project.contract_uid_name %}
+     {%if t_project.contract_uid_name and not t_projects_reject_titles %}
            <div class="alert alert-warning" role="alert">
                 合同岗位核对确认后，信息停止更改
 
@@ -5772,14 +5982,15 @@ ul,li {list-style: none;}
           </div>
           <div class="form-group" id="div_is_expedited">
               <label for="exampleInputEmail1"  class="col-sm-4 control-label">加急业务: </label>
-              <input type="radio" name="is_expedited"  value="1"  {% if t_project.is_expedited==1%}checked{%end%}/>&nbsp;是
-              <input type="radio" name="is_expedited" value="0" {% if t_project.is_expedited==0%}checked{%end%}/>&nbsp;否
+              
+              <input {%if t_project.contract_uid_name and 'is_expedited' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} type="radio"  name="is_expedited"  value="1"  {% if t_project.is_expedited==1%}checked{%end%}/>&nbsp;是
+              <input {%if t_project.contract_uid_name and 'is_expedited' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} type="radio" name="is_expedited" value="0" {% if t_project.is_expedited==0%}checked{%end%}/>&nbsp;否
           </div>
       <div id="div_building" class="well">
 
          <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">所属楼盘: {{t_project.building_id}}</label>
-        <select name="building_id" id="building_id"  class="form-control">
+        <select {%if t_project.contract_uid_name and 'building_id' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} name="building_id" id="building_id"  class="form-control">
              <option value="0">==请选择楼盘==</option>
            {% for idx, item in enumerate(t_building) %}
 
@@ -5802,7 +6013,7 @@ ul,li {list-style: none;}
       <div class="form-group">
           <label for="exampleInputEmail1" class="col-sm-4 control-label">优惠活动:
           </label>
-          <select name="promo_id" id="promo_id" class="form-control">
+          <select {%if t_project.contract_uid_name and 'promo_id' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} name="promo_id" id="promo_id" class="form-control">
               <option value="0">==请选择优惠活动==</option>
               {% for idx, item in enumerate(t_promo_types) %}
 
@@ -5825,7 +6036,7 @@ ul,li {list-style: none;}
    <div id="div_recommend_by"  style="  border:1px solid #eee; padding:15px;">
           <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">推荐客户人:</label>
-            <input class="form-control"  type="text" name="recommend_by" id="recommend_by" placeholder="谁帮我们介绍的客户" value="{%if t_project.recommend_by%}{{t_project.recommend_by}}{%end%}">
+            <input {%if t_project.contract_uid_name and 'recommend_by' not in t_projects_reject_titles  and t_project.uid_name==name%}disabled{%end%} class="form-control"  type="text" name="recommend_by" id="recommend_by" placeholder="谁帮我们介绍的客户" value="{%if t_project.recommend_by%}{{t_project.recommend_by}}{%end%}">
           </div>
   </div>
 
@@ -5835,7 +6046,7 @@ ul,li {list-style: none;}
           <div class="form-group">
             <label for="exampleInputEmail1" class="col-sm-4 control-label">内部推荐人:</label>
 
-   <input type="text" name="recommend_staff" id="recommend_staff"   data-items="8" data-provide="typeahead" value="{%if t_project.recommend_staff%}{{t_project.recommend_staff}}{%end%}"/>
+   <input {%if t_project.contract_uid_name and 'recommend_staff' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} type="text" name="recommend_staff" id="recommend_staff"   data-items="8" data-provide="typeahead" value="{%if t_project.recommend_staff%}{{t_project.recommend_staff}}{%end%}"/>
 
           </div>
   </div>
@@ -5863,7 +6074,7 @@ ul,li {list-style: none;}
  <div class="form-group" >
     <label for="inputEmail3" class=" control-label">来源关键词</label>
 
-            <input class="form-control"  type="text" name="from_word1" id="from_word1" placeholder="" value="{%if t_project.from_word%}{{t_project.from_word}}{%end%}"/>
+            <input {%if t_project.contract_uid_name and 'from_word1' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} class="form-control"  type="text" name="from_word1" id="from_word1" placeholder="" value="{%if t_project.from_word%}{{t_project.from_word}}{%end%}"/>
 
 
 
@@ -5875,7 +6086,7 @@ ul,li {list-style: none;}
 
            {% for idx, item in enumerate(t_business_channel) %}
 
-                 <input type="radio" name="business_channel"  value="{{item.id}}|{{item.income_name}}" {%if t_project.channel_id==item.id%}checked{%end%}/> &nbsp;{{item.income_name}}
+                 <input {%if t_project.contract_uid_name and 'business_channel' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} type="radio" name="business_channel"  value="{{item.id}}|{{item.income_name}}" {%if t_project.channel_id==item.id%}checked{%end%}/> &nbsp;{{item.income_name}}
            {% end %}
 
           </div>
@@ -5885,7 +6096,7 @@ ul,li {list-style: none;}
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">签约方式:</label>
 
            {% for idx, item in enumerate(t_sign_type) %}
-                 <input type="radio" name="sign_type_id"  value="{{item.id}}|{{item.income_name}}"
+                 <input {%if t_project.contract_uid_name and 'sign_type_id' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} type="radio" name="sign_type_id"  value="{{item.id}}|{{item.income_name}}"
                  {%if t_project.contract_sign_type_id==item.id%}checked{%end%}/> &nbsp;{{item.income_name}}
            {% end %}
 
@@ -5894,7 +6105,7 @@ ul,li {list-style: none;}
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">来源方式:</label>
 
            {% for idx, item in enumerate(t_talk_type) %}
-                 <input type="radio" name="talk_type"  value="{{item.id}}|{{item.income_name}}"
+                 <input {%if t_project.contract_uid_name and 'talk_type' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} type="radio" name="talk_type"  value="{{item.id}}|{{item.income_name}}"
                   {%if t_project.talk_type_id==item.id%}checked{%end%}/> &nbsp;{{item.income_name}}
            {% end %}
 
@@ -5903,17 +6114,17 @@ ul,li {list-style: none;}
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">是否记账:</label>
 
 
-                 <input type="radio" name="is_finance"  value="0"
+                 <input {%if t_project.contract_uid_name and 'is_finance' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} type="radio" name="is_finance"  value="0"
                   {%if t_project.is_finance==0%}checked{%end%} /> &nbsp;否
 
-           <input type="radio" name="is_finance"  value="1"
+           <input {%if t_project.contract_uid_name and 'is_finance' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} type="radio" name="is_finance"  value="1"
                   {%if t_project.is_finance==1%}checked{%end%} /> &nbsp;是
            <small id="err_is_finance" class="text-danger"></small>
           </div>
                          <div class="form-group">
   <label for="exampleInputEmail1"  class="col-sm-4 control-label">合同情况:</label>
                 {%for idx,item in enumerate(t_rec_contarct_type)%}
-          <input type="radio" name="new_contract_type_id" value="{{item.id}}|{{item.income_name}}"
+          <input {%if t_project.contract_uid_name and 'new_contract_type_id' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} type="radio" name="new_contract_type_id" value="{{item.id}}|{{item.income_name}}"
            {%if t_project.contract_confirm_id==item.id%}checked{%end%} title="{{item.income_name}}"/> {{item.income_name}}
        {%end%}
         </div>
@@ -5922,42 +6133,42 @@ ul,li {list-style: none;}
                  <div class=" form-group  span5   " style="margin:10px;">
             <label for="exampleInputEmail1"  class="control-label">成交周期(天）:</label>
 
-            <input class="form-control" value="{{t_project.deal_day}}" type="text" name="deal_day" id="deal_day" placeholder="花了多少天完成了订单" />
+            <input {%if t_project.contract_uid_name and 'deal_day' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} class="form-control" value="{{t_project.deal_day}}" type="text" name="deal_day" id="deal_day" placeholder="花了多少天完成了订单" />
           </div>
                   <div class="form-group span5" style="margin:10px;"    >
                         <label for="exampleInputEmail1"  class="control-label">预计合同定金:</label>
-                        <input class="form-control"  value="{{t_project.pre_income}}"  type="text" name="pre_income" id="pre_income" placeholder="预计合同定金金额" value="">
+                        <input {%if t_project.contract_uid_name and 'pre_income' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} class="form-control"  value="{{t_project.pre_income}}"  type="text" name="pre_income" id="pre_income" placeholder="预计合同定金金额" value="">
                     </div>
   </div>
               <div class="form-group" id="div_addr_type">
             <label for="exampleInputEmail1"  class="control-label">地址类型:</label>
-            <input class="form-control"  type="text"  value="{%if t_project.addr_type%}{{t_project.addr_type}}{%end%}"  name="addr_type" id="addr_type" placeholder="如果没有写无">
+            <input {%if t_project.contract_uid_name and 'addr_type' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} class="form-control"  type="text"  value="{%if t_project.addr_type%}{{t_project.addr_type}}{%end%}"  name="addr_type" id="addr_type" placeholder="如果没有写无">
           </div>
                 <div class="form-group">
             <label for="exampleInputEmail1"  class="control-label">业务内容:</label>
-            <input class="form-control" value="{%if t_project.project_name%}{{t_project.project_name}}{%end%}"   type="text"  name="project_name" id="project_name" placeholder="业务内容 摘要">
+            <input {%if t_project.contract_uid_name and 'project_name' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} class="form-control" value="{%if t_project.project_name%}{{t_project.project_name}}{%end%}"   type="text"  name="project_name" id="project_name" placeholder="业务内容 摘要">
           </div>
       <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">客户姓名:</label>
-            <input class="form-control" value="{%if t_project.customer_name%}{{t_project.customer_name}}{%end%}"  type="text" name="customer_name" id="customer_name" placeholder="客户姓名 称呼">
+            <input {%if t_project.contract_uid_name and 'customer_name' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} class="form-control" value="{%if t_project.customer_name%}{{t_project.customer_name}}{%end%}"  type="text" name="customer_name" id="customer_name" placeholder="客户姓名 称呼">
           </div>
 
 
           <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">企业名称:</label>
-            <input class="form-control"  value="{%if t_project.customer_company%}{{t_project.customer_company}}{%end%}" type="text" name="customer_company" id="customer_company"  placeholder="企业名称">
+            <input {%if t_project.contract_uid_name and 'customer_company' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} class="form-control"  value="{%if t_project.customer_company%}{{t_project.customer_company}}{%end%}" type="text" name="customer_company" id="customer_company"  placeholder="企业名称">
             <small id="customer_company_uidHelpInline" class="text-danger"></small>
           </div>
 
             <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">信用代码:</label>
-            <input class="form-control"  value="{%if t_project.company_uid%}{{t_project.company_uid}}{%end%}" type="text" name="company_uid" id="company_uid" placeholder="信用代码"  onkeyup="this.value=this.value.toUpperCase()">
+            <input {%if t_project.contract_uid_name and 'company_uid' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} class="form-control"  value="{%if t_project.company_uid%}{{t_project.company_uid}}{%end%}" type="text" name="company_uid" id="company_uid" placeholder="信用代码"  onkeyup="this.value=this.value.toUpperCase()">
                <small id="company_uidHelpInline" class="text-danger"></small>
           </div>
 
           <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">联系方式:</label>
-            <input class="form-control" value="{%if t_project.customer_tel%}{{t_project.customer_tel}}{%end%}"   type="text" name="customer_tel" id="customer_tel" placeholder="手机号码">
+            <input {%if t_project.contract_uid_name and 'customer_tel' not in t_projects_reject_titles and t_project.uid_name==name %}disabled{%end%} class="form-control" value="{%if t_project.customer_tel%}{{t_project.customer_tel}}{%end%}"   type="text" name="customer_tel" id="customer_tel" placeholder="手机号码">
           </div>
           <!-- <div class="form-group">
             <label for="exampleInputEmail1"  class="col-sm-4 control-label">备注</label>
@@ -5973,7 +6184,7 @@ ul,li {list-style: none;}
 
 
 
-     {%if not  t_project.contract_uid_name or role=="5" or role=="3" or role=="7" or role=="8"%}
+     {%if not  t_project.contract_uid_name or (t_project.contract_uid_name and  t_projects_reject_titles and t_project.uid_name==name)  or role=="5" or role=="3" or role=="7" or role=="8"%}
             <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
 
              <button class="btn btn-primary" id="btn_save_project">保 存</button>
@@ -7004,7 +7215,39 @@ ul,li {list-style: none;}
         </div>
       </div>
     </div>
-
+    <div class="modal fade" id="edit_trade_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document" >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="income_title_type">商标申请进度
+          </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+  
+  
+            <div class="modal-body form-horizontal" id="site_mod">
+ 
+                <div class="form-group">
+                        <div class="col-sm-10">
+                            <label>签单商标量:</label>
+                           <input value="{%if t_project.trade_nums%}{{t_project.trade_nums}}{%end%}" class="form-control" type="text" id="trade_nums" placeholder="签单商标量">
+                            </div>
+                        </div>
+                
+      
+            </div>
+  
+  
+            <div class="modal-footer">
+                <input type="hidden" value="0" id="is_other" name="is_other" />
+                       <button class="btn btn-primary" target="_blank" id="btn_save_trade">确定</button>
+  
+            </div>
+          </div>
+        </div>
+      </div>
     <div class="modal fade" id="add_project_xiezhu" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
         <div class="modal-dialog" role="document" >
           <div class="modal-content">
@@ -7109,7 +7352,42 @@ ul,li {list-style: none;}
             </div>
           </div>
         </div>
-
+        <div id="confirm_reject_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document" >
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLongTitle_license">反馈审核</h5>
+                      <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+              
+              <div class="modal-body form-horizontal" id="site_mod">
+                      <div class="form-group">
+                              <label class="control-label file_label" for="lastname" >审核</label>
+                              <div class="col-sm-10">
+                              <input type="radio" name="confirm_status" value="1">通过
+                              <input type="radio" name="confirm_status" value="2">驳回
+                          </div>
+  
+              </div>
+              <div class="form-group" id="reject_box" style="display:none;">
+                  <label for="">驳回理由</label>
+                  <div class="col-sm-10">
+                      <textarea  id="confirm_reject_msg" class="form-control" placeholder="驳回理由">
+  
+                      </textarea>
+                  </div>
+              </div>
+              </div>
+              <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" >关闭</button>
+                    <button class="btn btn-primary"  id="confirm_reject_save">确定</button>
+                  </div>
+  </div>
+  
+      </div>
+      </div>
         <div class="modal fade" id="add_express_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
           <div class="modal-dialog" role="document" >
             <div class="modal-content">
@@ -7614,7 +7892,9 @@ $.ajax({
   }
 });
 
-
+$("#edit_trade").click(function () { 
+  $("#edit_trade_modal").modal('show')
+ })
 
 $("#allcheck_trans").on("change",function(){
 
@@ -8186,6 +8466,11 @@ $('#t_customer_company').hide()
   $("#div_acc").hide()
   $("#div_recommend_staff").hide()
   $("#div_addr_type").show()
+  reject_list={'is_expedited':'加急业务','promo_id':'优惠活动','kf_id':'在线客服','from_word1':'来源关键词',
+  'business_channel':'来源渠道',
+  'sign_type_id':'签约方式','talk_type':'来源方式','is_finance':'是否记账','new_contract_type_id':'合同情况',
+  'deal_day':'成交周期(天)','pre_income':'预计合同定金','addr_type':'地址类型','project_name':'业务内容',
+  'customer_name':'客户姓名','customer_company':'企业名称','company_uid':'信用代码','customer_tel':'联系方式'}
 
 {%end%}
 
@@ -8202,6 +8487,11 @@ $('#t_customer_company').hide()
     $("#customer_company").removeAttr('readonly')
       $("#div_pre_value").show()
       $("#div_addr_type").show()
+  reject_list={'is_expedited':'加急业务','promo_id':'优惠活动','recommend_by':'客户推荐人',
+  'recommend_staff':'内部推荐人',
+  'sign_type_id':'签约方式','is_finance':'是否记账','new_contract_type_id':'合同情况',
+  'deal_day':'成交周期(天)','pre_income':'预计合同定金','addr_type':'地址类型','project_name':'业务内容',
+  'customer_name':'客户姓名','customer_company':'企业名称','company_uid':'信用代码','customer_tel':'联系方式'}
 
 {%end%}
 
@@ -8219,6 +8509,11 @@ $('#t_customer_company').hide()
     $("#div_pre_value").show()
     $("#div_addr_type").show()
 
+  reject_list={'is_expedited':'加急业务','building_id':'所属楼盘','promo_id':'优惠活动','recommend_staff':'内部推荐人',
+  'sign_type_id':'签约方式','talk_type':'来源方式','is_finance':'是否记账','new_contract_type_id':'合同情况',
+  'deal_day':'成交周期(天)','pre_income':'预计合同定金','addr_type':'地址类型','project_name':'业务内容',
+  'customer_name':'客户姓名','customer_company':'企业名称','company_uid':'信用代码','customer_tel':'联系方式'}
+
 {%end%}
 
 {%if t_project.busniess_from_id==81%}
@@ -8234,6 +8529,10 @@ $('#t_customer_company').hide()
   $("#customer_company").removeAttr('readonly')
   $("#div_pre_value").show()
   $("#div_addr_type").show()
+  reject_list={'is_expedited':'加急业务','promo_id':'优惠活动','recommend_staff':'内部推荐人',
+  'sign_type_id':'签约方式','talk_type':'来源方式','is_finance':'是否记账','new_contract_type_id':'合同情况',
+  'deal_day':'成交周期(天)','pre_income':'预计合同定金','addr_type':'地址类型','project_name':'业务内容',
+  'customer_name':'客户姓名','customer_company':'企业名称','company_uid':'信用代码','customer_tel':'联系方式'}
 
 {%end%}
 {%if t_project.busniess_from_id==200%}
@@ -8248,6 +8547,10 @@ $('#same_company').show()
       $("#div_pre_value").show()
       $("#div_addr_type").show()
       $("#div_promo").hide()
+  reject_list={'is_expedited':'加急业务','recommend_staff':'内部推荐人',
+  'sign_type_id':'签约方式','is_finance':'是否记账','new_contract_type_id':'合同情况',
+  'deal_day':'成交周期(天)','pre_income':'预计合同定金','addr_type':'地址类型','project_name':'业务内容',
+  'customer_name':'客户姓名','customer_company':'企业名称','company_uid':'信用代码','customer_tel':'联系方式'}
 
 {%end%}
 {%if t_project.busniess_from_id==202%}
@@ -8262,6 +8565,11 @@ $('#t_customer_company').hide()
       $("#div_pre_value").hide()
       $("#div_addr_type").hide()
       $("#div_promo").hide()
+  reject_list={'is_expedited':'加急业务',
+  'sign_type_id':'签约方式','is_finance':'是否记账','new_contract_type_id':'合同情况',
+  'project_name':'业务内容',
+  'customer_name':'客户姓名','customer_company':'企业名称','company_uid':'信用代码','customer_tel':'联系方式'}
+
 {%end%}
 {%if t_project.busniess_from_id==203%}
 $('#t_customer_company').hide()
@@ -8275,6 +8583,11 @@ $('#t_customer_company').hide()
   $("#div_pre_value").hide()
   $("#div_addr_type").hide()
   $("#div_promo").show()
+  reject_list={'promo_id':'优惠活动',
+  'sign_type_id':'签约方式','is_finance':'是否记账','new_contract_type_id':'合同情况',
+  'project_name':'业务内容',
+  'customer_name':'客户姓名','customer_company':'企业名称','company_uid':'信用代码','customer_tel':'联系方式'}
+
 {%end%}
 {%if t_project.busniess_from_id==278%}
   $('#t_customer_company').hide()
@@ -8290,7 +8603,14 @@ $('#t_customer_company').hide()
   $("#div_promo").hide()
   $("#div_is_expedited").hide()
   $("#div_is_finance").hide()
+  reject_list={'sign_type_id':'签约方式','new_contract_type_id':'合同情况',
+  'project_name':'业务内容','customer_name':'客户姓名','customer_company':'企业名称',
+  'company_uid':'信用代码','customer_tel':'联系方式'}
+
 {%end%}
+$.each(reject_list,function (index,value) { 
+  $('#reject_select').append('<option value="'+index+'">'+value+'</option>')
+ })
 $(".delete_state").on("click",function(){
 
 
@@ -9779,6 +10099,7 @@ $("#btn_save_project").on("click",function(){
                         // }
                         }
                         {%end%}
+  
                         $(this).attr("disabled","disabled")
                         $(this).text("保存中...")
                         $.post("/project?tag=modify",{
@@ -9812,7 +10133,13 @@ $("#btn_save_project").on("click",function(){
                         "recommend_staff":recommend_staff.val(),"_xsrf":_xsrf,
                         "same_company":1,"customer_id":res['customer'].id,"customer_company":res['customer'].company},function(result){
                             console.log("result"+result)
-                            location.reload()
+                            if(isNaN(Number(result))){
+                              alert(result)
+                            }else{
+                              location.reload()
+
+                            }
+                          
                         })
                       }
                     }else{
@@ -9867,7 +10194,13 @@ $("#btn_save_project").on("click",function(){
                         "recommend_staff":recommend_staff.val(),
                         "_xsrf":_xsrf},function(result){
                             console.log("result"+result)
-                            location.reload()
+
+                            if(isNaN(Number(result))){
+                              alert(result)
+                            }else{
+                              location.reload()
+
+                            }
                         })
                     }
                    }
@@ -13117,6 +13450,104 @@ $('.filepath_detail').on('click',function () {
 
 	$(this).toggleClass("atcur")
 })
+$("#project_reject").click(function(){
+  $("#project_reject_modal").modal('show')
+})
+$("#project_reject_save").click(function () { 
+  reject_msg=$("#reject_msg").val()
+  reject_msg_titles=$("#reject_msg_titles").val()
+  if(reject_msg==''){
+    alert('反馈内容不能为空')
+    return false
+  }
+  $.post('project?tag=project_reject',{
+    '_xsrf':_xsrf,
+    'reject_msg':reject_msg,
+    'project_id':"{{t_project.id}}",
+    'handler_name':"{{t_project.uid_name}}",
+    'handler_uid':"{{t_project.uid}}",
+    'project_guid':"{{t_project.guid}}",
+    'reject_msg_titles':reject_msg_titles
+  },function (data) { 
+    location.reload()
+   })
+ })
+$("#btn_save_trade").click(function () { 
+  trade_nums=$("#trade_nums").val()
+  // trade_ys_nums=$("#trade_ys_nums").val()
+  // trade_ds_nums=$("#trade_ds_nums").val()
+  $.post('/project?tag=project_trade',{
+    '_xsrf':_xsrf,
+    'trade_nums':trade_nums,
+    // 'trade_ys_nums':trade_ys_nums,
+    // 'trade_ds_nums':trade_ds_nums,
+    'project_id':"{{t_project.id}}"
+  },function (data) { 
+    location.reload()
+   })
+ })
+
+$("#add_to_reject").click(function () { 
+  reject_msg_title=$("#reject_select").val()
+  reject_msg=$('#reject_select').find('option:checked').text()
+  one_reject_msg=$("#one_reject_msg").val()
+  if(reject_msg_title=='' || one_reject_msg==''){
+    alert('反馈填写不全')
+    return false
+  }
+  $("#reject_msg").val($("#reject_msg").val()+reject_msg+':'+one_reject_msg+',')
+  $("#reject_msg_titles").val($("#reject_msg_titles").val()+reject_msg_title+',')
+ })
+ $(".hand_btn").click(function () { 
+        step=$(this).attr('step')
+        reject_id=$(this).attr('reject_id')
+        if(step=='1' || step=='3'){
+            if(confirm('确认已处理?')){
+                $.post('/project?tag=project_reject',{
+                    '_xsrf':_xsrf,
+                    'step':step,
+                    'reject_id':reject_id
+                },function (data) { 
+                    location.reload()
+                 })
+            }
+        }else if(step=='2'){
+            $("#confirm_reject_save").attr('reject_id',reject_id)
+            $("#confirm_reject_save").attr('step',step)
+            $("#confirm_reject_modal").modal('show')
+        }
+
+     })
+     if($("input[name=confirm_status]:checked").val()=='2'){
+        $("#reject_box").show()
+     }
+     $("input[name=confirm_status]").change(function () { 
+        confirm_status=$("input[name=confirm_status]:checked").val()
+        if(confirm_status=='2'){
+            $("#reject_box").show()
+        }else{
+            $("#reject_box").hide()
+        }
+      })
+      $("#confirm_reject_save").click(function () {
+        step=$(this).attr('step')
+        reject_id=$(this).attr('reject_id') 
+        confirm_reject_msg=$("#confirm_reject_msg").val()
+        confirm_status=$("input[name=confirm_status]:checked").val()
+        if(confirm_status==undefined){
+            alert('请选择')
+            return false
+        }
+        $.post('/project?tag=project_reject',{
+                    '_xsrf':_xsrf,
+                    'step':step,
+                    'reject_id':reject_id,
+                    'confirm_reject_msg':confirm_reject_msg,
+                    'confirm_status':confirm_status
+                },function (data) { 
+                    location.reload()
+                 })
+     })
 
 })
 

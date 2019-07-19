@@ -8,17 +8,18 @@
    </li>
    <li class="breadcrumb-item g1">用户管理
    {% if is_admin_user=='1' or role=='14'%}
-{%if tag%}
-<a class="btn btn-primary btn-sm"  id="add_kj" style="margin-left: 20px;" href="javascript:;">添加会计</a>
+   <a class="btn btn-primary btn-sm"  id="add_kj" style="margin-left: 20px;" href="javascript:;">新增管理会计</a>
+{%if tag=='kj_manage'%}
+
 <a href="manageuser" style="margin-left: 20px;" class="btn btn-primary btn-sm">用户管理</a>
 {%else%}
 <a class="btn btn-primary btn-sm"  style="margin-left: 20px;" href="/insertuser?member_page={{page1}}">新增用户</a>
-<a href="manageuser?tag=kj_manage" style="margin-left: 20px;" class="btn btn-primary btn-sm">会计管理</a>
+<!-- <a href="manageuser?tag=kj_manage" style="margin-left: 20px;" class="btn btn-primary btn-sm">会计管理</a> -->
 {%end%}
 </li>
 {%end%}
  </ol>
-{%if not tag%}
+{%if tag=='manageuser'%}
 <form >
   <table>
     <tbody>
@@ -42,7 +43,7 @@
      <div class="table-responsive">
              <table class="table table-bordered" id="dataTable"  cellspacing="0">
                <thead class="table_class">
-                {%if tag%}
+                {%if tag=='kj_manage'%}
                 <tr>
                   <th width="60">部门</th>
                   <th width="60">用户名</th>
@@ -74,7 +75,7 @@
                    {%end%}
                </thead>
                <tbody>
-                 {%if tag%}
+                 {%if tag=='kj_manage'%}
                  {% for user in all_users%}
                 <tr>
                   <td>{{user.department_name}}</td>
@@ -188,7 +189,7 @@
 <div class="modal-dialog" role="document" >
 <div class="modal-content">
  <div class="modal-header">
-   <h5 class="modal-title" id="exampleModalLongTitle_license">添加会计 </h5>
+   <h5 class="modal-title" id="exampleModalLongTitle_license">会计管理 </h5>
    <button type="button" class="clcreated_atose" data-dismiss="modal" aria-label="Close">
      <span aria-hidden="true">&times;</span>
    </button>
@@ -196,7 +197,16 @@
 <div class="modal-body form-horizontal">
 <div class="form-group">
   <div class="row">
-    <div class="col-sm-4">
+      <div class="col-sm-3">
+          <label for="">部门</label>
+        <select class="form-control" name="department_name" id="department_name">
+          <option value="">选择部门</option>
+          {%for item in department_names%}
+          <option value="{{item.department_id}}">{{item.department_name}}</option>
+          {%end%}
+        </select>
+      </div>
+    <div class="col-sm-3">
         <label for="">会计</label>
         <input class="form-control" type="text" name="kj_name" id="kj_name" placeholder="会计">
     </div>
@@ -204,23 +214,22 @@
         <label for="">职位</label>
         <input class="form-control" type="text" name="title_name" id="title_name" placeholder="职位">
     </div>
-    <div class="col-sm-4">
-        <label for="">部门</label>
-      <select class="form-control" name="department_name" id="department_name">
-        <option value="">选择部门</option>
-        {%for item in department_names%}
-        <option value="{{item.department_id}}">{{item.department_name}}</option>
-        {%end%}
-      </select>
-    </div>
+<div class="col-sm-2">
+    <label for="">&nbsp;</label>
+    <button class="btn btn-primary btn_save_kj">保 存</button>
+</div>
   </div>
 
 </div>
+<div class="form-group" >
+  <div class="col-sm-12" id="kj_box">
 
+  </div>
+</div>
 </div>
  <div class="modal-footer">
-   <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-            <button class="btn btn-primary" id="btn_save_kj">保 存</button>
+    <button class="btn btn-danger btn_delete_kj" id="btn_delete_kj">删 除</button>
+
  </div>
 </div>
 </div>
@@ -231,26 +240,161 @@
 
 {% end %}
 
-
 {%block js%}
 <script>
 $(function () {
 _xsrf =  getCookie("_xsrf")
+$("select[name=department_name]").change(function () { 
+  $.get('/manageuser?tag=find_kj',{
+    'department_id':$(this).val()
+  },function (data) { 
+    txt='<form><table class="table table-bordered" id="dataTable"  cellspacing="0">'+
+        '<thead class="table_class"><tr><th >部门</th><th>会计</th><th>职位</th><th></th></tr></thead><tbody>'
+    for(var i=0;i<data['kj'].length;i++){
+      txt+='<tr><td  id="department_name_'+i.toString()+'" >'+data['kj'][i].department_name+'</td>'+
+      '<td id="uid_name_'+i.toString()+'">'+data['kj'][i].uid_name+'</td>'+
+      '<td id="title_name_'+i.toString()+'">'+data['kj'][i].title_name+'</td>'+
+      '<td style="width:113px;"><a class="btn btn-sm btn-primary edit_kj1"'+
+       'index="'+i.toString()+'" department_id="'+data['kj'][i].department_id+
+       '" kj_name="'+data['kj'][i].uid_name+'" title_name="'+data['kj'][i].title_name+'"  relation_id="'+data['kj'][i].id+
+      '">修改</a> <a class="btn btn-sm btn-primary  btn_save_kj1" relation_id="'+data['kj'][i].id+'" style="display:none;" index="'+i.toString()+'">保存</a> '+
+      '<a class="btn btn-sm btn-danger btn_delete_kj" delete_id="'+data['kj'][i].id+'">移出</a></td></tr>'
+    }
+    txt+='</tbody></table></form>'
+    $("#kj_box").html(txt)
+   })
+ })
+
 $("#add_kj").click(function () { 
+  $("#kj_box").show()
   $("#kj_name").val('')
   $("#title_name").val('')
-  $("#btn_save_kj").removeAttr('relation_id')
+  $(".btn_save_kj").removeAttr('relation_id')
+  $("#btn_delete_kj").hide()
+ 
   $("#kj_name").attr('readonly',false)
   $("#add_kj_modal").modal('show')
  })
- $(".edit_kj").click(function () { 
-  $("#btn_save_kj").attr('relation_id',$(this).attr('id'))
+ $(".edit_kj").click(function () {
+   $("#kj_box").hide() 
+  $("#btn_delete_kj").show()
+  $("#btn_delete_kj").attr('delete_id',$(this).attr('id'))
+  $(".btn_save_kj").attr('relation_id',$(this).attr('id'))
    $("#kj_name").attr('readonly',true)
    $("#kj_name").val($(this).attr('kj_name'))
    $("#title_name").val($(this).attr('title_name'))
    $("#department_name option[value='"+$(this).attr('department_id')+"']").prop('selected',true)
    $("#add_kj_modal").modal('show')
   })
+$("body").on('click','.edit_kj1',function () { 
+  index=$(this).attr('index')
+  department_id=$(this).attr('department_id')
+  kj_name=$(this).attr('kj_name')
+  title_name=$(this).attr('title_name')
+  relation_id=$(this).attr('relation_id')
+  select='<select style="width:88px;" class="form-control" name="department_name'+index+'" id="department_name'+index+'">'+
+          '<option value="">选择部门</option>{%for item in department_names%}<option value="{{item.department_id}}">{{item.department_name}}</option>{%end%}</select>'
+  input1='<input readonly class="form-control" value="'+kj_name+'" type="text" name="kj_name" id="kj_name'+index+'" placeholder="会计">'
+  input2='<input class="form-control" value="'+title_name+'" type="text" name="title_name" id="title_name'+index+'" placeholder="职位">'
+  $("#department_name_"+index).html(select)
+  $("#department_name"+index).find('option[value="'+department_id+'"]').prop('selected',true)
+  $("#uid_name_"+index).html(input1)
+  $("#title_name_"+index).html(input2)
+  $('.btn_save_kj1[index='+index+']').show()
+  $(this).hide()
+ })
+ $('body').on('click','.btn_save_kj1',function () { 
+  index=$(this).attr('index')
+  kj_name=$("#kj_name"+index).val()
+  department_id= $("select[name=department_name"+index+"]").val()
+
+  department_name=  $("select[name=department_name"+index+"]").find("option:selected").text()
+  title_name=$("#title_name"+index).val()
+  if(kj_name==''|| department_id=='' ){
+    alert('未填写会计或部门')
+    return false
+  }
+  $.post('/manageuser?tag=kj_manage',{
+    '_xsrf':_xsrf,
+    'kj_name':kj_name,
+    'department_id':department_id,
+    'department_name':department_name,
+    'title_name':title_name,
+    'relation_id':$(this).attr('relation_id')
+  },function (data) { 
+    if(data=='-1'){
+      alert('会计不存在')
+    }
+    else if(data=='-2'){
+      alert('会计已存在')
+    }
+
+   })
+  $.get('/manageuser?tag=find_kj',{
+    'department_id':$("#department_name").val()
+  },function (data) { 
+    txt='<form><table class="table table-bordered" id="dataTable"  cellspacing="0">'+
+        '<thead class="table_class"><tr><th>部门</th><th>会计</th><th>职位</th><th></th></tr></thead><tbody>'
+    for(var i=0;i<data['kj'].length;i++){
+      txt+='<tr><td id="department_name_'+i.toString()+'" >'+data['kj'][i].department_name+'</td>'+
+      '<td id="uid_name_'+i.toString()+'">'+data['kj'][i].uid_name+'</td>'+
+      '<td id="title_name_'+i.toString()+'">'+data['kj'][i].title_name+'</td>'+
+      '<td style="width:113px;"><a class="btn btn-sm btn-primary edit_kj1"'+
+       'index="'+i.toString()+'" department_id="'+data['kj'][i].department_id+
+       '" kj_name="'+data['kj'][i].uid_name+'" title_name="'+data['kj'][i].title_name+'"  relation_id="'+data['kj'][i].id+
+      '">修改</a> <a class="btn btn-sm btn-primary  btn_save_kj1" relation_id="'+data['kj'][i].id+'" style="display:none;" index="'+i.toString()+'">保存</a> '+
+      '<a class="btn btn-sm btn-danger btn_delete_kj" delete_id="'+data['kj'][i].id+'">移出</a></td></tr>'
+    }
+    txt+='</tbody></table></form>'
+    $("#kj_box").html(txt)
+   })
+  })
+$('body').on('click',".btn_delete_kj",function () { 
+  if(confirm('确定移出?')){
+  delete_id=$(this).attr('delete_id')
+  kj_name=$("#kj_name").val()
+  department_id=$("select[name=department_name]").val()
+  department_name=$("select[name=department_name]").find("option:selected").text()
+  title_name=$("#title_name").val()
+
+  $.post('/manageuser?tag=kj_manage',{
+    '_xsrf':_xsrf,
+    'kj_name':kj_name,
+    'department_id':department_id,
+    'department_name':department_name,
+    'title_name':title_name,
+    'delete_id':delete_id
+  },function (data) { 
+    if(data=='-1'){
+      alert('会计不存在')
+    }
+    else if(data=='-2'){
+      alert('会计已存在')
+    }
+    else{
+      $.get('/manageuser?tag=find_kj',{
+    'department_id':$("#department_name").val()
+  },function (data) { 
+    txt='<form><table class="table table-bordered" id="dataTable"  cellspacing="0">'+
+        '<thead class="table_class"><tr><th>部门</th><th>会计</th><th>职位</th><th></th></tr></thead><tbody>'
+    for(var i=0;i<data['kj'].length;i++){
+      txt+='<tr><td id="department_name_'+i.toString()+'" >'+data['kj'][i].department_name+'</td>'+
+      '<td id="uid_name_'+i.toString()+'">'+data['kj'][i].uid_name+'</td>'+
+      '<td id="title_name_'+i.toString()+'">'+data['kj'][i].title_name+'</td>'+
+      '<td style="width:113px;"><a class="btn btn-sm btn-primary edit_kj1"'+
+       'index="'+i.toString()+'" department_id="'+data['kj'][i].department_id+
+       '" kj_name="'+data['kj'][i].uid_name+'" title_name="'+data['kj'][i].title_name+'"  relation_id="'+data['kj'][i].id+
+      '">修改</a> <a class="btn btn-sm btn-primary  btn_save_kj1" relation_id="'+data['kj'][i].id+'" style="display:none;" index="'+i.toString()+'">保存</a> '+
+      '<a class="btn btn-sm btn-danger btn_delete_kj" delete_id="'+data['kj'][i].id+'">移出</a></td></tr>'
+    }
+    txt+='</tbody></table></form>'
+    $("#kj_box").html(txt)
+   })
+    }
+  
+ })
+  }
+ })
 $('.l').click(function(){
   var id=$(this).attr('id');
   var lock_user=$(this);
@@ -345,7 +489,7 @@ $("#div_recommend_staff").hide()
 
      })
 
-$("#btn_save_kj").click(function () { 
+$(".btn_save_kj").click(function () { 
   kj_name=$("#kj_name").val()
   department_id=$("select[name=department_name]").val()
   department_name=$("select[name=department_name]").find("option:selected").text()
@@ -367,6 +511,25 @@ $("#btn_save_kj").click(function () {
     }
     else if(data=='-2'){
       alert('会计已存在')
+    }else if(data['result']>0){
+      $.get('/manageuser?tag=find_kj',{
+    'department_id':$("#department_name").val()
+  },function (data) { 
+    txt='<form><table class="table table-bordered" id="dataTable"  cellspacing="0">'+
+        '<thead class="table_class"><tr><th>部门</th><th>会计</th><th>职位</th><th></th></tr></thead><tbody>'
+    for(var i=0;i<data['kj'].length;i++){
+      txt+='<tr><td id="department_name_'+i.toString()+'" >'+data['kj'][i].department_name+'</td>'+
+      '<td id="uid_name_'+i.toString()+'">'+data['kj'][i].uid_name+'</td>'+
+      '<td id="title_name_'+i.toString()+'">'+data['kj'][i].title_name+'</td>'+
+      '<td style="width:113px;"><a class="btn btn-sm btn-primary edit_kj1"'+
+       'index="'+i.toString()+'" department_id="'+data['kj'][i].department_id+
+       '" kj_name="'+data['kj'][i].uid_name+'" title_name="'+data['kj'][i].title_name+'"  relation_id="'+data['kj'][i].id+
+      '">修改</a> <a class="btn btn-sm btn-primary  btn_save_kj1" relation_id="'+data['kj'][i].id+'" style="display:none;" index="'+i.toString()+'">保存</a> '+
+      '<a class="btn btn-sm btn-danger btn_delete_kj" delete_id="'+data['kj'][i].id+'">移出</a></td></tr>'
+    }
+    txt+='</tbody></table></form>'
+    $("#kj_box").html(txt)
+   })
     }
     else{
       location.reload()

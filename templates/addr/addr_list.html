@@ -288,14 +288,14 @@ class="table faye-table table-bordered fayetable"
     {% if pagination.has_prev %}
          <li class="paginate_button page-item previous " id="dataTable_previous">
          <a href="?tag=all&page={{ pagination.page - 1}}
-         {%if newtype%}&newtype={{newtype}}{%end%}{%if newtype%}&newtype={{newtype}}{%end%}{%if a_follow_uid_name%}&a_follow_uid_name={{a_follow_uid_name}}{%end%}
+         {%if newtype%}&newtype={{newtype}}{%end%}{%if ctype%}&ctype={{ctype}}{%end%}{%if a_follow_uid_name%}&a_follow_uid_name={{a_follow_uid_name}}{%end%}
          {%if act_id%}&act_id={{act_id}}{%end%}{%if cq_uid%}&cq_uid={{cq_uid}}{%end%}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">&laquo; 上页</a></li>
         {% end %}
         {%for page in pagination.iter_pages() %}
          {% if page %}
          {% if page != pagination.page %}
          <li class="paginate_button page-item "><a href="?tag=all&page={{page}}
-            {%if newtype%}&newtype={{newtype}}{%end%}{%if act_id%}&act_id={{act_id}}{%end%}
+            {%if ctype%}&ctype={{ctype}}{%end%}{%if act_id%}&act_id={{act_id}}{%end%}
             {%if newtype%}&newtype={{newtype}}{%end%}{%if a_follow_uid_name%}&a_follow_uid_name={{a_follow_uid_name}}{%end%}{%if cq_uid%}&cq_uid={{cq_uid}}{%end%}" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">{{ page }}</a></li>
          {% else %}
           <li class="paginate_button page-item active">
@@ -309,7 +309,7 @@ class="table faye-table table-bordered fayetable"
 
          {% if pagination.has_next %}
          <li class="paginate_button  page-item next" id="dataTable_next">
-             <a href="?tag=all&page={{pagination.page+1}}{%if newtype%}&newtype={{newtype}}{%end%}
+             <a href="?tag=all&page={{pagination.page+1}}{%if ctype%}&ctype={{ctype}}{%end%}
              {%if act_id%}&act_id={{act_id}}{%end%}{%if newtype%}&newtype={{newtype}}{%end%}{%if a_follow_uid_name%}&a_follow_uid_name={{a_follow_uid_name}}{%end%}{%if cq_uid%}&cq_uid={{cq_uid}}{%end%}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">下页 &raquo;</a></li>
      {% end %} </ul>
    </div>

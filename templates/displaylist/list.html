@@ -21,11 +21,11 @@
 <div style="background-color: #fff;">
 <ul class="nav nav-pills mb-3 bxk" id="pills-tab" role="tablist" style="background-color: #fff; padding-top: 1rem;">
 	<li class="nav-item">
-	<a class="nav-link active" id="pills-home-tab" href="/displaylist?tag=list" >首页</a>
+	<a class="nav-link {%if not params['node']%}active{%end%}" id="pills-home-tab" href="/displaylist?tag=list" >首页</a>
 	</li>
 {%for item in displaylist_node%}
 	<li class="nav-item">
-	<a class="nav-link " href="/displaylist?tag=list&node={{item.id}}" >{{item.name}}</a>
+	<a class="nav-link {%if params['node']==str(item.id)%}active{%end%} " href="/displaylist?tag=list&node={{item.id}}" >{{item.name}}</a>
 	</li>
   {%end%}
 
@@ -40,15 +40,17 @@
   .xxk {overflow: hidden;}
 	.xxk a {float: left; margin-left: 20px; padding: 0.5rem 1rem; text-decoration: none;}
 	.xxk a:hover {background-color: #007bff; color: #fff; border-radius: 5px;}
+	.x_a {background-color: #007bff; color: #fff; border-radius: 5px;}
 </style>
 <div class="tab-content" id="pills-tabContent">
 	<div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" style="border-top: 3px solid #007bff;padding-top: 20px;">
 		<div class="row">
 			<ul class="xuanze">
       			<div class="xxk" style="margin-bottom:20px;">
-					<a href="#" style="margin-left: 0;">全部</a>
-					<a href="#">变更注册事项</a>
-					<a href="#">报销流程</a>
+					<a {%if not params['category']%} class="x_a"{%end%}  href="/displaylist?tag=list{%if params['node']%}&node={{params['node']}}{%end%}" style="margin-left: 0;">全部</a>
+				  {%for item in displaylist_category%}
+					<a {%if str(item.id)==params['category']%} class="x_a"{%end%} href="/displaylist?tag=list&category={{item.id}}{%if params['node']%}&node={{params['node']}}{%end%}">{{item.name}}</a>
+					{%end%}
 				</div>
       {%for item in displaylist_articles%}
 				<li>

@@ -114,7 +114,7 @@ ul li {list-style-type:none; }
 <fieldset>
 
 <form class="form-search" >
-  <input type="text" value="{{keyword}}" name="keyword"  placeholder="公司名称/姓名/信用代码/编号">
+  <input type="text" value="{{keyword}}" name="keyword"  placeholder="公司/曾用名/姓名/信用代码/编号">
 
 
 
@@ -128,7 +128,8 @@ ul li {list-style-type:none; }
   </select>
   {%elif not my%}
   <input type="text" name="kj"  style="width:90px;"  placeholder="会计" value="{%if kj and kj!="100000" %}{{kj}}{%end%}">
- {%end%}
+  <input type="text" name="notin_kjs"  style="width:90px;"  placeholder="不包含会计" value="{%if notin_kjs%}{{notin_kjs}}{%end%}">
+  {%end%}
   <input type="hidden" value="{{tag_id}}" name="tag_id"/>
   <input type="hidden" value="{{new_tag}}" name="new_tag"/>
   <input type="hidden" value="{{tag_parent_id}}" name="tag_parent_id"/>
@@ -146,7 +147,7 @@ ul li {list-style-type:none; }
     <option value="0" {%if s_is_check=="0"%}selected{%end%}>无</option>
   </select>
 <select name="s_is_building" style="width:90px">
-<option value="">楼盘客户</option>
+<option value="">是否楼盘</option>
 <option value="1" {%if s_is_building=='1'%}selected{%end%} >楼盘</option>
 <option value="0" {%if s_is_building=='0'%}selected{%end%}>非楼盘</option>
 </select>
@@ -212,8 +213,7 @@ ul li {list-style-type:none; }
      
 
 {%if role=='3' or role=='8'%}
-<a href="javascript:void(0);" id="export_data" class="btn btn-primary" keyword="{{keyword}}"
-qtype="{{qtype}}" kj="{{kj}}" lp="{{lp}}" jz="{{jz}}"><i class="icon-large icon-arrow-down
+<a href="/customer?tag={{tag}}&output=1&page={{pagination.page+1}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}"  target="_blank" class="btn btn-primary" ><i class="icon-large icon-arrow-down
 "></i> 
 导出当前记录</a>
 {%end%}
@@ -333,7 +333,7 @@ qtype="{{qtype}}" kj="{{kj}}" lp="{{lp}}" jz="{{jz}}"><i class="icon-large icon-
                                         </li>
                                         <li style="width: 66px;">{{customer.addr_type}}</li>
                                         <li style="width: 66px;"> {%if customer.acc_uid_name%}{{customer.acc_uid_name}}{%end%}</li>
-                                        <li style="width: 66px;">{%if customer.is_check1%}{%if customer.is_check1==0%}否{%elif customer.is_check1==1%}是({%if customer.btype_id%}核定{%else%}查账{%end%}){%end%}{%end%}</li>
+                                        <li style="width: 66px;">{%if customer.is_check1%}{%if customer.is_check1==0%}否{%elif customer.is_check1==1%}是({%if customer.btype_id_1%}核定{%else%}查账{%end%}){%end%}{%end%}</li>
                                         <li style="width: 41px;">{%if customer.ss_num1%}{{customer.ss_num1}}{%end%}</li>
                                         <li style="width: 86px;">{%if customer.income%}{{customer.income}}{%end%}</li>
                                         <li style="width: 107px;">{%if customer.tel%}{{customer.name}}<br>{{customer.tel}}{%end%}</li>

@@ -78,7 +78,8 @@
        业务订单异常列表</a>
       <a class="btn btn-small {%if params["check_under"]%}btn-info{%end%} " href="/clearly?check_under=1{%if params["data_check"]%}&data_check={{params["data_check"]}}{%end%}&curr_year={{curr_year}}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}" id="customer_tab">
        查看下属部门</a>
-
+       <a class="btn btn-small {%if params["year_before"]%}btn-info{%end%} " href="/clearly??curr_year=2018&state=8&year_before=1" id="customer_tab">
+        年检未办结</a>
 <style>
 body .modal {
   width: 80%; /* desired relative width */
@@ -114,6 +115,9 @@ body .modal {
   </select>
   {%elif not my%}
   <input type="text" name="kj"  style="width:90px;"  placeholder="会计" value="{%if kj and kj!="100000" %}{{kj}}{%end%}">
+ {%end%}
+ {%if params['state']==6 and params['clearly_type']==2%}
+<input style="width:90px;" value="{{params['clearly_end_uid_name']}}" type="text" name="clearly_end_uid_name" placeholder="办结人">
  {%end%}
    <input type="hidden" value="{{params["my"]}}" name="my"/>
   <input type="hidden" value="{{params["tag_id"]}}" name="tag_id"/>
@@ -175,6 +179,9 @@ body .modal {
 {%if params["mbtype_id"]%}
 <input type="hidden" value="{{params['mbtype_id']}}" name="mbtype_id">
 {%end%}
+{%if params["year_before"]%}
+<input type="hidden" value="{{params['year_before']}}" name="year_before">
+{%end%}
 {%if params["state"]==2%}
   <select name="sale" style="width:100px;" >
       <option value="">销售顾问</option>
@@ -210,13 +217,17 @@ body .modal {
 
 {%end%}
   <button type="submit" class="btn">检 索</button>
+  {%if (params['clearly_type']==3 and params['state']==6 or \
+   params['year_type']==2 and params['state']==8) and (role=='8' or uid in ['98','161','202']) %}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" id='export' class="btn btn-primary">导出数据</a>
+{%end%}
 </form>
 
 
 
 
 
-
+{%if not params['year_before']%}
 <ul class="nav nav-tabs" id="myTab">
 {%if role!="1"%}
     <li {%if not params["state"] and not params["wait"]%}class="active" {%end%}>
@@ -243,16 +254,16 @@ body .modal {
 
 
 </ul>
-
+{%end%}
 {%if role=="3" or role=="8"%}
- <a style="margin-bottom:9px;" class="btn btn-small {%if not params["by_tag"]%}btn-info {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 全部</a>
+ <a style="margin-bottom:9px;" class="btn btn-small {%if not params["by_tag"]%}btn-info {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params['year_before']%}&year_before={{params['year_before']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 全部</a>
  <!-- <a style="margin-bottom:9px;" class="btn btn-small {%if  params["by_tag"]=="正常"%}btn-info {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}&by_tag=正常" id="customer_tab" title="非解约/停账/注销/逾期"><i class="icon-star"></i> 正常客户</a> -->
 
- <a style="margin-bottom:9px;" class="btn btn-small {%if  params["by_tag"]=="非记账"%}btn-info {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}&by_tag=非记账" id="customer_tab"><i class="icon-star"></i> 非记账</a>
+ <a style="margin-bottom:9px;" class="btn btn-small {%if  params["by_tag"]=="非记账"%}btn-info {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}&by_tag=非记账{%if params['year_before']%}&year_before={{params['year_before']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 非记账</a>
 
      {%for item in t_customer_type%}
 
-            <a style="margin-bottom:9px;" class="btn btn-small {%if  params["by_tag"]==item.name %}btn-info {%end%}" href="/clearly?curr_year={{curr_year}}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}&by_tag={{item.name}}" id="customer_tab"><i class="icon-star"></i> {{item.name}}</a>
+            <a style="margin-bottom:9px;" class="btn btn-small {%if  params["by_tag"]==item.name %}btn-info {%end%}" href="/clearly?curr_year={{curr_year}}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}&by_tag={{item.name}}{%if params['year_before']%}&year_before={{params['year_before']}}{%end%}" id="customer_tab"><i class="icon-star"></i> {{item.name}}</a>
 
     {%end%}
 {%end%}
@@ -279,22 +290,22 @@ body .modal {
 
 
 {%end%}
-{%if params["state"]==8%}<br/>
-      <a style="margin-bottom:9px;" class="btn btn-small {%if  params["year_type"]==0%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&year_type=0{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办理中</a>
-    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["year_type"]==1%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&year_type=1{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办理审核</a>
-        <a style="margin-bottom:9px;" class="btn btn-small {%if  params["year_type"]==2%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&year_type=2{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 已办结</a>
-
+{%if params["state"]==8 and not params['year_before']%}<br/>
+      <a style="margin-bottom:9px;" class="btn btn-small {%if  params["year_type"]==0%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&year_type=0{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}{%if params['year_before']%}&year_before={{params['year_before']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办理中</a>
+    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["year_type"]==1%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&year_type=1{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}{%if params['year_before']%}&year_before={{params['year_before']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办理审核</a>
+        <a style="margin-bottom:9px;" class="btn btn-small {%if  params["year_type"]==2%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&year_type=2{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}{%if params['year_before']%}&year_before={{params['year_before']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 已办结</a>
+  
  <br/>
-      <a style="margin-bottom:9px;" class="btn btn-small {%if not params["need"]%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["year_type"]%}&year_type={{params["year_type"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 全部</a>
-    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["need"]=="1"%}btn-primary {%end%} " href="/clearly?need=1&curr_year={{curr_year}}{%if params["year_type"]%}&year_type={{params["year_type"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 已签年检</a>
-        <a style="margin-bottom:9px;" class="btn btn-small {%if  params["need"]=="3"%}btn-primary {%end%} " href="/clearly?need=3&curr_year={{curr_year}}{%if params["year_type"]%}&year_type={{params["year_type"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 无需处理</a>
+      <a style="margin-bottom:9px;" class="btn btn-small {%if not params["need"]%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["year_type"]%}&year_type={{params["year_type"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}{%if params['year_before']%}&year_before={{params['year_before']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 全部</a>
+    <a style="margin-bottom:9px;" class="btn btn-small {%if  params["need"]=="1"%}btn-primary {%end%} " href="/clearly?need=1&curr_year={{curr_year}}{%if params["year_type"]%}&year_type={{params["year_type"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}{%if params['year_before']%}&year_before={{params['year_before']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 已签年检</a>
+        <a style="margin-bottom:9px;" class="btn btn-small {%if  params["need"]=="3"%}btn-primary {%end%} " href="/clearly?need=3&curr_year={{curr_year}}{%if params["year_type"]%}&year_type={{params["year_type"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}{%if params['year_before']%}&year_before={{params['year_before']}}{%end%}" id="customer_tab"><i class="icon-star"></i> 无需处理</a>
 
 {%end%}
 {%if params["state"]==6%}<br/>
       <a style="margin-bottom:9px;" class="btn btn-small {%if  params["clearly_type"]==0%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&clearly_type=0{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办理中</a>
     <a style="margin-bottom:9px;" class="btn btn-small {%if  params["clearly_type"]==1%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&clearly_type=1{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 办理审核</a>
         <a style="margin-bottom:9px;" class="btn btn-small {%if  params["clearly_type"]==2%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&clearly_type=2{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 已办结</a>
-  
+        <a style="margin-bottom:9px;" class="btn btn-small {%if  params["clearly_type"]==3%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}&clearly_type=3{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}"><i class="icon-star"></i>已出汇算</a>
   <br/>
       <a style="margin-bottom:9px;" class="btn btn-small {%if not params["need"]%}btn-primary {%end%} " href="/clearly?curr_year={{curr_year}}{%if params["clearly_type"]%}&clearly_type={{params["clearly_type"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 全部</a>
     <a style="margin-bottom:9px;" class="btn btn-small {%if  params["need"]=="1"%}btn-primary {%end%}" href="/clearly?need=1&curr_year={{curr_year}}{%if params["clearly_type"]%}&clearly_type={{params["clearly_type"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if my%}&my={{params['my']}}{%end%}{%if params["wait"]%}&wait={{params["wait"]}}{%end%}" id="customer_tab"><i class="icon-star"></i> 已签汇算</a>
@@ -313,7 +324,8 @@ body .modal {
          <div class="alert fade in">
 
  {%if keyword%} 关键词: <strong> {{keyword}}</strong>{%end%}
-共{{pagination.total_count}}条记录
+共{{pagination.total_count}}条记录  {%if params['state']==6 and params['clearly_type']==2 and params['clearly_end_uid_name'] %}总汇算提成:{{count.sum_clearly_tc}} 总汇算清缴:{{count.sum_service_money}}{%end%}
+
 
        
          
@@ -330,7 +342,7 @@ body .modal {
                                             <input type="checkbox" id="choose_all">
                                 </th>
 
-                                <th >公司名称</th>
+                                <th>公司名称</th>
                           {%if params["is_except"]%}
  <th >异常标签</th>
 
@@ -338,7 +350,7 @@ body .modal {
                                             <th  style="width:60px;">执照日期</th>
 {%if params["state"]  or  params["wait"]%}
 
-                                      <th  style="width:60px;">当年收入</th>
+                                      <th  style="width:40px;">当年收入</th>
 
 
   {%if params["wait"]==2%}
@@ -354,8 +366,8 @@ body .modal {
   {%if params["state"]>= 2%}
            <th style="width:70px;">报备价</th>
 
-           <th style="width:55px;">非报备价</th>
-  <th style="width:110px;">指导价备注</th>
+           <th style="width:50px;">非报备价</th>
+  <th style="width:100px;">指导价备注</th>
 
 
   {%else%}
@@ -379,12 +391,14 @@ body .modal {
 
  {%end%}
 
+{%if (params['clearly_type']==2 or params['clearly_type']==3) and params['state']==6%}
+<th style="width:50px;">汇算清缴</th>
+<th style="width:50px;">汇算提成</th>
+<th style="width:50px;">办结人</th>
+{%end%}
 
 
-
-
-
-                                <th  style="{%if params["state"]>3%}width:280px;{%else%}width:70px;{%end%}"></th>
+                                <th  style="{%if params["state"]>3%}width:265px;{%else%}width:70px;{%end%}"></th>
                                 </tr>
 
                             </thead>
@@ -398,7 +412,15 @@ body .modal {
                             value="{{customer.a_customer_id}}" name="check_customer"
                             {%if params["state"] >0%} clearly_id="{{customer.clearly_id}}" price_remark="{%if customer.price_remark%}{{customer.price_remark}}{%end%}" g_price="{{customer.g_price}}" no_price="{{customer.no_price}}" {%end%}></td>
 
-                        <td>{%if not customer.data_check %}<a target="_blank" href="/customer?tag=show&id={{customer.a_customer_id}}&guid={{customer.guid}}">
+                        <td>
+                          {%if params['clearly_type']==2 and params['state']==6 and (customer.acc_uid==int(uid) or uid=='117' ) and not customer.output_clearly %}
+                          <a class="btn btn-small btn-primary output_clearly" acc_uid="{{customer.acc_uid}}" milepost_id="{{customer.milepost_id}}" company="{{customer.company}}"  href="javascript:;">标记为已出汇算</a>
+                          <br>
+                          {%elif params['clearly_type']==2 and params['state']==6 and customer.output_clearly %}
+                          <a class="btn btn-small btn-danger output_clearly"  acc_uid="{{customer.acc_uid}}" milepost_id="{{customer.milepost_id}}" recall='1'  href="javascript:;">已标记已出汇算</a>
+                          <br>
+                          {%end%}
+                          {%if not customer.data_check %}<a target="_blank" href="/customer?tag=show&id={{customer.a_customer_id}}&guid={{customer.guid}}">
                          <i class=" icon-tags"></i>{{customer.company}}</a> {%else%}
 
                         <a target="_blank" href="/customer?tag=show&id={{customer.a_customer_id}}&guid={{customer.guid}}">{{customer.data_company}}</a><br/>
@@ -581,7 +603,16 @@ g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_
 
  {%end%}
  {%end%}
-
+ {%if (params['clearly_type']==2 or params['clearly_type']==3) and params['state']==6%}
+ <td>{{get_project_clearly(customer.project_id)}}</td>
+ <td>{{customer.clearly_tc}}
+  {%if role=='8'%} 
+  <a href="javascript:void(0)"  class="edit_clearly_tc" clearly_tc="{{customer.clearly_tc}}" 
+    milepost_id="{{customer.milepost_id}}"><i class="icon-edit"></i></a>
+    {%end%}
+ </td>
+ <td>{{customer.clearly_end_uid_name}}</td>
+ {%end%}
 
                         <td class="td-actions">
 
@@ -710,6 +741,17 @@ g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_
 
 
            {%if  customer.ass_end_confirm%}
+           {%if customer.file_paths and (params['clearly_type']==2 or params['clearly_type']==3 or params['year_type']==2 )%}
+           {%for idx,item in enumerate(customer.file_paths.split('|'))%}
+           {%if item%}
+         <font color='red'><a href="{{item}}" title="{{item.split('/')[-1]}}" target="_blank"><i class="icon-large icon-picture
+      "></i>附件{{idx+1}}</a> 
+      <a class="delete_file" href="javascript:;" clearly_id="{{customer.clearly_id}}" title="删除 {{item.split('/')[-1]}}" file_type="clearly_end_file" file_path="{{item}}" ><font color='red'>[删除]</a ></a></font>&nbsp;
+      
+      {%end%}
+      
+{%end%}<br>
+{%end%}
          <i class=" icon-arrow-right"></i> 1.申请{%if customer.result_id==3%}
         <font color='red'>(无需处理) (备注:{{customer.result_remark}})</font>
         {%else%}办结{%end%}({{customer.ass_uid_name}}){{customer.ass_end_confirm}}
@@ -744,6 +786,7 @@ g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_
       </span>
 <br/>
         {%end%}
+
         {%if  customer.clearly_end_at  and params["state"]==6%}
         <i class=" icon-arrow-right"></i> 4.({{customer.clearly_end_uid_name}})发起汇算办结{{customer.clearly_end_at}}<br/>
         {%if customer.clearly_end_remark%}
@@ -763,7 +806,8 @@ g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_
         {%end%}
 
 
-        {%if  customer.year_end_at and params["state"]==8%}
+        {%if  customer.year_end_at and params["state"]==8 and not params['year_before']%}
+
         <i class=" icon-arrow-right"></i> 4.({{customer.year_end_uid_name}})发起年检办结{{customer.year_end_at}}<br/>
               {%if customer.year_end_remark%}
            <font color='red'>办结备注: {{customer.year_end_remark}} </font><br/>{%end%}
@@ -861,7 +905,7 @@ clearly_id="{{customer.clearly_id}}" action="leader">汇算(办理人)办结</a>
 
 
  {%end%}
-{%if params["state"]==8 or  params["state"]==6 %}
+{%if (params["state"]==8 and not params['year_before']) or  params["state"]==6 %}
  <a  clearly_id="{{customer.clearly_id}}" is_general="{{customer.is_general}}"
                         lk="{{customer.lk}}"
                          do_action="kj_back"
@@ -884,7 +928,7 @@ g_price="{{customer.g_price}}" reg_date="{%if customer.reg_date%}{{customer.reg_
                          type='button' href="javascript:void(0)">信息异常撒回</a>
 
 {%end%}
-{%if (role=="8" or role=="7") and params["state"]==8%}
+{%if (role=="8" or role=="7") and params["state"]==8 and not params['year_before']%}
 
 
 {%if customer.year_end==1%}
@@ -903,12 +947,12 @@ clearly_id="{{customer.clearly_id}}" action="leader">确认年检办结</a>
 
 {%elif customer.year_end==2%}
 
-      {%if  customer.finance_uid_at%}
+      {%if  customer.finance_uid_at%}<br/>
        <i class=" icon-arrow-right"></i> 5.({{customer.year_end_confirm_uid_name}})确认年检办结{{customer.year_end_confirm_at}}
         {%end%}
 
 {%else%}
-
+{%if not params['year_before']%}
 <a href="javascript:void(0)" class="a_end_type btn btn-primary btn-sm"
 type_end="year_1"
 end_state="1"
@@ -919,7 +963,7 @@ company= "{{customer.company}}{%if customer.data_check%}[{{customer.data_company
 milepost_id="{{customer.milepost_id}}"
 result_id="{{customer.result_id}}"
 clearly_id="{{customer.clearly_id}}" action="leader">年检办结</a>
-
+{%end%}
 
 
 
@@ -933,7 +977,7 @@ clearly_id="{{customer.clearly_id}}" action="leader">年检办结</a>
    {%end%}
 
 
-   {%if (role=="5" or role=="8"  or role=="3") and (params["state"]==6 or  params["state"]==8)%}
+   {%if (role=="5" or role=="8"  or role=="3") and (params["state"]==6 or (params["state"]==8 and  not params['year_before']))%}
 <a href="javascript:void(0)"
 class="a_rollback btn btn-primary btn-sm"
 type_end="clearly_2"
@@ -971,17 +1015,17 @@ clearly_id="{{customer.clearly_id}}" action="leader">撒回审批(财务核对)<
                         <ul>
                             {% if pagination.has_prev %}
                             {%if kj%}
-                            <li><a href="/clearly?page={{ pagination.page - 1}}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">&laquo; 上页</a></li>
+                            <li><a href="/clearly?page={{ pagination.page - 1}}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if params["year_before"]%}&year_before={{params["year_before"]}}{%end%}{% if params['clearly_end_uid_name']%}&clearly_end_uid_name={{params['clearly_end_uid_name']}}{%end%}">&laquo; 上页</a></li>
                             {%else%}
-                            <li><a href="/clearly?page={{ pagination.page - 1}}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%} {%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">&laquo; 上页</a></li> {% end %}
+                            <li><a href="/clearly?page={{ pagination.page - 1}}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%} {%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}{%if params["year_before"]%}&year_before={{params["year_before"]}}{% if params['clearly_end_uid_name']%}&clearly_end_uid_name={{params['clearly_end_uid_name']}}{%end%}{%end%}">&laquo; 上页</a></li> {% end %}
                             {%end%}
                             {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             {%if kj%}
                             <li>
-                                    <a href="/clearly?page={{ page }}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">{{ page }}</a></li>
+                                    <a href="/clearly?page={{ page }}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if params["year_before"]%}&year_before={{params["year_before"]}}{%end%}{% if params['clearly_end_uid_name']%}&clearly_end_uid_name={{params['clearly_end_uid_name']}}{%end%}">{{ page }}</a></li>
                             {%else%}
                             <li>
-                                <a href="/clearly?page={{ page }}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">{{ page }}</a></li>
+                                <a href="/clearly?page={{ page }}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["ass_name"]%}&ass_name={{params['ass_name']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}{%if params["year_before"]%}&year_before={{params["year_before"]}}{%end%}{% if params['clearly_end_uid_name']%}&clearly_end_uid_name={{params['clearly_end_uid_name']}}{%end%}">{{ page }}</a></li>
                             {%end%}
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
@@ -989,9 +1033,9 @@ clearly_id="{{customer.clearly_id}}" action="leader">撒回审批(财务核对)<
                             <li><span class="active"><a href="#">....</a></span></li>
                             {% end %} {%end %} {% if pagination.has_next %}
                             {%if kj%}
-                            <li><a href="/clearly?page={{pagination.page+1}}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/clearly?page={{pagination.page+1}}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["gj"]%}&gj={{params['gj']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if params["year_before"]%}&year_before={{params["year_before"]}}{%end%}{% if params['clearly_end_uid_name']%}&clearly_end_uid_name={{params['clearly_end_uid_name']}}{%end%}">下页 &raquo;</a></li>
                             {%else%}
-                            <li><a href="/clearly?page={{pagination.page+1}}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/clearly?page={{pagination.page+1}}&curr_year={{curr_year}}{%if params["check_under"]%}&check_under={{params["check_under"]}}{%end%}{%if params["is_except"]%}&is_except={{params['is_except']}}{%end%}{%if params["data_check"]%}&data_check={{params['data_check']}}{%end%}{%if params["cpl"]%}&cpl={{params['cpl']}}{%end%}{%if params["tag_id"]%}&tag_id={{params['tag_id']}}{%end%}{%if params["sf"]%}&sf={{params['sf']}}{%end%}{%if params["regdate"]%}&regdate={{params['regdate']}}{%end%}{%if params["ass_day_end"]%}&ass_day_end={{params['ass_day_end']}}{%end%}{%if params["ass_day"]%}&ass_day={{params['ass_day']}}{%end%}{%if params["ass_num_end"]%}&ass_num_end={{params['ass_num_end']}}{%end%}{%if params["ass_num"]%}&ass_num={{params['ass_num']}}{%end%}{%if params["clearly_type"]%}&clearly_type={{params['clearly_type']}}{%end%}{%if params["year_type"]%}&year_type={{params['year_type']}}{%end%}{%if params["sale"]%}&sale={{params['sale']}}{%end%}{%if params["kf"]%}&kf={{params['kf']}}{%end%}{%if params["kj"]%}&kj={{params['kj']}}{%end%}{%if params["wait"]%}&wait={{params['wait']}}{%end%}{%if params["by_tag"]%}&by_tag={{params["by_tag"]}}{%end%}{%if params["mbtype_id"]%}&mbtype_id={{params['mbtype_id']}}{%end%}{%if params["state"]%}&state={{params["state"]}}{%end%}{%if params["need"]%}&need={{params["need"]}}{%end%}{%if my%}&my={{my}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}{%if params["year_before"]%}&year_before={{params["year_before"]}}{%end%}{% if params['clearly_end_uid_name']%}&clearly_end_uid_name={{params['clearly_end_uid_name']}}{%end%}">下页 &raquo;</a></li>
                             {%end%}
                             {% end %}
                         </ul>
@@ -1387,6 +1431,31 @@ clearly_id="{{customer.clearly_id}}" action="leader">撒回审批(财务核对)<
         <div class="modal-footer">
           <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
              <button class="btn btn-primary" id="btn_save_ass_modify">保存</button>
+
+        </div>
+      </div>
+<div id="clearly_tc_modal" class="modal  hide fade" style="  width: 30%; left: 35%;margin-left:auto;margin-right:auto; " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 >
+            汇算提成
+          </h3>
+        </div>
+
+
+       <div class="modal-body" id="finish_ass_leader">
+                    <div class="control-group" id="ass_by_leader_group">
+                        <label class="control-label" for="lastname">汇算提成</label>
+
+                        <div class="controls">
+                           <input type="text" id="clearly_tc" name="clearly_tc" />
+                        </div>
+                    </div>
+    </div>
+
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+             <button class="btn btn-primary" id="btn_save_clearly_tc">保存</button>
 
         </div>
       </div>
@@ -2471,12 +2540,14 @@ $('.delete_file').click(function () {
   milepost_id=$(this).attr('milepost_id')
   file_type=$(this).attr('file_type')
   file_path=$(this).attr('file_path')
+  clearly_id=$(this).attr('clearly_id')
   if(confirm('确定'+$(this).attr('title')+'?')){
     $.post('?tag=delete_file',{
       '_xsrf':_xsrf,
       'milepost_id':milepost_id,
       'file_type':file_type,
-      'file_path':file_path   
+      'file_path':file_path,
+      'clearly_id':clearly_id   
        },function (data) { 
          location.reload()
         })
@@ -2725,8 +2796,71 @@ $('.delete_file').click(function () {
 
      })
 
-
-
+$(".output_clearly").click(function () { 
+  company = $(this).attr('company')
+  recall=$(this).attr('recall')
+  acc_uid=$(this).attr('acc_uid')
+  if(acc_uid!='{{uid}}' && '{{uid}}'!='117' ){
+    return false
+  }
+  if(recall=='1'){
+    if(confirm('确定撤回?')){
+      $.post('?tag=output_clearly',{
+      '_xsrf':_xsrf,
+      'recall':recall,
+      'milepost_id':$(this).attr('milepost_id')
+    },function (data) { 
+      location.reload()
+     })
+    }
+  }
+  else{
+   if(confirm('确定标记('+company+')为已出汇算?')){
+    $.post('?tag=output_clearly',{
+      '_xsrf':_xsrf,
+      'milepost_id':$(this).attr('milepost_id')
+    },function (data) { 
+      location.reload()
+     })
+  }
+}
+ })
+$(".edit_clearly_tc").click(function () {
+  clearly_tc=$(this).attr('clearly_tc')
+  milepost_id=$(this).attr('milepost_id')
+  $("#clearly_tc").val(clearly_tc)
+  $("#btn_save_clearly_tc").attr('milepost_id',milepost_id)
+  $("#clearly_tc_modal").modal('show')
+ })
+$("#btn_save_clearly_tc").click(function () { 
+  clearly_tc=$("#clearly_tc").val()
+  if(isNaN(clearly_tc)){
+    alert('需填写数字')
+    return false
+  }
+  $.post('?tag=output_clearly',{
+      '_xsrf':_xsrf,
+      'milepost_id':$(this).attr('milepost_id'),
+      'clearly_tc':clearly_tc,
+      'tc':'1'
+    },function (data) { 
+      location.reload()
+     })
+ })
+ $("#export").click(function () { 
+   if(confirm('确认导出?')){
+     $(this).text('导出中...')
+     $.get('/clearly',{
+       {% for k,v in params.items()%}
+      {%if v%}"{{k}}":'{{v}}',{%end%}
+       {%end%}
+       'export':'1'
+     },function (data) { 
+       location.href=data
+       $("#export").text('导出数据')
+      })
+   }
+  })
 });
 
 </script>

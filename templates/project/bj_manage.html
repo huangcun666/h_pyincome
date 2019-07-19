@@ -142,23 +142,27 @@
                                
                             </td>{%end%}
                             <td>{{item.area}}</td>
-                            <td>{{item.type}}</td>
+                            <td>
+                                    <div style="font-size:12px;display: inline-block; line-height: 18px;">
+                                            {{item.type}}
+                                            </div>
+                               </td>
 
-                            <td>{{item.addr_nature}}</td>
+                            <td> <div style="font-size:12px;display: inline-block; line-height: 18px;">{{item.addr_nature}}</div></td>
                     
 
-                            <td>{{item.register_price}}</td>
-                            <td>{{item.same_area_change_price}}</td>
-                            <td>{{item.dif_area_change_price}}</td>
+                            <td><div style="font-size:12px;display: inline-block; line-height: 18px;">{{item.register_price}}</div></td>
+                            <td><div style="font-size:12px;display: inline-block; line-height: 18px;">{{item.same_area_change_price}}</div></td>
+                            <td><div style="font-size:12px;display: inline-block; line-height: 18px;">{{item.dif_area_change_price}}</div></td>
 
-                            <td>{{item.address}}</td>
-                            <td>{{item.business_scope_limit}}</td>
-                            <td>{{item.fp_limit}}</td>
-                            <td>{{item.accept_material}}</td>
+                            <td><div style="font-size:12px;display: inline-block; line-height: 18px;">{{item.address}}</div></td>
+                            <td><div style="font-size:12px;display: inline-block; line-height: 18px;">{{item.business_scope_limit}}</div></td>
+                            <td><div style="font-size:12px;display: inline-block; line-height: 18px;">{{item.fp_limit}}</div></td>
+                            <td><div style="font-size:12px;display: inline-block; line-height: 18px;">{{item.accept_material}}</div></td>
 
                             <td>{% if item.is_lock==1%}能{%elif item.is_lock==2%}不能{%end%}</td>
                             <td>{% if item.is_renew==1%}是{%elif item.is_renew==2%}否{%end%}</td>
-                            <td>{{item.danbao_matter}}</td>
+                            <td><div style="font-size:12px;display: inline-block; line-height: 18px;">{{item.danbao_matter}}</div></td>
                             <td>{{item.uid_name}}</td>
                             <td>{{item.created_at.strftime('%Y-%m-%d')}}</td>
                            

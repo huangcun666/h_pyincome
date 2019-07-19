@@ -252,6 +252,7 @@ wait_pay="{%if item.acc_end and  compare_date(item.acc_end,dt_next)%}{{item.next
     href="javascript:void(0)"
     company_name="{{item.company}}"
     customer_remark="{%if item.customer_remark%}{{item.customer_remark}}{%else%}无{%end%}"
+    adjusted_option= "{{adjusted_option(item.customer_id).adjusted_option}}"
     >
      发起</a>
 
@@ -360,7 +361,12 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
          <td id="customer_remark"  colspan="4"></td>
     </tr>
 
-
+    <tr style="background:#ccc;">
+            <td colspan="8">待调整事项</td>
+        </tr>
+        <tr id="last_adjusted_option">
+        
+        </tr>
     <tr style="background:#ccc;">
         <td colspan="8">当前收款基本信息</td>
     </tr>
@@ -636,7 +642,13 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
 
                 }
 
+                ao = $(this).attr("adjusted_option")
+    if(ao=="" ||  ao==undefined || ao=="None"){
+        $("#last_adjusted_option").html("无")
+    }else{
 
+        $("#last_adjusted_option").html("<span style='color:red; font-size:18px;'>"+ao+"</span>")
+    }
 
                 $.get("/payment?tag=get_last_payment", { "customer_id": customer_id }, function (result) {
                     if (result.code == 1) {
@@ -717,6 +729,8 @@ $(".edit_detail").on("click", function () {
     $("#btn_save_wai_pay1").attr('fee', fee)
     $('#acc_book_end1').combodate("setValue", acc_book_end);
     $('#acc_end1').combodate("setValue", acc_end);
+
+    
     $.get("/payment?tag=get_last_payment", { "customer_id": customer_id }, function (result) {
         if (result.code == 1) {
 

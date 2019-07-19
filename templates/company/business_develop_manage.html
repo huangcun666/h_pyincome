@@ -65,7 +65,10 @@ z-index: 1060;
         <li class="g1 g1-left">
         
             <a href="javascript:void(0);" class="btn btn-primary btn-sm" id="add_cb_addr">新增</a>
-         
+            {% if t_user_relation.gc!=None  or uid=='161'%}
+            <a href="?tag=business_develop_manage"  {%if not params['show_tag']%} class="btn btn-primary btn-sm" {%else%} class="btn btn-default btn-sm" style="background-color: #9ec6ef;"{%end%}>我的商机</a>            
+            <a href="?tag=business_develop_manage&show_tag=subordinate"  {%if params['show_tag']=='subordinate'%} class="btn btn-primary btn-sm" {%else%} class="btn btn-default btn-sm" style="background-color: #9ec6ef;"{%end%}>下级商机</a>
+            {%end%}
         </li>
         {%if '314' in role_list%}
         <li class="g1 g1-right2">
@@ -86,47 +89,47 @@ z-index: 1060;
       <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <a class="btn btn-light  nav_padding {%if not step%} active {%end%}"
-                    href="/company?tag=business_develop_manage" style="font-size:13px;">全部 
+                    href="/company?tag=business_develop_manage{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}" style="font-size:13px;">全部 
                     <span class="badge badge-danger">{%if not step%}{{count.count}}{%else%}{{count.count1}}{%end%}</span>
                     </a>
                 <a class="btn btn-light  nav_padding {%if step=='1'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=1" style="font-size:13px;">待分配 
+                href="/company?tag=business_develop_manage&step=1{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}" style="font-size:13px;">待分配 
                 <span class="badge badge-danger">{%if step=='1'%}{{count.count}}{%else%}{{count.count2}}{%end%}</span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='2'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=2" style="font-size:13px;">待接单
+                href="/company?tag=business_develop_manage&step=2{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}" style="font-size:13px;">待接单
                 <span class="badge badge-danger">
                     {%if step=='2'%}{{count.count}}{%elif '283' not in role_list and '284' not in role_list and '300' not in role_list%}
                     {{count.count31}}{%else%}{{count.count32}}{%end%}
                 </span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='3'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=3" style="font-size:13px;">处理中 
+                href="/company?tag=business_develop_manage&step=3{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}" style="font-size:13px;">处理中 
                 <span class="badge badge-danger">{%if step=='3'%}{{count.count}}{%else%}{{count.count4}}{%end%}</span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='4'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=4" style="font-size:13px;">审核 
+                href="/company?tag=business_develop_manage&step=4{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}" style="font-size:13px;">审核 
                 <span class="badge badge-danger">{%if step=='4'%}{{count.count}}{%else%}{{count.count5}}{%end%}</span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='5'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=5" style="font-size:13px;">已成交 
+                href="/company?tag=business_develop_manage&step=5{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}" style="font-size:13px;">已成交 
                 <span class="badge badge-danger">{%if step=='5'%}{{count.count}}{%else%}{{count.count6}}{%end%}</span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='6'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=6" style="font-size:13px;">驳回 
+                href="/company?tag=business_develop_manage&step=6{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}" style="font-size:13px;">驳回 
                 <span class="badge badge-danger">{%if step=='6'%}{{count.count}}{%else%}{{count.count7}}{%end%}</span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='7'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=7" style="font-size:13px;">放弃商机 
+                href="/company?tag=business_develop_manage&step=7{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}" style="font-size:13px;">放弃商机 
                 <span class="badge badge-danger">{%if step=='7'%}{{count.count}}{%else%}{{count.count8}}{%end%}</span>
                 </a>
                 <a class="btn btn-light  nav_padding  {%if step=='invalid_business'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=invalid_business" style="font-size:13px;">反馈无效列表 
+                href="/company?tag=business_develop_manage&step=invalid_business{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}" style="font-size:13px;">反馈无效列表 
                 <span class="badge badge-danger">{%if step=='invalid_business'%}{{count.count}}{%else%}{{count.count10}}{%end%}</span>
                 </a>
                 {%if '300' in role_list%}
                 <a class="btn btn-light  nav_padding  {%if step=='anomaly'%}active {%end%}"
-                href="/company?tag=business_develop_manage&step=anomaly" style="font-size:13px;">异常列表
+                href="/company?tag=business_develop_manage&step=anomaly{%if params['show_tag']%}&show_tag={{params['show_tag']}}{%end%}" style="font-size:13px;">异常列表
                 <span class="badge badge-danger">{%if step=='anomaly'%}{{count.count}}{%else%}{{count.count9}}{%end%}</span>
                 </a>
                 {%end%}
@@ -233,9 +236,9 @@ z-index: 1060;
                                             </div>
                                             </ul>
                                               </div>
-                                <input type="hidden" name="create_time" id="">
-                                <input type="hidden" name="created_name_start" id="">
-                                <input type="hidden" name="created_name_end" id="">
+                                <input type="hidden" name="create_time" id="" value="{{params['create_time']}}">
+                                <input type="hidden" name="created_name_start" id="" value="{{params['created_name_start']}}">
+                                <input type="hidden" name="created_name_end" id="" value="{{params['created_name_end']}}">
 
                                             </td>
                               
@@ -250,7 +253,11 @@ z-index: 1060;
                                
                                 <td>
                                     <input type="hidden" name="step" value="{{step}}">
+                                    <input type="hidden" name="customer_tag" value="{{params['customer_tag']}}">
                                     <input type="hidden" name="tag" value="{{tag}}">
+                                    {%if params['show_tag']%}
+                                    <input type="hidden" name="show_tag" value="{{params['show_tag']}}" >
+                                    {%end%}
                                     <input id="search_btn" type="submit" class="btn btn-primary btn-sm" value="检索" >
                                 </td>
                             </tr>
@@ -281,7 +288,7 @@ z-index: 1060;
                                                 {%end%}
                                             </div>
                                           
-                                          {%if step=='7'%}
+                                          {%if step=='7' and ('283' in role_list or '284' in role_list or '300' in role_list) %}
                                           <nav>
                                             <div class="nav nav-tabs" style="height:32px; margin-top:-7px;" id="nav-tab" role="tablist">
                                                     <a  class="btn btn-light  nav_padding  {%if not params['is_valid_business']%}active{%end%}"
@@ -345,7 +352,7 @@ z-index: 1060;
                                             </nav>
                                           {%end%}
                                           <span style="padding-top:8px; margin-left:12px; font-size:13px;">
-                                           共 {{pagination.total_count}} 条记录</span>
+                                           共 {{pagination.total_count}} 条记录 {%for k,v in search_params.items()%}{%if v%}{{k}}{{v}}，{%end%}{%end%}</span>
                                           
                                           </div>
                     <div class="table-responsive">
@@ -690,7 +697,11 @@ z-index: 1060;
                                                 <label for="company" id="company_lab">公司名称:</label><small class="text-danger" id="company_small" style="font-size:15px;">*</small>
                                             </div>
                                             <div class="col-sm-7" style="margin-left:-17px;">
+                                                <div id="not_company_div" style=" display:none;">
+                                                <input type="checkbox" id="not_company" value="1" >未成立公司
+                                            </div>
                                                     <input placeholder="公司名称" class="form-control" name="company" id="company" type="text">
+                                                    
                                                     <div class="alert alert-danger" id="er_company" style="margin-top:0px;display:none;"></div>
                                                 </div>
                                             </div>
@@ -1244,6 +1255,9 @@ if($('input[name=busniess_from]:checked').val().split('|')[0]=='294'){
         $('#referrer_div').show()
          $('#source_div').hide()
          $('#be_referrer_div').hide()
+         if(feedback_type_id=='1'){
+            $("#not_company_div").show()
+         }
          if(feedback_type_id=='4'){
             $('#customer_name_lab').text('新客户姓名:')
             $('#customer_name').attr('placeholder','新客户姓名')
@@ -1272,6 +1286,8 @@ if($('input[name=busniess_from]:checked').val().split('|')[0]=='294'){
          $('#phone').attr('placeholder','内部客户联系电话')
         $('#referrer_div').show()
         $('#source_div').hide()
+        $("#not_company_div").show()
+
         $('#be_referrer_div').show()
     }
  }
@@ -1334,6 +1350,8 @@ $('input[name=busniess_from]').on('change',function () {
     $('#er_company').text('')
     $('#er_company').hide()
     $("#company_small").show()
+    $("#not_company_div").hide()
+
     feedback_type_id=''
     feedback_type=$('input[name=feedback_type]:checked').val()
     if(feedback_type!=undefined){
@@ -1388,15 +1406,21 @@ $('input[name=busniess_from]').on('change',function () {
         $('#referrer_div').show()        
         $(".feedback_div").show()    
     if(feedback_type_id=='1' || feedback_type_id=='4'){
+
          $('#source_div').hide()
          $('#referrer_div').show()
          $('#be_referrer_div').hide()
          if(feedback_type_id=='4'){
             $("#company_small").hide()
+         }else if(feedback_type_id=='1'){
+            $("#not_company_div").show()
+
          }
     }
 
     else if(feedback_type_id=='3' || feedback_type_id=='2'){
+        $("#not_company_div").show()
+
         $("#link_div1").show()        
         $("#link_div2").hide()
         $("#be_referrer_company_lab").text('新公司名称:')
@@ -1428,6 +1452,7 @@ $('input[name=feedback_type]').on('change',function () {
     $('#er_source_port').text('')
     $('#er_company').text('')
     $('#er_company').hide()
+    $("#not_company_div").show()
     if($("input[name=feedback_type]:checked").val().split('|')[0]=='1'){
         $('#customer_name_lab').text('内部客户姓名:')
     $('#customer_name').attr('placeholder','内部客户姓名')
@@ -1471,8 +1496,9 @@ $('input[name=feedback_type]').on('change',function () {
          $('#referrer_div').show()
          $('#be_referrer_div').hide()
          if(feedback_type_id=='4'){
-            $("#company_small").hide()
-         }
+            $("#company_small").hide()  
+            $("#not_company_div").hide()
+        }
     }
  
     else if(feedback_type_id=='3' || feedback_type_id=='2'){
@@ -1519,6 +1545,7 @@ $('#btn_save').click(function () {
     feedback_type_id=''
     feedback_type=$('input[name=feedback_type]:checked').val()
     link_gender=$("input[name=link_gender]:checked").val()
+    not_company=$("#not_company:checked").val()
     if(feedback_type!=undefined){
         feedback_type_id=feedback_type.split('|')[0]
     }
@@ -1554,7 +1581,7 @@ $('#btn_save').click(function () {
         $('#er_customer_name').show()
         return false
     }
-    else if(company=='' && busniess_from.split('|')[0]=='295' && feedback_type_id!='4' ){
+    else if(company=='' && busniess_from.split('|')[0]=='295' && feedback_type_id!='4' && not_company==undefined ){
             $('#er_company').text('请填写公司名')
             $('#er_company').show()
             return false
@@ -1569,8 +1596,11 @@ $('#btn_save').click(function () {
         return false 
     }
         if(confirm('请确认信息填写无误?')){
+            if(busniess_from.split('|')[0]=='294' || busniess_from.split('|')[0]=='295' && feedback_type_id=='4'){
+                not_company=undefined
+            }
             $(this).attr('disabled','disabled')
-        $(this).text('保存中...')
+            $(this).text('保存中...')
         $.post('/company?tag=business_develop_manage',{
             '_xsrf':_xsrf,
             'link_gender':link_gender,
@@ -1586,6 +1616,7 @@ $('#btn_save').click(function () {
             'source_port':source_port,
             'remark':remark,
             'referrer':referrer,
+            'not_company':not_company,
             'be_referrer_company':be_referrer_company,
             'be_referrer_name':be_referrer_name,
             'be_referrer_phone':be_referrer_phone,
@@ -1804,7 +1835,7 @@ $('body').on('click',".sj-at1",function(){
 
     $('body').on('click','input[name=company_tag]',function () {
         var str = ""; 
-        $('input[name=customer_tag]').remove()
+        $('input[name=customer_tag]').val('')
         $('input[name=company_tag]').each(function () {
                 if($(this).hasClass('atcur')){
                     str += $(this).attr('search_title')+',';
@@ -1813,7 +1844,9 @@ $('body').on('click',".sj-at1",function(){
                 
             });
         if(str!=''){
-            $('input[name=step]').after('<input type="hidden" name="customer_tag" value="'+str+'">')
+            $("input[name=customer_tag]").val(str)
+
+          
         }
      })
     // $('body').on('click','.customer_btn',function () { 
