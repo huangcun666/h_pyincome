@@ -54,7 +54,11 @@
     </li>
     <li class="g1 g1-left">
       <a class="btn {%if params[ "show_tag"]=='2' %} btn-primary{%else%}btn-default{%end%} btn-sm" href="project?tag=cq_jd_list&show_tag=2" {%if params["show_tag"]!="2" %}style="background-color: #9ec6ef;" {%end%}>办结列表</a>
-    </li>  <li class="g1 g1-left">
+    </li> 
+    <li class="g1 g1-left">
+        <a class="btn {%if params[ "show_tag"]=='-2' %} btn-primary{%else%}btn-default{%end%} btn-sm" href="project?tag=cq_jd_list&show_tag=-2" {%if params["show_tag"]!="-2" %}style="background-color: #9ec6ef;" {%end%}>未办结列表</a>
+      </li>
+    <li class="g1 g1-left">
       <a class="btn {%if params[ "show_tag"]=='3' %} btn-primary{%else%}btn-default{%end%} btn-sm" href="project?tag=cq_jd_list&show_tag=3" {%if params["show_tag"]!="3" %}style="background-color: #9ec6ef;" {%end%}>联系客户</a>
       </li>  <li class="g1 g1-left">
       <a class="btn {%if params[ "show_tag"]=='4' %} btn-primary{%else%}btn-default{%end%} btn-sm" href="project?tag=cq_jd_list&show_tag=4" {%if params["show_tag"]!="4" %}style="background-color: #9ec6ef;" {%end%}>跟进记录</a>
@@ -202,7 +206,8 @@
               <thead class="table_class">
                   <tr>
                       {%if count.every_count%}
-                      <th width='120'>日期</th>
+                      <th width='120'>{%if params['show_tag'] in ['1','-2']%}分配{%elif params['show_tag']=='2'%}
+                        办结{%elif params['show_tag']=='3'%}最新跟进{%elif params['show_tag']=='4'%}跟进{%end%}日期</th>
                       <th width='50'>合计</th>
                       {%if params['count_type']=='gs' %}
                         {%for item in t_projects_type%}
@@ -352,6 +357,10 @@
                         <th width='120'>办结日期</th>
                         <th width='100'>办结时长</th>
                         {%end%}
+                        {%if params["show_tag"]=='-2'%}
+                        <th width="100">办结时长</th>
+                        {%end%}
+                        
                         {%if params['show_tag']=='3'%}
                         <th width="120">最新跟进内容</th>
                         <th width='100'>跟进数量</th>
@@ -376,11 +385,14 @@
                         <td>{{item.customer_name}}</td>
                         <td>{{item.btype_id_name}}</td>
                         <td>{{item.member_name}}</td>
-                        <td>{{item.jd.strftime('%Y-%m-%d')}}</td>
-                        <td>{{item.jd_day}}天</td>
+                        <td>{%if item.jd%}{{item.jd.strftime('%Y-%m-%d')}}{%end%}</td>
+                        <td>{%if item.jd_day>=0%}{{item.jd_day}}天{%end%}</td>
                         {%if params[ "show_tag"]=='2' %}
                         <td>{%if item.confirm_at%}{{item.confirm_at.strftime('%Y-%m-%d')}}{%end%}</td>
                         <td>{{item.bj_day}}天</td>
+                        {%end%}
+                        {%if params["show_tag"]=='-2'%}
+                        <td>{%if item.bj_day%}{{item.bj_day}}天{%elif item.genjin_day%}{{item.genjin_day}}天{%end%}</td>
                         {%end%}
                         {%if params['show_tag']=='3'%}
                         <td>{{item.last_state_msg}}{%if item.last_state_remark%}<br>备注:{{item.last_state_remark}}{%end%}</td>

@@ -299,7 +299,7 @@ display: -webkit-box;
                                                     
                                                    <td>
    
-                                                       <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or item.req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
+                                                       <a href="/customer?tag=show&id={{item.customer_id}}&guid={{item.guid}}&to_tag=payment_record_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or item.req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
                                                     </td>
                                              
                                                   

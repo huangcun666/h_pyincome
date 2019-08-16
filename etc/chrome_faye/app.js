@@ -8,22 +8,7 @@ $(function(){
       // content.js
 
       if(curr_url.indexOf("?bszmFrom=1&ticket=")> 0){
-          // launchPlugin();
-          // function launchPlugin() {
-          //   if($("#userName").text()!=""){
-          //         site_company = $("#userName").text().replace("欢迎，","")
-          //         console.log(site_company+"ok")
-          //         company = localStorage.getItem("company")
-            
-          //   } else{
-          //     setTimeout(
-          //       function(){
-          //         launchPlugin();
-          //       }, 3000);
-          //   }
-        
-        
-          // }
+
 
           var timeout = setTimeout(function()
           {
@@ -38,8 +23,6 @@ $(function(){
                     chrome.runtime.sendMessage({greeting: "您好","customer_id":customer_id,"company":company}, function(response) {
                       console.log(response.farewell);
           
-                      console.log(company)
-                      console.log(customer_id)
                     });
                 }else{
                     if( confirm("发业辅助助手提醒您: 当期操作客户("+site_company+") 与管理系统("+company+")不一致,请确认是否有误! ")){
@@ -52,6 +35,8 @@ $(function(){
 
           }, 1000);
       }
+
+
       else if (curr_url.indexOf("/web-sbzs/nssb/printPdf2.do") > 0 ){
           ht =  document.documentElement.innerHTML
           start  = ht.indexOf('pdfURL ="')+9
@@ -151,8 +136,57 @@ $(function(){
   
   
     }else if(curr_url.lastIndexOf("index_login.html") > 0 ){
+          var timeout = setTimeout(function()
+          {
+              
+            if($("#userName").text()!=""){
+                site_company = $("#userName").text().replace("欢迎，","")
+                console.log(site_company+"ok")
+                company = localStorage.getItem("company")
+                customer_id = localStorage.getItem("customer_id")
+                site_company = site_company.replace("（","(").replace("）",")")
+                if(site_company==company){
+                    chrome.runtime.sendMessage({greeting: "您好","customer_id":customer_id,"company":company}, function(response) {
+                      console.log(response.farewell);
+          
+                    });
+                }else{
+                    if( confirm("发业辅助助手提醒您: 当期操作客户("+site_company+") 与管理系统("+company+")不一致,请确认是否有误! ")){
 
-    }
+
+                    }
+                }
+              } 
+
+
+          }, 1000);
+    }  ///xxmh/html/
+    else if(curr_url.lastIndexOf("index_origin.html") > 0  || curr_url.lastIndexOf("index_login.html?isChangeSf=Y") >0){
+      var timeout = setTimeout(function()
+      {
+          
+        if($("#userName").text()!=""){
+            site_company = $("#userName").text().replace("欢迎，","")
+            console.log(site_company+"ok")
+            company = localStorage.getItem("company")
+            customer_id = localStorage.getItem("customer_id")
+            site_company = site_company.replace("（","(").replace("）",")")
+            if(site_company==company){
+                chrome.runtime.sendMessage({greeting: "您好","customer_id":customer_id,"company":company}, function(response) {
+                  console.log(response.farewell);
+      
+                });
+            }else{
+                if( confirm("发业辅助助手提醒您: 当期操作客户("+site_company+") 与管理系统("+company+")不一致,请确认是否有误! ")){
+
+
+                }
+            }
+          } 
+
+
+      }, 1000);
+}
 
 
     

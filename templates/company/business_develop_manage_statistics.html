@@ -53,6 +53,9 @@
                 <a href="?tag=business_develop_manage_statistics&statistics_type=fenpei{%if params['my']%}&my={{params['my']}}{%end%}" {%if params['statistics_type']=='fenpei'%}class="btn btn-primary btn-sm"{%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%} >商机分配统计</a> 
                 </li>
         <li class="g1 g1-left">
+                <a href="?tag=business_develop_manage_statistics&statistics_type=business_type{%if params['my']%}&my={{params['my']}}{%end%}" {%if params['statistics_type']=='business_type'%}class="btn btn-primary btn-sm"{%else%}class="btn btn-default btn-sm" style="background-color: #9ec6ef;" {%end%} >商机分类统计</a> 
+                </li>
+        <li class="g1 g1-left">
             <div class="dropdown">
                     <a href="javascript:void(0)" class="btn  btn-primary btn-sm"  id='project_btn'>{%if not params['way'] or params['way']=='day' %}按日统计{%elif params['way']=='month'%}按月统计{%elif params['way']=='week'%}按周统计{%end%}
                     <span class="fa fa-caret-down"></span>  
@@ -131,9 +134,11 @@
         {%end%}
         {%end%}
         {%block form_search%}
+        {%if params['statistics_type']!='business_type'%}
         <td>
         <input placeholder="人员" type="text" class="form-control" name="search_referrer" value="{{params['search_referrer']}}" >           
         </td>
+        {%end%}
         <td>
             <input readonly type="text" placeholder="开始时间" class="form-control" id="start_time" name="start_time" value="{{params['start_time']}}"> 
         </td>

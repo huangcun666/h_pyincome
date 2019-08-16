@@ -34,7 +34,8 @@ media/express/*
 media/economic_census/*
 media/business_manage/*
 media/trade/*
-
+media/verify.jpg
+media/approval/*
 # PyInstaller
 #  Usually these files are written by a python script from a template 
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.

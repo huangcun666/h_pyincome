@@ -246,6 +246,8 @@ ul,li {list-style: none;}
 .jz-kk {width: 50%; float: left; border:none; padding-left: 5px; box-sizing: border-box;}
 .jz-at {width: 50%; float: left; border:none; color: #6f6f6f; background-color: #fff; border-left: 1px solid #6f6f6f; cursor: pointer;}
 .atcur {background-color: #007bff; color: #fff;}
+.ddlz-show {width: 86.2%; height: 40px; position: fixed; top: 114px; left: 10.3%; z-index: 99; background-color: #fff; margin-left: 30px; display: none;} 
+
 </style>
                     <div class="ddlz-top">
                         <a href="#yewushouru">收入明细</a>
@@ -262,7 +264,53 @@ ul,li {list-style: none;}
                         <a href="#kuaidi">快递</a>
                       </div>
 
-
+                      <div class="faye-table ddlz-show">
+                        <ul>
+                          <li>
+                            <div class="fayet" style="border-left: none;">订单编号</div>
+                            <div class="fayet1">{{t_project.id}}
+                              <a href="/project?tag=relation_show&guid={{t_project.guid}}&id={{t_project.id}}">关联订单</a>
+                            </div>
+                      
+                            <div class="fayet">公司名称</div>
+                            <div class="fayet11">
+                      
+                                          {%if  t_project.customer_company%}
+                                            {%if t_customer%}
+                                            <a href="/customer?tag=show&id={{t_customer.id}}&guid={{t_customer.guid}}&from_tag=1" target="_blank">{{t_project.customer_company}}</a>
+                                            {%else%}
+                                            {{t_project.customer_company}}
+                      
+                                          {%end%}
+                                          {%else%}
+                                          {%end%}
+                                          {%if visible_project%}
+                                          <a href="javascript:void(0)" class="relation_other_project" {%if t_projects_relation%}
+                                          project_relation_id={{t_projects_relation.id}} {%end%}>关联</a>
+                                          {%end%}
+                                          <!-- {%if t_project.contract_confirm_id ==57 and role=='13'%}
+                                          <a href='javascript:void(0)' id="btn_modify1" id> <img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
+                                          {%end%} -->
+                                        </div>
+                            <div class="fayet">客户联系人</div>
+                            <div class="fayet1">{%if  t_project.customer_name%}
+                                          {{t_project.customer_name}}
+                                          {%else%}
+                                          {%end%}
+                                          <!-- {%if t_project.contract_confirm_id ==57 and role=='13'%}
+                                          <a href='javascript:void(0)' id="btn_edit_kehu"> <img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
+                                          {%end%} -->
+                                        </div>
+                            <div class="fayet">电话</div>
+                            <div class="fayet1">           {%if  t_project.customer_tel%}
+                                          {{t_project.customer_tel}}
+                                          {%else%}
+                                            无
+                                          {%end%}</div>
+                      
+                          </li>
+                        </ul>
+                      </div>
 
       <ol class="breadcrumb diao-top">
           <li class="breadcrumb-item g1">主面板</li>
@@ -346,7 +394,7 @@ ul,li {list-style: none;}
                     {%else%}
                     {%end%}
                     {%if visible_project%}
-                    <a href="javascript:void(0)" id="relation_other_project" {%if t_projects_relation%}
+                    <a href="javascript:void(0)" class="relation_other_project" {%if t_projects_relation%}
                     project_relation_id={{t_projects_relation.id}} {%end%}>关联</a>
                     {%end%}
                     <!-- {%if t_project.contract_confirm_id ==57 and role=='13'%}
@@ -902,7 +950,7 @@ ul,li {list-style: none;}
                        <a href="javascript:void(0)" id="a_add_team" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i>设置</a>
 
        {%end%}
-         {%if (role=="7") or (role=="8") or (name=="陈月娇") %}
+         {%if (role=="7") or (role=="8") or (name=="蔡健全") %}
                              <a href="javascript:void(0)" team_id="38" class="a_add_team_cq" class=" mr-3 d-inline-block"> <i class="fa fa-fw fa-comment"></i><b>新增工商专员</b></a>
                           {%end%}
 
@@ -941,7 +989,7 @@ ul,li {list-style: none;}
                     
 
 
-                       {%elif  role=="7" and item.team_id==38 or  (item.btype_id==158 and name=="陈月娇") or  (item.updated_uid_name==name and item.team_id==38) or role=='8' or name=='吴蔚亮'%}
+                       {%elif  role=="7" and item.team_id==38 or  (item.btype_id==158 and name=="蔡健全") or  (item.updated_uid_name==name and item.team_id==38) or role=='8' or name=='吴蔚亮'%}
 
                         <a href="javascript:void(0)"
                           team_id="{{item.team_id}}"
@@ -2449,8 +2497,12 @@ ul,li {list-style: none;}
         <button class=" btn_cq_rec_order_remark" remark="{%if row.remark%}{{row.remark}}{%end%}"
          mp_id="{{row.id}}" guid="{{row.guid}}" name="btn_cq_rec_order_remark">备注
           </button>
+      
      {%end%}
      {%if confirm_banjie%}
+     {%if row.uid==int(uid) and confirm_banjie.confirm_banjie==0%}
+      <button mid="{{row.member_id}}" mp_id="{{row.id}}" class="recall_banjie">撤回办结</button>
+     {%end%}
   {%if '231' in role_list and  (confirm_banjie.confirm_banjie==0 or confirm_banjie.confirm_banjie==2)%}
   <button  mid="{{row.member_id}}" class="confirm_banjie_btn" team_name="{{item.team_name}}"
   id="{{confirm_banjie.id}}" guid="{{confirm_banjie.m_guid}}" confirm_banjie="{{confirm_banjie.confirm_banjie}}" banjie_remark="{{confirm_banjie.banjie_remark}}"
@@ -7819,7 +7871,13 @@ init: function () {
 }
 };
 $(function(){
-
+	$(window).scroll(
+		function () {
+		var scrollValue = $(window).scrollTop();
+		console.log(scrollValue);
+		scrollValue > 62 ? $(".ddlz-show").show(): $(".ddlz-show").hide();
+		}
+	)
 
 customer_id="{%if t_customer%}{{t_customer.id}}{%else%}0{%end%}",
 $("#show_msg_by_transition").hide()
@@ -12913,7 +12971,7 @@ var tmpl = '<br><li style=" width:100%;height:20px;background-image:url(#url#); 
            )
          })
 
-        $('#relation_other_project').on('click',function () {
+        $('.relation_other_project').on('click',function () {
             $('.all_other_project').hide()
             $('.search_other_project').show()
             $('.modal-title_project').text('关联其他订单')
@@ -13548,6 +13606,19 @@ $("#add_to_reject").click(function () {
                     location.reload()
                  })
      })
+     $(".recall_banjie").click(function () { 
+       if(confirm('确认撤回?')){
+         mid=$(this).attr('mid')
+         mp_id=$(this).attr('mp_id')
+         $.post('/project?tag=recall_banjie',{
+           '_xsrf':_xsrf,
+           'mid':mid,
+           'mp_id':mp_id
+         },function (data) { 
+           location.reload()
+          })
+       }
+      })
 
 })
 

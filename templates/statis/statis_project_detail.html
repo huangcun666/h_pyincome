@@ -91,14 +91,14 @@
                         {%end%}
                         {%end%}
                         </tr>
-                        <tr style="background-color:bisque;">
-                                <td style="background-color: #efefef;">合计</td>
-                      <td style="background-color: #efefef;">
+                        <tr style="background-color:white;">
+                                <td style="background-color:black;">合计</td>
+                      <td style="background-color: black;">
                         {%if params['step']=='3' or params['step']=='1'%}{{t_account_project_detail_all.ac}}
                         {%elif params['step']=='2' or not params['step']%}{{t_account_project_detail_all.tapda}}{%end%}</td>
                         {%if params['step'] in ['2','3']%}
                         {%for item in t_account_names%}
-           <td>
+           <td style="background-color: black;">
                 {%if params['step']=='3'%}{{item.ac}}{%elif params['step']=='2'%}{{item.ta}}{%end%}
                        </td>
            
@@ -107,7 +107,7 @@
                        {%for item in t_projects_type%}
                        {%for row in t_account_project_detail_type_all%}
                        {%if item.income_name==row.service_name%}
-                       <td>
+                       <td style="background-color: black;">
                            {%if not params['step']%}
                         {{row.am}}
                         {%else%}

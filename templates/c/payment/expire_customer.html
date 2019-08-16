@@ -1,14 +1,19 @@
  {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
 
 <style>
-body .modal {
-  width: 50%; /* desired relative width */
-  left: 25%; /* (100%-width)/2 */
-  /* place center */
-  margin-left:auto;
-  margin-right:auto;
-}
 
+body .modal {
+width: 70%; /* desired relative width */
+left: 15%; /* (100%-width)/2 */
+/* place center */
+margin-left:auto;
+margin-right:auto;
+}
+.modal-body {
+    max-height:600px; 
+    overflow-y: auto;
+}
+</style>
 
 
 </style>
@@ -37,7 +42,7 @@ body .modal {
                                     <fieldset>
       <form class="form-search" id="query_form">
 
-  <input type="text" value="{%if company%}{{company}}{%end%}" name="company"  placeholder="公司名称/姓名/信用代码/编号">
+  <input type="text" value="{%if company%}{{company}}{%end%}" name="company"  placeholder="公司/曾用名/姓名/信用代码/编号">
 
 
                                             <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
@@ -106,7 +111,7 @@ body .modal {
 
                                         当前数量: {{pagination.total_count}}
                                         <span style="font: 15px;">合计待收金额: {{total.wait_pay_total}} 元</span>
-
+                                            <a class="btn btn-primary" href="javascript:;" id="export_data">导出数据</a>
                                         </div>
 
                                         {%if customers%}
@@ -117,9 +122,8 @@ body .modal {
 
 
                                                     <th style="min-width:180px;">公司名称</th>
-
-
-                                                                                                        <th style="min-width:40px;">会计</th>
+                                                    <th width="60">客户备注</th>
+     <th style="min-width:40px;">会计</th>
 
                                                     <th style="min-width:50px;">付款方式</th>
 
@@ -153,7 +157,8 @@ body .modal {
                                                     <td>
          <a target="_blank" href="/customer?tag=show&id={{item.customer_id}}&guid={{item.guid}}">{{item.company}}</a>
 
-                         {%if role=="3" or role=="8" or role=="5" %} <a 
+                         {%if role=="3" or role=="8" or role=="5" %} 
+                         <a 
                            class="modify_customer_detail btn-sm control"
          customer_id="{{item.customer_id}}"
          promo_id="{{item.customer_promo_id}}|{{item.customer_promo_id_name}}"
@@ -214,6 +219,21 @@ body .modal {
     </div>
                                 
                                                      </td>
+                                                     <td title="{%if item.t_remark%}{{item.t_remark}}{%end%}"> 
+                                                            {%if item.t_remark%}
+                                                            {%if len(item.t_remark)>15%}
+                                                            {{item.t_remark[:15]}}...{%else%} {{item.t_remark}}{%end%}{%end%}
+                                                                  {%if role=='3' or role=='8'%}
+                                                            <a class="handler_remark_modify"
+                                                            type='button'
+                                                             customer_id="{{item.customer_id}}"
+                                                             t_remark="{%if item.t_remark%}{{item.t_remark}}{%end%}"
+                                                                 href="javascript:void(0)"> <img src="/static/images/modify.png" width="20"/></a>
+                                                                 {%end%}
+                                                        </td>
+                                                    
+
+
                                                      <td>{{item.acc_uid_name}}</td>
                                                     <td>{{item.pay_pay_typeid_name}}</td>
                                                     <td>{{item.pay_service_amount}}</td>
@@ -541,7 +561,25 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
             <button class="btn btn-primary" id="btn_save_wai_pay1">保存</button>
         </div>
     </div>
-
+    <div id="a_handler_modal_remark" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel_account">备注
+                </h3>
+            </div>
+            <div class="modal-body">
+                <div class="control-group">
+                    <div class="controls">
+                        <textarea class="span8" name="t_remark" id="t_remark" rows="5" placeholder="备注"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+    
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    <button class="btn btn-primary" id="btn_save_remark">保存</button>
+                </div>
+            </div>
 {%end%} {%block js%}
 <script src="/static/moment.js"></script>
 <script src="/static/combodate.js"></script>
@@ -695,7 +733,23 @@ e_wait_pay_amount = "{{item.wait_pay_amount}}"
 
 
             })
+            $(".handler_remark_modify").click(function () {
+            $('#btn_save_remark').attr('customer_id',$(this).attr('customer_id'))
+            $('#t_remark').val($(this).attr('t_remark'))
+            $("#a_handler_modal_remark").modal('show')
+         })
+         $('#btn_save_remark').click(function () {
+            customer_id=$(this).attr('customer_id')
+            t_remark=$('#t_remark').val()
+            $.post('payment?tag=edit_customer_remark',{
+                '_xsrf':_xsrf,
+                'customer_id':customer_id,
+                't_remark':t_remark
+            },function (data) {
+                location.reload()
+             })
 
+         })
 $(".edit_detail").on("click", function () {
     pay_id = $(this).attr("pay_id")
     wait_pay = $(this).attr("wait_pay")
@@ -801,6 +855,18 @@ else{
 }
  })
 })
+$("#export_data").click(function () { 
+    $.get('?tag={{tag}}',{
+        'kf':"{{kf}}",
+        'company':"{{company}}",
+        'show_tag':"{{show_tag}}",
+        'by_tag':"{{by_tag}}",
+        'from_expire':"{{from_expire}}",
+        'export':'1'
+    },function (data) { 
+        location.href=data['output_path']
+     })
+ })
 
     })
 </script> {%end%}

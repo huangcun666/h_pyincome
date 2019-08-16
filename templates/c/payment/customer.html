@@ -1,6 +1,3 @@
-{% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
-
-<!--<a class="btn btn-danger btn-sm delete " id="customer_delete" type="button" title="2776">删除</a>-->
 <style>
 .faye-table {width: 100%; height: auto; /*background-color: purple;*/ margin: 0% auto; font-weight: bold;}
 .faye-table ul {overflow: hidden; margin: 0; padding: 0;}
@@ -139,14 +136,10 @@ margin: auto;
 <div class="row">
 <div class="span12">
 <div class="widget">
-<div class="widget-header">
-<i class="icon-user"></i>
-<h3>客户详情 - {{customer.company}}
-</h3>
-</div>
+
 <div class="widget-content">
 		<div class="tabbable">
-						<ul class="nav nav-tabs" id="myTab">
+						<!-- <ul class="nav nav-tabs" id="myTab">
 						  <li>
 						    <a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=customer_tab" id="a_customer_tab" >基础信息</a>
                           </li>
@@ -155,10 +148,10 @@ margin: auto;
                               </li>
 
               <li ><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=finance_tab" id="a_finance_tab" >财务信息</a></li>
-              <!-- <li><a href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if old_tag%}&old_tag={{old_tag}}{%end%}&to_tag=exchange_tab" id="a_exchange_tab" >联系记录</a></li> -->
+
               <li class="active"><a href="#payment_tab" id="a_payment_tab" data-toggle="tab">应收记录</a></li>
 
-						</ul>
+						</ul> -->
 
                         <style>
                                 .xws-biashi ul li a {float: left; margin-right: 25px; padding:5px 10px; background-color: #20a4e5; border-radius: 6px; color: #fff; text-decoration: none; cursor: pointer; margin-bottom: 10px;}
@@ -190,7 +183,7 @@ margin: auto;
                             .xs-two button {display: block;font-size: 12px; margin-left: 15px; margin-top: 8px; width: 72px; height: 28px; background-color: transparent; }
                             .xs-btn1 {border:1px solid #1fa1e1; color: #1fa1e1;}
                             .xs-btn2 {border:1px solid #d60000; color: #d60000;}
-                            .xs-lie {width: 1138px; height: 155px; border:1px solid #898989; border-radius: 8px; margin-top: 15px;}
+                            .xs-lie {width: 1134px; height: 155px; border:1px solid #898989; border-radius: 8px; margin-top: 15px;}
                             .xs-lie hr {width: 1100px; margin: 0 auto;}
                             .xs-lietop { height: 30px;  margin: 15px 0; overflow: hidden;}
                             .xs-lietop ul li {float: left; height: 20px; line-height: 20px;}
@@ -198,7 +191,7 @@ margin: auto;
                             .xs-lietop ul li a {font-size: 14px; color:#646464; font-weight: bold; line-height: 20px; margin-left: 20px;}
                             .xs-lietop ul li span {margin-left: 30px;  color: #7d7d7d;}
                             .xs-lietop ul li span b {font-weight: 100; color: #7d7d7d;}
-                            .xs-lietop ul li.xs-box button {width:79px; height: 23px; font-size: 12px; padding: 0; border:1px solid #20a4e5; color: #20a4e5; background-color: transparent;}
+                            .xs-liebutright ul li.xs-box button {width:79px; height: 23px; font-size: 12px; padding: 0; border:1px solid #20a4e5; color: #20a4e5; background-color: transparent;}
                             .xs-liemid { overflow: hidden; margin-top: 10px; margin-bottom: 5px;}
                             .xs-liemid ul li {float: left;}
                             .xs-liemid ul li:nth-child(1){width: 355px ; margin-left: 10px; border-right: 1px solid #e0e0e0;}
@@ -267,14 +260,14 @@ margin: auto;
                                 </div>
                                 <div class="xs-nameone">
                                     <span>备注：<b title="{{item.remark}}">{{item.remark}}</b></span>
-                                    <span>创建：<b>{{item.acc_uid_name}}</b></span>
+                                    <span>创建：<b>{{item.acc_uid_name}} {{item.created_at.strftime("%Y-%m-%d")}}</b></span>
                                 </div>
                                 <div class="xs-tell">
                                     <span>联系电话：<b>{{item.tel}}</b></span>
-                                    <span>创建时间：<b>{{item.created_at.strftime("%Y-%m-%d")}}</b></span>
+                                   
                                 </div>
                                 <div class="xs-two">
-                                    <button class="xs-btn1 modify_linkman"
+                                    <button class="xs-btn1 modify_linkman1"
                                     tel="{{item.tel}}"
                                     remark="{{item.remark}}"
                                     title="{{item.name}}"
@@ -283,7 +276,7 @@ margin: auto;
                                     is_first="{{item.is_first}}"
                                     linkman_id="{{item.id}}"
                                     >编辑</button>
-                                    <button class="xs-btn2 delete_linkman"
+                                    <button class="xs-btn2 delete_linkman1"
                                       linkman_id="{{item.id}}"
                                       linkman_guid="{{item.guid}}"
                                     >删除</button>
@@ -291,7 +284,7 @@ margin: auto;
                             </li>
                             {%end%}
                             {%end%}
-                            <li title="{{customer.id}}" id="a_add_linkman">
+                            <li title="{{customer.id}}" id="a_add_linkman1">
                                     
                                 +增加新联系人
                             </li>
@@ -325,27 +318,7 @@ margin: auto;
 
                                         </li>
                                      
-                                            <li class="xs-box" style="margin-right:10px;float:right;">
-                                                    {%if  role=="8" or role=="5" or role=="3" %}
-                                                    <button class="handler_detail" 
-                                                    customer_id="{{item.customer_id}}"
-                                                    item_id="{{item.id}}"
-                                                    wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})账册费:{{item.pay_book_amount}}元{%end%}"
-                                                   
-                                                 curr_expire_pay="{%if item.acc_end and item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
-                                                {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
-                                          
-                                                company_name="{{item.company}}"
-                                                acc_end ="{%if item.acc_end%}{{item.acc_end.strftime("%Y-%m")}}{%end%}"
-                                                acc_book_end = "{%if item.acc_book_end%}{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
-                                                pb_remark = "{%if item.pb_remark%}{{item.pb_remark}}{%end%}"
-                                                al_remark="{%if item.al_remark%}{{item.al_remark}}{%end%}"
-                                                pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
-                                                pay_service_amount="{{item.pay_service_amount}}"
-                                                pay_service_amount_month="{{item.pay_service_amount_month}}"
-                                                pay_book_amount="{{item.pay_book_amount}}"
-                                                    >编辑</button>{%end%}
-                                                </li>
+                    
                                     </ul>
                                 </div>
                                 <div class="xs-liemid">
@@ -377,7 +350,28 @@ margin: auto;
                                         <ul>
                                             <li> 更新人:<b>{%if item.pay_uid_name%}{{(item.pay_uid_name)}}{%end%}</b></li>
                                              <li>更新时间:<b>{%if item.created_at%} {{item.created_at.strftime("%Y-%m-%d")}} {%end%}</b></li>
-                                        </ul>
+                                            <li class="xs-box">
+                                                {%if  role=="8" or role=="5" or role=="3" %}
+                                                    <button class="handler_detail" 
+                                                    customer_id="{{item.customer_id}}"
+                                                    item_id="{{item.id}}"
+                                                    wait_pay="{%if item.acc_end and  item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_start.strftime("%Y-%m")}}至{{item.next_pay_acc_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})记账费:{{item.pay_service_amount}}元 {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}{{item.next_pay_acc_book_start.strftime("%Y-%m")}}至{{item.next_pay_acc_book_end.strftime("%Y-%m")}}({{item.pay_pay_typeid_name}})账册费:{{item.pay_book_amount}}元{%end%}"
+                                                   
+                                                 curr_expire_pay="{%if item.acc_end and item.acc_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}记账费到期:{{item.acc_end.strftime("%Y-%m")}}
+                                                {%end%}{%if item.acc_book_end and item.acc_book_end.strftime("%Y-%m")==dt_next.strftime("%Y-%m")%}账册费到期:{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
+                                          
+                                                company_name="{{item.company}}"
+                                                acc_end ="{%if item.acc_end%}{{item.acc_end.strftime("%Y-%m")}}{%end%}"
+                                                acc_book_end = "{%if item.acc_book_end%}{{item.acc_book_end.strftime("%Y-%m")}}{%end%}"
+                                                pb_remark = "{%if item.pb_remark%}{{item.pb_remark}}{%end%}"
+                                                al_remark="{%if item.al_remark%}{{item.al_remark}}{%end%}"
+                                                pay_pay_typeid_name="{{item.pay_pay_typeid_name}}"
+                                                pay_service_amount="{{item.pay_service_amount}}"
+                                                pay_service_amount_month="{{item.pay_service_amount_month}}"
+                                                pay_book_amount="{{item.pay_book_amount}}"
+                                                    >编辑</button>{%end%}
+                                            </li>
+                                            </ul>
                                     </div>
                                 </div>
                             </div>
@@ -545,13 +539,7 @@ margin: auto;
                 <tr id="curr_expire">
 
                 </tr>
-                <!--  <tr style="background:#ccc;">
-        <td colspan="8">本期到款明细</td>
-    </tr>
-    <tr id="curr_payment_detail">
 
-    </tr>
--->
             </table>
             <br>
             <div class="control-group">
@@ -563,13 +551,13 @@ margin: auto;
                 {%for idx,item in enumerate(t_payment_type)%}
                          <input style="width:auto;height:auto;" type="radio"
                          {%if item.id==customer.paytype_id %} checked="true" {%end%}
-                         name="pay_type_id" fee="{{item.fee}}" value="{{item.id}}" pay_typeid_name="{{item.name}}"/> {{item.name}} {%end%}
+                         name="pay_type_id1" fee1="{{item.fee}}" value="{{item.id}}" pay_typeid_name1="{{item.name}}"/> {{item.name}} {%end%}
               </div>
             </div>
 <div class="control-group">
-    总服务费：<input style="width:50px;" type="text"  id="service_amount" name="service_amount" >
-    月服务费：<input style="width:50px;background-color:white;" type="text" disabled="true" id="service_amount_month" name="service_amount_month" >
-    帐册费：<input style="width:50px;" type="text" id="book_amount" name="book_amount" >
+    总服务费：<input style="width:50px;" type="text"  id="service_amount1" name="service_amount1" >
+    月服务费：<input style="width:50px;background-color:white;" type="text" disabled="true" id="service_amount_month1" name="service_amount_month1" >
+    帐册费：<input style="width:50px;" type="text" id="book_amount1" name="book_amount1" >
 </div>
 <div class="control-group">
 
@@ -577,10 +565,10 @@ margin: auto;
 
     </label>
     <div class="controls">
-        <input type="text" class="span2 " id="acc_end" name="acc_end" value=""><br/>
-        <p id="msg_acc_end" class="help-block" style="color:red"></p>
+        <input type="text" class="span2 " id="acc_end1" name="acc_end1" value=""><br/>
+        <p id="msg_acc_end1" class="help-block" style="color:red"></p>
     </div>
-    <!-- /controls -->
+
 </div>
 <div class="control-group">
 
@@ -588,10 +576,10 @@ margin: auto;
 
     </label>
     <div class="controls">
-        <input type="text" class="span2" id="acc_book_end" name="acc_book_end" value="">
-        <p id="msg_acc_book_end" class="help-block" style="color:red"></p>
+        <input type="text" class="span2" id="acc_book_end1" name="acc_book_end1" value="">
+        <p id="msg_acc_book_end1" class="help-block" style="color:red"></p>
     </div>
-    <!-- /controls -->
+  
 </div>
 
 
@@ -599,16 +587,16 @@ margin: auto;
 <div class="control-group">
     <label class="control-label" for="al_remark">已收明细</label>
     <div class="controls">
-        <textarea type="text" class="span4" id="al_remark" name="al_remark" value="" style="height: 50px;"></textarea>
+        <textarea type="text" class="span4" id="al_remark1" name="al_remark1" value="" style="height: 50px;"></textarea>
     </div>
-    <!-- /controls -->
+  
 </div>
 <div class="control-group">
     <label class="control-label" for="lastname">待收明细</label>
     <div class="controls">
-        <textarea type="text" class="span4" id="pb_remark" name="pb_remark" value="" style="height: 50px;"></textarea>
+        <textarea type="text" class="span4" id="pb_remark1" name="pb_remark1" value="" style="height: 50px;"></textarea>
     </div>
-    <!-- /controls -->
+ 
 </div>
 
 
@@ -652,7 +640,8 @@ margin: auto;
 
     </div>
     </div>
-    <div id="add_linkman_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    
+    <div id="add_linkman_modal1" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
               <h3 id="myModalLabel_linkman">增加客户联系人
@@ -662,50 +651,50 @@ margin: auto;
               <div class="control-group">
                                                           <label class="control-label" for="username">名字/称呼</label>
                                                           <div class="controls">
-                                                              <input type="text" class="span4 " id="name" name="name" value="">
-                                                              <p id="msg_name" class="help-block" style="color:red"></p>
+                                                              <input type="text" class="span4 " id="name1" name="name1" value="">
+                                                              <p id="msg_name1" class="help-block" style="color:red"></p>
                                                           </div>
-                                                          <!-- /controls -->
+                                                 
                                                       </div>
-                                                      <!-- /control-group -->
+                                                
           
           
                                                       <div class="control-group">
                                                           <label class="control-label" for="firstname">性别</label>
                                                           <div class="controls">
-                                                              <input type="radio" name="gender" value="1" /> 先生
-                                                              <input type="radio" name="gender" value="0" /> 女士
-                                                               <p id="msg_gender" class="help-block" style="color:red"></p>
+                                                              <input type="radio" name="gender1" value="1" /> 先生
+                                                              <input type="radio" name="gender1" value="0" /> 女士
+                                                               <p id="msg_gender1" class="help-block" style="color:red"></p>
                                                           </div>
-                                                          <!-- /controls -->
+                                                          
                                                       </div>
           
                                                       <div class="control-group">
                                                           <label class="control-label" for="username">电话</label>
                                                           <div class="controls">
-                                                              <input type="text" class="span4 " id="tel" name="tel" value="">
-                                                              <p id="msg_company" class="help-block" style="color:red"></p>
+                                                              <input type="text" class="span4 " id="tel1" name="tel1" value="">
+                                                              <p id="msg_company1" class="help-block" style="color:red"></p>
                                                           </div>
-                                                          <!-- /controls -->
+                                                         
                                                       </div>
-                                                      <!-- /control-group -->
+                                                   
           
           
           
                                                 <div class="control-group">
                                                     <label class="control-label" for="lastname">备注</label>
                                                     <div class="controls">
-                                                        <textarea type="text" class="span4" id="linkman_remark" name="linkman_remark" value="" style="height: 50px;"></textarea>
+                                                        <textarea type="text" class="span4" id="linkman_remark1" name="linkman_remark" value="" style="height: 50px;"></textarea>
                                                     </div>
-                                                    <!-- /controls -->
+                                             
                                                 </div>
                                                 <div class="control-group">
                                                     
                                                     <div class="controls">
-                                                        <label for="is_first"><input type="checkbox" id="is_first" style="display: inline;" value="1">添加为首要联系人</label>
+                                                        <label for="is_first"><input type="checkbox" id="is_first1" style="display: inline;" value="1">添加为首要联系人</label>
                                                         
                                                     </div>
-                                                    <!-- /controls -->
+                                                  
                                                 </div>
           
           
@@ -713,22 +702,22 @@ margin: auto;
             </div>
             <div class="modal-footer">
               <button class="btn" data-dismiss="modal" aria-hidden="true" >关闭</button>
-              <button class="btn btn-primary" id="btn_save_linkman">保存</button>
+              <button class="btn btn-primary" id="btn_save_linkman1">保存</button>
             </div>
           </div>
-    {%end%}
+   
 
     {% block  js %}
     <script src="http://momentjs.com/downloads/moment.js"></script>
-<script src="/static/combodate.js"></script>
+    <script src="/static/combodate.js"></script>
     <script>
-$(window).scroll(
-function () {
-var scrollValue = $(window).scrollTop();
-console.log(scrollValue);
-scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
-}
-)
+// $(window).scroll(
+// function () {
+// var scrollValue = $(window).scrollTop();
+// console.log(scrollValue);
+// scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
+// }
+// )
         $(function(){
 
            var customer_id = {{ customer.id }}
@@ -742,17 +731,17 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
 
 
         $("#btn_save_wai_pay").on("click",function () {
-                acc_end=$('#acc_end').combodate("getValue","YYYY-MM");
-                acc_book_end=$('#acc_book_end').combodate("getValue","YYYY-MM");
-                al_remark=$("#al_remark").val()
-                pb_remark=$("#pb_remark").val()
+                acc_end=$('#acc_end1').combodate("getValue","YYYY-MM");
+                acc_book_end=$('#acc_book_end1').combodate("getValue","YYYY-MM");
+                al_remark=$("#al_remark1").val()
+                pb_remark=$("#pb_remark1").val()
                 pay_id=$(this).attr("pay_id")
-                fee=$("input[name=pay_type_id]:checked").attr('fee')
-                pay_typeid=$("input[name=pay_type_id]:checked").val()
-                pay_typeid_name=$("input[name=pay_type_id]:checked").attr('pay_typeid_name')
-                service_amount=$("#service_amount").val()
-                service_amount_month=$("#service_amount_month").val()
-                book_amount=$("#book_amount").val()
+                fee=$("input[name=pay_type_id1]:checked").attr('fee1')
+                pay_typeid=$("input[name=pay_type_id1]:checked").val()
+                pay_typeid_name=$("input[name=pay_type_id1]:checked").attr('pay_typeid_name1')
+                service_amount=$("#service_amount1").val()
+                service_amount_month=$("#service_amount_month1").val()
+                book_amount=$("#book_amount1").val()
                 $.post("payment?tag=add",
                 {
                     "_xsrf":_xsrf,
@@ -769,23 +758,24 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
                     "book_amount":book_amount
                 },function (result) {
                     if(result=="-100"){
-                    $("#acc_end").focus()
+                    $("#acc_end1").focus()
                     alert("要填写记账费到期日期哦")
                 }
                 else{
-                  location.reload()
+                    location.href="/customer?tag=show&id="+customer_id+"&guid={{customer_guid}}&to_tag=payment_record_tab"
+                 
                 }
                  })
              })
 
 
-        $('#acc_end').combodate({
+        $('#acc_end1').combodate({
              format: "YYYY-MM",
              template:"YYYY-MM",
             minYear: 2018,
             maxYear: 2025,
         });
-        $('#acc_book_end').combodate({
+        $('#acc_book_end1').combodate({
             format: "YYYY-MM",
             template: "YYYY-MM",
             minYear: 2018,
@@ -801,8 +791,8 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
 
             acc_book_end = $(this).attr("acc_book_end")
             acc_end= $(this).attr("acc_end")
-            $("#acc_book_end").val(acc_book_end)
-            $("#acc_end").val(acc_end)
+            $("#acc_book_end1").val(acc_book_end)
+            $("#acc_end1").val(acc_end)
 
             al_remark = $(this).attr("al_remark")
             pb_remark = $(this).attr("pb_remark")
@@ -811,8 +801,8 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
             pay_service_amount_month=$(this).attr("pay_service_amount_month")
             pay_book_amount=$(this).attr("pay_book_amount")
             pay_id=$(this).attr('item_id')
-           $("#al_remark").val(al_remark)
-            $("#pb_remark").val(pb_remark)
+           $("#al_remark1").val(al_remark)
+            $("#pb_remark1").val(pb_remark)
 
 
             company_name = $(this).attr("company_name")
@@ -835,8 +825,8 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
                     $("#service_price").html(html)
                     // $("#msg_service_amount").text("上一次总服务费:" +  result.customer.service_amount)
 
-                    $("#msg_acc_end").text("(上期记账费到期时间:" + result.customer.acc_end + ")")
-                    $("#msg_acc_book_end").text("(上期账册费到期时间:" + result.customer.acc_book_end + ")")
+                    $("#msg_acc_end1").text("(上期记账费到期时间:" + result.customer.acc_end + ")")
+                    $("#msg_acc_book_end1").text("(上期账册费到期时间:" + result.customer.acc_book_end + ")")
 
                     if (result.customer.al_remark == undefined || result.customer.al_remark == "") {
                         $("#last_payment").html("<td colspan='8'>没有上期收款明细哦</td>")
@@ -856,10 +846,10 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
 
                     $("#btn_save_wai_pay").attr("pay_id", result.customer.payment_id)
 
-                    $("input[name=pay_type_id][pay_typeid_name="+pay_pay_typeid_name+"]").prop('checked',true)
-                    $("#service_amount").val(pay_service_amount)
-                    $("#service_amount_month").val(pay_service_amount_month)
-                    $("#book_amount").val(pay_book_amount)
+                    $("input[name=pay_type_id1][pay_typeid_name1="+pay_pay_typeid_name+"]").prop('checked',true)
+                    $("#service_amount1").val(pay_service_amount)
+                    $("#service_amount_month1").val(pay_service_amount_month)
+                    $("#book_amount1").val(pay_book_amount)
                     $("#wait_pay_remark").val(wait_pay)
                     $("#a_handler_modal").modal("show")
                 } else {
@@ -878,21 +868,11 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
             function intToFloat(val) {
                 return new Number(val).toFixed(2);
             }
-            $('input[type="radio"][name="pay_type_id"]').click(function () {
-                service_amount = $("#service_amount").val()
-                if ($(this).is(':checked')) {
-                    all_total = service_amount / $(this).attr("fee");
-                    if(all_total==Infinity){
-                        $("#service_month_amount").val(0)
-                    }else{
-                    $("#service_month_amount").val(intToFloat(all_total))
-                    }
-                }
-            });
 
-            $('#service_amount').keyup(function () {
-                all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
-                $("#service_month_amount").val(intToFloat(all_total))
+
+            $('#service_amount1').keyup(function () {
+                all_total = $(this).val() / $("input[name='pay_type_id1']:checked").attr("fee1");
+                $("#service_month_amount1").val(intToFloat(all_total))
 
 
             });
@@ -934,7 +914,7 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
                         processData: false,  // tell jQuery not to process the data
                         contentType: false,  // tell jQuery not to set contentType
                         success: function (data) {
-                            location.href = "/payment?tag=customer&customer_id=" + customer_id + "&to_tag=payment_tab"
+                            location.href="/customer?tag=show&id="+customer_id+"&guid={{customer_guid}}&to_tag=payment_record_tab"
                         }
                     })
                 }
@@ -1008,38 +988,39 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
            })
         }
         })
-        $('input[type="radio"][name="pay_type_id"]').click(function(){
+        $('input[type="radio"][name="pay_type_id1"]').click(function(){
 
-                   service_amount = $("#service_amount").val()
+                   service_amount = $("#service_amount1").val()
                    if ($(this).is(':checked'))
                    {
-                      if($(this).attr("fee")>0){
-                            $("#service_amount").removeAttr("readOnly")
+    
+                      if($(this).attr("fee1")>0){
+                            $("#service_amount1").removeAttr("readOnly")
 
                        }else{
-                            $("#service_amount").val("0")
+                            $("#service_amount1").val("0")
                            all_total = 0
                        }
 
 
-                       all_total =  service_amount / $(this).attr("fee");
+                       all_total =  service_amount / $(this).attr("fee1");
                        console.log(all_total)
                        if (all_total==Infinity){
                            all_total = 0
 
                        }
-                       $("#service_amount_month").val(intToFloat(all_total))
+                       $("#service_amount_month1").val(intToFloat(all_total))
                    }
        });
-       $('#service_amount').keyup(function() {
+       $('#service_amount1').keyup(function() {
 
-                           all_total = $(this).val() / $("input[name='pay_type_id']:checked").attr("fee");
+                           all_total = $(this).val() / $("input[name='pay_type_id1']:checked").attr("fee1");
                              if (all_total==Infinity || all_total==NaN){
                            all_total = 0
 
                        }
 
-                           $("#service_amount_month").val(intToFloat(all_total))
+                           $("#service_amount_month1").val(intToFloat(all_total))
 
 
            })
@@ -1047,7 +1028,7 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
           return new Number(val).toFixed(2);
    }
 
-   $(".modify_linkman").on("click",function(){
+   $(".modify_linkman1").on("click",function(){
           var linkman_guid  = $(this).attr("linkman_guid")
 
           var linkman_id = $(this).attr("linkman_id")
@@ -1058,32 +1039,32 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
           var gender = $(this).attr('gender')
           var is_first=$(this).attr('is_first')
 
-          $("#btn_save_linkman").attr("linkman_id",linkman_id)
-          $("#tel").val(tel)
-          $("input[type=radio]").filter('[value="'+gender+'"]').attr("checked",true)
-          $("#name").val(name)
-          $("#linkman_remark").val(linkman_remark)
-          $("#is_first").prop('checked',false)
+          $("#btn_save_linkman1").attr("linkman_id",linkman_id)
+          $("#tel1").val(tel)
+          $("input[name=gender1][value='"+gender+"']").prop("checked",true)
+          $("#name1").val(name)
+          $("#linkman_remark1").val(linkman_remark)
+          $("#is_first1").prop('checked',false)
           if(is_first=='1'){
-            $("#is_first").prop('checked',true)
+            $("#is_first1").prop('checked',true)
           }
-          $("#add_linkman_modal").modal('show')
+          $("#add_linkman_modal1").modal('show')
         })
-        $("#btn_save_linkman").on("click",function(){
-            var gender = $("input[name=gender]:checked").val()
-            var name = $("#name").val()
-            var tel = $("#tel").val()
-            var remark = $("#linkman_remark").val()
+        $("#btn_save_linkman1").on("click",function(){
+            var gender = $("input[name=gender1]:checked").val()
+            var name = $("#name1").val()
+            var tel = $("#tel1").val()
+            var remark = $("#linkman_remark1").val()
             var is_first=$('#is_first:checked').val()
             var linkman_id=$(this).attr('linkman_id')
             if (name==""){
-              $("#msg_name").text("客户的名字必须要填写哦。")
-               $("#name").focus()
+              $("#msg_name1").text("客户的名字必须要填写哦。")
+               $("#name1").focus()
               return false
 
             }else if(gender==undefined){
-              $("#msg_gender").text("请选择客户的性别")
-               $("input[name=gender]").focus()
+              $("#msg_gender1").text("请选择客户的性别")
+               $("input[name=gender1]").focus()
               return false
             }
 
@@ -1093,32 +1074,31 @@ scrollValue > 60 ? $(".ys_fixed").show(): $(".ys_fixed").hide();
                 "tel":tel,"name":name,"remark":remark,
                 "gender":gender,"is_first":is_first,
                 "linkman_id":linkman_id},function(result){
-
-                  location.reload()
-
+                    location.href="/customer?tag=show&id="+customer_id+"&guid={{customer_guid}}&to_tag=payment_record_tab"
                 })
 
             }
 
 
         })
-        $("#a_add_linkman").on("click", function () {
-              $("#btn_save_linkman").removeAttr('linkman_id')
-              $("#tel").val("")
-              $("input[type=radio]").filter('[value="1"]').attr("checked",true)
-              $("#is_first").prop('checked',false)
-              $("#name").val(name)
-              $("#add_linkman_modal").modal('show')
+        $("body").on("click","#a_add_linkman1", function () {
+          
+              $("#btn_save_linkman1").removeAttr('linkman_id')
+              $("#tel1").val("")
+              $("input[name=gender1]").prop("checked",false)
+              $("#is_first1").prop('checked',false)
+              $("#name1").val('')
+              $("#add_linkman_modal1").modal('show')
             })
     
-            $(".delete_linkman").on("click",function(){
+            $(".delete_linkman1").on("click",function(){
            var linkman_id = $(this).attr('linkman_id')
            var linkman_guid = $(this).attr('linkman_guid')
 
             if(confirm("确认删除吗？")){
                 $.post("linkman?tag=delete",{"_xsrf": _xsrf,"id": linkman_id,"guid":linkman_guid},function(result){
                     alert("删除成功！")
-                    location.reload()
+                    location.href="/customer?tag=show&id="+customer_id+"&guid={{customer_guid}}&to_tag=payment_record_tab"                    
                 })
 
             }

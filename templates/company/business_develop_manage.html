@@ -43,6 +43,13 @@ z-index: 1060;
     border: 1px solid #6f6f6f;
     cursor: pointer;
 }
+#search_key_ul{
+    width:100%;
+}
+#search_key_ul li{
+    margin:5px;
+    width:95%;
+}
 #created_at_ul li{
     float: left;
     margin:3px;
@@ -185,18 +192,17 @@ z-index: 1060;
                                           {% end %}
                               
                                 </select></td>
-                                <td style="width:15%">
-                                    <input class="form-control" type="text" placeholder="编号/客户/电话/公司" {%if params['search_key']%} value="{{params['search_key']}}"{%end%} name="search_key">
+                                <td style="width:12%">
+                                        <input class="form-control" type="text" placeholder="编号/客户/电话/公司" {%if params['search_key']%} value="{{params['search_key']}}"{%end%} name="search_key">
+                                     
+
                                 </td>
-                                <td style="width:8%">
-                                <input type="text" class="form-control" placeholder="确认单" name="project_id" value="{{params['project_id']}}">
+                                <td style="width:12%">
+                                <input type="text" class="form-control" placeholder="确认单/客户/电话" name="project_search_key" value="{{params['project_search_key']}}">
+                                
                                 </td>
-                                <td style="width:8%">
-                                <input type="text" class="form-control" name="customer_name" placeholder="客户姓名" value="{{params['customer_name']}}">
-                                </td>
-                                <td style="width:8%">
-                                <input type="text" class="form-control" name="customer_tel" placeholder="联系方式" value="{{params['customer_tel']}}">
-                                </td>
+                       
+                        
                                 <td style="width:8%">
                                 <button data-html="true"  type="button" style="width:100%;background-color:white;box-shadow: 0 0 0 0.08rem rgba(40, 44, 48, 0.25);"  class="btn btn-sm customer_btn">业务标签</button>
                                 </td>
@@ -258,6 +264,10 @@ z-index: 1060;
                                     {%if params['show_tag']%}
                                     <input type="hidden" name="show_tag" value="{{params['show_tag']}}" >
                                     {%end%}
+                                    {%if params['is_valid_business']%}
+                                    <input type="hidden" name="is_valid_business" value="{{params['is_valid_business']}}" >
+
+                                    {%end%}
                                     <input id="search_btn" type="submit" class="btn btn-primary btn-sm" value="检索" >
                                 </td>
                             </tr>
@@ -274,7 +284,11 @@ z-index: 1060;
                                             </button>
                                             <div class="dropdown-menu">
                                               <a class="dropdown-item" href="javascript:void(0)" id="btn_set_group">设置分组</a>
-  
+                                              {%if '315' in role_list and (step=='2' or step=='3')%}
+                                           
+                                              <a class="dropdown-item" href="javascript:void(0)" step='5' id="update_business_status">更换跟单人</a>
+
+                                              {%end%}
                                               {%if ('293' in role_list or '283' in role_list) and step %}
                                               <a href="javascript:void(0);" class="dropdown-item business_distribution">{%if step=='1'%}批量分配{%else%}批量协助{%end%}</a>
                                               {%end%}
@@ -296,14 +310,17 @@ z-index: 1060;
                                                     <span class="badge badge-danger"></span>
                                                     </a>
                                                 <a class="btn btn-light  nav_padding  {%if params['is_valid_business']=='1'%}active {%end%}"
-                                                href="/company?tag=business_develop_manage&step=1{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=7&is_valid_business=1" style="font-size:13px;height:32px;">有效商机 
+                                                href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=7&is_valid_business=1" style="font-size:13px;height:32px;">有效商机 
                                                 <span class="badge badge-danger"></span>
                                                 </a>
                                                 <a class="btn btn-light  nav_padding  {%if params['is_valid_business']=='2'%}active {%end%}"
-                                                href="/company?tag=business_develop_manage&step=2{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=7&is_valid_business=2" style="font-size:13px;height:32px;">无效商机
+                                                href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=7&is_valid_business=2" style="font-size:13px;height:32px;">无效商机
                                                 <span class="badge badge-danger"></span>
                                                 </a>
-
+                                                <a class="btn btn-light  nav_padding  {%if params['is_valid_business']=='3'%}active {%end%}"
+                                                href="/company?tag=business_develop_manage{% if category_id%}&category_id={{category_id}}{%end%}{%if ntag%}&ntag={{ntag}}{%end%}&step=7&is_valid_business=3" style="font-size:13px;height:32px;">反馈商机
+                                                <span class="badge badge-danger"></span>
+                                                </a>
 
                                               
                                                </div>
@@ -386,7 +403,7 @@ z-index: 1060;
                           </thead>
                           <tbody class="fayetbody"> 
                               {%if business_develop_manage%}
-                              {%for item in business_develop_manage%}
+                              {%for index,item in enumerate(business_develop_manage)%}
                               <tr>
                                 
                                   <td><input type="checkbox" name="businessid_milepostid_company" value="{{item.id}}_{{item.business_milepost_id}}_{{item.company}}_{% if item.business_category_id%}{{item.business_category_id}}{%end%}_{%if item.be_assigner_ids%}{%for row in item.be_assigner_ids[:-1].split(',')%}{{row}}|{%end%}{%end%}"></td>
@@ -409,7 +426,10 @@ z-index: 1060;
                                   <td title="{%if item.customer_name%}{{item.customer_name}}{%end%}">
                                     <div {%if len(item.customer_name)>7%}style="font-size:12px;display: inline-block; line-height: 18px;"{%end%}>
 
-                                        <a href="/company?tag=show_business&id={{item.id}}&guid={{item.guid}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}">
+                                        <a href="/company?tag=show_business&id={{item.id}}&guid={{item.guid}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}
+                                        {%if index>0%}&pre_business={'id':'{{business_develop_manage[index-1].id}}','guid':'{{business_develop_manage[index-1].guid}}'}{%end%}
+                                        {%if index<len(business_develop_manage)-1%}&next_business={'id':'{{business_develop_manage[index+1].id}}','guid':'{{business_develop_manage[index+1].guid}}'}{%end%}
+                                        " target="_blank">
                                             <!-- {%if item.business_from_id==295 and item.feedback_type_id in [2,3]%}
                                             {%if item.be_referrer_name%}{%if len(item.be_referrer_name)>12%} {{item.be_referrer_name[:12]}}..{%else%}{{item.be_referrer_name}}{%end%}{%else%}无{%end%}                                            
                                             {%else%}
@@ -479,7 +499,7 @@ z-index: 1060;
                                         {%end%}
                                  
                                   </td>
-                                  <td title="{%if item.customer_tag%}{% for idx,row in enumerate(item.customer_tag[:-1].split(',')) %}{%if row%}{%if len(item.customer_tag[:-1].split(','))==idx+1%}{{row.split('_')[1]}} {%else%}{{row.split('_')[1]}},{%end%}{%end%}{%end%}{%end%}"
+                                  <td title=""
                                   >
                                  
                                     {%if item.customer_tag%}
@@ -809,6 +829,24 @@ z-index: 1060;
                           
                            
                         </div>
+                        <div class="form-group">
+                            <div class="row">
+                            <div class="col-sm-4">
+                                <label for="exampleInputEmail1">商机分类: <small class="text-danger">（必填）</small></label>
+                            </div> 
+
+                            <div class="col-sm-7" style="margin-left:-17px;">
+
+                                {% for idx, item in enumerate(t_business_type) %}
+    
+                                <input type="radio" id="business_type" name="business_type"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
+                        {% end %}
+                <small id="er_business_type" class="text-danger">
+                        
+                        </small>
+                        </div>
+                            </div>
+                        </div>
                     </div>
                             <div class="form-group" id="referrer_div">
                                     <div class="row">
@@ -1134,6 +1172,42 @@ z-index: 1060;
                       </div>
                     </div>
                   </div>
+                
+                  <div id="change_genjin_modal" class="modal modal-ku fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 id="myModalLabel_linkman">更换跟进人
+                                    <a href="javascript:;" class="btn btn-danger btn-small " id="delete_linkman" style="display: none;">
+                                        <i class="btn-icon-only icon-remove">×</i>
+                                        </i>
+                                    </a>
+                
+                                </h5>
+                            </div>
+                            <div class="modal-body form-horizontal" id="site_mod">
+                
+                
+                
+                            <div class="form-group">
+                                    <div class="col-md-10">
+                                            <label for="">更换人:</label>
+                                              <input class="form-control" type="text" name="change_name" id="change_name" placeholder="更换人">
+            
+                
+                                        </div>
+                                
+                                    <!-- /controls -->
+                                </div>
+            
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                                <button class="btn btn-primary" id="btn_save_change_genjin">更换</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>      
   {%end%}
 
   {%block js%}
@@ -1172,6 +1246,14 @@ $('#company').typeahead({
     }
     }); 
 $('#gendan_name').typeahead({
+source: function (query, process) {
+return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+return process(JSON.parse(data));
+});
+}
+});
+
+$('#change_name').typeahead({
 source: function (query, process) {
 return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
 return process(JSON.parse(data));
@@ -1536,6 +1618,7 @@ $('#btn_save').click(function () {
     source_way=$('input[name=source_way]:checked').val()
     source_place=$('input[name=source_place]:checked').val()
     source_port=$('input[name=source_port]:checked').val()
+    business_type=$("input[name=business_type]:checked").val()
     remark=$('#remark').val()
     referrer=$('#referrer').val()
     be_referrer_company=$('#be_referrer_company').val()
@@ -1557,6 +1640,9 @@ $('#btn_save').click(function () {
             return false
         }else if(source_port==undefined && busniess_from.split('|')[0]=='294'){
             $('#er_source_port').text('请选择')
+            return false
+        }else if(business_type==undefined && busniess_from.split('|')[0]=='294'){
+            $('#er_business_type').text('请选择')
             return false
         }
     else if(busniess_from.split('|')[0]=='295' && feedback_type==undefined ){
@@ -1620,7 +1706,8 @@ $('#btn_save').click(function () {
             'be_referrer_company':be_referrer_company,
             'be_referrer_name':be_referrer_name,
             'be_referrer_phone':be_referrer_phone,
-            'friend_introduce':friend_introduce
+            'friend_introduce':friend_introduce,
+            'business_type':business_type
         },function (data) {
              if(data=='-1'){
                 $('#btn_save').attr('disabled',false)
@@ -1949,6 +2036,46 @@ $('body').on('click',".sj-at1",function(){
         $('input[name=created_name_end]').val($("#created_name_end").val())
 
      })
+    $("#update_business_status").click(function () { 
+        $("#change_genjin_modal").modal('show')
+     })
+    $("#btn_save_change_genjin").click(function () { 
+        milepost_ids=[]
+        business_ids=[]
+        be_change_ids=[]
+        change_name=$("#change_name").val()
+        $("input[name=businessid_milepostid_company]:checked").each(function () { 
+            milepost_ids.push($(this).val().split('_')[1])
+            business_ids.push($(this).val().split('_')[0])
+            be_change_ids.push($(this).val().split('_')[4].split('|')[0])
+     })
+     if(business_ids==''){
+         alert('未选择')
+        return false
+     }
+     else if(change_name==''){
+         alert('未填写跟进人')
+         return false
+     }
+     $.post('company?tag=business_develop_manage_milepost',{
+            '_xsrf':_xsrf,
+            'step':'5',
+            'change_name':change_name,
+            'business_ids':business_ids.join(','),
+            'milepost_ids':milepost_ids.join(','),
+            'be_change_ids':be_change_ids.join(',')
+        },function (data) {
+            if(data=='-1'){
+                alert('跟进人不在系统中')
+            }else{
+                location.reload()
+            }
+           
+            
+         })
+     })
+
+     
     //  $('.detail').click(function () {
     //      params=$(this).attr('params') 
     //      $.get('?tag=show_business',{

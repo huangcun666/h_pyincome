@@ -125,12 +125,12 @@
             <th></th>
         </tr>
 
-        <tr style="background-color:bisque;">
-            <td style="background-color: #efefef;">合计</td>
-           <td style="background-color: #efefef;">{{count.ssc}}</td>
+        <tr style="background-color:white;">
+            <td style="background-color:#000;">合计</td>
+           <td style="background-color: #000;">{{count.ssc}}</td>
            {%if count.every_count%}
            {%for item in count.every_count.split(',')%}
-            <td>{{item.split('|')[1]}}</td>
+            <td style="background-color: #000;">{{item.split('|')[1]}}</td>
            {%end%}
            {%end%}
 

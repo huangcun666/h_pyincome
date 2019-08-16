@@ -9,6 +9,10 @@
 }
 .gdd {position: fixed; top: 70px; right:20px; width: 25px; height: 30px;z-index: 999; }
 .gdd img {display: block; margin: 5px auto; cursor: pointer;}
+.g1-right{
+position: fixed;
+right: 45px;
+}
 </style>    
 <div class="ddlz-top">
         <a href="/project?tag=projects_state">全部</a>
@@ -43,11 +47,10 @@
 
 <a href="/project?tag=projects_state&department_id=0"  class="btn btn-sm {%if params["department_id"]=="0"%}btn-primary  {%else%} btn-default{%end%}">工商部</a>
 
-
-
-
 </li>
-
+<li class="g1 g1-right">
+    <a href="?tag=cq_jd_list&count_type=project_name&way=month&show_tag=-2" class="btn btn-primary btn-sm" target="_blank">未办结统计</a>
+</li>
 
 
 

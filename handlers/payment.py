@@ -37,6 +37,11 @@ def time_transition(date):
 
 
 class PaymentHandler(BaseHandler):
+    def show_project(self,project_id):
+        t_project=self.db.get(' select id,guid from t_projects where id=%s  ',project_id)
+        if t_project:
+            return '<a href="project?tag=show&guid=%s&id=%s">'%(t_project.guid,t_project.id),'</a>'
+        return '',''
     def compare_date(self, dt1, dt2):
         # print dt1.strftime("%Y-%m"), dt2.strftime("%Y-%m")
         if dt1.date() <= dt2:
@@ -379,6 +384,7 @@ class PaymentHandler(BaseHandler):
             customer_id = int(self.get_argument("customer_id"))
             to_tag = self.get_argument("to_tag", "")
             old_tag=self.get_argument('old_tag','')
+            customer_guid=self.get_argument('customer_guid','')
             dt_next = datetime.date.today() - relativedelta(months=-1)
 
             sql = ""
@@ -435,6 +441,7 @@ class PaymentHandler(BaseHandler):
             t_linkman = self.db_customer.query(
                         "select * from t_linkman where customer_id=%s order by is_first desc,id ",
                         customer_id)
+
             self.render(
                 'c/payment/customer.html',
                 t_customer_payment_max_assist=t_customer_payment_max_assist,
@@ -447,6 +454,7 @@ class PaymentHandler(BaseHandler):
                 t_linkman=t_linkman,
                 tag=tag,
                 old_tag=old_tag,
+                customer_guid=customer_guid,
                 dt_next=dt_next)
         elif tag == "project_customer_list":
             sql = ""
@@ -550,8 +558,9 @@ where customer_type_name like '%%记账%%'
             output = self.get_argument("output","")
             if is_manager=="1":
                 pass
-            elif role!="8" or role!="3" or role!="5" :
+            elif role!="8" and role!="3" and role!="5" :
                 kf=uid_name
+
             order_by_colunm = " req_at desc"
             pre_page = 20
             params={
@@ -568,7 +577,9 @@ where customer_type_name like '%%记账%%'
             if company:
                 sql += """ 
                         and (a.id = '""" + company + """'
-                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' )
+                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' 
+                          or a.id in (select customer_id  from t_company_name where name like '%%""" + company + """%%' )
+                         )
                 
                 
                 """
@@ -669,7 +680,7 @@ where customer_type_name like '%%记账%%'
                     a.tag_parent_id_name customer_tag_parent_id_name,
                     a.is_building customer_is_building,
                     a.is_clearly customer_is_clearly,
-                    a.is_year customer_is_year,
+                    a.is_year customer_is_year,c.project_id payment_project_id,
                     c.updated_at pay_updated_at,c.uid_name pay_uid_name,c.wait_pay_amount,
                     c.pay_typeid pay_pay_typeid_id, c.pay_typeid_name pay_pay_typeid_name,
                     c.service_amount pay_service_amount,c.service_month_amount pay_service_amount_month,
@@ -771,12 +782,11 @@ where customer_type_name like '%%记账%%'
                 wb.save('media/output/payment_%s.xls' % (dt))
                 return self.write(
                     "<a href='%s'>下载</a>" % ('static/output/payment_%s.xls' % (dt)))
-
             self.render(
                 'c/payment/payment_list.html',
                 t_promo_types=t_promo_types,
                 t_customer_type=t_customer_type,
-                # \
+                show_project=self.show_project,
                 t_type_new_parents=t_type_new_parents,
                 t_type_new=t_type_new,
                 by_tag=by_tag,
@@ -803,7 +813,9 @@ where customer_type_name like '%%记账%%'
             if company:
                 sql1 += """ 
                         and (a.project_id = '""" + company + """'
-                         or c.customer_company like '%%""" + company + """%%' or c.company_uid like '%%""" + company + """%%' )
+                         or c.customer_company like '%%""" + company + """%%' or c.company_uid like '%%""" + company + """%%' 
+                         
+                         )
                 
                 
                 """
@@ -900,7 +912,9 @@ where customer_type_name like '%%记账%%'
             if company:
                 sql += """ 
                         and (a.id = '""" + company + """'
-                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' )
+                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' 
+                          or a.id in (select customer_id  from """+options.mysql_database_customer+""".t_company_name where name like '%%""" + company + """%%' )
+                         )
                 
                 
                 """
@@ -962,7 +976,7 @@ where customer_type_name like '%%记账%%'
                 """
                     select 
                     a.*,
-                     a.paytype_id_name customer_paytype_id_name,
+                     a.paytype_id_name customer_paytype_id_name,a.remark t_remark,
                       a.promo_id customer_promo_id,
                     a.promo_id_name customer_promo_id_name,
                     a.is_general customer_is_general,
@@ -1065,7 +1079,9 @@ where customer_type_name like '%%记账%%'
             if company:
                 sql += """ 
                         and (a.id = '""" + company + """'
-                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' )
+                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%'
+                          or a.id in (select customer_id  from """+options.mysql_database_customer +""".t_company_name where name like '%%""" + company + """%%' )
+                          )
                 
                 
                 """
@@ -1109,7 +1125,7 @@ where customer_type_name like '%%记账%%'
             startpage = (page - 1) * pre_page
             customers = self.db.query(
                 """
-                    SELECT a.company , 
+                    SELECT a.company , a.remark t_remark,
                     a.paytype_id_name customer_paytype_id_name,
                     a.promo_id_name customer_promo_id_name,
                     a.is_general customer_is_general,
@@ -1136,7 +1152,7 @@ pfi_confirm_remark,payment_confirm_at,
                     customer_company,b.project_name,income_num,b.id project_id,e.id income_title_id,
                     e.created_at title_created_at,
                     a.id customer_id,a.paytype_id customer_pay_type_id, a.service_amount customer_service_amount,
-                    a.service_amount_month customer_service_amount_month,
+                    a.service_amount_month customer_service_amount_month,g.payment_confirm_last_state,
                     a.book_amount customer_book_amount,a.guid a_customer_guid, a.paytype_id_name customer_paytype_id_name,
                     g.acc_end,g.acc_book_end,g.id payment_id,g.al_remark,g.pb_remark,g.payment_confirm_remark,
                     a.tag_id,a.tag_id_name,a.tag_parent_id,a.tag_parent_id_name,a.is_building,a.is_clearly,a.is_year
@@ -1215,8 +1231,10 @@ pfi_confirm_remark,payment_confirm_at,
             show_tag = self.get_argument("show_tag", "1")
             by_tag = self.get_argument("by_tag","")
             from_expire = self.get_argument("from_expire","")
+            export=self.get_argument('export','')
             by_tag_sql =""
             order_by_colunm = " c.acc_end "
+           
             if by_tag =="正常":
                 by_tag_sql = " and a.id not in  (select id from t_customer where  customer_type_name  like '%%解约%%' or customer_type_name  like '%%停账%%' or customer_type_name  like '%%注销%%' or customer_type_name  like '%%取消%%' or customer_type_name  like '%%逾期%%') "
             elif by_tag=='楼盘':
@@ -1256,7 +1274,9 @@ or
             if company:
                 sql += """ 
                         and (a.id = '""" + company + """'
-                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' )
+                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' 
+                          or a.id in (select customer_id  from t_company_name where name like '%%""" + company + """%%' )
+                         )
                 
                 
                 """
@@ -1297,11 +1317,12 @@ or
 
             pagination = Pagination(page, pre_page, count.count, self.request)
             startpage = (page - 1) * pre_page
-
-
+            
+      
+            limit_sql='' if export else  " limit %s,%s"%(startpage, pre_page)    
 
             customers = self.db_customer.query("""
-                       SELECT  a.company , c.id payment_id,
+                       SELECT  a.company , c.id payment_id,a.remark t_remark,
                     a.paytype_id_name customer_paytype_id_name,
                     a.promo_id_name customer_promo_id_name,
                     a.is_general customer_is_general,
@@ -1337,34 +1358,108 @@ or
                                                                             b.max_id = c.id
 
                                           """ + sql + by_tag_sql + """
-                             order by """+order_by_colunm+""" desc
-                        limit %s,%s
-            """, startpage, pre_page)
+                             order by """+order_by_colunm+""" desc """+limit_sql)
+                
+            if export:
+                wb=xlwt.Workbook(encoding='utf-8')
+                sh=wb.add_sheet(u'即将到期客户费用列表')
 
-            print """
-                       SELECT  a.remark customer_remark,DATE_ADD(c.acc_end, INTERVAL 1 MONTH) next_pay_acc_start , a.acc_uid_name,cp_title_id,a.promo_id,is_general,
-            customer_type,promo_id_name,
-                        DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,
-                        DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
-                        DATE_ADD(c.acc_book_end, INTERVAL 12 MONTH) next_pay_acc_book_end, c.*,
-                        a.guid,a.company,c.updated_at pay_updated_at,c.uid_name pay_uid_name,
-                        c.pay_typeid_name pay_pay_typeid_name,c.service_amount pay_service_amount,
-                                                                c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount
-                                                                FROM  t_customer a
-                                                                    INNER JOIN t_customer_payment c
-                                                                        ON a.id = c.customer_id
-                                                                       INNER JOIN
-                                                                    (
-                                                                        SELECT `customer_id`, MAX(id) max_id
-                                                                        FROM t_customer_payment
-                                                                        GROUP BY customer_id
-                                                                    ) b ON c.customer_id = b.customer_id AND
-                                                                            b.max_id = c.id
+                first_col = sh.col(0)
+                first_col.width = 100 * 150  # Set the column width
+                sh.write(0,0,u'公司名称')
+                sh.write(0,1,u'会计')
+                sh.write(0,2,u'付款方式')
+                sh.write(0,3,u'总服务费')
+                sh.write(0,4,u'月服务费')
+                sh.write(0,5,u'帐册费')
+                sh.write(0,6,u'记账到期')
+                sh.write(0,7,u'账册到期')
+                sh.write(0,8,u'最新收款明细')
+                sh.write(0,9,u'待收明细')
+                sh.write(0,10,u'待收金额')
+                for idx,row in enumerate(customers):
+                    idx+=1
+                    company=row.company
+                    if row.is_general:
+                        company+=u'\n一般纳税人'
+                    if row.tag_parent_id_name!=row.tag_id_name:
+                        company+=u'\n'+row.tag_parent_id_name
+                    
+                    if row.tag_id_name:
+                        company+=u' '+row.tag_id_name
+                    if row.is_building:
+                        company+=u' 楼盘'
+                    if row.is_year:
+                        company+=u' 工商年检'
+                    if row.is_clearly:
+                        company+=u' 汇算清缴'
+                        
+                    if row.company_reguid:
+                        company+=u'\n'+row.company_reguid
+                    if self.adjusted_option(row.customer_id):
+                        if self.adjusted_option(row.customer_id).adjusted_option:
+                            company+=u'\n'+self.adjusted_option(row.customer_id).adjusted_option
+                    company+=u'\n付款方式:'+row.customer_paytype_id_name+u' '+\
+                    str(row.customer_service_amount)+u' （总）/'+str(row.customer_service_amount_month)+u'（月）'+\
+                    str(row.customer_book_amount)+u'(帐册费)'
+                    sh.write(idx,0,company)
+                
 
-                                          """ + sql + by_tag_sql + """
-                             order by """+order_by_colunm+""" desc
-                        limit %s,%s
-            """
+                    sh.write(idx,1,row.acc_uid_name)
+                    sh.write(idx,2,row.pay_pay_typeid_name)
+                    sh.write(idx,3,row.pay_service_amount)
+                    sh.write(idx,4,row.pay_service_amount_month)
+                    sh.write(idx,5,row.pay_book_amount)
+                    if row.acc_end:
+                        sh.write(idx,6,row.acc_end.strftime("%Y-%m"))
+                    else:
+                        sh.write(idx,6,u'')
+
+                    if row.acc_book_end:
+                        sh.write(idx,7,row.acc_book_end.strftime("%Y-%m"))
+                    else:
+                        sh.write(idx,7,u'')
+                    if row.al_remark:
+                        sh.write(idx,8,row.al_remark)
+                    else:
+                        sh.write(idx,8,u'')
+                    if row.pb_remark:
+                        sh.write(idx,9,row.pb_remark)
+                    else:
+                        sh.write(idx,9,u'')
+
+                    sh.write(idx,10,row.wait_pay_amount)
+                    sh.row(idx).height_mismatch = True
+                    sh.row(idx).height = 30 * 40 
+
+                wb.save('media/output/即将到期客户费用列表.xls')
+
+                return self.write({'output_path':'static/output/即将到期客户费用列表.xls'})
+
+            # print """
+            #            SELECT  a.remark customer_remark,DATE_ADD(c.acc_end, INTERVAL 1 MONTH) next_pay_acc_start , a.acc_uid_name,cp_title_id,a.promo_id,is_general,
+            # customer_type,promo_id_name,
+            #             DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,
+            #             DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
+            #             DATE_ADD(c.acc_book_end, INTERVAL 12 MONTH) next_pay_acc_book_end, c.*,
+            #             a.guid,a.company,c.updated_at pay_updated_at,c.uid_name pay_uid_name,
+            #             c.pay_typeid_name pay_pay_typeid_name,c.service_amount pay_service_amount,
+            #                                                     c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount
+            #                                                     FROM  t_customer a
+            #                                                         INNER JOIN t_customer_payment c
+            #                                                             ON a.id = c.customer_id
+            #                                                            INNER JOIN
+            #                                                         (
+            #                                                             SELECT `customer_id`, MAX(id) max_id
+            #                                                             FROM t_customer_payment
+            #                                                             GROUP BY customer_id
+            #                                                         ) b ON c.customer_id = b.customer_id AND
+            #                                                                 b.max_id = c.id
+
+            #                               """ + sql + by_tag_sql + """
+            #                  order by """+order_by_colunm+""" desc
+            #             limit %s,%s
+            # """
             t_payment_type = self.db_customer.query(
                 "select * from t_type where tag='付费方式'")
             t_promo_types = self.db.query(
@@ -1447,7 +1542,9 @@ or
             if company:
                 sql += """ 
                         and (a.id = '""" + company + """'
-                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' )
+                         or a.company like '%%""" + company + """%%' or a.company_reguid like '%%""" + company + """%%' 
+                         or a.id in (select customer_id  from t_company_name where name like '%%""" + company + """%%' )
+                         )
                 
                 
                 """
@@ -1489,7 +1586,7 @@ or
             startpage = (page - 1) * pre_page
 
             customers = self.db_customer.query("""
-                         SELECT a.company , c.id payment_id,
+                         SELECT a.company , c.id payment_id,a.remark  t_remark,
                     a.paytype_id_name customer_paytype_id_name,
                     a.promo_id_name customer_promo_id_name,
                     a.is_general customer_is_general,
@@ -1593,6 +1690,7 @@ or
             acc_end_end=self.get_argument('acc_end_end','')
             acc_book_end_start=self.get_argument('acc_book_end_start','')
             acc_book_end_end=self.get_argument('acc_book_end_end','')
+            wait_pay_amount=self.get_argument('wait_pay_amount','')
             ssql=''
             sql_bad=''
             group_sql=''
@@ -1632,6 +1730,8 @@ or
                 search_sql+=' and DATE_FORMAT(c.acc_end,"%%Y-%%m")  between "'+acc_end_start+'" and "'+acc_end_end+'"'
             if acc_book_end_start and acc_book_end_end:
                 search_sql+=' and DATE_FORMAT(c.acc_book_end,"%%Y-%%m")  between "'+acc_book_end_start+'" and "'+acc_book_end_end+'"'
+            if wait_pay_amount:
+                search_sql+=' and c.wait_pay_amount<>0.00 '
             params={
                 'company_sql':company_sql,
                 'kf_kuaiji':kf_kuaiji,
@@ -1649,7 +1749,8 @@ or
                 'acc_end_start':acc_end_start,
                 'acc_end_end':acc_end_end,
                 'acc_book_end_start':acc_book_end_start,
-                'acc_book_end_end':acc_book_end_end
+                'acc_book_end_end':acc_book_end_end,
+                'wait_pay_amount':wait_pay_amount
             }
             if category_id=='ungroup':
                 search_sql+=' and d.id not in (select assist_id from t_customer_payment_assist_group where d.id=assist_id and uid=%s) '%uid
@@ -1857,7 +1958,7 @@ or
                 startpage = (page - 1) * pre_page
                 customers = self.db_customer.query("""
                         SELECT  *,"""+sel_sql+""" c.id payment_id,a.id customer_id,
-                        g.id sale_cuikuan_id,c.acc_end,c.acc_book_end,
+                        g.id sale_cuikuan_id,c.acc_end,c.acc_book_end,a.guid customer_guid,
                         c.updated_at pay_updated_at,c.uid_name pay_uid_name,c.wait_pay_amount,
                         c.pay_typeid pay_pay_typeid_id, c.pay_typeid_name pay_pay_typeid_name,
                         c.service_amount pay_service_amount,c.service_month_amount pay_service_amount_month,
@@ -1893,7 +1994,41 @@ or
                             order by """+order_int+"""
                             limit %s,%s
                 """, startpage, pre_page)
-
+                # print("""
+                #         SELECT  *,"""+sel_sql+""" c.id payment_id,a.id customer_id,
+                #         g.id sale_cuikuan_id,c.acc_end,c.acc_book_end,a.guid customer_guid,
+                #         c.updated_at pay_updated_at,c.uid_name pay_uid_name,c.wait_pay_amount,
+                #         c.pay_typeid pay_pay_typeid_id, c.pay_typeid_name pay_pay_typeid_name,
+                #         c.service_amount pay_service_amount,c.service_month_amount pay_service_amount_month,
+                #         c.book_amount pay_book_amount,c.sale_man sale_man1,c.kf_man kf_man1,
+                #         a.acc_uid_name,f.member_name sale_man,e.member_name kf_man,a.remark customer_remark,
+                #         DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,
+                #                 DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
+                #                 DATE_ADD(c.acc_book_end, INTERVAL a.fee MONTH) next_pay_acc_book_end,
+                #                 DATE_ADD(c.acc_end, INTERVAL 1 MONTH) next_pay_acc_start,
+                #                 TIMESTAMPDIFF(MONTH,DATE_FORMAT(c.acc_book_end, '%%Y-%%m-%%d'), DATE_FORMAT(now(), '%%Y-%%m-%%d')) acc_book_end_expire
+                #         FROM  t_customer a
+                #             INNER JOIN t_customer_payment c
+                #                 ON a.id = c.customer_id
+                #             INNER JOIN
+                #             (
+                #                 SELECT `customer_id`, MAX(id) max_id
+                #                 FROM t_customer_payment
+                #                 GROUP BY customer_id
+                #             ) b ON c.customer_id = b.customer_id AND
+                #                     b.max_id = c.id
+                #             """+ssql+"""
+                #             left join """+options.mysql_database+""".t_projects_member f on
+                #                     c.project_id=f.project_id and f.team_id=34
+                #             left join """+options.mysql_database+""".t_projects_member e on
+                #                     c.project_id=e.project_id and e.team_id=36
+                #         left join t_customer_exchange g on a.id=g.customer_id and  g.isvisible=2
+                #         and g.id=(select MAX(gg.id) g_id from t_customer_exchange gg where a.id=gg.customer_id and gg.isvisible=2 )
+                                    
+                #                     where
+                #                     wait_pay_amount<>0.00
+                                     
+                #                      """+search_sql)
             else:
                 if department_name=='销售部' and '250' not in role_list or '302' in role_list :
                     ssql='''
@@ -2059,7 +2194,7 @@ or
                             DATE_ADD(c.acc_book_end, INTERVAL a.fee MONTH) next_pay_acc_book_end, 
                             TIMESTAMPDIFF(MONTH,DATE_FORMAT(c.acc_book_end, '%%Y-%%m-%%d'), DATE_FORMAT(now(), '%%Y-%%m-%%d')) acc_book_end_expire,
                             c.*,
-                            a.guid,a.company,c.updated_at pay_updated_at,c.uid_name pay_uid_name,
+                            a.guid customer_guid,a.company,c.updated_at pay_updated_at,c.uid_name pay_uid_name,
                             c.pay_typeid_name pay_pay_typeid_name,c.service_amount pay_service_amount,
                             a.last_cuikuan_at,a.last_cuikuan_msg,a.sale_last_cuikuan_at,a.sale_last_cuikuan_msg,
                                 c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount,
@@ -2094,48 +2229,48 @@ or
                                                                                                 limit %s,%s
                 
                                                                                     """, startpage, pre_page)
-                print("""
-                                        SELECT d.*,d.created_at assist_created_at,d.sale_id assist_sale_id,d.id assist_id, DATE_ADD(c.acc_end, INTERVAL 1 MONTH) next_pay_acc_start , a.acc_uid_name a_acc_uid_name ,
-                            DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,a.remark customer_remark,
-                             if(d.sale_end_at,datediff(DATE_FORMAT(d.sale_end_at, '%%Y-%%m-%%d'),DATE_FORMAT(d.distribute_at,'%%Y-%%m-%%d')),
-                             datediff(DATE_FORMAT(now(), '%%Y-%%m-%%d'),DATE_FORMAT(d.distribute_at,'%%Y-%%m-%%d'))) genjin_day,
-                            DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
-                            DATE_ADD(c.acc_book_end, INTERVAL a.fee MONTH) next_pay_acc_book_end, 
-                            TIMESTAMPDIFF(MONTH,DATE_FORMAT(c.acc_book_end, '%%Y-%%m-%%d'), DATE_FORMAT(now(), '%%Y-%%m-%%d')) acc_book_end_expire,
-                            c.*,
-                            a.guid,a.company,c.updated_at pay_updated_at,c.uid_name pay_uid_name,
-                            c.pay_typeid_name pay_pay_typeid_name,c.service_amount pay_service_amount,
-                            a.last_cuikuan_at,a.last_cuikuan_msg,a.sale_last_cuikuan_at,a.sale_last_cuikuan_msg,
-                                c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount,
-                                f.member_name sale_man,e.member_name kf_man,c.sale_man sale_man1,c.kf_man kf_man1, g.id sale_cuikuan_id,
-                                h.created_at sale_created_at
-                                                                    FROM  t_customer_payment_assist d
-                                                                    """+group_sql+"""
-                                                                    inner join ( select max(id) id,customer_id from t_customer_payment_assist
-                                                                    group by customer_id
-                                                                    )dd on d.customer_id=dd.customer_id and d.id=dd.id
-                                                                      inner join t_customer a on d.customer_id=a.id
-                                                                        INNER JOIN t_customer_payment c
-                                                                            ON a.id = c.customer_id
-                                                                        left join """+options.mysql_database+""".t_projects_member f on
-                                                                        c.project_id=f.project_id and f.team_id=34
-                                                                        left join """+options.mysql_database+""".t_projects_member e on
-                                                                                c.project_id=e.project_id and e.team_id=36
-                                                                   left join t_customer_exchange g on a.id=g.customer_id and  g.isvisible=2
-                                                                    and g.id=(select MAX(gg.id) g_id from t_customer_exchange gg where a.id=gg.customer_id and gg.isvisible=2 )
-                                                                      left join t_customer_exchange h on a.id=h.customer_id 
-                                                                    and h.id=(select MAX(gg.id) g_id from t_customer_exchange gg where a.id=gg.customer_id  and d.sale_id=gg.uid and h.created_at>=d.created_at )
-                                                                        INNER JOIN
-                                                                        (
-                                                                            SELECT `customer_id`, MAX(id) max_id,acc_end
-                                                                            FROM t_customer_payment
-                                                                            GROUP BY customer_id
-                                                                        ) b ON c.customer_id = b.customer_id AND
-                                                                                b.max_id = c.id
+                # print("""
+                #                         SELECT d.*,d.created_at assist_created_at,d.sale_id assist_sale_id,d.id assist_id, DATE_ADD(c.acc_end, INTERVAL 1 MONTH) next_pay_acc_start , a.acc_uid_name a_acc_uid_name ,
+                #             DATE_ADD(c.acc_end, INTERVAL a.fee MONTH) next_pay_acc_end,a.remark customer_remark,
+                #              if(d.sale_end_at,datediff(DATE_FORMAT(d.sale_end_at, '%%Y-%%m-%%d'),DATE_FORMAT(d.distribute_at,'%%Y-%%m-%%d')),
+                #              datediff(DATE_FORMAT(now(), '%%Y-%%m-%%d'),DATE_FORMAT(d.distribute_at,'%%Y-%%m-%%d'))) genjin_day,
+                #             DATE_ADD(c.acc_book_end, INTERVAL 1 MONTH) next_pay_acc_book_start ,
+                #             DATE_ADD(c.acc_book_end, INTERVAL a.fee MONTH) next_pay_acc_book_end, 
+                #             TIMESTAMPDIFF(MONTH,DATE_FORMAT(c.acc_book_end, '%%Y-%%m-%%d'), DATE_FORMAT(now(), '%%Y-%%m-%%d')) acc_book_end_expire,
+                #             c.*,
+                #             a.guid,a.company,c.updated_at pay_updated_at,c.uid_name pay_uid_name,
+                #             c.pay_typeid_name pay_pay_typeid_name,c.service_amount pay_service_amount,
+                #             a.last_cuikuan_at,a.last_cuikuan_msg,a.sale_last_cuikuan_at,a.sale_last_cuikuan_msg,
+                #                 c.service_month_amount pay_service_amount_month, c.book_amount pay_book_amount,
+                #                 f.member_name sale_man,e.member_name kf_man,c.sale_man sale_man1,c.kf_man kf_man1, g.id sale_cuikuan_id,
+                #                 h.created_at sale_created_at
+                #                                                     FROM  t_customer_payment_assist d
+                #                                                     """+group_sql+"""
+                #                                                     inner join ( select max(id) id,customer_id from t_customer_payment_assist
+                #                                                     group by customer_id
+                #                                                     )dd on d.customer_id=dd.customer_id and d.id=dd.id
+                #                                                       inner join t_customer a on d.customer_id=a.id
+                #                                                         INNER JOIN t_customer_payment c
+                #                                                             ON a.id = c.customer_id
+                #                                                         left join """+options.mysql_database+""".t_projects_member f on
+                #                                                         c.project_id=f.project_id and f.team_id=34
+                #                                                         left join """+options.mysql_database+""".t_projects_member e on
+                #                                                                 c.project_id=e.project_id and e.team_id=36
+                #                                                    left join t_customer_exchange g on a.id=g.customer_id and  g.isvisible=2
+                #                                                     and g.id=(select MAX(gg.id) g_id from t_customer_exchange gg where a.id=gg.customer_id and gg.isvisible=2 )
+                #                                                       left join t_customer_exchange h on a.id=h.customer_id 
+                #                                                     and h.id=(select MAX(gg.id) g_id from t_customer_exchange gg where a.id=gg.customer_id  and d.sale_id=gg.uid and h.created_at>=d.created_at )
+                #                                                         INNER JOIN
+                #                                                         (
+                #                                                             SELECT `customer_id`, MAX(id) max_id,acc_end
+                #                                                             FROM t_customer_payment
+                #                                                             GROUP BY customer_id
+                #                                                         ) b ON c.customer_id = b.customer_id AND
+                #                                                                 b.max_id = c.id
                                                                                
-                                                                        """ + sql +search_sql+ """
-                                                                                        order by """+order_int
-                )
+                #                                                         """ + sql +search_sql+ """
+                #                                                                         order by """+order_int
+                # )
             t_user_sales=self.db.query('''
                 select * from t_user where department_name='销售部' or find_in_set('302',role_list) 
             ''')
@@ -2658,11 +2793,11 @@ or
                 return self.write("not payment_id")
             else:
                 result = self.db_customer.execute("""
-                    update t_customer_payment set payment_confirm_remark=%s , payment_confirm_state=%s ,
+                    update t_customer_payment set payment_confirm_remark=%s , payment_confirm_state=%s ,payment_confirm_last_state=%s,
 
                     payment_confirm_uid=%s , payment_confirm_uid_name=%s,payment_confirm_at=%s
                     where id=%s and customer_id=%s
-                """, payment_confirm_remark, payment_confirm_state, uid,
+                """, payment_confirm_remark, payment_confirm_state,payment_confirm_state, uid,
                                                   uid_name, dt, payment_id,
                                                   customer_id)
                 self.write(str(result))
@@ -3079,6 +3214,11 @@ or
                     insert into t_customer_payment_assist(acc_uid,acc_uid_name,customer_id,created_at,sale_name,sale_id,assist_msg,distribute_at,is_manage)
                     values(%s,%s,%s,%s,%s,%s,%s,%s,1)
                 ''',t_customer.acc_uid,t_customer.acc_uid_name,customer_id,dt,sale_name,sale_id,assist_msg,dt)
+                    self.db_customer.execute('''
+                        insert into  t_customer_exchange(msg_time,msg,customer_id,created_at,uid,uid_name,etype)
+                        values(%s,%s,%s,%s,%s,%s,%s)''',dt,'分配销售为'+sale_name,customer_id,dt, uid,
+                                            uid_name,'2')
+                    
                     t_remind=self.db.get('''
                         select * from t_remind where uid=%s
                     ''',sale_id)
@@ -3100,7 +3240,6 @@ or
             elif step=='6':
 
                 if assist_ids_and_sales:
-                    print(assist_ids_and_sales)
                     t_remind1=self.db.get('''
                                 select * from t_remind where uid=%s
                             ''',sale_id)
@@ -3108,7 +3247,13 @@ or
                         t_remind=self.db.get('''
                                 select * from t_remind where uid=%s
                             ''',item.split('|')[1])
-                      
+                        t_customer_payment_assist=self.db_customer.get('''
+                            select  customer_id from t_customer_payment_assist where id=%s
+                        ''',item.split('|')[0])
+                        self.db_customer.execute('''
+                        insert into  t_customer_exchange(msg_time,msg,customer_id,created_at,uid,uid_name,etype)
+                        values(%s,%s,%s,%s,%s,%s,%s)''',dt,'分配销售为'+sale_name, t_customer_payment_assist.customer_id,dt, uid,
+                                            uid_name,'2')
                         self.db_customer.execute('''
                         update t_customer_payment_assist set sale_name=%s,sale_id=%s,distribute_at=%s,summary=null,
                         status=0,sale_end_at=null,is_check=0,check_remark=null,check_at=null,check_name=null,
@@ -3135,6 +3280,10 @@ or
                             insert into t_customer_payment_assist(acc_uid,acc_uid_name,customer_id,created_at,sale_name,sale_id,assist_msg,distribute_at,is_manage)
                             values(%s,%s,%s,%s,%s,%s,%s,%s,1)
                         ''',t_customer.acc_uid,t_customer.acc_uid_name,customer_id,dt,sale_name,sale_id,assist_msg,dt)
+                            self.db_customer.execute('''
+                                insert into  t_customer_exchange(msg_time,msg,customer_id,created_at,uid,uid_name,etype)
+                                values(%s,%s,%s,%s,%s,%s,%s)''',dt,'分配销售'+sale_name,customer_id,dt, uid,
+                                                    uid_name,'2')
                             t_remind=self.db.get('''
                                 select * from t_remind where uid=%s
                             ''',sale_id)

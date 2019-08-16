@@ -11,7 +11,13 @@
 <i class="icon-user"></i>
 <h3>记账应收管理
 {% include "payment_nav.html" %}
+<style>
+.modal {
+    width: 900px;
+    margin-left: -450px; 
+}
 
+</style>
 
 </h3>
 </div> <!-- /widget-header -->
@@ -19,7 +25,7 @@
 <div class="tab-content">
 <div class="tab-pane active" id="formcontrols">
         <form class="form-search" id="query_form">
-       <input type="text" value="{{company}}" name="company"  placeholder="公司名称/姓名/信用代码/编号">
+       <input type="text" value="{{company}}" name="company"  placeholder="公司/曾用名/姓名/信用代码/编号">
 
                     <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
 
@@ -71,6 +77,7 @@
 
 
                                 <th >公司名称</th>
+                                <th width="60">客户备注</th> 
                                 <th style="width:50px;">会计</th>
 
                                  {%if pay_project_id==0%}
@@ -109,8 +116,8 @@
                         <td>
 
 
-
-                            <a target="_blank" href="/payment?tag=customer&customer_id={{item.a_customer_id}}&to_tag=payment_tab">{{item.customer_company}}</a>
+                                <a target="_blank" href="/customer?tag=show&id={{item.a_customer_id}}&guid={{item.a_customer_guid}}&to_tag=payment_record_tab">
+                           {{item.customer_company}}</a>
 
                             {%if role=="3" or role=="8" or role=="5" %} <a 
                            class="modify_customer_detail btn-sm control"
@@ -170,6 +177,18 @@
                                
 
                             </td>
+                            <td title="{%if item.t_remark%}{{item.t_remark}}{%end%}"> 
+                                    {%if item.t_remark%}
+                                    {%if len(item.t_remark)>15%}
+                                    {{item.t_remark[:15]}}...{%else%} {{item.t_remark}}{%end%}{%end%}
+                                          {%if role=='3' or role=='8'%}
+                                    <a class="handler_remark_modify"
+                                    type='button'
+                                     customer_id="{{item.customer_id}}"
+                                     t_remark="{%if item.t_remark%}{{item.t_remark}}{%end%}"
+                                         href="javascript:void(0)"> <img src="/static/images/modify.png" width="20"/></a>
+                                         {%end%}
+                                </td>           
                                         <td>{{item.acc_uid_name}}</td>
 
 
@@ -368,72 +387,60 @@
 </tr>
 
 </table>
-
-
-
-
-<table  style="padding:3x;width:100%">
-
+<table  style="padding:1x;width:100%">
     <tr>
-        <td><div class="control-group">
+        <td>
 
-            <label class="control-label" for="acc_end">记账费到期时间
-
-
-
-            </label>
-            <div class="controls">
-                <input type="text" class="span2 " id="acc_end" name="acc_end" value=""><br/>
-                <span id="msg_acc_end" style="color:red"></span>
-            </div>
+            记账费到期时间 <br/><span id="msg_acc_end" style="color:red"></span><br/>
+                <input type="text" id="acc_end" name="acc_end" value="">
+               
+        
             <!-- /controls -->
-        </div></td><td>
-
-<div class="control-group">
-
-    <label class="control-label" for="account">账册费到期时间
-        <span id="is_free" style="color: red"></span>
+       </td><td>
 
 
-    </label>
-    <div class="controls">
-        <input type="text" class="span2" id="acc_book_end" name="acc_book_end"  data-format="YYYY-MM" data-template="YYYY-MM"><br/>
-        <span id="msg_acc_book_end" style="color:red"></span>
-    </div>
+
+   账册费到期时间 <br/> <span id="msg_acc_book_end" style="color:red"></span>
+        <span id="is_free" style="color: red"></span><br/>  
+        <input type="text" class="span2" id="acc_book_end" name="acc_book_end"  data-format="YYYY-MM" data-template="YYYY-MM">
+    
+
     <!-- /controls -->
 </div>
 
 
 
         </td>
+
+        <td><br/>待收金额<br/><input type="text" class="span4" id="wait_pay_amount" name="wait_pay_amount" />
+            <span style="color:red" id="lb_wait_pay_amount"></td>
+
     </tr>
 </table>
 
 
 
+<table  style="padding:1x;width:100%">
 
-        <div class="control-group">
-            <label class="control-label" for="al_remark">本期收款明细</label>
-            <div class="controls">
-                <textarea type="text" class="span5" id="al_remark" name="al_remark" value="" style="height: 40px;"></textarea>
-            </div>
-            <!-- /controls -->
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="lastname">待收明细 </label>
-            <div class="controls">
-                <textarea type="text" class="span5" id="pb_remark" name="pb_remark" value="" style="height: 40px;"></textarea>
-            </div>
-            <!-- /controls -->
-        </div>
-    <div class="control-group">
-        <label class="control-label" for="wait_pay_amount">待收金额</label>
-        <div class="controls">
-            <input type="text" class="span4" id="wait_pay_amount" name="wait_pay_amount" />
-            <span style="color:red" id="lb_wait_pay_amount"></span>
-        </div>
-        <!-- /controls -->
-    </div>
+    <tr>
+
+        <td>
+            本期收款明细<br/>
+
+            <textarea type="text" id="al_remark" name="al_remark" value="" style="height: 63px; width: 416px; margin: 0px 0px 9px;"></textarea>
+            
+        </td>
+        <td>
+            待收明细<br/>
+
+       
+            <textarea type="text"  id="pb_remark" name="pb_remark" value="" style="height: 63px; width: 416px; margin: 0px 0px 9px;"></textarea>            
+        </td>
+    </tr>
+
+</table>
+
+
 
 
 
@@ -451,6 +458,25 @@
 
 
 
+<div id="a_handler_modal_remark" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel_account">备注
+            </h3>
+        </div>
+        <div class="modal-body">
+            <div class="control-group">
+                <div class="controls">
+                    <textarea class="span8" name="t_remark" id="t_remark" rows="5" placeholder="备注"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <button class="btn btn-primary" id="btn_save_remark">保存</button>
+            </div>
+        </div>
     {%end%}
 
     {%block js%}
@@ -522,9 +548,24 @@
                 location.reload()
             })
         })
+        $('#btn_save_remark').click(function () {
+            customer_id=$(this).attr('customer_id')
+            t_remark=$('#t_remark').val()
+            $.post('payment?tag=edit_customer_remark',{
+                '_xsrf':_xsrf,
+                'customer_id':customer_id,
+                't_remark':t_remark
+            },function (data) {
+                location.reload()
+             })
 
+         })
 
-
+        $(".handler_remark_modify").click(function () {
+            $('#btn_save_remark').attr('customer_id',$(this).attr('customer_id'))
+            $('#t_remark').val($(this).attr('t_remark'))
+            $("#a_handler_modal_remark").modal('show')
+         })
 
         $("#delete_payment").on("click", function () {
             payment_id = $(this).attr("payment_id")

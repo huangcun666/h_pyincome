@@ -86,12 +86,16 @@
         </div>
         {%if pre_business%}
                 <li class="g1 g1-right2">
-                        <a class="btn btn-primary btn-sm" href="company?tag=show_business&id={{pre_business.id}}&guid={{pre_business.guid}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}"><i class="fa fa-arrow-left" aria-hidden="true"></i>上一个客户</a>
+                        <a class="btn btn-primary btn-sm" href="company?tag=show_business&id={{pre_business['id']}}&guid={{pre_business['guid']}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}
+                        {%if get_pre_next_business(business_develop_manage_all,pre_business)%}
+                        &pre_business={{get_pre_next_business(business_develop_manage_all,pre_business)[0]}}&next_business={{get_pre_next_business(business_develop_manage_all,pre_business)[1]}}{%end%}"><i class="fa fa-arrow-left" aria-hidden="true"></i>上一个客户</a>
                     </li>
                 {%end%}
                 {%if next_business%}
                 <li class="g1 g1-right1">
-                    <a  class="btn btn-primary btn-sm" href="company?tag=show_business&id={{next_business.id}}&guid={{next_business.guid}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}">下一个客户<i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+                    <a  class="btn btn-primary btn-sm" href="company?tag=show_business&id={{next_business['id']}}&guid={{next_business['guid']}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}
+                    {%if get_pre_next_business(business_develop_manage_all,next_business)%}
+                        &pre_business={{get_pre_next_business(business_develop_manage_all,next_business)[0]}}&next_business={{get_pre_next_business(business_develop_manage_all,next_business)[1]}}{%end%}">下一个客户<i class="fa fa-arrow-right" aria-hidden="true"></i></a>
                 </li>
                 {%end%}
     </ol>
@@ -466,10 +470,17 @@ background-color: #007bff;
                     <li class="xiaolei">
                         <div class="sj-table-left">商机类型</div>
                         <div class="sj-table-right">{{business_develop_manage.business_from_name}}</div>
-                      </li><li class="xiaolei"><div class="sj-table-left">创建人</div>
+                      </li>
+                      <li class="xiaolei">
+                        <div class="sj-table-left">商机分类</div>
+                        <div class="sj-table-right">{{business_develop_manage.business_type_name}}</div>
+                      </li>
+                      <li class="xiaolei"><div class="sj-table-left">创建人</div>
                       <div class="sj-table-right">{{business_develop_manage.uid_name}}</div>
                       
-                      </li><li class="xiaolei"><div class="sj-table-left" >创建时间</div><div class="sj-table-right" >{{business_develop_manage.created_at}}</div>
+                      </li>
+          
+                      <li class="xiaolei"><div class="sj-table-left" >创建时间</div><div class="sj-table-right" >{{business_develop_manage.created_at}}</div>
                     </li>
                     <li>
                             <div class="sj-table-left" style="height:80px;line-height: 80px;">备注</div>
@@ -496,6 +507,7 @@ background-color: #007bff;
                                     <div class="sj-table-left">商机类型</div>
                                     <div class="sj-table-right">{{business_develop_manage.business_from_name}}</div>
                                     </li>
+
                                     <li class="xiaolei"><div class="sj-table-left">商机反馈员工</div>
                                         <div class="sj-table-right">{%if business_develop_manage.referrer%}{{business_develop_manage.referrer}}{%else%}无{%end%}</div>
                                       </li>
@@ -553,6 +565,7 @@ background-color: #007bff;
                                 <div class="sj-table-left">商机类型</div>
                                 <div class="sj-table-right">{{business_develop_manage.business_from_name}}</div>
                                 </li>
+                     
                                 <li class="xiaolei"><div class="sj-table-left">商机反馈员工</div>
                                     <div class="sj-table-right">{%if business_develop_manage.referrer%}{{business_develop_manage.referrer}}{%else%}无{%end%}</div>
                                   </li>
@@ -612,6 +625,7 @@ background-color: #007bff;
                                         <div class="sj-table-right">
                                      
                                         {{business_develop_manage.business_from_name}}</div></li>
+                        
                                         <li class="xiaolei"><div class="sj-table-left">类别</div>
                                         <div class="sj-table-right">
                                         {{business_develop_manage.feedback_type_name}}</div></li>
@@ -652,8 +666,8 @@ background-color: #007bff;
                           <li class="xiaolei">
                                 <div class="sj-table-left">商机类型</div>
                                 <div class="sj-table-right">
-                           
                                 {{business_develop_manage.business_from_name}}</div></li>
+         
                                 <li class="xiaolei"><div class="sj-table-left">类别</div>
                                 <div class="sj-table-right">
                          
@@ -1778,6 +1792,25 @@ background-color: #007bff;
                   
                    
                 </div>
+
+                <div class="form-group">
+                    <div class="row">
+                    <div class="col-sm-4">
+                        <label for="exampleInputEmail1">商机分类: <small class="text-danger">（必填）</small></label>
+                    </div> 
+
+                    <div class="col-sm-7" style="margin-left:-17px;">
+
+                        {% for idx, item in enumerate(t_business_type) %}
+
+                        <input {%if item.id==business_develop_manage.business_type_id%}checked{%end%} type="radio" id="business_type" name="business_type"  value="{{item.id}}|{{item.income_name}}"/> &nbsp;{{item.income_name}}
+                {% end %}
+        <small id="er_business_type" class="text-danger">
+                
+                </small>
+                </div>
+                    </div>
+                </div>
             </div>
                     <div class="form-group" id="referrer_div">
                             <div class="row">
@@ -2653,6 +2686,7 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
     source_way=$('input[name=source_way]:checked').val()
     source_place=$('input[name=source_place]:checked').val()
     source_port=$('input[name=source_port]:checked').val()
+    business_type=$("input[name=business_type]:checked").val()
     remark=$('#remark').val()
     referrer=$('#referrer').val()
     be_referrer_company=$('#be_referrer_company').val()
@@ -2672,6 +2706,9 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
             return false
         }else if(source_port==undefined && busniess_from.split('|')[0]=='294'){
             $('#er_source_port').text('请选择')
+            return false
+        }else if(business_type==undefined && busniess_from.split('|')[0]=='294'){
+            $('#er_business_type').text('请选择')
             return false
         }
     else if(busniess_from.split('|')[0]=='295' && feedback_type==undefined ){
@@ -2716,6 +2753,7 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
             source_way=undefined
             source_place=undefined
             source_port=undefined
+            business_type=undefined
         }
         $.post('/company?tag=business_develop_manage',{
             '_xsrf':_xsrf,
@@ -2736,7 +2774,9 @@ var tmpl = ' <li style=" width:100%;height:20px;background-image:url(#url#); bac
             'be_referrer_phone':be_referrer_phone,
             'business_id':business_id,
             'business_guid':business_guid,
-            'not_company':not_company
+            'not_company':not_company,
+            'business_type':business_type
+
         },function (data) { 
             if(data=='-1'){
                 $("#btn_save").attr('disabled',false)
@@ -2911,11 +2951,14 @@ $("input[name=banjie_type]").change(function () {
             'company':business_company,
             'reallocate':reallocate
         },function (data) {
+
+            if(data=='-1'){
             $('.btn_save_update').removeAttr('disabled')
             $('.btn_save_update').text('保存')
-            if(data=='-1'){
                 alert('跟单人不存在系统中')
             }else if(data=='跟单人已有'){
+               $('.btn_save_update').removeAttr('disabled')
+            $('.btn_save_update').text('保存')
                 alert('跟单人已存在')
             }
             else{

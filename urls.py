@@ -31,6 +31,7 @@ from handlers.displaylist import *
 from handlers.clearly import *
 from handlers.trade import *
 url_patterns = [
+    (r"/getnewverify",GetNewverify),
     (r"/trade",TradeHandler),
     (r"/clearly", ClearlyHandler),
     (r"/plan", PlanHandler),
@@ -61,7 +62,7 @@ url_patterns = [
     (r'/allchangepassword', AllChangePasswordHandler),
     (r'/manageuser', ManageUserHandler),
     (r'/lockuser/(\d+)', LockUserhandler),
-    (r'/unlockuser/(\d+)', UnlockUserHandler),
+    (r'/unlockuser', UnlockUserHandler),
     (r'/insertuser', InsertUserHandler),
     (r'/changeuser', ChangeUserHandler),
     (r'/adminchangepassword/(\d+)', AdminChangePasswordHandler),

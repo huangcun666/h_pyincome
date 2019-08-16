@@ -6,9 +6,7 @@
   "browser_action": {
     "default_popup": "popup.html",
       "default_icon": "logo.png",
-      "default_title": "发业小助手",
-      "update_url": "hhttp://192.168.2.168:9000/capi?tag=ver"
-
+      "default_title": "发业小助手"
     },
  "commands": {
     "_execute_browser_action": {

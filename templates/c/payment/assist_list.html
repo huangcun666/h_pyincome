@@ -178,7 +178,7 @@ display: -webkit-box;
     <div class="widget-header">
         <i class="icon-user"></i>
         <h3>应收协助{%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
-             <input type="checkbox" id="choose_all" style="width: 17px;height: 17px;border: 1px solid #ccc;">
+             <input type="checkbox" class="choose_all" style="width: 17px;height: 17px;border: 1px solid #ccc;">
              <a class="btn btn-primary btn-sm allot_choose" href="javascript:void(0);" style="margin-bottom: 5px;">批量分配</a>
             
              {%end%}
@@ -363,7 +363,7 @@ display: -webkit-box;
                        <div class="widget-header">
                            <i class="icon-user"></i>
                            <h3>应收协助{%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
-                                <input type="checkbox" id="choose_all" style="width: 17px;height: 17px;border: 1px solid #ccc;">
+                                <input type="checkbox" class="choose_all" style="width: 17px;height: 17px;border: 1px solid #ccc;">
                                 <a class="btn btn-primary btn-sm allot_choose" href="javascript:void(0);" style="margin-bottom: 5px;">批量分配</a>
                                
                                 {%end%}
@@ -513,6 +513,7 @@ display: -webkit-box;
         <option value="1"  {%if params['status']=='1'%}selected{%end%} >已收款</option>
         <option value="2" {%if params['status']=='2'%}selected{%end%}>未收款</option>
     </select>
+    <input type="checkbox" value="1" name="wait_pay_amount" {%if params['wait_pay_amount']%}checked{%end%}>含待收金额
     {%end%}
     <input type="hidden" name="tag" value="{{tag}}">
     {%if show_tag%}
@@ -593,7 +594,7 @@ display: -webkit-box;
                                                         {%if '250' in role_list and show_tag in ['-1000','-2000','2','3','4','5','6'] %}
                                                         <li><input type="checkbox" name="check" value="{{item.customer_id}}" {%if show_tag!='-1000' and show_tag!='-2000'%}assist_id="{{item.assist_id}}" sale_id="{{item.assist_sale_id}}"{%end%} id="check"></li>
                                                         {%end%}
-                                                    <li><a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px;" title="{{item.company}}">{{item.company}}</a></li>
+                                                    <li><a href="/customer?tag=show&id={{item.customer_id}}&guid={{item.customer_guid}}&to_tag=payment_record_tab" target="_blank" class="box-dd "  style="width: 169px;" title="{{item.company}}">{{item.company}}</a></li>
                                                     {%if get_assist_linkman(item.customer_id)%}
                                                     {%set link_man=get_assist_linkman(item.customer_id)%}
                                                     <li> <span style="color: #f30000;">联系人:<b style="color: #f30000;">{{link_man.name}}</b></span> <span>电话:<b>{{link_man.tel}}</b></span> <span>备注:<b title="{{link_man.remark}}">{%if link_man.remark%}{{link_man.remark[:6]}}{%if len(link_man.remark)>6%}..{%end%}{%end%}</b></span> <span>记账到期：<b>{%if item.acc_end%}{{item.acc_end.strftime("%Y-%m")}} {%end%}</b></span>
@@ -823,7 +824,7 @@ display: -webkit-box;
                                                  
                                                     <span class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</span>
                                                     {%else%}
-                                                       <a href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or item.req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
+                                                       <a href="/customer?tag=show&id={{item.customer_id}}&guid={{item.customer_guid}}&to_tag=payment_record_tab" target="_blank" class="box-dd "  style="width: 169px; {%if item.pb_remark!='' and  item.pb_remark!=None and item.req_close==0%}color: red;{%elif item.pb_remark=='' or  item.pb_remark==None or item.req_close==1%} color:#333;{%end%}" title="{{item.company}}">{{item.company}}</a>
                                                    {%end%}
                                                     </td>
                                              
@@ -1646,7 +1647,8 @@ scrollValue > 60 ? $(".xs-fixed").show(): $(".xs-fixed").hide();
             elem: '#acc_book_end_end' //指定元素
             ,type: 'month'
           });
-          $('#choose_all').on('change',function () { 
+          $('.choose_all').on('change',function () {
+               
          $('input[name=check]').not(this).prop('checked',this.checked);
       })
       $('.allot_choose').on('click',function () {

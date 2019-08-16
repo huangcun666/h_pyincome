@@ -76,39 +76,74 @@ function fullChar2halfChar(result) {
             }
 
         })
-        $.get("/project?tag=get_project_reject", {}, function (data) {
-          
-            if (data['c']!='0') {
-                $.notify({
-                    icon: '/static/77.png',
-                    title: '确认单信息填写错误'+data['txt'],
-                    allow_dismiss:true,
-                    message: '<a href="/project?tag=project_reject&step='+data['step']+'&my=1">您好! 您当前有' + data['c'] + '条'+data['txt']+',尽快处理哦,谢谢!</a>',
-                   
-                }, {
-                        animate: {
-                            enter: 'animated lightSpeedIn',
-                            exit: 'animated lightSpeedOut'
-                        },
-                        type: 'minimalist',
+        setInterval(function () { 
+            $.get("/project?tag=get_project_reject", {}, function (data) {
+                $('.project_rejec_div').remove()
+                if (data['c']!='0') {
+                    $.notify({
+                        icon: '/static/77.png',
+                        title: '确认单信息填写错误'+data['txt'],
+                        allow_dismiss:true,
+                        message: '<a href="/project?tag=project_reject&step='+data['step']+'&my=1">您好! 您当前有' + data['c'] + '条'+data['txt']+',尽快处理哦,谢谢!</a>',
                        
-                        placement: {
-                            from: 'top',
-                            align: 'right'
-                        },
-                        offset: 55, spacing: 5,
-                        delay: 500000,
-                        icon_type: 'image',
-                        
-                        template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-                            '<img data-notify="icon" class="img-circle pull-left">' +
-                            '<span data-notify="title">{1}</span>' +
-                            '<span data-notify="message">{2}</span>' +
-                            '</div>'
-                    });
+                    }, {
+                            animate: {
+                                enter: 'animated lightSpeedIn',
+                                exit: 'animated lightSpeedOut'
+                            },
+                            type: 'minimalist',
+                           
+                            placement: {
+                                from: 'top',
+                                align: 'right'
+                            },
+                            offset: 55, spacing: 5,
+                            delay: 500000,
+                            icon_type: 'image',
+                            
+                            template: '<div data-notify="container" class="project_rejec_div col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                                '<img data-notify="icon" class="img-circle pull-left">' +
+                                '<span data-notify="title">{1}</span>' +
+                                '<span data-notify="message">{2}</span>' +
+                                '</div>'
+                        });
+    
+    
+                }
+                if (data['confirm_count']!='0') {
+                    
+                    $.notify({
+                        icon: '/static/77.png',
+                        title: '确认单信息填写错反馈',
+                        allow_dismiss:true,
+                        message: '<a href="/project?tag=project_reject&step=2&my=1">您好! 您当前有' + data['confirm_count'] + '条反馈已处理,尽快审核哦,谢谢!</a>',
+                       
+                    }, {
+                            animate: {
+                                enter: 'animated lightSpeedIn',
+                                exit: 'animated lightSpeedOut'
+                            },
+                            type: 'minimalist',
+                           
+                            placement: {
+                                from: 'top',
+                                align: 'right'
+                            },
+                            offset: 55, spacing: 5,
+                            delay: 500000,
+                            icon_type: 'image',
+                            
+                            template: '<div  data-notify="container" class="project_rejec_div col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                                '<img data-notify="icon" class="img-circle pull-left">' +
+                                '<span data-notify="title">{1}</span>' +
+                                '<span data-notify="message">{2}</span>' +
+                                '</div>'
+                        });
+    
+    
+                }
+    
+            })
+        },20000)
 
-
-            }
-
-        })
     })

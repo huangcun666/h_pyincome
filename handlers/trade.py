@@ -253,13 +253,7 @@ class TradeHandler(BaseHandler):
                    where  0=0 '''+my_sql+sql_where+'''
                 order by created_at desc limit %s,%s
                 ''',startpage,pre_page)
-            print '''
-                SELECT  a.*,d.*,b.mbs,c.customer_name from   t_trade a left join 
-                (select project_id,group_concat(team_name,"|",member_name)  mbs   from t_projects_member where member_id > 0 group by project_id) b
-                on a.project_id=b.project_id
-                left join t_projects c on a.project_id=c.id
-               inner join t_trade_milepost d on d.trade_id=a.id and a.curr_mile_id=d.mile_id_order
-                   where  0=0 '''+my_sql+sql_where
+
             
             t_mile_type = self.db.query("select * from t_projects_type where income_category='商标' order by order_int ")
             t_trade_color=self.db.query(' select * from t_trade_color ')
@@ -545,13 +539,12 @@ class TradeHandler(BaseHandler):
             mile_id = self.get_argument("mile_id",0)
             his_id = self.get_argument("his_id",0)
             tag_from =self.get_argument("tag_from","")
-
+            print len(self.request.files.items()),"====="
             for k,file1 in self.request.files.items():
-        
+                
                 ori_filename = file1[0].filename
                 filename_full = options.upload_path + "/customer/trade/%s/" % (
                         trade_id)
-                print filename_full  
                 url_path = "/static/customer/trade/%s/" % (trade_id)
                 try:
                     os.makedirs(filename_full)
@@ -624,3 +617,8 @@ class TradeHandler(BaseHandler):
                 self.db.execute(''' update t_trade_msg set message=%s where id=%s ''',msg,msg_id)
             else:
                 self.db.execute(' delete from t_trade_msg where id=%s ',msg_id)
+
+        elif tag=='delete_trade_file':
+            trade_file_id=self.get_argument('trade_file_id')
+
+            self.db.execute(' delete from t_trade_file where id=%s ',trade_file_id)

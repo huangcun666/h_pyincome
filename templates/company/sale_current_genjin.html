@@ -1,0 +1,118 @@
+{%extends "../common_milepost/base.html"%}{%block title%}本日跟进情况
+{%end%}
+
+
+
+{%block addstyle%}
+
+{%end%}
+{%block li%}
+
+{%end%}
+{%block nav%}
+<div class="nav nav-tabs" id="myTab">
+    <a class="btn btn-light nav_padding {%if params['show_tag']=='tuiguang' %}active{%end%}" href="?tag=sale_current_genjin&show_tag=tuiguang" id="tab_confirm">推广商机
+      <span class="badge bg-danger"></span>
+    </a>
+    <a class="btn btn-light nav_padding {%if params['show_tag']=='fankui' %}active{%end%}" href="?tag=sale_current_genjin&show_tag=fankui" id="tab_confirm">反馈商机
+        <span class="badge bg-danger"></span>
+      </a>
+      <a class="btn btn-light nav_padding {%if params['show_tag']=='jizhang' %}active{%end%}" href="?tag=sale_current_genjin&show_tag=jizhang" id="tab_confirm">记账应收
+        <span class="badge bg-danger"></span>
+      </a>
+      <a class="btn btn-light nav_padding {%if params['show_tag']=='yeji' %}active{%end%}" href="?tag=sale_current_genjin&show_tag=yeji" id="tab_confirm">业绩
+        <span class="badge bg-danger"></span>
+      </a>
+
+  
+</div>
+{%end%}
+{%block form_search%}
+<td>
+<select name="sale_name" class="form-control">
+<option value="">选择销售</option>
+{%for item in all_sales%}
+<option value="{{item.name}}" {%if params['sale_name']==item.name%}selected{%end%}>{{item.name}}</option>
+{%end%}
+  </select>
+</td>
+<td>
+  <input class="form-control" type="text" name="start_time" id="start_time" placeholder="开始时间" value="{{params['start_time']}}">
+    </td>
+    <td>
+      至
+    </td>
+    <td>
+      <input class="form-control" type="text" name="end_time" id="end_time" placeholder="结束时间" value="{{params['end_time']}}">
+        </td>
+{%end%}
+{%block form_tags%}
+{%if params['show_tag']%}
+<input type="hidden" name="show_tag" value="{{params['show_tag']}}">
+{%end%}
+{%end%}
+
+{%block ths%}
+{%if every_count%}
+<th width="100">日期</th>
+<th width='100'>合计</th>
+{%for item in every_count%}
+<th width="100">{{item.uid_name}}</th>
+{%end%}
+<th></th>
+{%end%}
+{%end%}
+{%block sum_data%}
+<tr>
+    <td>合计</td>
+    <td>{{count.ssc}}</td>
+    {%for item in every_count%}
+<td>{{item.count}}</td>
+{%end%}
+<td></td>
+</tr>
+{%end%}
+{%block data%}
+
+<tr>
+<td>{{item.df}}</td>
+<td>{{item.sc}}</td>
+{%for row in every_count%}
+<td>
+{%for col in item.gc.split(',')%}
+    {%if row.uid_name==col.split('|')[0]%}
+        {{col.split('|')[1]}}
+    {%end%}
+{%end%}
+</td>
+{%end%}
+</tr>
+{%end%}
+{%block page_params%}
+{%for k,v in params.items()%}{%if v!=''%}&{{k}}={{v}}{%end%}{%end%}
+{%end%}
+
+
+<!-- Modal -->
+{%block modal%}
+
+{%end%}
+
+
+{%block js%}
+
+
+<script>
+$(function () {
+    _xsrf =  getCookie("_xsrf")
+    $("#start_time").datetimepicker({
+        minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd',
+        language: 'zh-CN', initialDate: new Date()
+    });
+    $("#end_time").datetimepicker({
+        minView: 2, pickTime: false, todayBtn: true, autoclose: true, format: 'yyyy-mm-dd',
+        language: 'zh-CN', initialDate: new Date()
+    });
+ })
+</script>
+{%end%}

@@ -49,6 +49,30 @@ chrome.runtime.onMessage.addListener(
           }
         });
 
+
+        $.ajax({url: 'http://192.168.2.177:9998/capi?tag=enterSbqc',type:"POST", data: { "s": table_body.slice(0, -1), "customer_id": request.customer_id, "company": request.company }, 
+       
+        error: function(xhr, status) {
+          if(xhr.status==0){
+
+           $.ajax({url: 'http://8.fayejituan.com:8080/capi?tag=enterSbqc',type:"POST", data: { "s": table_body.slice(0, -1), "customer_id": request.customer_id, "company": request.company }, 
+           success: function (response) {  
+             console.log("data updated");
+         },
+           error: function(xhr, status) {
+             if(xhr.status==0){
+              console.log("lost")
+  
+             }
+            }
+          });
+
+          }
+         }
+       });
+
+
+
       })
       // alert(tab.url);
       _url = tab.url;

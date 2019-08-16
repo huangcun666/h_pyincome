@@ -21,6 +21,9 @@ ul li {list-style-type:none; }
 .es-hang {border-bottom: 1px solid #ddd; overflow: hidden;}
 .es-hang ul {margin: 0;overflow: hidden; height: 58px;}
 .es-hang ul li {float: left; padding-left: 5px; padding-right: 5px; box-sizing: border-box; padding-top: 20px;}
+.es-hanga {border-bottom: 1px solid #ddd; overflow: hidden;}
+.es-hanga ul {margin: 0;overflow: hidden; height: 80px;}
+.es-hanga ul li {float: left; padding-left: 5px; padding-right: 5px; box-sizing: border-box; padding-top: 20px;}
 .eslabel {font-size: 12px;}
 .eslabel a {display: inline-block; background-color: #4db0d2; margin: 2px; color: #fff; padding: 2px; font-size: 12px;}
 .caoz {width: 35px; height: 35px;  float: left; line-height: 14px; padding: 2px;  border: 1px solid #a5a5a5;  display: inline-block; text-align: center; border-radius: 5px; margin: 1px; box-sizing: border-box; color: #a5a5a5;}
@@ -66,9 +69,11 @@ ul li {list-style-type:none; }
   {%end%}
 
 
-     <a class="btn {%if not   tag_parent_id%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1{%if my%}&my={{my}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">全部</a>
+     <a class="btn {%if not   tag_parent_id and  not  params['etax']%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1{%if my%}&my={{my}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">全部</a>
      <a class="btn {%if  tag_parent_id=="1"%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1&tag_parent_id=1{%if my%}&my={{my}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">记账</a>
           <a class="btn {%if  tag_parent_id=="2"%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1&tag_parent_id=2{%if my%}&my={{my}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">非记账</a>
+          <a class="btn {%if  params['etax']%}btn-primary btn-sm{%end%}"  href="/customer?tag=all&new_tag=1{%if my%}&my={{my}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}&etax=1&tag_id=1">未申报</a>
+
 
 </h3>
 </div> <!-- /widget-header -->
@@ -79,14 +84,14 @@ ul li {list-style-type:none; }
     <ul class="nav nav-tabs" id="myTab">
 
         <li {%if  not by_tag%} class="active" {%end%}>
-            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&show_tag=1{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}" id="customer_tab">全部<span class="badge badge-danger">
+            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&show_tag=1{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}" id="customer_tab">全部<span class="badge badge-danger">
 {{type_count_map[0][1]}}</span></a>
         </li>
 
 
      {%for item in t_customer_type%}
         <li {%if  by_tag==item.name %} class="active" {%end%}>
-            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&by_tag={{item.name}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}"
+            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&by_tag={{item.name}}{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}"
             id="customer_tab">{{item.name}}<span class="badge badge-danger">{{type_count_map[item.id][1]}}</span></a>
         </li>
     {%end%}
@@ -97,13 +102,13 @@ ul li {list-style-type:none; }
     <ul class="nav nav-tabs" id="myTab">
 
         <li {%if  not tag_id%} class="active" {%end%}>
-            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&show_tag=1{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}" id="customer_tab">全部<span class="badge badge-primary">{{type_count_map[0][1]}}</span></a>
+            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&show_tag=1{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}" id="customer_tab">全部<span class="badge badge-primary">{{type_count_map[0][1]}}</span></a>
         </li>
 
 
      {%for item in t_customer_tags%}
         <li {%if  tag_id==item.order_int %} class="active" {%end%}>
-            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&tag_id={{item.order_int}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}"
+            <a href="/customer?tag=all{%if page_count%}&page_count={{page_count}}{%end%}&tag_id={{item.order_int}}{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}"
             id="customer_tab">{{item.name}}<span class="badge badge-danger">{{type_count_map[item.order_int][1]}}</span></a>
         </li>
     {%end%}
@@ -171,7 +176,10 @@ ul li {list-style-type:none; }
   {%if my%}
   <input type="hidden" value="{{my}}" name="my"/>
 {%end%}
+{%if  params['etax']%}
+<input type="hidden" value="{{params['etax']}}" name='etax' />
 
+{%end%}
 
 {%if check_under%}
 <input type="hidden" value="{{check_under}}" name="check_under">
@@ -194,7 +202,7 @@ ul li {list-style-type:none; }
 
 
 
-                        {%if customers%}
+                      
                         {%if is_manager=='1' and not my%}
                         <a class="btn btn-info btn-sm change_kj"><i class="icon-large icon-hdd
 "></i> 批量修改客服会计</a>
@@ -217,17 +225,37 @@ ul li {list-style-type:none; }
 "></i> 
 导出当前记录</a>
 {%end%}
-
                         {%end%}
-                   
+
+
+{% if role=='8' or uid=='10' %}
+<a href="/customer?tag={{tag}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}&err_msg=password_err" class="btn  {%if params['err_msg']=='password_err'%} {%else%}btn-primary{%end%}">税局密码异常</a>
+<a href="/customer?tag={{tag}}{%for k,v in params.items()%}{%if v%}&{{k}}={{v}}{%end%}{%end%}&err_msg=account_err" class="btn {%if params['err_msg']=='account_err'%}{%else%}btn-primary{%end%}">税局账号异常</a>
+<a href="/customer?tag={{tag}}{%for k,v in params.items()%}{%if k=="etax" or k=="tag_id"%}{%continue%}{%end%}{%if v%}&{{k}}={{v}}{%end%}{%end%}&etax=1&tag_id=1" class="btn  {%if params['etax']=='1'%} {%else%}btn-primary{%end%}">已到申报期</a>
+<a href="/customer?tag={{tag}}{%for k,v in params.items()%}{%if k=="etax" or k=="tag_id"%}{%continue%}{%end%}{%if v%}&{{k}}={{v}}{%end%}{%end%}&etax=2&tag_id=1" class="btn {%if params['etax']=='2'%}{%else%}btn-primary{%end%}">未到申报期</a>
+
+
+
+{%end%}  {%if customers%}
                         <div class="es-table">
                                
                             <div  class="eslantable">
                                 <ul class="es-top" style='background-color:#989898'>
                                         {%if is_manager=='1' and not my %}
                                     <li style="width: 40px;"><input type="checkbox" id="choose_all"></li>{%end%}
+                                    
                                     <li style="width: 39px;">编号</li>
-                                    <li style="width: 226px;">公司名称/社会信用代码</li>
+                                    <li style="width: 225px;">公司名称/社会信用代码</li>
+
+                                    {%if params['etax']%}
+                                    <li style="width: 50px;">序号</li>
+                                    <li style="width: 175px;">征收项目</li>
+                                    <li style="width: 175px;">征收品目</li>
+                                    <li style="width: 95px;">税款所属期起</li>
+                                    <li style="width: 95px;">税款所属期止</li>
+                                    <li style="width: 95px;">申报期限</li>
+                                    <li style="width: 95px;">申报日期</li>
+                                    {%else%}
                                     <li style="width: 70px;">纳税类型</li>
                                     <li style="width: 66px;">会计标记</li>
                                     <li style="width: 66px;">地址类型</li>
@@ -239,11 +267,113 @@ ul li {list-style-type:none; }
                                     <li style="width: 77px;">注备</li>
                                     <li style="width: 66px;">跟进记录</li>
                                     <li style="width: 122px;">操作</li>
+                                    {%end%}
                                 </ul>
                             </div>
                             <div style="overflow: hidden;">
+
                                     {%for customer in customers%}
-                                <div class="es-hang">
+                                    {%if params['etax']%}
+                                    <div class="es-hanga">
+                                        <ul id="{{customer.id}}">
+                                        
+                                            <div style=" float: left;">
+                                                {%if is_manager=='1' and not my%}
+                                                <li style="width: 40px;">
+                                                <input type="checkbox"  value="{{customer.id}}" name="check_customer"></li>
+                                                {%end%}
+                                        
+                                                <li style="width: 39px;">{{customer.id}}</li>
+                                                <li style="width: 225px;">
+                                                    <a target="_blank" 
+                                                     href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if not new_tag%}&old_tag=1{%end%}">
+                                                        {{customer.company}}</a> 
+                                                        {%raw get_etax_info(customer.id,"/customer?tag=show&id={0}&guid={1}&to_tag=etax".format(customer.id,customer.guid))%}
+                                                    <br>
+                                                    <!-- <p class="eslabel" style="margin: 0;">
+                                                        <a href="http://192.168.2.177:9999/customer?tag=all&amp;new_tag=1#">记账</a>
+                                                        <a href="http://192.168.2.177:9999/customer?tag=all&amp;new_tag=1#">非逾期</a>
+                                                    </p> -->
+                                                    {%if new_tag%}
+                                                    <p class="eslabel" style="margin: 0;">
+                                                  {%if customer.tag_parent_id_name!=customer.tag_id_name%}
+                                                  
+                                                    <a href="#">{{customer.tag_parent_id_name}}</a> 
+                                                   {%end%}
+                                                    {%if customer.tag_id_name%}
+                                                   <a href="#">{{customer.tag_id_name}}</a> 
+                                                   {%end%}
+                                                  
+                                                     {%if customer.is_building%}
+                                                   <a href="#">楼盘</a> 
+                                                   {%end%}
+                                                    
+                                                     {%if customer.is_year%}
+                                                   <a href="#">工商年检</a> 
+                                                   {%end%}
+                                                   
+                                                    
+                                                     {%if customer.is_clearly%}
+                                                   <a href="#">汇算清缴</a> 
+                                                   {%end%}
+                                                   
+                                                  
+                                                   </p> 
+                                            {%else%}
+                                                {% if customer.customer_type_name%}
+                                                <p class="eslabel">
+                                            
+                                                标签：
+                                                {%for item in customer.customer_type_name.split(',')%}
+                                                {%if item!=''%}
+                                                <a href="#">{{item}}</a>
+                                                {%end%}
+                                                {%end%}
+    
+                                            {%end%}
+                                            </p>
+                                            {%end%}
+                                                    <p style="margin:0; ">{%if customer.company_reguid%}{{customer.company_reguid}}{%end%}</p>
+                                                </li>
+                                            </div>
+                                        <style>
+                                            .no-tax-box {margin-top: 10px;}
+                                            .no-tax div {float: left; margin-top: 5px; height: 18px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+                                        </style>
+                                            <div class="no-tax-box" style=" float: left;">
+                                               {%if get_etax_wfm(customer.id,etax)%}
+                                               {%set t_etax_wfm=get_etax_wfm(customer.id,etax)%}
+                                               {%for idx,item in enumerate(t_etax_wfm)%}
+                                               <div class="no-tax" style="width: 100%;height: 15px;">
+                                                    <div style="width: 50px;">{{idx+1}}</div>
+                                                    <div style="width: 175px;">{{item.zsxmMc}}</div>
+                                                    <div style="width: 175px;">{{item.zspmMc}}</div>
+                                                    <div style="width: 95px;">{{item.skssqQ}}</div>
+                                                    <div style="width: 95px;">{{item.skssqZ}}</div>
+                                                    <div style="width: 95px;">{{item.sbqx}}</div>
+                                                    <div style="width: 95px;">{{item.sbrq}}</div>
+                                                </div>
+                                                {%end%}
+                                                {%end%}
+                                            </div>
+                                            <li style="width: 35px; margin-top: 20px;">
+                                                    {%if get_etax_wfm(customer.id,etax)%}
+                                                    {%if len(get_etax_wfm(customer.id,etax))>3%}
+                                                <a href="javascript:void(0)" class="caoz genduoa" style="line-height: 24px;" customer_id="{{customer.id}}">更多</a>
+                                                {%end%}    
+                                                {%end%}
+                                            </li>
+                                        </ul>
+                                        <div class="es-skr">
+                                        <div class="p1">
+                                        </div>
+                                        
+                                        <div class="p2"><a href="http://192.168.2.177:9999/customer?tag=show&amp;id=5494&amp;guid=eb047881-f47b-42a0-a8fa-5f62e4bfc673&amp;to_tag=etax" target="_blank" style="font-size:13px; color:blue;"></a></div>
+                                        <div class="p2"></div>
+                                        </div>
+                                        </div>
+                                    {%else%}
+                                    <div class="es-hang">
                                        
                                     <ul id="{{customer.id}}">
                                             {%if is_manager=='1' and not my%}
@@ -251,7 +381,9 @@ ul li {list-style-type:none; }
                                         <input type="checkbox"  value="{{customer.id}}" name="check_customer"></li>
                                         {%end%}
                                         <li style="width: 39px;">{{customer.id}}</li>
-                                        <li style="width: 226px;"><a target="_blank" href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if not new_tag%}&old_tag=1{%end%}">{{customer.company}}</a> <br>
+                                        <li style="width: 226px;"><a target="_blank" href="/customer?tag=show&id={{customer.id}}&guid={{customer.guid}}{%if not new_tag%}&old_tag=1{%end%}">{{customer.company}}</a> 
+                                            {%raw get_etax_info(customer.id,"/customer?tag=show&id={0}&guid={1}&to_tag=etax".format(customer.id,customer.guid))%}
+                                            <br>
 
                                             {%if new_tag%}
 
@@ -325,11 +457,13 @@ ul li {list-style-type:none; }
                                             {%end%}
                                         </li>
                                         <li style="width: 66px;">
-                                            {%if customer.acc_type_name%}
-                                            {%for item in customer.acc_type_name.split(',')%}
+                                    
+                                            {%if customer.kj_label_names%}
+                                            {%for item in customer.kj_label_names.split(',')%}
                                             {{item}}<br>
                                             {%end%}
                                             {%end%}
+                                            
                                         </li>
                                         <li style="width: 66px;">{{customer.addr_type}}</li>
                                         <li style="width: 66px;"> {%if customer.acc_uid_name%}{{customer.acc_uid_name}}{%end%}</li>
@@ -355,13 +489,31 @@ ul li {list-style-type:none; }
                                             <a href="#" class="caoz">客户标记</a>
                                             <a href="#" class="caoz" style="line-height: 24px;">审批</a>
                                         </li>
-                                    </ul>
+                                    </ul>    
+                                    
                                     <div class="es-skr">
-                                        <div class="p1">{%if customer.company_reguid%}<br>{{customer.company_reguid}}{%end%}</div>
-                                        <div class="p2">（付款方式：<span>{{customer.paytype_id_name}}</span>     月服务费：<span>{{customer.service_amount_month}}</span>     账册费：<span>{{customer.book_amount}}</span>    {%raw get_payment_info(customer.id) %}）</div>
+                                        <div class="p1">{%if customer.company_reguid%}<br>{{customer.company_reguid}}{%end%}
+                                    
+                                        </div>
+                                        {%if params['err_msg']%}
+                                        <div style="float: left;
+                                       ;
+                                        padding-left: 30px;
+                                        width: 260px;
+                                        font-size: 12px;
+                                        line-height: 14px;margin-top: 9px;">
+                                            {{customer.err_msg}}
+                                        </div>{%end%}
+                                      
+                                   
+                                        <div class="p2">（付款方式：<span>{{customer.paytype_id_name}}</span>  月服务费：<span>{{customer.service_amount_month}}</span>  账册费：<span>{{customer.book_amount}}</span> {%raw get_payment_info(customer.id) %})</div>
+                                   
+                                   
                                     </div>
                                    
                                 </div>
+                                {%end%}
+                          
                                 {%end%}
                             </div>
                         </div>
@@ -409,8 +561,10 @@ ul li {list-style-type:none; }
                         </div>
 
                     {%else%}
+                    <br/><br/>
+                    <div class="alert alert-info">
                         还没有客户哦。
-
+                    </div>
                     {%end%}
 
 
@@ -418,17 +572,17 @@ ul li {list-style-type:none; }
                         <ul>
                             {% if pagination.has_prev %}
                             {%if kj%}
-                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">&laquo; 上页</a></li>
+                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">&laquo; 上页</a></li>
                             {%else%}
-                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%} {%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">&laquo; 上页</a></li> {% end %}
+                            <li><a href="/customer?tag={{tag}}&page={{ pagination.page - 1}}{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%} {%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">&laquo; 上页</a></li> {% end %}
                             {%end%}
                             {%for page in pagination.iter_pages() %} {% if page %} {% if page != pagination.page %}
                             {%if kj%}
                             <li>
-                                    <a href="/customer?tag={{tag}}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">{{ page }}</a></li>
+                                    <a href="/customer?tag={{tag}}&page={{ page }}{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">{{ page }}</a></li>
                             {%else%}
                             <li>
-                                <a href="/customer?tag={{tag}}&page={{ page }}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">{{ page }}</a></li>
+                                <a href="/customer?tag={{tag}}&page={{ page }}{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">{{ page }}</a></li>
                             {%end%}
                             {% else %}
                             <li><span class="active"><a href="#">{{ page }}</a></span></li>
@@ -436,9 +590,9 @@ ul li {list-style-type:none; }
                             <li><span class="active"><a href="#">....</a></span></li>
                             {% end %} {%end %} {% if pagination.has_next %}
                             {%if kj%}
-                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}">下页 &raquo;</a></li>
                             {%else%}
-                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">下页 &raquo;</a></li>
+                            <li><a href="/customer?tag={{tag}}&page={{pagination.page+1}}{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}{%if check_kj%}&check_kj={{check_kj}}{%end%}">下页 &raquo;</a></li>
                             {%end%}
                             {% end %}
                         </ul>
@@ -589,7 +743,7 @@ $(function () {
           alert('开发中')
        })
        $("#page_count").on('change',function () { 
-        location.href='/customer?tag={{tag}}&page_count='+$(this).val()+'{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}'
+        location.href='/customer?tag={{tag}}&page_count='+$(this).val()+'{%if params['etax']%}&etax={{params['etax']}}{%end%}{%if my%}&my={{my}}{%end%}{%if tag_parent_id%}&tag_parent_id={{tag_parent_id}}{%end%}{%if new_tag%}&new_tag={{new_tag}}{%if tag_id%}&tag_id={{tag_id}}{%end%}{%end%}{%if by_tag%}&by_tag={{by_tag}}{%end%}{%if kj%}&kj={{kj}}{%end%}{%if jz%}&jz={{jz}}{%end%}{%if lp%}&lp={{lp}}{%end%}{%if check_under%}&check_under={{check_under}}{%end%}'
         })
         $(document).keyup(function(event){
         if(event.keyCode ==13){
@@ -636,6 +790,15 @@ $(function(){
 		
 		}
 	})
+    $(".genduoa").click(function(){
+customer_id=$(this).attr('customer_id')
+height1=$(".es-hanga ul[id="+customer_id+"]").height()
+if (height1=='80') {
+$(".es-hanga ul[id="+customer_id+"]").animate({height:"164px"});
+} else {
+$(".es-hanga ul[id="+customer_id+"]").animate({height:"80px"});
+}
+})
 })
 
 </script>

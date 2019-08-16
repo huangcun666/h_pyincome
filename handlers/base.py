@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+import json,re
 import tornado.web
 
 import logging,datetime
@@ -10,11 +10,24 @@ class BaseHandler(tornado.web.RequestHandler):
     """A class to collect common handler methods - all other handlers should
     subclass this one.
     """
+
     def render(self, template, **kwargs):
         # add any variables we want available to all templates
         #         zone  = self.get_secure_cookie("zone")
         # if not zone:
         #     self.set_secure_cookie("zone","北京")
+        kwargs['forbid_outer_net']=''
+        kwargs['user_is_first']=0
+        t_user=self.db.get(' select * from t_user where id=%s ',self.get_secure_cookie('uid'))
+        if t_user:
+            kwargs['user_is_first']=t_user.is_first
+            if( not re.match('localhost:\d{4}',self.request.host) and not re.match('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{4}',self.request.host) ):
+                if t_user.forbid_outer_net==1:
+                    self.clear_all_cookies()
+                    mobile=self.get_argument('mobile','')
+                    kwargs['forbid_outer_net']=t_user.forbid_outer_net
+                    kwargs['error_forbid']='你被禁止外网访问'
+                    kwargs['mobile']=mobile        
         kwargs['name'] = self.get_secure_cookie("name")
         kwargs['uid'] = self.get_secure_cookie("uid")
         kwargs['role'] = self.get_secure_cookie("role")
@@ -72,9 +85,29 @@ class BaseHandler(tornado.web.RequestHandler):
                     banli_reminder=''
         kwargs['banli_reminder']=banli_reminder
         kwargs['liuzhuan_reject_count']=liuzhuan_reject_count
-        
+        kwargs['business_develop_genjin']=''
+        kwargs['assist_genjin']=''
+        kwargs['ye_ji']=''
+        if self.get_secure_cookie('department_name')=='销售部':
+            kwargs['business_develop_genjin']=self.db.query('''
+                select count(*) count,business_from_name from(
+                SELECT business_from_name FROM business_develop_manage_msg a inner join
+                business_develop_manage b on a.business_id=b.id
+                where a.uid=%s and a.btype_id=3 and date_format(a.created_at,'%%Y-%%m-%%d')=date_format(curdate(),'%%Y-%%m-%%d')
+                group by a.business_id,b.business_from_name)a group by business_from_name order by business_from_name desc
+            ''',self.get_secure_cookie('uid'))
+            kwargs['assist_genjin']=self.db_customer.get('''
+                select count(*) count from (
+                select count(*) count from t_customer_exchange where etype=2 and isvisible=2 and  
+                date_format(created_at,'%%Y-%%m-%%d')=date_format(curdate(),'%%Y-%%m-%%d') and uid=%s
+                group by customer_id)a
+                ''',self.get_secure_cookie('uid'))
+            kwargs['ye_ji']=self.db.get('''
+                SELECT if(sum(all_income),sum(all_income),0) all_incomes FROM t_projects a
+                inner join t_user b on a.uid=b.id and a.uid=b.id and b.department_name='销售部' 
+                and   date_format(a.created_at,'%%Y-%%m-%%d')=date_format(curdate(),'%%Y-%%m-%%d') and b.id=%s
+            ''',self.get_secure_cookie('uid'))
 
-        
         x_real_ip = self.request.headers.get("X-Real-IP")
         ip = x_real_ip or self.request.remote_ip
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -83,7 +116,6 @@ class BaseHandler(tornado.web.RequestHandler):
                      (dt, self.get_secure_cookie("name"),
                       self.request.protocol, self.request.host,
                       self.request.uri, ip))
-
         super(BaseHandler, self).render(template, **kwargs)
 
     def load_json(self):

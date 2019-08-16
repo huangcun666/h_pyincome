@@ -17,8 +17,8 @@
 
         <form class="form-search" id="query_form">
    
-
-                  <input type="text" value="{%if params['company']%}{{params['company']}}{%end%}" name="company"  placeholder="公司名称/姓名/信用代码/编号">
+            {{params['kf']}}
+                  <input type="text" value="{%if params['company']%}{{params['company']}}{%end%}" name="company"  placeholder="公司/曾用名/姓名/信用代码/编号">
 
             <input style="width:80px;" type="text" value="{%if params['kf']%}{{params['kf']}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
             <input  style="width:80px;" type="text" value="{%if params['acc_end_start']%}{{params['acc_end_start']}}{%end%}" id="acc_end_start" name="acc_end_start" class="input-medium search-query" placeholder="记账到期开始">
@@ -192,7 +192,7 @@
     {{item.acc_book_end.strftime("%Y-%m")}}
     {%end%}
 </td>
-    <td>{%if item.al_remark%}{{item.al_remark}}{%end%}</td>
+    <td>{%raw show_project(item.payment_project_id)[0]%}{%if item.al_remark%}{{item.al_remark}}{%end%}{%raw show_project(item.payment_project_id)[1]%}</td>
   <td>{%if item.pb_remark%}{{item.pb_remark}}{%end%}</td>
 <td {%if item.wait_pay_amount > 0%} style="background-color:yellow" {%end%}>{{item.wait_pay_amount}}
 

@@ -3,11 +3,15 @@
 <style>
 
 body .modal {
-width: 60%; /* desired relative width */
-left: 20%; /* (100%-width)/2 */
+width: 70%; /* desired relative width */
+left: 15%; /* (100%-width)/2 */
 /* place center */
 margin-left:auto;
 margin-right:auto;
+}
+.modal-body {
+    max-height:600px; 
+    overflow-y: auto;
 }
 </style>
  <div class="main">
@@ -28,7 +32,7 @@ margin-right:auto;
 <div class="tab-content">
 <div class="tab-pane active" id="formcontrols">
         <form class="form-search" id="query_form">
-        <input type="text" value="{%if company%}{{company}}{%end%}" name="company"  placeholder="公司名称/姓名/信用代码/确认单编号">
+        <input type="text" value="{%if company%}{{company}}{%end%}" name="company"  placeholder="公司/曾用名/姓名/信用代码/确认单编号">
                     <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
                     <input type="text" value="{%if is_handler_uid_name%}{{is_handler_uid_name}}{%end%}" id="is_handler_uid_name" name="is_handler_uid_name" class="input-medium search-query" placeholder="到款处理人">
                 <button type="submit" class="btn">检 索</button>
@@ -86,8 +90,10 @@ margin-right:auto;
                      <thead>
                                 <tr style="background-color: black; color:#fff;">
 
-                                <th style="width:180px;">公司名称</th>
+                                <th style="width:180px;">公司名称</th>               
+                                   <th style="width:60px;">客户备注</th>
                                 <th style="width:60px;">会计</th>
+              
 
 
 
@@ -142,7 +148,11 @@ margin-right:auto;
      {%for item in customers%}
                     <tr>
 
-                        <td><a target="_blank" href="/payment?tag=customer&customer_id={{item.customer_id}}&to_tag=payment_tab">{{item.customer_company}}</a>
+                        <td>
+                            
+
+                                <a target="_blank" href="/customer?tag=show&id={{item.customer_id}}&guid={{item.a_customer_guid}}&to_tag=payment_record_tab">
+                            {{item.customer_company}}</a>
 
                                   {%if role=="3" or role=="8" or role=="5" %} <a 
                            class="modify_customer_detail btn-sm control"
@@ -166,6 +176,7 @@ margin-right:auto;
 
     <img src="/static/images/modify.png" width="20"/></a>{%end%}   
 
+    
 {%if item.is_general%}<font color='red'><i class="icon-star"></i> 一般纳税人</font>{%end%}
                           <br />
                             <span style="font-size:11px; color:blue;">
@@ -203,9 +214,23 @@ margin-right:auto;
     </div>
              
                         </td>
-                                        <td>{{item.acc_uid_name}}</td>
+
+                        
 
 
+
+                                        <td title="{%if item.t_remark%}{{item.t_remark}}{%end%}"> 
+                                                {%if item.t_remark%}
+                                                {%if len(item.t_remark)>15%}
+                                                {{item.t_remark[:15]}}...{%else%} {{item.t_remark}}{%end%}{%end%}
+                                                      {%if role=='3' or role=='8'%}
+                                                <a class="handler_remark_modify"
+                                                type='button'
+                                                 customer_id="{{item.customer_id}}"
+                                                 t_remark="{%if item.t_remark%}{{item.t_remark}}{%end%}"
+                                                     href="javascript:void(0)"> <img src="/static/images/modify.png" width="20"/></a>
+                                                     {%end%}
+                                            </td>                <td>{{item.acc_uid_name}}</td>
 
              <td>
                     <a href="/project?tag=show&guid={{item.guid}}&id={{item.project_id}}&from_mod=payment" target="_blank"> 
@@ -232,8 +257,8 @@ margin-right:auto;
 
             <td>
 
-
-                <a class="btn handler_detail btn-sm control"
+                <a class="btn handler_detail btn-sm control"\
+                payment_confirm_last_state="{{item.payment_confirm_last_state}}"
                 al_remark = "{%if item.al_remark%}{{item.al_remark}}{%end%}"
                 pb_remark = "{%if item.pb_remark%}{{item.pb_remark}}{%end%}"
                 type='button' income_id="{{item.income_title_id}}"
@@ -255,6 +280,11 @@ margin-right:auto;
                      customer_remark="{%if item.customer_remark%}{{item.customer_remark}}{%end%}"
                     href="javascript:void(0)">审核</a>
 
+                    {%if item.payment_confirm_last_state==1 %}
+                    <span class="alert-danger" style="padding: 4px 10px;
+                    margin-top: 4px;
+                    display: block;
+                    width: 36px;"> 驳回单 </span>{%end%}
             </td>
             {%else%}
                 <td>
@@ -508,7 +538,7 @@ margin-right:auto;
 <div id="a_handler_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel_account">审核应收到款1
+        <h3 id="myModalLabel_account">审核应收到款
 
             <a href="javascript:void(0)" class="btn btn-danger" id="delete_payment">删除</a>
 
@@ -573,10 +603,7 @@ margin-right:auto;
     <tr>
         <td><div class="control-group">
 
-            <label class="control-label" for="acc_end">记账费到期时间1
-
-
-
+            <label class="control-label" for="acc_end">记账费到期时间
             </label>
             <div class="controls">
                 <input type="text" class="span2 " id="acc_end" disabled name="acc_end" value=""><br/>
@@ -602,24 +629,38 @@ margin-right:auto;
 
 
         </td>
+        <td>
+                <div class="control-group">
+                       本期待收金额<br/>
+                       
+                            <input type="text" class="span2" id="wait_pay_amount" name="wait_pay_amount" disabled />
+                            <span style="color:red" id="lb_wait_pay_amount"></span>
+                    
+                        <!-- /controls -->
+                    </div>
+        </td>
     </tr>
-    <tr>
-<td>     <div class="control-group">
-            <label class="control-label" for="lastname">本期待收明细 </label>
-            <div class="controls">
-                <textarea type="text" class="span5" disabled id="pb_remark" name="pb_remark" value="" style="height: 40px;"></textarea>
-            </div>
-            <!-- /controls -->
-        </div></td><td>
    
-    <div class="control-group">
-        <label class="control-label" for="wait_pay_amount">本期待收金额</label>
-        <div class="controls">
-            <input type="text" class="span2" id="wait_pay_amount" name="wait_pay_amount" disabled />
-            <span style="color:red" id="lb_wait_pay_amount"></span>
-        </div>
-        <!-- /controls -->
-    </div></td>
+    </table>
+    <table> <tr>
+<td>    
+          本期待收明细 <br/>
+       
+                <textarea type="text"  disabled id="pb_remark" name="pb_remark" value="" style="height: 40px; width: 450px;"></textarea>
+  
+            <!-- /controls -->
+       </td><td>
+               
+             应收确认审核:
+                        <input type="radio" name="state" checked="checked" value="2"/> 同意
+                        <input type="radio" name="state" value="1" /> 驳回<br/>
+            
+                        <!-- <div class="controls" id="pc_remark_show"> -->
+                            <textarea type="text"  id="payment_confirm_remark" name="payment_confirm_remark" value="" style="height: 40px;width: 450px;"></textarea>
+                        <!-- </div> -->
+                        <!-- /controls -->
+                 
+   </td>
     </tr>
 </table>
 
@@ -628,16 +669,7 @@ margin-right:auto;
 
 
 
-        <div class="control-group well">
-            <label class="control-label" for="payment_confirm_remark">应收确认审核</label>
-            <input type="radio" name="state" checked="checked" value="2"/> 同意
-            <input type="radio" name="state" value="1" /> 驳回
 
-            <div class="controls" id="pc_remark_show">
-                <textarea type="text" class="span5" id="payment_confirm_remark" name="payment_confirm_remark" value="" style="height: 40px;"></textarea>
-            </div>
-            <!-- /controls -->
-        </div>
 
 
 
@@ -650,6 +682,25 @@ margin-right:auto;
     </div>
 </div>
 
+<div id="a_handler_modal_remark" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel_account">备注
+            </h3>
+        </div>
+        <div class="modal-body">
+            <div class="control-group">
+                <div class="controls">
+                    <textarea class="span8" name="t_remark" id="t_remark" rows="5" placeholder="备注"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <button class="btn btn-primary" id="btn_save_remark">保存</button>
+            </div>
+        </div>
 
 {%end%}
 
@@ -700,7 +751,18 @@ margin-right:auto;
 
 
         });
+        $('#btn_save_remark').click(function () {
+            customer_id=$(this).attr('customer_id')
+            t_remark=$('#t_remark').val()
+            $.post('payment?tag=edit_customer_remark',{
+                '_xsrf':_xsrf,
+                'customer_id':customer_id,
+                't_remark':t_remark
+            },function (data) {
+                location.reload()
+             })
 
+         })
         $('input[type=radio][name=state]').change(function () {
            // alert($(this).val())
             if (this.value == '1') {
@@ -830,15 +892,17 @@ margin-right:auto;
                     "pfi_confirm_state": 0,
 
                 "service_amount": service_amount,
-                    "fee": fee, "service_amount_month": service_amount_month, "pay_typeid": pay_typeid, "pay_typeid_name": pay_typeid_name,
-                 "book_amount": book_amount, "acc_end": acc_end, "acc_book_end": acc_book_end,
+                    "fee": fee, "service_amount_month": service_amount_month, 
+                    "pay_typeid": pay_typeid, "pay_typeid_name": pay_typeid_name,
+                 "book_amount": book_amount, "acc_end": acc_end,
+                  "acc_book_end": acc_book_end,
 
                   "remark": "",
                      "customer_id": customer_id,
                  "cp_title_id": cp_title_id,
                    "project_id": project_id,
-                                            "pb_remark": pb_remark, "al_remark": al_remark, "_xsrf": _xsrf,
-                                                "wait_pay_amount": wait_pay_amount
+                "pb_remark": pb_remark, "al_remark": al_remark, "_xsrf": _xsrf,
+                "wait_pay_amount": wait_pay_amount
             }, function (result) {
                     console.log(result)
                     if (result == "-1") {
@@ -872,6 +936,12 @@ margin-right:auto;
             customer_service_amount_month = $(this).attr("customer_service_amount_month")
             customer_book_amount = $(this).attr("customer_book_amount")
             customer_remark = $(this).attr("customer_remark")
+            payment_confirm_last_state=$(this).attr('payment_confirm_last_state')
+            payment_confirm_remark=$(this).attr('payment_confirm_remark')
+            $("#reject_msg").remove()
+            if(payment_confirm_last_state=='1'){
+                $(".well").append('<span style="color:red;font-size:15px;" id="reject_msg">上次驳回内容:'+payment_confirm_remark+'</span>')
+            }
             if (customer_book_amount ==0){
                 $("#is_free").text("(免账册费,无需选择到期时间)")
             }
@@ -992,7 +1062,11 @@ margin-right:auto;
 
         });
 
-
+        $(".handler_remark_modify").click(function () {
+            $('#btn_save_remark').attr('customer_id',$(this).attr('customer_id'))
+            $('#t_remark').val($(this).attr('t_remark'))
+            $("#a_handler_modal_remark").modal('show')
+         })
         $("#btn_save").click(function () {
 
             customer_id = $(this).attr("customer_id")

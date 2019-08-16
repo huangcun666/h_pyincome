@@ -37,7 +37,7 @@ class AddrHandler(BaseHandler):
             add_ctype_sql = ""
             act_id_sql=""
             left_sql="left"
-            order_column = " rent_end  "
+            order_column = " b.created_at desc   "
             expired_count = 0
             company_sql=""
             gs_sql=''
@@ -168,9 +168,6 @@ class AddrHandler(BaseHandler):
                     select * from t_addr_manager a '''+company_sql +gs_sql+sql+new_sql+a_follow_uid_name_sql+''' order by created_at desc limit %s,%s
                 ''',startpage,pre_page)
             else:
-                print('''  select count(*) count from t_addr_manager a ''' + left_sql
-                    + ''' join t_addr_manager_req b on a.id =b.addr_id ''' +
-                    add_ctype_sql + act_id_sql +new_addr_sql+company_sql+gs_sql+a_follow_uid_name_sql)
                 count = self.db_company.get(
                     '''  select count(*) count from t_addr_manager a ''' + left_sql
                     + ''' join t_addr_manager_req b on a.id =b.addr_id ''' +
@@ -178,9 +175,9 @@ class AddrHandler(BaseHandler):
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page-1) * pre_page
                 t_addr_manager = self.db_company.query(
-                    '''select a.*,b.req_act_id_name,b.req_now_addr,b.req_remark,created_by,b.created_at bcreated_at
+                    '''select a.*,b.req_act_id_name,b.req_now_addr,b.req_remark,created_by
                     from t_addr_manager a ''' + left_sql +
-                    ''' join t_addr_manager_req b on a.id =b.addr_id   ''' +
+                    ''' join t_addr_manager_req b on a.id =b.addr_id  ''' +
                     add_ctype_sql + act_id_sql +new_addr_sql+company_sql +gs_sql+a_follow_uid_name_sql+''' order by ''' +
                     order_column + '''  
                     limit %s,%s 
@@ -297,11 +294,8 @@ class AddrHandler(BaseHandler):
                     t_company_msg = self.db_company.query(
                         "select * from t_company_msg where rel_id=%s  and btype_id=2"
                         + sql_tag_type + " order by created_at desc", addr_id)
-                    print t_company_msg, "t_company_msg"
-                    t_company_tag_group = self.db_company.query("""
-                       select tag_category,GROUP_CONCAT(tag_name,"_",id) gc from t_company_tag group by tag_category
-
-                    """)
+                    # print t_company_msg, "t_company_msg"
+                    t_company_tag_group = self.db_company.query(""" select tag_category,GROUP_CONCAT(tag_name,"_",id) gc from t_company_tag group by tag_category""")
                     t_type = self.db_company.query(
                         "select * from t_type where type_category='销售计划'")
                     t_plan = self.db_company.query(

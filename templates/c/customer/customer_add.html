@@ -208,7 +208,7 @@
 <input  {%if item.order==2%}checked{%end%} type="radio" name="tag_parent_id" value="{{item.order}}" title="{{item.name}}"/>{{item.name}}
 {%end%}
       </div>
-      <div id='tag_box' style="border:none;display:none;">
+      <div class='tag_box' style="border:none;display:none;">
         &nbsp;&nbsp;(
     {%for item in t_type_new%}
     {%if item.parent_id==1%}
@@ -233,6 +233,12 @@
 <input  type="checkbox" name='is_clearly' value="1">汇算清缴
 <input  type="checkbox" name='is_year' value="1">工商年检
 
+<div class='tag_box' style="border:none;display:none;" >
+<br>
+<br>
+{%for item in t_type_new2%}          
+<input {%if role!='3' and role!='8' and role!='5'%}disabled{%end%} style="width:auto;height:auto;" type="radio" name="tag_id2" value="{{item.order_int}}" title="{{item.name}}"/>{{item.name}}
+{%end%}</div>
                                                 <!-- <div class="controls">
                                                 {%for item in t_customer_type%}
                                                     <input type="checkbox" name="customer_type" value="{{item.id}}" title="{{item.name}}"/> {{item.name}}
@@ -582,7 +588,8 @@ function intToFloat(val){
             tag_id=$("input[name=tag_id]:checked").val()
             tag_name=$("input[name=tag_id]:checked").attr('title')
             tag_id_parent=$("input[name=tag_id]:checked").attr('parent_id')
-
+            tag_id2=$("input[name=tag_id2]:checked").val()
+            tag_name2=$("input[name=tag_id2]:checked").attr('title')
 
             $("input[name=customer_type]").each(function(){
                  if (this.checked) {
@@ -660,6 +667,8 @@ function intToFloat(val){
                     'tag_parent_name':tag_parent_name,
                     'tag_id':tag_id,
                     'tag_name':tag_name,
+                    'tag_id2':tag_id2,
+                    'tag_name2':tag_name2,
                     "acc_uid_name":acc_uid_name,
                     "company_reguid":company_reguid,
                     "industry_name":industry_name,
@@ -734,14 +743,14 @@ $('body').on('click','#more_projects',function () {
  })
  $('input[name=tag_parent_id]').on('change',function () {
     if($(this).val()=='1'){
-      $("#tag_box").show()
+      $(".tag_box").show()
       $("#tag_box1").hide()
-      $("#tag_box").css('display','inline')
+      $(".tag_box").css('display','inline')
       if($('input[name=tag_id]:checked').val()=='12' || $('input[name=tag_id]:checked').val()=='13'){
         $('input[name=tag_id]').prop('checked',false)
       }
     }else if($(this).val()=='2'){
-      $("#tag_box").hide()
+      $(".tag_box").hide()
       $("#tag_box1").css('display','inline')
       $("#tag_box1").show()
     }

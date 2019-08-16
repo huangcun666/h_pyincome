@@ -45,7 +45,10 @@ class ProjectHandler(BaseHandler):
 
             else:
                 return "<span class='badge badge-pill badge-danger'  style='font-size:13px;' >未登报</span>"
-
+    def add_other_users(self,t_role,team_id):
+        return self.db.query('''
+            select * from t_user where role=%s  and id not in (select uid from t_user_teams where team_id=%s) 
+            ''',t_role,team_id)
     def write_income(self,val,id):
         #  print "bs", val, "id", id,type(id)
         if val:
@@ -370,8 +373,11 @@ class ProjectHandler(BaseHandler):
             and confirm_at is not null and confirm_status=2 ''',uid)
                 step='4'
                 txt='驳回'
-
-            return self.write({'c':str(tcount.count),'step':step,'txt':txt})
+            confirm_count=self.db.get(''' 
+             select count(*) count from 
+             t_projects_information_reject where uid=%s 
+            and confirm_at is null and handler_at is not null ''',uid)
+            return self.write({'c':str(tcount.count),'step':step,'txt':txt,'confirm_count':str(confirm_count.count)})
 
         elif tag=='get_trans_daijie_count':
             t_project=self.db.get('''
@@ -3407,6 +3413,7 @@ and btype_id > 0
                 t_user_sales=t_user_sales,
                 t_user_cq=t_user_cq,
                 t_users=t_users,
+                add_other_users=self.add_other_users,
                 t_rec_contarct_type=t_rec_contarct_type,
                 t_income_type=t_income_type,
                 t_users_kf=t_users_kf,
@@ -3510,6 +3517,9 @@ and btype_id > 0
                         '''%" or a.remark like "%''' + search_sql +
                         '''%" or customer_name like "%''' + search_sql + '''%"
                         or a.id in (select project_id from t_projects_company_history where company like "%''' + search_sql + '''%" )
+                        or a.customer_company in (select name  from '''+options.mysql_database_customer+'''.t_company_name where name like "%''' + search_sql + '''%"
+                        or customer_id in (select id from '''+options.mysql_database_customer+'''.t_customer where company like "%''' + search_sql + '''%")
+                        )
                         )''',
                         uid)
                     pagination = Pagination(page, pre_page, count.count, self.request)
@@ -3525,7 +3535,11 @@ and btype_id > 0
                         '''%" or a.remark like "%''' + search_sql +
                         '''%" or customer_name like "%''' + search_sql + '''%"
                         or a.id in (select project_id from t_projects_company_history where company like "%''' + search_sql + '''%"
-                        ))
+                        )
+                          or a.customer_company in (select name  from '''+options.mysql_database_customer+'''.t_company_name where name like "%''' + search_sql + '''%"
+                           or customer_id in (select id from '''+options.mysql_database_customer+'''.t_customer where company like "%''' + search_sql + '''%")
+                          )
+                        )
                             order by a.created_at desc limit %s,%s
                             ''', uid, startpage, pre_page)
 
@@ -3537,7 +3551,11 @@ and btype_id > 0
                         '''%" or a.remark like "%''' + search_sql +
                         '''%" or customer_name like "%''' + search_sql + '''%"
                         or a.id in (select project_id from t_projects_company_history where company like "%''' + search_sql + '''%"
-                        ))''',
+                        )
+                          or a.customer_company in (select name  from '''+options.mysql_database_customer+'''.t_company_name where name like "%''' + search_sql + '''%"
+                           or customer_id in (select id from '''+options.mysql_database_customer+'''.t_customer where company like "%''' + search_sql + '''%")
+                          )
+                        )''',
                         uid)
                     pagination = Pagination(page, pre_page, count.count, self.request)
                     startpage = (page - 1) * pre_page
@@ -3552,7 +3570,11 @@ and btype_id > 0
                         '''%" or a.remark like "%''' + search_sql +
                         '''%" or customer_name like "%''' + search_sql + '''%"
                         or a.id in (select project_id from t_projects_company_history where company like "%''' + search_sql + '''%"
-                        ))
+                        )
+                          or a.customer_company in (select name  from '''+options.mysql_database_customer+'''.t_company_name where name like "%''' + search_sql + '''%"
+                           or customer_id in (select id from '''+options.mysql_database_customer+'''.t_customer where company like "%''' + search_sql + '''%")
+                          )
+                        )
                             order by a.created_at desc limit %s,%s
                             ''', uid, startpage, pre_page)
 
@@ -3566,6 +3588,8 @@ and btype_id > 0
                         '''%" or a.remark like "%''' + search_sql +
                     '''%" or customer_name like "%''' + search_sql + '''%"
                     or a.id in (select project_id from t_projects_company_history where company like "%''' + search_sql + '''%"
+                    )   or a.customer_company in (select name  from '''+options.mysql_database_customer+'''.t_company_name where name like "%''' + search_sql + '''%" 
+                     or customer_id in (select id from '''+options.mysql_database_customer+'''.t_customer where company like "%''' + search_sql + '''%")
                     )) and b.name=%s ''',name)
                     pagination = Pagination(page, pre_page, count.count, self.request)
                     startpage = (page - 1) * pre_page
@@ -3578,6 +3602,8 @@ and btype_id > 0
                         '''%" or a.remark like "%''' + search_sql +
                     '''%" or customer_name like "%''' + search_sql + '''%" 
                     or a.id in (select project_id from t_projects_company_history where company like "%''' + search_sql + '''%"
+                    )   or a.customer_company in (select name  from '''+options.mysql_database_customer+'''.t_company_name where name like "%''' + search_sql + '''%"
+                     or customer_id in (select id from '''+options.mysql_database_customer+'''.t_customer where company like "%''' + search_sql + '''%")
                     )) and b.name=%s
                     order by created_at desc limit %s,%s
                     ''', name,startpage, pre_page)
@@ -3592,6 +3618,8 @@ and btype_id > 0
                         '''%" or a.remark like "%''' + search_sql +
                         '''%"
                          or a.id in (select project_id from t_projects_company_history where company like "%''' + search_sql + '''%"
+                        )   or a.customer_company in (select name  from '''+options.mysql_database_customer+'''.t_company_name where name like "%''' + search_sql + '''%" 
+                         or customer_id in (select id from '''+options.mysql_database_customer+'''.t_customer where company like "%''' + search_sql + '''%")
                         )) ''')
                     pagination = Pagination(page, pre_page, count.count, self.request)
                     startpage = (page - 1) * pre_page
@@ -3607,7 +3635,10 @@ and btype_id > 0
                         '''%" or a.company_history like "%'''+search_sql+
                         '''%"
                         or a.id in (select project_id from t_projects_company_history where company like "%''' + search_sql + '''%"
-                        ))
+                        )  or a.customer_company in (select name  from '''+options.mysql_database_customer+'''.t_company_name where name like "%''' + search_sql + '''%"
+                         or customer_id in (select id from '''+options.mysql_database_customer+'''.t_customer where company like "%''' + search_sql + '''%")
+                        )
+                        )
                         order by created_at desc limit %s,%s
                         ''', startpage, pre_page)
 
@@ -4764,8 +4795,8 @@ and btype_id > 0
                 ''',t_project.customer_company)
                 elif  t_project.customer_company and len(t_project.customer_company) >6:
                     t_customer=self.db_customer.get('''
-                    select * from t_customer where company=%s limit 1
-                ''',t_project.customer_company)
+                    select * from t_customer where company=%s or company_reguid=%s limit 1
+                ''',t_project.customer_company,t_project.company_uid)
                 visible_other_relation=self.db.query('''
                         SELECT a.id  FROM t_projects a
                  inner join t_projects_member c on a.id=c.project_id
@@ -4787,7 +4818,7 @@ and btype_id > 0
                 else:
                     visible_project=True
                 can_role = ['8','2','3','5','7','10','11']
-                can_user = ['210'] #陈月娇
+                can_user = ['291'] #陈月娇
                 if t_project.uid == int(uid) or self.checkUserArrIn(
                         can_user, uid) or self.checkUserIn(
                             t_project_members, uid) or self.checkRoleIn(
@@ -5579,6 +5610,8 @@ and btype_id > 0
                 sql_project_name+=' and b.project_name like "%%'+project_name+'%%" '
             if fq_uid_name:
                 sql_fq_uid_name+=' and a.uid_name="%s" '%fq_uid_name
+            sql_fq_uid_name+=' and a.is_kj=1 ' if '344' in role_list  else ' and a.is_kj=0 ' if '345' in role_list  else ''
+                
             if not_check:
                 count=self.db.get(
                 """ select count(*) count
@@ -5645,9 +5678,10 @@ and btype_id > 0
             if t_project:
                 if t_project.customer_company:
                     t_customer=self.db_customer.get(' select id from t_customer where company=%s limit 1',t_project.customer_company)
+            sql=' and a.is_kj=1 ' if '344' in role_list  else ' and a.is_kj=0 ' if '345' in role_list  else ''
             t_projects_note_check=self.db.query(
                     """
-                    select * from t_projects_note a where project_id=%s and is_check=1
+                    select * from t_projects_note a where project_id=%s and is_check=1 """+sql+"""
                        and id not in(
 								select note_id from t_projects_note_check where note_id=a.id
                          )
@@ -5817,7 +5851,9 @@ and btype_id > 0
             if waitme:
                 sql_my_leader = "  and a.leader_id=" + uid
             if t_user.department_name==u"会计部" or t_user.department_name==u"工商部":
-                department_sql = " and b.department_name='"+t_user.department_name+"' "
+                department_sql = """ 
+                    and (b.department_name='%s' or a.leader_id=%s)  
+                    """%(t_user.department_name,uid)
                 nums = self.db.get("""  select count(*) count,
                     (select count(*) c from t_todo_arrange_status a , t_todo_arrange b,t_user c where a.todo_id=b.id and
                     b.responsible_per=c.name and c.department_name=%s  and  a.created_at is null and a.updated_at is null and (banshi_per  is not null) """
@@ -5911,6 +5947,16 @@ and btype_id > 0
                                               department_sql + """
                     order by """+order_int+""" limit %s,%s """, startpage,
                                               pre_page)
+                print(""" select a.*,b.phone phone_fz ,b.department_name,c.phone phone_bs,
+                 d.created_at bs_created_at,d.updated_at fz_updated_at
+                from t_todo_arrange a inner join t_user b
+                 on a.responsible_per=b.name
+                 left join t_user c on a.banshi_per=c.name
+                  inner join t_todo_arrange_status d
+                   on a.id=d.todo_id
+
+                   where is_hide=0  """ + wait_my_sql + sql1 + sql +
+                                              department_sql )
 # t_todo_arrange a ,t_todo_arrange_status c  ,t_user b  where a.id=c.todo_id and  a.responsible_per=b.name and  banshi_per is null
 
             elif my:
@@ -5950,6 +5996,7 @@ and btype_id > 0
                    on a.id=d.todo_id
                    where (a.responsible_per=%s or a.banshi_per=%s) """+sql1+sql+"""
                     order by """+order_int+""" limit %s,%s """,uid_name,uid_name,startpage,pre_page)
+
             else:
 
                 if sql:
@@ -6021,6 +6068,7 @@ and btype_id > 0
                         on a.id=d.todo_id """+sql+department_sql+"""
                          order by """+order_int+""" limit %s,%s
                         """,startpage,pre_page)
+                
             t_todo_leader = self.db.query("select * from t_todo_leader where is_hide=0")
             responsible_per=self.db.query('''
                 select responsible_per responsible_per_name from t_todo_arrange a
@@ -7491,6 +7539,7 @@ and btype_id > 0
             bj_check=self.get_argument('bj_check','1')
             work_sql=''
             work_sel_sql=''
+            chuli_sql=' and d.confirm_at is not null '
             params={
                 'gs_name':gs_name,
                 'show_tag':show_tag,
@@ -7522,12 +7571,16 @@ and btype_id > 0
             elif way=='week':
                 way_sql=" '%%Y-%%m-%%u' "
             if show_tag=="2":
-                sql=' and b.confirm_at is not null '
+                sql=' and b.confirm_at is not null  '
                 if bj_check=='1':
                     sql+=' and a.confirm_banjie=1 '
                 elif bj_check=='0':
                     sql+=' and a.confirm_banjie=0 '
                 order_int=' b.confirm_at '
+            elif show_tag=="-2":
+                sql=' and a.is_cancel_confirm_at is null and  (b.confirm_at is null or b.confirm_at is not null and a.confirm_banjie=0 and b.confirm_at>="2018-10-01 00:00:00") and not_transition=0 '
+                chuli_sql=''
+                order_int=' a.created_at '
             elif show_tag=="3":
                 if not way:
                     sql=' and a.last_state_msg_at is not null '
@@ -7603,7 +7656,7 @@ and btype_id > 0
                             FROM t_projects_state_msg b
                             inner join t_projects_member a on a.project_id=b.project_id and b.uid=a.member_id and b.p_type_id=a.btype_id
                             inner join t_projects c on a.project_id=c.id
-                            inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                            inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
                             where  a.team_id=38 '''+sql+''' group by gb order by count desc)aa
                          )every_count
                         from(
@@ -7613,7 +7666,7 @@ and btype_id > 0
                             FROM t_projects_state_msg b
                             inner join t_projects_member a on a.project_id=b.project_id and b.uid=a.member_id and b.p_type_id=a.btype_id
                             inner join t_projects c on a.project_id=c.id
-                            inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                            inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
                             where  a.team_id=38 '''+sql+''' group by gb,df_confirm_at)aa group by df_confirm_at
                         )aaa
                     ''')
@@ -7626,7 +7679,7 @@ and btype_id > 0
                             FROM t_projects_state_msg b
                             inner join t_projects_member a on a.project_id=b.project_id and b.uid=a.member_id and b.p_type_id=a.btype_id
                             inner join t_projects c on a.project_id=c.id
-                            inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                            inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
                             where  a.team_id=38 '''+sql+''' group by gb,df_confirm_at)aa group by df_confirm_at order by df_confirm_at desc limit %s,%s
                     ''',startpage,pre_page)
                 else:
@@ -7635,7 +7688,7 @@ and btype_id > 0
                             from (select '''+gb_sql+''' gb,count(*) count from  t_projects_member a
                 inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3
                 inner join t_projects c on a.project_id=c.id
-                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
                 where a.team_id=38 '''+sql+''' group by gb order by count desc)bbb
                     ''')
                     count=self.db.get('''
@@ -7644,7 +7697,7 @@ and btype_id > 0
                             from (select '''+gb_sql+''' gb,count(*) count from  t_projects_member a
                 inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3
                 inner join t_projects c on a.project_id=c.id
-                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
                 where a.team_id=38 '''+sql+''' group by gb order by count desc)bbb
                         )every_count
                         from (
@@ -7652,7 +7705,8 @@ and btype_id > 0
                     select '''+gb_sql+''' gb,date_format('''+order_int+''','''+way_sql+''') df_confirm_at,count(*) count from  t_projects_member a
                 inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3
                 inner join t_projects c on a.project_id=c.id
-                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+            
+                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
                 where a.team_id=38 '''+sql+''' group by df_confirm_at,gb)aa group by df_confirm_at
                         )bb
                     ''')
@@ -7663,10 +7717,18 @@ and btype_id > 0
                     select group_concat(gb,'|',count) gc,df_confirm_at,sum(count) sc from (
                     select '''+gb_sql+''' gb,date_format('''+order_int+''','''+way_sql+''') df_confirm_at,count(*) count from  t_projects_member a
                 inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3
-                inner join t_projects c on a.project_id=c.id
-                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                inner join t_projects c on a.project_id=c.id              
+                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
                 where a.team_id=38 '''+sql+''' group by df_confirm_at,gb)aa group by df_confirm_at order by  df_confirm_at desc limit %s,%s
                     ''',startpage,pre_page)
+                    print('''
+                     select group_concat(gb,'|',count) gc,df_confirm_at,sum(count) sc from (
+                    select '''+gb_sql+''' gb,date_format('''+order_int+''','''+way_sql+''') df_confirm_at,count(*) count from  t_projects_member a
+                inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3
+                inner join t_projects c on a.project_id=c.id
+                inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
+                where a.team_id=38 '''+sql+''' group by df_confirm_at,gb)aa group by df_confirm_at order by  df_confirm_at desc
+                    ''')
             else:
                 if show_tag=='4':
                     count=self.db.get('''
@@ -7685,7 +7747,7 @@ and btype_id > 0
                         select count(*) count  from  t_projects_member a
                         inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and order_int=3
                         inner join t_projects c on a.project_id=c.id
-                        inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                        inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
                         where a.team_id=38
                         '''+sql)
                     pagination = Pagination(page, pre_page, count.count, self.request)
@@ -7693,13 +7755,23 @@ and btype_id > 0
                     t_projects=self.db.query('''
                     select  '''+work_sel_sql+''' a.last_state_remark,a.state_msg_counts, a.last_state_msg,a.last_state_msg_at,a.member_name,a.project_id,a.created_at fp , d.confirm_at jd,c.customer_company,a.mid,b.confirm_at,
                     c.customer_name,a.btype_id_name,datediff( d.confirm_at,a.created_at) jd_day,c.guid,datediff(b.confirm_at,b.created_at)
-                    bj_day from  t_projects_member a
+                    bj_day,datediff(now(),d.confirm_at) genjin_day from  t_projects_member a
                     inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3
                     inner join t_projects c on a.project_id=c.id
-                    inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 and d.confirm_at is not null
+                    inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
                     '''+work_sql+'''
                     where a.team_id=38 '''+sql+''' order by '''+order_int+''' desc limit %s,%s
                     ''',startpage,pre_page)
+                    print('''
+                    select  '''+work_sel_sql+''' a.last_state_remark,a.state_msg_counts, a.last_state_msg,a.last_state_msg_at,a.member_name,a.project_id,a.created_at fp , d.confirm_at jd,c.customer_company,a.mid,b.confirm_at,
+                    c.customer_name,a.btype_id_name,datediff( d.confirm_at,a.created_at) jd_day,c.guid,datediff(b.confirm_at,b.created_at)
+                    bj_day from  t_projects_member a
+                    inner join t_projects_milepost b on a.project_id=b.project_id and  a.mid=b.member_id and b.order_int=3
+                    inner join t_projects c on a.project_id=c.id
+                    inner join t_projects_milepost d on a.project_id=d.project_id and  a.mid=d.member_id and d.order_int=2 '''+chuli_sql+'''
+                    '''+work_sql+'''
+                    where a.team_id=38 '''+sql)
+                    
             member_gs=self.db.query('''
                 select member_name uid_name,member_id from t_projects_member
                  where team_id=38 and last_milepost_id is not null and last_milepost_id <> 0  group by member_name
@@ -10514,11 +10586,15 @@ and btype_id > 0
                         ''',note_content,uid,uid_name,note_id
                     )
                 else:
-
+                    is_kj=self.db.get(''' 
+                     select if((
+                     select mid from t_projects_member where 
+                     member_id=%s and team_id=205 and project_id=%s limit 1),1,0) kj  '''
+                     ,uid,project_id)
                     result=self.db.execute("""
-                    insert into t_projects_note(msg,creatd_at,uid,uid_name,project_id,is_check,is_chengjiao)
-                    values(%s,%s,%s,%s,%s,%s,%s)
-                    """, note_content,dt, uid, uid_name, project_id,is_check,is_chengjiao)
+                    insert into t_projects_note(msg,creatd_at,uid,uid_name,project_id,is_check,is_chengjiao,is_kj)
+                    values(%s,%s,%s,%s,%s,%s,%s,%s)
+                    """, note_content,dt, uid, uid_name, project_id,is_check,is_chengjiao,is_kj.kj)
                     if result>0:
                         if is_check=='1':
                             txt=' (需要上级审核)'
@@ -11948,3 +12024,14 @@ and btype_id > 0
             self.db.execute('''
                 update t_projects set trade_nums=%s where id=%s
             ''',trade_nums,project_id)
+
+        elif tag=="recall_banjie":
+            mid=self.get_argument('mid')
+            mp_id=self.get_argument('mp_id')
+
+            self.db.execute('''update t_projects_milepost set confirm_at=null where id=%s''',mp_id)
+            self.db.execute(''' 
+            update t_projects_member a,t_projects_milepost b 
+            set  a.last_milepost_id=b.type_id,a.last_milepost_id_name=b.type_name,
+            a.last_milepost_id_at=b.confirm_at where a.mid=b.member_id and a.mid=%s and b.order_int=2
+            ''',mid)

@@ -10,8 +10,10 @@ import re
 import hashlib
 from Pagination import Pagination
 import uuid
+from captcha.image import ImageCaptcha
+import datetime
 logger = logging.getLogger('boilerplate.' + __name__)
-
+dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 class LogoutHandler(BaseHandler):
@@ -36,9 +38,11 @@ class LoginHandler(BaseHandler):
     def get(self):
         ok = self.get_argument("ok",None)
         mobile= self.get_argument("mobile","")
-        
+        error_forbid=self.get_argument('error_forbid','')
+        show_verification=False
         error=None
         log_in_again=None
+        ver_str=''
         if ok:
             log_in_again='修改成功，请重新登录'
         tmp_html = "login.html"
@@ -46,18 +50,43 @@ class LoginHandler(BaseHandler):
         if mobile:
             tmp_html = "mobile/accounts/mobile_login.html"
 
-
-        self.render(tmp_html,error=error,log_in_again=log_in_again)
+        if( not re.match('localhost:\d{4}',self.request.host) and not re.match('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{4}',self.request.host) ):
+            show_verification=True
+            _letter_cases = "abcdefghjkmnpqrstuvwxy"                        # 小写字母
+            _upper_cases = "ABCDEFGHJKLMNPQRSTUVWXY"                        # 大写字母
+            _numbers = "1234567890"    
+            ver_str=''.join((_letter_cases,_upper_cases,_numbers))
+            ver_str=random.sample(ver_str,4)
+            img=ImageCaptcha()
+            image=img.generate_image(ver_str)
+            image.save('media/verify.jpg')
+        self.render(
+            tmp_html,error=error,error_forbid=error_forbid,
+            log_in_again=log_in_again
+            ,mobile=mobile,show_verification=show_verification,
+            ver_str=hash(''.join(ver_str).lower()))
 
     def post(self):
         f_email = self.get_argument("username",None)
         f_password = self.get_argument("password",None)
         mobile = self.get_argument("mobile", "")
+        ver_str1=self.get_argument('ver_str1','')
+        input_ver_str=self.get_argument('input_ver_str','')
+        show_verification=self.get_argument('show_verification','')
+        _letter_cases = "abcdefghjkmnpqrstuvwxy"                        # 小写字母
+        _upper_cases = "ABCDEFGHJKLMNPQRSTUVWXY"                        # 大写字母
+        _numbers = "1234567890"    
+        ver_str=''.join((_letter_cases,_upper_cases,_numbers))
+        ver_str=random.sample(ver_str,4)
+        img=ImageCaptcha()
+        image=img.generate_image(ver_str)
+        image.save('media/verify.jpg')
         tmp_html = "login.html"
         
         if mobile:
             tmp_html = "mobile/accounts/mobile_login.html"
         error=None
+        error_forbid=None
         log_in_again=None
 
         if not f_email:
@@ -66,36 +95,56 @@ class LoginHandler(BaseHandler):
         # 	error="您的帐户格式不正确."
         elif not f_password:
             error="密码不能为空."
+        elif show_verification and str(hash(input_ver_str.lower()))!=str(ver_str1):
+ 
+            error='验证码输入错误'
 
         elif self.authenticate(f_email,f_password):
             t_user = self.get_user_info(f_email)
             if t_user:
                 if t_user.is_lock==1:
                     self.write("抱歉,该用户被锁定,有疑问请管理员联系!")
+
                 else:
-                    self.set_secure_cookie("uid",str(t_user.id), expires_days=30)
-                    self.set_secure_cookie("name",str(t_user.name.encode("utf8")), expires_days=30)
-                    self.set_secure_cookie("role",str(t_user.role),expires_days=30)
-                    self.set_secure_cookie('is_check',str(t_user.is_check),expires_days=30)
+                    if( not re.match('localhost:\d{4}',self.request.host) and not re.match('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{4}',self.request.host) ):
+             
+                        if t_user.forbid_outer_net==0:
+                            self.set_secure_cookie("uid",str(t_user.id), expires_days=1)
+                        else:
+                            tmp_html = "login.html"
+                            if mobile:
+                                tmp_html = "mobile/accounts/mobile_login.html"
+                        
+                            return  self.render(tmp_html,error_forbid='已被禁止外网访问',error='',log_in_again='',mobile=mobile,
+                            show_verification=show_verification,ver_str=hash(''.join(ver_str).lower()))                        
+                    else:
+                        self.set_secure_cookie("uid",str(t_user.id), expires_days=1)
+                    self.set_secure_cookie("name",str(t_user.name.encode("utf8")), expires_days=1)
+                    self.set_secure_cookie("role",str(t_user.role),expires_days=1)
+                    self.set_secure_cookie('is_check',str(t_user.is_check),expires_days=1)
+                    self.set_secure_cookie('is_manager', str(t_user.is_manager), expires_days=1)
+                    self.set_secure_cookie('is_bj_manage',str(t_user.is_bj_manage),expires_days=1)
+                    self.set_secure_cookie('is_gy_manage',str(t_user.is_gy_manage),expires_days=1)
+                    self.set_secure_cookie('department_name',str(t_user.department_name),expires_days=1)
+                    self.set_secure_cookie('is_xz_manage',str(t_user.is_xz_manage),expires_days=1)
+                    self.set_secure_cookie('kj_manage', str(t_user.kj_manage), expires_days=1)
+                    self.set_secure_cookie('all_manage', str(t_user.all_manage), expires_days=1)
                     self.set_secure_cookie(
-                        'is_manager', str(t_user.is_manager), expires_days=30)
-                    self.set_secure_cookie('is_bj_manage',str(t_user.is_bj_manage),expires_days=30)
-                    self.set_secure_cookie('is_gy_manage',str(t_user.is_gy_manage),expires_days=30)
-                    self.set_secure_cookie('department_name',str(t_user.department_name),expires_days=30)
-                    self.set_secure_cookie('is_xz_manage',str(t_user.is_xz_manage),expires_days=30)
-                    self.set_secure_cookie('kj_manage', str(t_user.kj_manage), expires_days=30)
-                    self.set_secure_cookie('all_manage', str(t_user.all_manage), expires_days=30)
-                    self.set_secure_cookie(
-                        'is_developer', str(t_user.is_developer), expires_days=30)
-                    self.set_secure_cookie('sh_manage', str(t_user.sh_manage), expires_days=30)
-                    self.set_secure_cookie('kf_manage', str(t_user.kf_manage), expires_days=30)
-                    self.set_secure_cookie('express_manage', str(t_user.express_manage), expires_days=30)
-                    self.set_secure_cookie('role_list',str(t_user.role_list) or '',expires_days=30)
+                        'is_developer', str(t_user.is_developer), expires_days=1)
+                    self.set_secure_cookie('sh_manage', str(t_user.sh_manage), expires_days=1)
+                    self.set_secure_cookie('kf_manage', str(t_user.kf_manage), expires_days=1)
+                    self.set_secure_cookie('express_manage', str(t_user.express_manage), expires_days=1)
+                    self.set_secure_cookie('role_list',str(t_user.role_list) or '',expires_days=1)
+                    x_real_ip = self.request.headers.get("X-Real-IP")
+                    ip = x_real_ip or self.request.remote_ip
+                    self.db.execute('''
+                    insert into t_login_log values(default,%s,%s,%s,%s,%s)
+                    ''',ip,self.request.host,t_user.name,t_user.id,dt)
                     exists= self.db.get("""
                     select uid_name,role from t_statis_kf where uid_name=%s limit 1
                     """,t_user.name)
                     if exists:
-                        self.set_secure_cookie('show_statis_kf','1',expires_days=30)
+                        self.set_secure_cookie('show_statis_kf','1',expires_days=1)
 
                     t_role = self.db.get("select * from t_user_group where id=%s",t_user.role)
                     if t_user.is_first==1:
@@ -114,7 +163,10 @@ class LoginHandler(BaseHandler):
         else:
             error="登录帐户信息不正确,请效验后再重试."
 
-        self.render(tmp_html, error=error, log_in_again=log_in_again)
+        self.render(tmp_html, error=error,error_forbid=error_forbid, log_in_again=log_in_again,mobile=mobile,
+         show_verification=show_verification,ver_str=hash(''.join(ver_str).lower())
+         
+        )
 
     def get_user_info(self,name):
 
@@ -134,6 +186,19 @@ class LoginHandler(BaseHandler):
         if hashPassword:
             return hashlib.md5(password).hexdigest() == hashPassword.user_pass
 
+class GetNewverify(BaseHandler):
+    def get(self):
+ 
+        _letter_cases = "abcdefghjkmnpqrstuvwxy"                        
+        _upper_cases = "ABCDEFGHJKLMNPQRSTUVWXY"                        
+        _numbers = "1234567890"    
+        ver_str=''.join((_letter_cases,_upper_cases,_numbers))
+        ver_str=random.sample(ver_str,4)
+        img=ImageCaptcha()
+        image=img.generate_image(ver_str)
+
+        image.save('media/verify.jpg')
+        self.write({'ver_str1':str(hash(''.join(ver_str).lower())),'img_src':'/static/verify.jpg'})
 class AdminChangePasswordHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,id):
@@ -323,7 +388,7 @@ class AllChangePasswordHandler(BaseHandler):
             new_password=self.get_argument('newpassword')
             id=self.get_secure_cookie('uid')
             if f_password==new_password:
-                error='与当前密码不能一致哦.'
+                error='与原始密码不能一致哦.'
                 change_success=''
                 admin=False
             else:
@@ -365,28 +430,75 @@ class ManageUserHandler(BaseHandler):
     def get(self):
         tag=self.get_argument('tag','manageuser')
 
-        if tag=='manageuser' or tag=='kj_manage':
+        if tag=='manageuser' or tag=='kj_manage' or tag=='login_log':
             page = int(self.get_argument("page", 1))
             user_name=self.get_argument('user_name','')
             phone=self.get_argument('phone','')
+            forbid_outer_net=self.get_argument('forbid_outer_net','')
+            login_name=self.get_argument('login_name','')
+            login_at_start=self.get_argument("login_at_start",'')
+            login_at_end=self.get_argument('login_at_end','')
+            statistics=self.get_argument('statistics','')
             sql=''
             pre_page = 20
             params={
                 'user_name':user_name,
-                'phone':phone
+                'phone':phone,
+                'forbid_outer_net':forbid_outer_net,
+                'login_name':login_name,
+                'login_at_start':login_at_start,
+                'login_at_end':login_at_end,
+                'statistics':statistics
             }
             id=self.get_secure_cookie('uid')
             is_admin_user=self.db.get('select is_admin from t_user where id=%s',int(id))
             department_names=self.db.query(' select department_name,department_id from t_user_relation group by department_name,department_id ')
+            #用户查询
             if user_name:
                 sql+=' and a.name="%s" '%user_name
             if phone:
                 sql+=' and a.phone=%s '%phone
+            if forbid_outer_net:
+                sql+=' and a.forbid_outer_net=%s '%forbid_outer_net
+            #登录查询
+            if login_name:
+                sql+=' and uid_name="%s" '%login_name
+            if login_at_start and login_at_end:
+                sql+=' and created_at between "%s" and "%s" '%(login_at_start,login_at_end)
+            elif tag=='login_log':
+                sql+=' and TIMESTAMPDIFF(MONTH,created_at,CURDATE())=0 '
+           
             if tag=='kj_manage':
                 count=self.db.get(' select count(*) count from t_user_relation')
                 pagination = Pagination(page, pre_page, count.count, self.request)
                 startpage = (page - 1) * pre_page
                 all_users=self.db.query(' select * from t_user_relation order by id desc limit %s,%s ',startpage,pre_page)
+            elif tag=='login_log':
+                if sql:
+                    sql=' where '+sql[4:]
+
+                if statistics:
+                    count=self.db.get('''
+                    select count(*) count from(
+                    select df from(
+                    SELECT date_format(created_at,'%%Y-%%m-%%d') df,uid_name,count(*) count 
+                     FROM t_login_log '''+sql+''' group by uid_name,df order by df desc)a 
+                      group by df)b  
+                    ''')
+                    pagination = Pagination(page, pre_page, count.count, self.request)
+                    startpage = (page - 1) * pre_page
+                    all_users=self.db.query('''
+                    select df, group_concat(uid_name,'|',count order by count desc)gc,sum(count) sc from(
+                    SELECT date_format(created_at,'%%Y-%%m-%%d') df,uid_name,count(*) count 
+                     FROM t_login_log '''+sql+''' group by uid_name,df order by df desc,count desc)a 
+                      group by df desc limit %s,%s
+                    ''',startpage,pre_page)
+                else:
+                    count=self.db.get(' select count(*) count from t_login_log '+sql)
+                    pagination=Pagination(page,pre_page,count.count,self.request)
+                    startpage=(page-1)*pre_page
+                    all_users=self.db.query(' select * from t_login_log '+sql+' order by created_at desc limit %s,%s ',startpage,pre_page)
+
             else:
                 count = self.db.get(
                         '''SELECT count(*) count FROM t_user a  where  0=0
@@ -419,6 +531,13 @@ class ManageUserHandler(BaseHandler):
             select * from t_user_relation where  department_id=%s order by is_leader desc        
             ''',department_id)
             return self.write({'kj':t_user_relation})
+        elif tag=='detail_login':
+            created_at=self.get_argument('created_at','')
+            login_name=self.get_argument('login_name','')
+            t_login_log=self.db.query(' select rea_ip,url,uid_name,date_format(created_at,"%%Y-%%m-%%d %%H:%%I:%%S") created_at from t_login_log where date_format(created_at,"%%Y-%%m-%%d")=%s and uid_name=%s  order by created_at desc ',
+            created_at,login_name)
+            self.write({'t_login_log':t_login_log})
+
     @tornado.web.authenticated
     def post(self):
         tag=self.get_argument('tag','')
@@ -468,7 +587,8 @@ class LockUserhandler(BaseHandler):
 
 class UnlockUserHandler(BaseHandler):
     @tornado.web.authenticated
-    def get(self,id):
+    def get(self):
+        id=self.get_argument('id','')
         cur_id=self.get_secure_cookie('uid')
         if self.get_secure_cookie('role_list'):
             role_list=self.get_secure_cookie('role_list').split(',')
@@ -479,7 +599,18 @@ class UnlockUserHandler(BaseHandler):
             self.db.execute("""
             update  t_user  set is_lock=%s where id=%s
         """,int(0),int(id))
-
+    @tornado.web.authenticated
+    def post(self):
+        user_id=self.get_argument('user_id','')
+        forbid_outer_net=self.get_argument('forbid_outer_net','')
+        print(user_id)
+        if forbid_outer_net=='1':
+            forbid_outer_net='0'
+        else:
+            forbid_outer_net='1'
+        self.db.execute('''
+        update t_user set forbid_outer_net=%s where id=%s
+        ''',forbid_outer_net,user_id)
 class InsertUserHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):

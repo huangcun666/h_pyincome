@@ -373,14 +373,15 @@ background-color: #007bff;
 
 {%if t_addr_manager_req%}
 
-{%if t_addr_manager_req.req_act_id>1%}
+{%if t_addr_manager_req.req_act_id>1%}{%if role=="8" or role=="7"%}
+
 <ul class="list-group">
 <li class="list-group-item">
 <button class="a_add_set_member" mtype="modify" follow_uid_name="{{t_addr_manager_req.follow_uid_name}}" ass_remark="{%if t_addr_manager_req.ass_remark%}{{t_addr_manager_req.ass_remark}}{%end%}" req_id="{{t_addr_manager.req_id}}" addr_id="{{t_addr_manager.id}}">分配人修改</button>
 
 
 </li>
-</ul>
+</ul>{%end%}
 {%end%}
 {%if t_addr_manager_req.req_act_id==1%}
 <ul class="list-group">

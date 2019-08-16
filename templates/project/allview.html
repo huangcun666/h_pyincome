@@ -64,6 +64,11 @@
                 <option value="{{item.id}}"  {%if params["kfgw"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
          {%end%}
             {%end%}
+            {%if add_other_users(13,2)%}
+            {%for item in add_other_users(13,2)%}
+            <option value="{{item.id}}"  {%if params["kfgw"]==str(item.id)%}selected{%end%}>{{item.name}}</option> 
+            {%end%}
+            {%end%}
         </select>
                </td>
        <td>

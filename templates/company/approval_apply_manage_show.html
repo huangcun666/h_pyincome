@@ -1,0 +1,835 @@
+{% extends "../base.html" %}{%block title%}审批申请管理{%end%}
+{%block body%}
+<link rel="stylesheet" href="/static/js/manifest/styles.css">
+<link href="/static/dropzone.css" rel="stylesheet">
+<style>
+.feather {width: 16px;height: 16px;vertical-align: text-bottom;}
+.sidebar {position: fixed;top: 155px;bottom: 0;z-index: 100;padding: 0;box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);}
+.sidebar-sticky {position: -webkit-sticky;position: sticky;top: 48px; height: calc(100vh - 48px);padding-top: .5rem;overflow-x: hidden;overflow-y: auto; }
+.sidebar .nav-link {font-weight: 500;color: #333;}
+.sidebar .nav-link .feather {margin-right: 4px;color: #999;}
+.sidebar .nav-link.active {color: #007bff;}
+.sidebar .nav-link:hover .feather,.sidebar .nav-link.active .feather {color: inherit;}
+.sidebar-heading {font-size: .75rem;text-transform: uppercase;}
+.navbar .form-control {padding: .75rem 1rem;border-width: 0;border-radius: 0;}
+.form-control-dark {color: #fff;background-color: rgba(255, 255, 255, .1);border-color: rgba(255, 255, 255, .1);}
+.form-control-dark:focus {border-color: transparent;box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);}
+.border-top { border-top: 1px solid #e5e5e5; }
+.border-bottom { border-bottom: 1px solid #e5e5e5; }
+.col-lg-9 {
+    margin-top: 67px;
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 75%;
+    flex: 0 0 75%;
+    max-width: 72%;
+}
+.sidebar-sticky{padding-top:0px;}
+ol.breadcrumb {
+position: fixed;
+width: 98%;
+z-index: 999;
+}
+ol.approval_ol,ol.copy_ol{
+padding: 0;
+margin-bottom: 1px;
+}
+ol.approval_ol>li,ol.copy_ol>li{
+cursor: pointer;
+display: inline-block;
+margin: 2px;
+padding: 3px 10px 3px;
+font-size: 14px;
+vertical-align: top;
+height: 28px;
+background-color: #E0E0E0;
+}
+.sj-table-left {
+    float: left;
+    width: 30%;
+    height: 49px;
+    background-color: #eeeeee;
+    border-bottom: 1px solid #dedede;
+    text-align: center;
+    line-height: 49px;
+    font-size: 12px;
+    color: #000;
+    font-weight: bold;
+}
+.sj-table-right {
+    float: right;
+    width: 70%;
+    height: 49px;
+    border: 1px solid #dedede;
+    box-sizing: border-box;
+    text-align: left;
+    font-size: 12px;
+    color: #000;
+    font-weight: 100;
+    padding-left: 10px;
+    line-height: 49px;
+  
+    font-weight: bold;
+}
+</style>
+<div style="position: fixed; top: 55px; width: 98%; z-index: 998; height:96px; background-color: #ebebeb"></div>
+        <ol class="breadcrumb">
+                <li class="breadcrumb-item g1">
+                 主面板
+                </li>
+                <li class="breadcrumb-item g1">审批申请管理</li>
+                {%if int(uid)==data.apply_id%}
+                    <li class="g1 g1-left">
+                            <a href="javascript:void(0)" id="btn_modify">
+                            <img alt="[编辑]" width="25" src="/static/images/modify.png"></a>
+                
+                            </li>
+                    {%end%}
+                    {%if (int(uid)==data.apply_id or name in data.approval_names.split(',')) and not data.check_at%}
+                    <li class="g1 g1-left">
+                            <a href="javascript:void(0);" class="btn btn-primary btn-sm add_name" name_type='approval_name' >添加审核人</a>
+                    </li>
+                    <li class="g1 g1-left">
+                            <a href="javascript:void(0);" class="btn btn-primary btn-sm add_name" name_type='copy_name'>添加抄送人</a>
+                    </li>
+                    {%end%}
+                    {%if name in data.approval_names.split(',') %}
+                    {%if unconfirm_approval_person%}
+                    <li class="g1 g1-left">
+                            <a href="javascript:void(0);" class="btn btn-primary btn-sm" id="approval_confirm">审批人确认</a>
+                    </li>
+                    {%end%}
+                    {%if submit_approval_person and not data.submit_at%}
+                    <li class="g1 g1-left">
+                            <a href="javascript:void(0);" class="btn btn-primary btn-sm" id="approval_submit">递交上级审批</a>
+                    </li>
+                    {%end%}
+                    {%end%}
+                    {%if (uid=='98' and data.project_type_tag==0 or uid=='226' and data.project_type_tag==1)\
+                    and data.check_status==0 and data.submit_at
+                    %}
+                    <li class="g1 g1-left">
+
+                            <a href="javascript:void(0);" class="btn btn-primary btn-sm" id="approval_check">审核</a>
+                    </li>
+                    
+                    {%end%}
+            </ol>
+
+
+
+<div class="row" style="margin-left: 0px;">
+        <nav class="col-md-3  bg-light sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                     <div class="sj-table-left">审批编号</div>
+                    <div class="sj-table-right">{{data.created_at.strftime('%Y-%m-%d')}} {{data.id}}</div>
+              </li>
+              <li class="nav-item">
+                    <div class="sj-table-left">所在部门</div>
+                    <div class="sj-table-right">{{data.department_name}}</div>
+              </li>
+              <li class="nav-item">
+                    <div class="sj-table-left">申请人</div>
+                    <div class="sj-table-right">{{data.apply_name}}</div>
+              </li>
+              <li class="nav-item">
+                    <div class="sj-table-left">项目</div>
+                    <div class="sj-table-right">{{data.project_type_name}}</div>
+              </li>
+              <li class="nav-item">
+                    <div class="sj-table-left">对方公司名称</div>
+                    <div class="sj-table-right">{{data.opposite_company}}</div>
+              </li>
+              <li class="nav-item">
+                    <div class="sj-table-left">对方负责人</div>
+                    <div class="sj-table-right">{{data.opposite_fz_name}}</div>
+              </li>
+
+              <li class="nav-item">
+                    <div class="sj-table-left">审批人</div>
+                    <div class="sj-table-right">{{data.approval_names}}</div>
+              </li>
+              <li class="nav-item">
+                    <div class="sj-table-left">抄送人</div>
+                    <div class="sj-table-right">{{data.copy_names}}</div>
+              </li>
+              <li class="nav-item">
+                    <div class="sj-table-left">内容</div>
+                    <div class="sj-table-right">{{data.content}}</div>
+              </li>
+              <li class="nav-item">
+                {%if data.file_path%}
+                {%for item in data.file_path.split('|')[:-1]%} 
+                    <div class="sj-table-left" >附件</div>
+                    <div class="sj-table-right" style="overflow-y: hidden;">
+                           
+                        <a href="{{item}}">{{''.join(item.split('_')[1:])}}</a>
+                       
+                    </div>
+                    {%end%}
+                    {%end%}
+      
+              </li>
+            </ul>
+
+     
+         
+        </div>
+        </nav>
+
+        <main role="main" class="col-md-9 d-none d-md-block  ml-sm-auto col-lg-9 pt-3 px-4">
+           
+                <style>
+                        .sjlao {overflow: hidden; width: 98%; margin: 15px auto; height: auto; position: relative; }
+                        .sjlao-f {float: left; width: 8%; position: relative;}
+                        .sjlao-f img {display: block; margin: 0 auto;width:100%;}
+                        .sjlao-f span {text-align: center; display: block;}
+                        .sjlao-r {float: left; width: 89%; height: auto; border: 1px solid #dedede; margin-top: 3px; margin-left: 2%; box-shadow: 0px 0px 10px #ccc; padding: 15px 15px 5px ; box-sizing: border-box;}
+                        .sjtext {line-height: 24px;margin-top:-16px;}
+                        .sjlao-r hr {margin: 5px 0 ;}
+                        .sjlao-r .fj { font-size: 14px; color: #007bff; font-weight: bold;}
+                        .sj-x {top: 16px;margin-left:-29px; }
+                        .sj-time {color: #919191;}
+                            </style>
+                <div class="card-columns">
+                        <div class="card mb-12">
+                                <div class="card-body">
+                                        <h6 class="card-title mb-1" style="display: inline-block;">
+                                                流转记录
+                                            </h6>
+                                            <hr>
+                        {%for item in approval_msg%}
+                        <div class="sjlao">
+                            <div class="sjlao-f">
+                                  
+                                <img src="/static/images/avatar.jpeg" alt="" style="max-width:73px;max-height:73px;">
+                                <span class="handle">{{item.uid_name}}</span>
+                                
+                            </div>
+                
+                            <div class="sjlao-r">
+                                    <div class="sj-x">
+                                            <img src="/static/images/img/xsj_07.jpg" alt="" width="14" height="16">
+                                        </div>
+                                <div class="sjtext">
+                
+                                    {{item.msg}}
+                
+                                </div>
+                            
+                                <!-- <a href="" target="_blank" class="fj">查看附件</a> -->
+                                
+                                <hr>
+                                <div>
+                                    <span style="float: left;" class="sj-time">{{item.created_at}}</span>
+                              
+                                    <span style="float: right;" class="sjbq2"></span>
+
+                
+                
+                                   
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        {%end%}
+                        </div>
+                        </div>
+                </div>
+        
+
+         
+      
+        </main>
+      </div>
+
+      <div id="approval_model" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">新增审批申请</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                      </div>
+                
+                <div class="modal-body form-horizontal" id="site_mod">
+                    <!-- <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                        <label for="department" id="department_lab">所在部门:<span style="color: #dc3545;">*</span></label>
+                                        <span id="er_department" class="badge badge-danger" hidden>未选</span>                                
+                                </div>
+                            
+                                <div class="col-sm-7" style="margin-left:-17px;">
+                                    <select class="form-control" id="department">
+                                        <option value="">选择部门</option>
+                                        {%for item in t_user_department%}
+                                        <option {%if data.department_id==item.id%}selected{%end%} value="{{item.id}}">{{item.name}}</option>
+                                        {%end%}
+                                    </select>
+                                
+                                </div>
+                            </div>
+                            </div> -->
+                                <div class="form-group">
+                                        <div class="row">
+                                        <div class="col-sm-4">
+                                                <label for="project_type_name" id="project_type_name_lab">项目:<span style="color: #dc3545;">*</span></label>
+                                                <span id="er_project_type" class="badge badge-danger" hidden>未选</span>
+                                       
+                                            </div>
+                                    
+                                        <div class="col-sm-7" style="margin-left:-17px;">
+        
+                                            <select class="form-control" id="project_type">
+                                                <option value="">选择项目</option>
+                                                {%for item in t_projects_type%}
+                                                <option {%if data.project_type_id==int(item.id)%}selected{%end%} value="{{item.id}}" btag="{{item.btag}}">{{item.income_name}}</option>
+                                                {%end%}
+                                                
+                                            </select>
+                                        </div>
+                                    </div>
+                                    </div>  
+                                  <div id="opposite_box" {%if data.project_type_tag==1%}hidden{%end%}>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                                <label for="opposite_company" id="opposite_company_lab">对方公司名称:</label>
+                                        </div>
+                                    
+                                        <div class="col-sm-7" style="margin-left:-17px;">
+                                            <input value="{{data.opposite_company}}"class="form-control" type="text" id="opposite_company" placeholder="对方公司名称">
+                                        
+                                        </div>
+                                    </div>
+                                    </div>    
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                                <label for="opposite_fz_name" id="opposite_fz_name_lab">对方负责人:</label>
+                                        </div>
+                                    
+                                        <div class="col-sm-7" style="margin-left:-17px;">
+                                            <input value="{{data.opposite_fz_name}}" class="form-control" type="text" id="opposite_fz_name" placeholder="对方负责人">
+                                        
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div> 
+                                  
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                                <label for="approval_names" id="approval_names_lab">审批人:<span style="color: #dc3545;">*</span></label>
+                                                <span id="er_approval_names" class="badge badge-danger" hidden>未选</span>
+                                                
+                                        </div>
+                                    
+                                        <div class="col-sm-7" style="margin-left:-17px;">
+                                            <ol class="approval_ol">
+                                                    {%if data.approval_names%}
+                                            {%for item in data.approval_names[:-1].split(',')%}
+                                                <li>{{item}}
+                                                <a href="javascript:;" approval_name="{{item}}" class="mf_remove delete_name" title="删除">X</a>
+                                                <input type="hidden" value="{{item}}">                                            
+                                            </li>
+                                            {%end%}
+                                            {%end%}
+                                        </ol>
+                                            <input  placeholder='增加审批人'  type="text" id="approval_names" >
+                                        
+                                        </div>
+                                    </div>
+                                    </div>   
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                                <label for="copy_names" id="copy_names_lab">抄送人:</label>
+                                                <span id="er_copy_names" class="badge badge-danger" hidden></span>
+    
+                                        </div>
+                                    
+                                        <div class="col-sm-7" style="margin-left:-17px;">
+                                            <ol class="copy_ol">
+                                                {%if data.copy_names%}
+                                                {%for item in data.copy_names[:-1].split(',')%}
+                                                    <li>{{item}}
+                                                    <a href="javascript:;" copy_name="{{item}}" class="mf_remove delete_name" title="删除">X</a>
+                                                    <input type="hidden" value="{{item}}">
+                                                </li>
+                                                {%end%}
+                                                {%end%}
+                                            <input type="text" id="copy_names" placeholder="增加抄送人">
+                                        
+                                        </div>
+                                    </div>
+                                    </div> 
+                                <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                    <label for="content" id="content_lab">内容:</label>
+                                            </div>
+                                        
+                                            <div class="col-sm-7" style="margin-left:-17px;">
+                                                <textarea  name="" id="content" class="form-control" placeholder="内容">{{data.content}}</textarea>
+                                                
+                                            
+                                            </div>
+                                        </div>
+                                        </div>   
+                                <div class="form-group"> 
+                                <div class="col-sm-12">
+                                <label for="file_path" id="file_path_lab">上传附件:</label>
+                                    <div id="file_path" class="dropzone"></div>
+                                    
+                                
+                                </div>
+                        
+                                        </div> 
+                </div>
+                <div class="modal-footer">
+                       
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                      <button class="btn btn-primary" target="_blank" id="btn_save_approval">保存</button>
+                    </div>
+    </div>
+    
+        </div>
+        </div>
+    
+        <div id="add_name_model" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="name-title"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                          </div>
+                    
+                    <div class="modal-body form-horizontal" id="site_mod">
+                            <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                                <label for="add_name" id="add_name_lab">审批人:</label>
+                                                <span id="er_add_name" class="badge badge-danger" hidden>未选</span>
+                                                
+                                        </div>
+                                    
+                                        <div class="col-sm-7" style="margin-left:-17px;">
+                                            <input  class="form-control"   type="text" id="add_name" >
+                                        
+                                        </div>
+                                    </div>
+                                    </div>  
+                </div>
+                <div class="modal-footer">
+                       
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button class="btn btn-primary" target="_blank" id="btn_save_name">保存</button>
+                      </div>
+            </div>
+         </div>
+        </div>
+        
+        <div id="approval_check_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document" >
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="check-title">审核</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                          </div>
+                    
+                    <div class="modal-body form-horizontal" id="site_mod">
+                        <div class="form-group">
+                            <div class="col-10">
+                                <label for="">审核:</label>
+                            <input type="radio" value="1" name="check_status">通过 &nbsp;
+                            <input type="radio" value="2" name="check_status">驳回
+                        </div>
+                        </div>  
+                </div>
+                <div class="modal-footer">
+                       
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button class="btn btn-primary" target="_blank" id="btn_save_check">审核</button>
+                      </div>
+            </div>
+         </div>
+        </div>
+{%end%}
+{%block js%}
+<script src="/static/js/manifest/jquery.ui.widget.js"></script>
+<script src="/static/js/manifest/jquery.marcopolo.js"></script>
+<script src="/static/js/manifest/jquery.manifest.js"></script>
+<script src="/static/dropzone.js"></script>
+<script src="/static/dropzone-amd-module.js"></script>
+<script>
+    
+Dropzone.autoDiscover = false;
+var myDrop_upload=new Dropzone('#file_path',{
+    url:'?tag=add_new_approval_apply',
+    dictDefaultMessage:"请点击选择文件或拖动文件到本区域",
+addRemoveLinks: true,
+autoProcessQueue: false,
+//允许上传多个照片
+uploadMultiple: true,
+//每次上传的最多文件数，经测试默认为2，坑啊
+//记得修改web.config 限制上传文件大小的节
+parallelUploads: 100,
+paramName:'file',
+init:function(){
+    var submitButton = document.querySelector("#btn_save_approval")
+    var approval_ids=''
+    var copy_ids=''
+    thisDropzone = this;
+    submitButton.addEventListener('click',function () {
+        // department_id=$("#department").val()
+        // department_name=$("#department").find("option:selected").text()
+        project_type_id=$("#project_type").val()
+        project_type_name=$("#project_type").find("option:selected").text()
+        project_type_tag=$("#project_type").find("option:selected").attr('btag')
+        opposite_company=$("#opposite_company").val()
+        opposite_fz_name=$("#opposite_fz_name").val()
+        // approval_names=$("#approval_names").val()
+        // copy_names=$("#copy_names").val()
+        approval_names=[]
+        approval_names_exist_edit=[]
+        copy_names_exist_edit=[]
+
+        copy_names=[]
+        $("#approval_names").prev().children('li').each(function () { 
+            approval_names.push($(this).find('input').val())
+         })
+         $("#copy_names").prev().children('li').each(function () { 
+            copy_names.push($(this).find('input').val())
+         })
+         
+         $('.approval_ol').children('li').each(function () {
+            if($(this).find('input').val()==undefined){
+                approval_names_exist_edit.push('已删')
+            }else{
+                approval_names_exist_edit.push($(this).find('input').val())
+
+            }
+             
+        
+          })
+          $('.copy_ol').children('li').each(function () {
+            if($(this).find('input').val()==undefined){
+            copy_names_exist_edit.push('已删')
+            }else{
+                copy_names_exist_edit.push($(this).find('input').val())
+            }
+            })
+          
+        content=$("#content").val()
+        // if(department_id==''){
+        //     $('#er_department').removeAttr('hidden')
+        //     return false
+        // }
+        if(project_type_id==''){
+            $('#er_project_type').removeAttr('hidden')
+            return false           
+        }
+        else if(approval_names=='' && $('.approval_ol>li').find('input').val()==undefined){
+            $('#er_approval_names').removeAttr('hidden')
+            $('#er_approval_names').html('未填')
+            return false   
+        }
+        
+        $.get("?tag=search_user_list",{
+            'name':approval_names.join(),
+            'name1':copy_names.join()
+        },function (data) {
+            if(data['er_user']=='-1'){
+                $('#er_approval_names').removeAttr('hidden')
+                $('#er_approval_names').html(data['user_name']+'不存在')
+                return false
+            }
+            else if(data['er_user']=='-2'){
+                $('#er_copy_names').removeAttr('hidden')
+                $('#er_copy_names').html(data['user_name']+'不存在')
+                return false
+            }
+            else{
+                approval_ids=data['user_ids'].join()
+                copy_ids=data['user_ids1'].join()
+        $("#btn_save_approval").attr('disabled','disabled')
+        $("#btn_save_approval").text('保存中...')
+        if(thisDropzone.getQueuedFiles().length==0){
+            $.post('?tag=add_new_approval_apply',{
+                '_xsrf': _xsrf,
+                'project_type_id': project_type_id,
+                'project_type_name':project_type_name,
+                'project_type_tag':project_type_tag,
+                'opposite_company':opposite_company,
+                'opposite_fz_name':opposite_fz_name, 
+                'approval_names':approval_names.join(),
+                'approval_ids':data['user_ids'].join(),
+                'copy_names':copy_names.join(),
+                'copy_ids':data['user_ids1'].join(),
+                'content':content,
+                'approval_id':"{{data.id}}",
+                'approval_names_exist_edit':approval_names_exist_edit.join(),
+                'approval_names_exist':"{{data.approval_names[:-1]}}",
+                'copy_names_exist_edit':copy_names_exist_edit.join(),
+                'copy_names_exist':"{{data.copy_names[:-1]}}"
+
+            },function (data) { 
+                if(data['same_approval_names']!='' || data['same_copy_names']){
+              txt=''
+              if(data['same_approval_names']){
+                txt+='审核人'+data['same_approval_names']+'已存在'
+              }
+              if(data['same_copy_names']){
+                txt+='抄送人'+data['same_copy_names']+'已存在'
+              }
+              alert(txt)
+          } 
+                location.reload()
+             })
+        }else{
+            thisDropzone.processQueue();
+        }
+            }
+         })
+
+     });
+     this.on("sending",function (file,xhr,formData) { 
+        project_type_id=$("#project_type").val()
+        project_type_name=$("#project_type").find("option:selected").text()
+        project_type_tag=$("#project_type").find("option:selected").attr('btag')
+        opposite_company=$("#opposite_company").val()
+        opposite_fz_name=$("#opposite_fz_name").val()
+
+        approval_names=[]
+        copy_names=[]
+        approval_names_exist_edit=[]
+        copy_names_exist_edit=[]
+        $("#approval_names").prev().children('li').each(function () { 
+            approval_names.push($(this).find('input').val())
+         })
+         $("#copy_names").prev().children('li').each(function () { 
+            copy_names.push($(this).find('input').val())
+         })
+
+         $('.approval_ol').children('li').each(function () {
+            if($(this).find('input').val()==undefined){
+                approval_names_exist_edit.push('已删')
+            }else{
+                approval_names_exist_edit.push($(this).find('input').val())
+
+            }
+             
+        
+          })
+          $('.copy_ol').children('li').each(function () {
+            if($(this).find('input').val()==undefined){
+            copy_names_exist_edit.push('已删')
+            }else{
+                copy_names_exist_edit.push($(this).find('input').val())
+            }
+            })
+        content=$("#content").val()
+        formData.append('_xsrf', _xsrf)
+        // formData.append('department_id', department_id)
+        // formData.append('department_name', department_name)
+        formData.append('project_type_id', project_type_id)
+        formData.append('project_type_name',project_type_name )
+        formData.append('project_type_tag',project_type_tag )
+        formData.append('opposite_company',opposite_company)
+        formData.append('opposite_fz_name',opposite_fz_name )
+        formData.append('approval_names',approval_names.join() )
+        formData.append('copy_names', copy_names.join())
+        formData.append('content', content)
+        formData.append('approval_ids',approval_ids)
+        formData.append('copy_ids',copy_ids)
+        formData.append('approval_id',"{{data.id}}")
+
+        formData.append('approval_names_exist_edit',approval_names_exist_edit.join())
+        formData.append('approval_names_exist',"{{data.approval_names[:-1]}}")
+        formData.append('copy_names_exist_edit',copy_names_exist_edit.join())
+        formData.append('copy_names_exist',"{{data.copy_names[:-1]}}")
+        
+      });
+      this.on('success',function (files,response) {
+          if(response['same_approval_names']!='' || response['same_copy_names']){
+              txt=''
+              if(response['same_approval_names']){
+                txt+='审核人'+response['same_approval_names']+'已存在'
+              }
+              if(response['same_copy_names']){
+                txt+='抄送人'+response['same_copy_names']+'已存在'
+              }
+              alert(txt)
+          } 
+          location.reload()
+       })
+}
+})
+
+
+$(function () { 
+    _xsrf = getCookie("_xsrf")
+    $('#approval_names').manifest({
+        
+  marcoPolo: {
+    url: '/api?tag=users',
+    formatItem: function (data) {
+      return data
+    }
+  },
+  minChars:1,
+});
+
+$('#copy_names').manifest({
+  marcoPolo: {
+    url: '/api?tag=users',
+    formatItem: function (data) {
+      return data
+    }
+  },
+  minChars:1,
+});
+    $('#add_name').typeahead({
+      source: function (query, process) {
+        return $.post('/api', { query: query ,"_xsrf":_xsrf}, function (data) {
+            return process(JSON.parse(data));
+        });
+    }
+    })
+$("#btn_modify").click(function () { 
+$("#approval_model").modal('show')
+ })
+ $(".add_name").click(function () { 
+    name_type=$(this).attr('name_type')
+    if(name_type=='approval_name'){
+        $(".name-title").html("添加审批人")
+        $("#add_name_lab").html('审批人<span style="color: #dc3545;">*</span>')
+    }else if(name_type=='copy_name'){
+        $(".name-title").html("添加抄送人")
+        $("#add_name_lab").html('抄送人')
+        
+    }
+    $("#btn_save_name").attr('name_type',name_type)
+    $("#add_name_model").modal('show')
+
+  }
+ )
+ $("#btn_save_name").click(function () { 
+    name_type=$(this).attr('name_type')
+    add_name=$("#add_name").val()
+    if(add_name==''){
+        $("#er_add_name").removeAttr('hidden')
+        return false
+    }
+        $.get("?tag=search_user",{
+            'name':add_name
+        },function (data) {
+            if(data=='-1'){
+                $('#er_add_name').removeAttr('hidden')
+                $('#er_add_name').html('审核人不存在')
+                return false
+              
+            }else{
+                $.post('?tag=add_approval_name',{
+                        '_xsrf':_xsrf,
+                        'name_type':name_type,
+                        'add_name':add_name,
+                        'approval_id':"{{data.id}}",
+                        'add_name_id':data['user_id']
+                    },function (data) {
+                        if(data=='-1'){
+                            alert('审核人已存在,请不要反复添加')
+                        } else if(data=='-2'){
+                            alert('抄送人已存在,请不要反复添加')
+                        }else if(data=='-3'){
+                            alert('已审核不能添加')
+                            location.reload()
+                        }
+                        else{
+                            location.reload()
+
+                        }
+                    })
+            }
+     
+         })
+         
+  })
+  $("#approval_confirm").click(function () { 
+      if(confirm('是否确认?')){
+          $.post('?tag=approval_milepost',{
+              '_xsrf':_xsrf,
+              'step':'approval_conform',
+              'approval_id':'{{data.id}}',
+              'guid':"{{data.guid}}"
+          },function (data) { 
+              location.reload()
+           })
+      }
+   })
+   $("#approval_submit").click(function () { 
+    if(confirm('确认需要递交上级审批?')){
+          $.post('?tag=approval_milepost',{
+              '_xsrf':_xsrf,
+              'step':'approval_submit',
+              'approval_id':'{{data.id}}',
+              'guid':"{{data.guid}}"
+          },function (data) { 
+              location.reload()
+           })
+      }
+    })
+    $("#btn_save_check").click(function () { 
+        check_status=$("input[name='check_status']:checked").val()
+        
+        if(check_status==undefined){
+            alert('请选择')
+            return false
+        }
+        $.post('?tag=approval_milepost',{
+              '_xsrf':_xsrf,
+              'step':'approval_check',
+              'approval_id':'{{data.id}}',
+              'guid':"{{data.guid}}",
+              'check_status':check_status
+          },function (data) { 
+              if(data=='-1'){
+                alert('有新的审批人添加,暂时无法审核')
+              }
+                location.reload()
+              
+           })
+     })
+    $("#approval_check").click(function () { 
+        $("#approval_check_modal").modal('show')
+     })
+     $("#project_type").change(function () { 
+        btag=$(this).find('option:selected').attr('btag')
+        if(btag=='0'){
+             $('#opposite_box').removeAttr('hidden')
+        }else if(btag=='1'){
+            $('#opposite_box').attr('hidden','hidden')
+            $("#opposite_company").val('')
+            $("#opposite_fz_name").val('')
+        }
+        $("#content").val($(this).find('option:selected').text())
+        
+      })
+      $(".delete_name").click(function () { 
+          if(confirm('确认删除？')){
+            $(this).parent().css({'padding':'0','margin':'0'})
+            $(this).parent().empty()
+          }
+       })
+ })
+</script>
+
+{%end%}

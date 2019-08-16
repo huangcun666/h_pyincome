@@ -20,11 +20,25 @@ import datetime
 class CompanyHandler(BaseHandler):
     def get_projects(self,project_ids):
         return self.db.query(' select id,guid from t_projects where find_in_set(id,%s) ',project_ids)
+    def get_pre_next_business(self,business_list,business):
+        if business in business_list:
+            current_num=business_list.index(business)
+            next_num=current_num+1
+            pre_num=current_num-1
+            next_business=''
+            pre_business=''
+            if next_num<=len(business_list)-1:
+                next_business=business_list[next_num]
+            if pre_num>=0:
+                pre_business=business_list[pre_num]
+            return pre_business,next_business
+        return ''
     @tornado.web.authenticated
     def get(self):
         tag = self.get_argument("tag", "list_company")
         uid = self.get_secure_cookie("uid")
         uid_name = self.get_secure_cookie("name")
+        role = self.get_secure_cookie("role")
         role_list=self.get_secure_cookie('role_list')
         if tag == "list_company":
             start = self.get_argument("start","")
@@ -250,9 +264,7 @@ class CompanyHandler(BaseHandler):
             create_time=self.get_argument('create_time','')
             created_name_start=self.get_argument('created_name_start','')
             created_name_end=self.get_argument('created_name_end','')
-            project_id=self.get_argument('project_id','')
-            customer_name=self.get_argument('customer_name','')
-            customer_tel=self.get_argument('customer_tel','')
+            project_search_key=self.get_argument('project_search_key','')
             show_tag=self.get_argument('show_tag','')
             pre_page=20
             params={
@@ -274,11 +286,10 @@ class CompanyHandler(BaseHandler):
                 'created_name_end':created_name_end,
                 'step':step,
                 'category_id':category_id,
-                'project_id':project_id,
-                'customer_name':customer_name,
-                'customer_tel':customer_tel,
+                'project_search_key':project_search_key,
                 'ntag':ntag,
-                'show_tag':show_tag
+                'show_tag':show_tag,
+            
             }
             business_from_name=''
             if business_from_id=='294':
@@ -297,9 +308,7 @@ class CompanyHandler(BaseHandler):
                 '创建时间:':search_created_time,
                 '创建人:':created_name,
                 '业务标签:':customer_tag_name,
-                '联系方式:':customer_tel,
-                '客户姓名:':customer_name,
-                '确认单:':project_id,
+                '确认单/客户/电话:':project_search_key,
                 '编号/客户/电话/公司:':search_key,
                 '商机类型:':business_from_name
             }
@@ -326,6 +335,13 @@ class CompanyHandler(BaseHandler):
                 sql='  and b.assigner_at is not null and b.jiedan_at is not null and b.banjie_at is not null and b.checked_at is not null and b.checked_status=2 '
             elif step=='7':
                 sql=' and a.is_invalid_business=0 and b.assigner_at is not null and b.jiedan_at is not null and b.banjie_at is not null and b.checked_at is not null  and b.banjie_typle=2 '
+                if is_valid_business!='3':
+                    sql+=' and  business_from_id=294 '
+                    if is_valid_business:
+                        sql+=' and is_valid_business=%s '%is_valid_business
+                else:
+                    sql+=' and  business_from_id=295 '
+            
             elif step=='anomaly':
                 sql=''' and a.is_invalid_business=0 inner join '''+options.mysql_database_customer+'''.t_customer aa 
                  on a.company=aa.company  inner join '''+options.mysql_database_customer+'''
@@ -359,8 +375,9 @@ class CompanyHandler(BaseHandler):
             datediff(DATE_FORMAT(if(banjie_at is null,now(),banjie_at), '%%Y-%%m-%%d'),DATE_FORMAT(assigner_at,'%%Y-%%m-%%d'))
               between "'''+genjin_days_start+'''" and "'''+genjin_days_end+'''"
                 '''
-            if is_valid_business:
-                sql+=' and is_valid_business=%s '%is_valid_business
+            
+
+            
             if step=='3':
                 if deal_type=='1':
                     sql+=' and length(b.be_assigner_ids)-length(REPLACE (b.be_assigner_ids, ",", ""))>=1  '
@@ -383,12 +400,18 @@ class CompanyHandler(BaseHandler):
 
             if genjin_count_start and genjin_count_end:    
                 genjin_count_sql+=' and ee.genjin_count between "'+genjin_count_start+'" and "'+genjin_count_end+'" '
-            if project_id.isdigit():
-                genjin_count_sql+=' and find_in_set(%s,a.project_id) '%project_id
-            if customer_name:
-                genjin_count_sql+=' and t.customer_name="%s" '%customer_name
-            if customer_tel:
-                genjin_count_sql+=' and t.customer_tel="%s" '%customer_tel
+
+            if project_search_key:
+                p_id_sql=''
+                if project_search_key.isdigit():
+                    p_id_sql=' or find_in_set("%s",a.project_id) '%project_search_key
+                genjin_count_sql+=' and (t.customer_name="'+project_search_key+'" or t.customer_tel="'+project_search_key+'" '+p_id_sql+' ) '
+            # if project_id.isdigit():
+            #     genjin_count_sql+=' and find_in_set(%s,a.project_id) '%project_id
+            # if customer_name:
+            #     genjin_count_sql+=' and t.customer_name="%s" '%customer_name
+            # if customer_tel:
+            #     genjin_count_sql+=' and t.customer_tel="%s" '%customer_tel
 
             if genjin_name:
                 sql+=' and b.jiedan_name="%s" '%genjin_name
@@ -419,7 +442,7 @@ class CompanyHandler(BaseHandler):
                     sql+=' and find_in_set(a.uid,"%s") '%str(t_user_relation.gc)
         
             elif '283' not in role_list and '284' not in role_list and '300' not in role_list:
-                if step!='7':
+                if step!='7' and  is_valid_business!='3':
                     sql+=' and (a.uid=%s or find_in_set(%s,b.be_assigner_ids)) '%(uid,uid)
                 count_sql=' and (a.uid='+uid+' or find_in_set('+uid+',b.be_assigner_ids)) and if(a.uid='+uid+',a.uid='+uid+', find_in_set("'+uid+'_'+uid_name+'",b.be_assigner_confirm_ids) ) '
                 count_sql1=' and (a.uid=%s or find_in_set(%s,b.be_assigner_ids)) '%(uid,uid)
@@ -439,6 +462,9 @@ class CompanyHandler(BaseHandler):
                 
                  order by id 
                 """)
+            t_business_type=self.db.query('''
+                select * from t_projects_type where income_category='商机分类'
+            ''')
             t_income_type = self.db.query("""
                 select * from t_projects_type where income_category='商机来源'
                 """)
@@ -576,7 +602,8 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
              left join (select business_id,max(created_at) created_at from 
               business_develop_manage_msg f1 where f1.btype_id=3 
               and find_in_set(f1.uid,(select be_assigner_ids from business_develop_manage_milepost 
-               where business_id=f1.business_id)) group by business_id) ff on a.id=ff.business_id 
+               where business_id=f1.business_id)) group by business_id) ff on a.id=ff.business_id
+            left join t_projects t on a.project_id=t.id
               '''+genjin_count_sql+'''
              order by c.created_at desc,a.created_at desc limit %s,%s
             ''',uid,startpage,pre_page)
@@ -604,7 +631,8 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             t_income_type=t_income_type,
             t_port_type=t_port_type,
             params=params,
-            search_params=search_params
+            search_params=search_params,
+            t_business_type=t_business_type
             )
 
         elif tag=="show_business":
@@ -629,6 +657,8 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             create_time=self.get_argument('create_time','')
             created_name_start=self.get_argument('created_name_start','')
             created_name_end=self.get_argument('created_name_end','')
+            next_business=self.get_argument('next_business','')
+            pre_business=self.get_argument('pre_business','')
             page=int(self.get_argument('page','1'))
             pre_page=1
             params={
@@ -682,31 +712,49 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             
             elif step=='invalid_business':
                 sql=' and a.is_invalid_business=1 '
-            elif step:
-                if business_develop_manage.assigner_at:
-                    sql+=' and b.assigner_at is not null '
+            elif step=='1':
+                sql=' and a.is_invalid_business=0 and b.assigner_at is null and b.be_assigner_ids="" and b.banjie_at is null and b.checked_at is null '
+            
+            elif step=='2':
+                if '283' not in role_list and '284' not in role_list and '300' not in role_list:
+                    sql=' and a.is_invalid_business=0 and b.assigner_at is not null and if(a.uid='+uid+', b.jiedan_at is null and b.banjie_at is null and b.checked_at is null,not find_in_set("'+uid+'_'+uid_name+'",b.be_assigner_confirm_ids) )  '
                 else:
-                    sql+=' and b.assigner_at is null '
-                if not business_develop_manage.be_assigner_ids:
-                    sql+=' and b.be_assigner_ids="" '
-                if business_develop_manage.jiedan_at:
-                    sql+=' and b.jiedan_at is not null '
-                else:
-                    sql+=' and b.jiedan_at is null '
-                if business_develop_manage.banjie_at:
-                    sql+=' and b.banjie_at is not null '
-                else:
-                    sql+=' and b.banjie_at is null '
-                if business_develop_manage.checked_at:
-                    sql+=' and b.checked_at is not null '
-                else:
-                    sql+=' and b.checked_at is null '
-                sql+=' and b.checked_status=%s '%business_develop_manage.checked_status
+                    sql=' and a.is_invalid_business=0 and b.assigner_at is not null and b.jiedan_at is null and b.banjie_at is null and b.checked_at is null '
+            elif step=='3':
+                sql=' and a.is_invalid_business=0 and b.assigner_at is not null and b.jiedan_at is not null and b.banjie_at is null and b.checked_at is null '
+            elif step=='4':
+                sql=' and a.is_invalid_business=0 and b.assigner_at is not null and b.jiedan_at is not null and b.banjie_at is not null and b.checked_at is null '
+            elif step=='5':
+                sql=' and a.is_invalid_business=0 and b.assigner_at is not null and b.jiedan_at is not null and b.banjie_at is not null and b.checked_at is not null and b.checked_status=1 and b.banjie_typle=1 '
+            elif step=='6':
+                sql='  and b.assigner_at is not null and b.jiedan_at is not null and b.banjie_at is not null and b.checked_at is not null and b.checked_status=2 '
+            elif step=='7':
+                sql=' and a.is_invalid_business=0 and b.assigner_at is not null and b.jiedan_at is not null and b.banjie_at is not null and b.checked_at is not null  and b.banjie_typle=2 '
+            # elif step:
+                # if business_develop_manage.assigner_at:
+                #     sql+=' and b.assigner_at is not null '
+                # else:
+                #     sql+=' and b.assigner_at is null '
+                # if not business_develop_manage.be_assigner_ids:
+                #     sql+=' and b.be_assigner_ids="" '
+                # if business_develop_manage.jiedan_at:
+                #     sql+=' and b.jiedan_at is not null '
+                # else:
+                #     sql+=' and b.jiedan_at is null '
+                # if business_develop_manage.banjie_at:
+                #     sql+=' and b.banjie_at is not null '
+                # else:
+                #     sql+=' and b.banjie_at is null '
+                # if business_develop_manage.checked_at:
+                #     sql+=' and b.checked_at is not null '
+                # else:
+                #     sql+=' and b.checked_at is null '
+                # sql+=' and b.checked_status=%s '%business_develop_manage.checked_status
                 
-                if business_develop_manage.banjie_typle:
-                    sql+=' and b.banjie_typle=%s '%business_develop_manage.banjie_typle
-                else:
-                    sql+=' and b.banjie_typle is null '
+                # if business_develop_manage.banjie_typle:
+                #     sql+=' and b.banjie_typle=%s '%business_develop_manage.banjie_typle
+                # else:
+                #     sql+=' and b.banjie_typle is null '
 
             if '283' not in role_list and '284' not in role_list and '300' not in role_list:
                 if step and step!='invalid_business' and step!='anomaly':
@@ -800,6 +848,9 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             t_port_type=self.db.query('''
                  select * from t_projects_type where income_category='来源端口'
             ''')
+            t_business_type=self.db.query('''
+                select * from t_projects_type where income_category='商机分类'
+            ''')
             t_company_tag_group = self.db_company.query("""
                        select tag_category,GROUP_CONCAT(tag_name,"_",id) gc from t_company_tag where is_hide=1 group by tag_category order by order_int 
 
@@ -807,7 +858,7 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             business_develop_manage_msg=self.db.query('''
             select *,date_format(created_at,"%%Y-%%m-%%d")=date_format(now(),"%%Y-%%m-%%d") is_current_day  from business_develop_manage_msg where business_id=%s order by created_at desc
             ''',id)
-            print(sql)
+      
             business_develop_manage_all=self.db.query('''
             select a.id,a.guid
              from business_develop_manage a
@@ -820,16 +871,20 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
              ) 
              order by c.created_at desc,a.created_at desc 
             ''')
-            next_business=''
-            pre_business=''
+
             if {'guid':guid,'id':long(id)} in business_develop_manage_all:
                 current_num=business_develop_manage_all.index({'guid':guid,'id':long(id)})
                 next_num=current_num+1
                 pre_num=current_num-1
+                next_business=''
+                pre_business=''
                 if next_num<=len(business_develop_manage_all)-1:
                     next_business=business_develop_manage_all[next_num]
                 if pre_num>=0:
                     pre_business=business_develop_manage_all[pre_num]
+
+            next_business=eval(str(next_business)) if next_business else ''
+            pre_business=eval(str(pre_business)) if pre_business else ''
             t_type = self.db_company.query("select * from t_type where type_category='销售计划'")
             t_plan = self.db_company.query(
                         "select * from t_plan where business_id=%s",id)
@@ -886,6 +941,7 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                 params=params,
                 search_key='',
                 t_talk_type=t_talk_type,
+                t_business_type=t_business_type,
                 t_type=t_type,
                 t_plan=t_plan,
                 t_project=t_project,
@@ -899,7 +955,9 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                 business_develop_manage=business_develop_manage,
                 business_develop_manage_msg=business_develop_manage_msg,
                 next_business=next_business,
-                pre_business=pre_business
+                pre_business=pre_business,
+                business_develop_manage_all=business_develop_manage_all,
+                get_pre_next_business=self.get_pre_next_business
                 )   
 
         elif tag=="business_develop_manage_statistics":
@@ -938,99 +996,120 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                 date_format_sql="'%%Y-%%m'"
             elif way=='week':
                 date_format_sql="'%%Y-%%m-%%u'"
+            if statistics_type=='business_type':
+                count=self.db.get('''
+                    select count(*) count,sum(sc) ssc,
+                    (   select group_concat(business_type_name,'|',sc) from(
+                        select business_type_name, sum(sums) sc from business_develop_manage_type_counts group by business_type_name 
+                        order by sc desc)b
+                    ) every_count
+                    from (
+                     select date_format(created_at,'''+date_format_sql+''') df,sum(sums) sc from business_develop_manage_type_counts
+                     where 0=0 '''+sql_date+''' 
+                    group by df)a
+                ''')
 
-            if statistics_type=='fankui':
-                if my:
-                    sql+=' and referrer_id="%s" '%uid
-                if search_referrer:
-                    sql+=' and referrer="%s" '%search_referrer
-                select_name='referrer'
-                sql+=' and referrer <> "" and a.business_from_id=295 '
-                inner_sql=''
-            elif statistics_type=='tuiguang':
-                if my:
-                    sql+=' and uid=%s '%uid
-                if search_referrer:
-                    sql+=' and uid_name="%s" '%search_referrer
-                select_name='uid_name'
-                if invalid:
-                    sql+=' and a.business_from_id=294 and  a.is_invalid_business=1 '
-                else:
-                    sql+=' and  a.business_from_id=294 and  a.is_invalid_business!=1  '
-                inner_sql=' inner join business_develop_manage_milepost b on a.id=b.business_id  '
-            elif statistics_type=='fenpei':
-                inner_sql=' inner join business_develop_manage_milepost b on a.id=b.business_id   '
-                if fenpei_type=='new_tuiguang' or fenpei_type=='new_fankui':
-                    if my:
-                        sql+=' and substring_index(b.be_assigner_ids,",",1)="%s" '%uid
-                    if search_referrer:
-                        sql+=' and substring_index(b.be_assigner_names,",",1)="%s" '%search_referrer
-                    select_name=' substring_index(b.be_assigner_names,",",1) '
-                    date_sql=' assigner_at '
-                    if start_time and end_time:
-                        sql_date= ' and assigner_at between "%s" and "%s" '%(start_time,end_time)
+                pagination=Pagination(page,pre_page,count.count,self.request)
+                startpage=(page-1)*pre_page
+                datas=self.db.query('''
+                    select sum(sums) sc,group_concat(business_type_name,'|',sums) gc,
+                    date_format(created_at,'''+date_format_sql+''') df from business_develop_manage_type_counts 
+                    where 0=0 '''+sql_date+''' 
+                    group by df order by df  desc limit %s,%s''',startpage,pre_page)
 
-                    if fenpei_type=='new_tuiguang':
-                        sql+=' and  a.business_from_id=294 '
-                    elif fenpei_type=='new_fankui':
-                        sql+=' and  a.business_from_id=295 '                        
-                    sql+='  and  a.is_invalid_business!=1  and b.be_assigner_names<>""  '
-                elif fenpei_type=='fq_tuiguang' or fenpei_type=='fq_fankui':
+            else:
+                if statistics_type=='fankui':
                     if my:
-                        sql+=' and banjie_id=%s '%uid
+                        sql+=' and referrer_id="%s" '%uid
                     if search_referrer:
-                        sql+=' and banjie_name="%s" '%search_referrer
-                    select_name=' banjie_name '
-                    date_sql=' banjie_at '
-                    if start_time and end_time:
-                        sql_date= ' and banjie_at between "%s" and "%s" '%(start_time,end_time)
-                    if fenpei_type=='fq_tuiguang':
-                        sql+=' and a.business_from_id=294 '
-                    elif fenpei_type=='fq_fankui':
-                        sql+=' and a.business_from_id=295 '
-                    sql+=' and  a.is_invalid_business!=1  and b.banjie_typle=2 '
-                elif fenpei_type=='transfer_tuiguang' or fenpei_type=='transfer_fankui':
+                        sql+=' and referrer="%s" '%search_referrer
+                    select_name='referrer'
+                    sql+=' and referrer <> "" and a.business_from_id=295 '
+                    inner_sql=''
+                elif statistics_type=='tuiguang':
                     if my:
-                        sql+=' and raw_jiedan_id=%s '%uid
+                        sql+=' and uid=%s '%uid
                     if search_referrer:
-                        sql+=' and raw_jiedan_name="%s" '%search_referrer
-                    select_name=' raw_jiedan_name '
-                    date_sql=' b.created_at '
-                    if start_time and end_time:
-                        sql_date= ' and b.created_at between "%s" and "%s" '%(start_time,end_time)
+                        sql+=' and uid_name="%s" '%search_referrer
+                    select_name='uid_name'
+                    if invalid:
+                        sql+=' and a.business_from_id=294 and  a.is_invalid_business=1 '
+                    else:
+                        sql+=' and  a.business_from_id=294 and  a.is_invalid_business!=1  '
+                    inner_sql=' inner join business_develop_manage_milepost b on a.id=b.business_id  '
+                elif statistics_type=='fenpei':
+                    inner_sql=' inner join business_develop_manage_milepost b on a.id=b.business_id   '
+                    if fenpei_type=='new_tuiguang' or fenpei_type=='new_fankui':
+                        if my:
+                            sql+=' and substring_index(b.be_assigner_ids,",",1)="%s" '%uid
+                        if search_referrer:
+                            sql+=' and substring_index(b.be_assigner_names,",",1)="%s" '%search_referrer
+                        select_name=' substring_index(b.be_assigner_names,",",1) '
+                        date_sql=' assigner_at '
+                        if start_time and end_time:
+                            sql_date= ' and assigner_at between "%s" and "%s" '%(start_time,end_time)
 
-                    if fenpei_type=='transfer_tuiguang':
-                        sql+=' and a.business_from_id=294 '
-                    elif fenpei_type=='transfer_fankui':
-                        sql+=' and a.business_from_id=295 '
-                    inner_sql=' inner join business_develop_manage_transfer b on a.id=b.business_id   '
-            count=self.db.get('''
-                select count(*) count,sum(sc) ssc,
-                (
-                select group_concat(name,'|',count) from
-                (select '''+select_name+''' name,count(*) count from 
-                business_develop_manage a '''+inner_sql+''' where 0=0'''+sql+''' group by name order by count desc)a
-                ) every_count
-                from (
-                select group_concat(name,'|',count),df,sum(count) sc from (
-                select '''+select_name+''' name,date_format('''+date_sql+''','''+date_format_sql+''') df,count(*)  count
-                from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+sql_date+''' group by '''+select_name+''',df)aa
-                group by df)aaa
-            ''')
-            pagination=Pagination(page,pre_page,count.count,self.request)
-            startpage=(page-1)*pre_page
-            datas=self.db.query('''
-                select group_concat(name,'|',count) gc,df,sum(count) sc from (
-                select '''+select_name+''' name,date_format('''+date_sql+''','''+date_format_sql+''') df,count(*)  count
-                from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+sql_date+''' group by name,df)aa
-                group by df order by df desc limit %s,%s
-            ''',startpage,pre_page)
-            print('''
-              select group_concat(name,'|',count) gc,df,sum(count) sc from (
-                select '''+select_name+''' name,date_format('''+date_sql+''','''+date_format_sql+''') df,count(*)  count
-                from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+sql_date+''' group by name,df)aa
-                group by df order by df desc
-            ''')
+                        if fenpei_type=='new_tuiguang':
+                            sql+=' and  a.business_from_id=294 '
+                        elif fenpei_type=='new_fankui':
+                            sql+=' and  a.business_from_id=295 '                        
+                        sql+='  and  a.is_invalid_business!=1  and b.be_assigner_names<>""  '
+                    elif fenpei_type=='fq_tuiguang' or fenpei_type=='fq_fankui':
+                        if my:
+                            sql+=' and banjie_id=%s '%uid
+                        if search_referrer:
+                            sql+=' and banjie_name="%s" '%search_referrer
+                        select_name=' banjie_name '
+                        date_sql=' banjie_at '
+                        if start_time and end_time:
+                            sql_date= ' and banjie_at between "%s" and "%s" '%(start_time,end_time)
+                        if fenpei_type=='fq_tuiguang':
+                            sql+=' and a.business_from_id=294 '
+                        elif fenpei_type=='fq_fankui':
+                            sql+=' and a.business_from_id=295 '
+                        sql+=' and  a.is_invalid_business!=1  and b.banjie_typle=2 '
+                    elif fenpei_type=='transfer_tuiguang' or fenpei_type=='transfer_fankui':
+                        if my:
+                            sql+=' and raw_jiedan_id=%s '%uid
+                        if search_referrer:
+                            sql+=' and raw_jiedan_name="%s" '%search_referrer
+                        select_name=' raw_jiedan_name '
+                        date_sql=' b.created_at '
+                        if start_time and end_time:
+                            sql_date= ' and b.created_at between "%s" and "%s" '%(start_time,end_time)
+
+                        if fenpei_type=='transfer_tuiguang':
+                            sql+=' and a.business_from_id=294 '
+                        elif fenpei_type=='transfer_fankui':
+                            sql+=' and a.business_from_id=295 '
+                        inner_sql=' inner join business_develop_manage_transfer b on a.id=b.business_id   '
+                count=self.db.get('''
+                    select count(*) count,sum(sc) ssc,
+                    (
+                    select group_concat(name,'|',count) from
+                    (select '''+select_name+''' name,count(*) count from 
+                    business_develop_manage a '''+inner_sql+''' where 0=0'''+sql+''' group by name order by count desc)a
+                    ) every_count
+                    from (
+                    select group_concat(name,'|',count),df,sum(count) sc from (
+                    select '''+select_name+''' name,date_format('''+date_sql+''','''+date_format_sql+''') df,count(*)  count
+                    from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+sql_date+''' group by '''+select_name+''',df)aa
+                    group by df)aaa
+                ''')
+                pagination=Pagination(page,pre_page,count.count,self.request)
+                startpage=(page-1)*pre_page
+                datas=self.db.query('''
+                    select group_concat(name,'|',count) gc,df,sum(count) sc from (
+                    select '''+select_name+''' name,date_format('''+date_sql+''','''+date_format_sql+''') df,count(*)  count
+                    from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+sql_date+''' group by name,df)aa
+                    group by df order by df desc limit %s,%s
+                ''',startpage,pre_page)
+                # print('''
+                #   select group_concat(name,'|',count) gc,df,sum(count) sc from (
+                #     select '''+select_name+''' name,date_format('''+date_sql+''','''+date_format_sql+''') df,count(*)  count
+                #     from business_develop_manage a '''+inner_sql+''' where 0=0 '''+sql+sql_date+''' group by name,df)aa
+                #     group by df order by df desc
+                # ''')
             self.render(
             'company/business_develop_manage_statistics.html',
             search_key='',
@@ -1115,6 +1194,241 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             pagination=pagination,
             params=params
             )
+        elif tag=='search_user':
+            name=self.get_argument('name','')
+            name1=self.get_argument('name1','')
+            #同时传入两个人名
+            user_ids={}
+            result=True
+            if name:
+                t_user=self.db.get('select id from t_user where name=%s ',name)
+                if not t_user:
+                    return self.write('-1')
+                user_ids['user_id']=t_user.id
+            if name1:
+                t_user1=self.db.get('select id from t_user where name=%s ',name1)
+                if not t_user1:
+                    return self.write('-2')
+                user_ids['user_id1']=t_user1.id
+
+            return self.write(user_ids)
+
+        elif tag=='search_user_list':
+            name=self.get_argument('name','')
+            name1=self.get_argument('name1','')
+            #同时传入两个人名
+            user_ids={'user_ids':[],'user_ids1':[]}
+            result=True
+            if name:
+                user_list=[]
+                for item in name.split(','):
+                    t_user=self.db.get('select id from t_user where name=%s ',item)
+                    if not t_user:
+                        return self.write({'er_user':-1,'user_name':item})
+                    user_list.append(t_user.id)
+                user_ids['user_ids']=user_list
+
+            if name1:
+                user_list=[]
+                for item in name1.split(','):
+                    t_user=self.db.get('select id from t_user where name=%s ',item)
+                    if not t_user:
+                        return self.write({'er_user':-2,'user_name':item})
+                    user_list.append(t_user.id)
+                user_ids['user_ids1']=user_list
+
+            return self.write(user_ids)        
+
+        elif tag=='approval_apply_manage':
+            page=int(self.get_argument('page',1))
+            step=self.get_argument('step','')
+            project_type_id=self.get_argument('project_type_id','')
+            pre_page=20
+            sql=''
+            params={
+                'step':step,
+                'project_type_id':project_type_id
+            }
+        
+            if role!='8' and uid not in ['98','226']:
+                sql=' and  (find_in_set("%s",approval_names) or find_in_set("%s",copy_names) or  apply_id=%s)'%(uid_name,uid_name,uid)
+            if step=='1':
+                sql+=' and submit_at is null and check_at is null '
+            elif step=='2':
+                sql+=' and submit_at is not null and check_at is null '
+            elif step=='3':          
+                sql+=' and submit_at is not null and check_at  is not null and check_status=1'
+            elif step=='4':
+                sql+=' and submit_at is not null and check_at  is not null and check_status=2'
+            if project_type_id:
+                sql+=' and project_type_id=%s '%project_type_id
+                        
+            sql=' where  '+sql[4:] if sql else ''
+            count=self.db.get(' select count(*) count  from  approval_apply_manage '+sql)
+            pagination=Pagination(page,pre_page,count.count,self.request)
+            startpage=(page-1)*pre_page
+            datas=self.db.query(''' 
+            select * from approval_apply_manage '''+sql+''' order by created_at desc limit %s,%s
+              ''',startpage,pre_page)
+            t_projects_type=self.db.query(' select id,income_name,btag from t_projects_type where income_category="审批申请项目" ')
+            t_user_department=self.db.query(' select id,name from t_user_department where parent_id=0 ')
+            self.render('company/approval_apply_manage.html',
+            datas=datas,
+            search_key='',
+            params=params,
+            t_projects_type=t_projects_type,
+            t_user_department=t_user_department,
+            pagination=pagination,
+            tag=tag
+            )
+
+        elif tag=="approval_apply_manage_show":
+            id=self.get_argument('id','')
+            guid=self.get_argument('guid','')
+            data=self.db.get('''
+            select * from approval_apply_manage where id=%s and guid=%s
+            ''',id,guid)
+
+            if not data:
+                return self.write('审批单不存在')
+            unconfirm_approval_person=self.db.get('''
+                select * from approval_apply_manage_approval where  approval_id=%s and  confirm_at is null and approval_uid=%s ''',id,uid)
+            submit_approval_person=self.db.get('''
+                select a.* from approval_apply_manage_approval a where 
+                approval_id=%s and  confirm_at is not null and approval_uid=%s 
+                and (select count(*) from approval_apply_manage_approval where approval_id=a.approval_id and confirm_at is null)=0
+                and id=(select max(id) from approval_apply_manage_approval where approval_id=a.approval_id)
+                 ''',id,uid)
+            approval_msg=self.db.query(' select * from approval_apply_manage_msg where approval_id=%s  order by id desc',id)
+            t_projects_type=self.db.query(' select id,income_name,btag from t_projects_type where income_category="审批申请项目" ')
+            t_user_department=self.db.query(' select id,name from t_user_department where parent_id=0 ')
+            self.render('company/approval_apply_manage_show.html',
+            data=data,
+            approval_msg=approval_msg,
+            unconfirm_approval_person=unconfirm_approval_person,
+            submit_approval_person=submit_approval_person,
+            t_projects_type=t_projects_type,
+            t_user_department=t_user_department,
+            search_key='')
+        
+        elif tag=="sale_current_genjin":
+            show_tag=self.get_argument('show_tag','tuiguang')
+            sale_name=self.get_argument('sale_name','')
+            start_time=self.get_argument('start_time','')
+            end_time=self.get_argument('end_time','')
+            page=int(self.get_argument('page',1))
+            pre_page=20
+            search_time=' =curdate() '
+            params={
+                'tag':tag,
+                'show_tag':show_tag,
+                'sale_name':sale_name,
+                'start_time':start_time,
+                'end_time':end_time
+            }
+            if role!='8':
+                return self.write('无权限')
+            all_sales=self.db.query(' select name from t_user where  department_name="销售部" ')
+            if start_time and end_time:
+                search_time=' between date("%s") and date("%s") '%(start_time,end_time)
+            if sale_name:
+                search_time+=' and a.uid_name="%s" '%sale_name
+            
+            if show_tag=='tuiguang' or show_tag=='fankui':
+                from_sql='"推广商机"'
+                if show_tag=='fankui':
+                    from_sql='"反馈商机"'
+                
+                every_count=self.db.query('''
+                    select count(*) count,uid_name from(
+                    SELECT a.uid_name FROM business_develop_manage_msg a inner join
+                    business_develop_manage b on a.business_id=b.id
+                    where a.btype_id=3 and date(a.created_at)'''+search_time+'''
+                    and b.business_from_name='''+from_sql+'''
+                    group by a.business_id,a.uid_name)a group by uid_name order by count desc
+                ''')
+                count=self.db.get('''
+                select count(*) count,sum(sc) ssc
+                from (
+                 select sum(count) sc,df from(
+                    select count(*) count,df,uid_name from(
+                    SELECT a.uid_name, date(a.created_at) df FROM business_develop_manage_msg a inner join
+                    business_develop_manage b on a.business_id=b.id
+                    where a.btype_id=3 and date(a.created_at)'''+search_time+'''
+                    and b.business_from_name='''+from_sql+'''
+                    group by a.business_id,a.uid_name,df)a group by a.uid_name,df)b group by df)c
+                ''')
+                pagination=Pagination(page,pre_page,count.count,self.request)
+                startpage=(page-1)*pre_page
+                datas=self.db.query('''
+                    select group_concat(uid_name,'|',count) gc,df,sum(count) sc from(
+                    select count(*) count,df,uid_name from(
+                    SELECT a.uid_name, date(a.created_at) df FROM business_develop_manage_msg a inner join
+                    business_develop_manage b on a.business_id=b.id
+                    where a.btype_id=3 and date(a.created_at)'''+search_time+'''
+                    and b.business_from_name='''+from_sql+'''
+                    group by a.business_id,a.uid_name,df)a group by a.uid_name,df)b group by df order by df desc
+                    limit %s,%s''',startpage,pre_page)    
+            elif show_tag=='jizhang':
+                every_count=self.db_customer.query('''
+                       select count(*) count,uid_name from (
+                    select count(*) count,a.uid_name, date(created_at) df from t_customer_exchange a where etype=2 and isvisible=2 and  
+                    date(created_at)'''+search_time+'''
+                    group by customer_id,uid_name)a group by uid_name order by count desc
+                ''')
+                count=self.db_customer.get('''
+                select count(*) count,sum(sc) ssc from (
+                   select sum(count) sc from(
+                    select count(*) count,uid_name,df from (
+                    select count(*) count,a.uid_name, date(created_at) df from t_customer_exchange a where etype=2 and isvisible=2 and  
+                    date(created_at)'''+search_time+'''
+                    group by customer_id,uid_name)a group by uid_name,df)b group by df)c
+                ''')
+                pagination=Pagination(page,pre_page,count.count,self.request)
+                startpage=(page-1)*pre_page
+                datas=self.db_customer.query('''
+                    select group_concat(uid_name,'|',count) gc,df,sum(count) sc from(
+                    select count(*) count,uid_name,df from (
+                    select count(*) count,a.uid_name, date(created_at) df from t_customer_exchange a where etype=2 and isvisible=2 and  
+                    date(created_at)'''+search_time+'''
+                    group by customer_id,uid_name)a group by uid_name,df)b group by df order by df desc limit %s,%s
+                    ''',startpage,pre_page)
+            elif show_tag=='yeji':
+                every_count=self.db.query('''
+                   SELECT  sum(all_income) count
+                    ,uid_name FROM t_projects a
+                    inner join t_user b on a.uid=b.id and a.uid=b.id and b.department_name='销售部' 
+                    and   date(a.created_at)'''+search_time+'''
+                    group by uid_name order by count desc ''')
+                count=self.db.get('''
+                    select count(*) count,sum(sc) ssc from (
+                    select df,sum(all_incomes) sc
+                    from ( SELECT  sum(all_income) all_incomes,
+                    date(a.created_at) df,uid_name FROM t_projects a
+                    inner join t_user b on a.uid=b.id and a.uid=b.id and b.department_name='销售部' 
+                    and   date(a.created_at)'''+search_time+'''
+                    group by uid_name,df)a group by df)c
+                ''')
+                pagination=Pagination(page,pre_page,count.count,self.request)
+                startpage=(page-1)*pre_page
+                datas=self.db.query('''
+                    select group_concat(uid_name,'|',all_incomes) gc,df,sum(all_incomes) sc
+                    from
+                    ( SELECT  sum(all_income) all_incomes,
+                    date(a.created_at) df,uid_name FROM t_projects a
+                    inner join t_user b on a.uid=b.id and a.uid=b.id and b.department_name='销售部' 
+                    and   date(a.created_at)'''+search_time+'''
+                    group by uid_name,df)a group by df order by df desc limit %s,%s
+                ''',startpage,pre_page)
+            self.render('company/sale_current_genjin.html',
+            datas=datas,
+            params=params,
+            tag=tag,
+            all_sales=all_sales,
+            count=count,
+            every_count=every_count,
+            pagination=pagination,
+            search_key='')
 
     @tornado.web.authenticated
     def post(self):
@@ -1311,6 +1625,7 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             business_from_name=busniess_from.split('|')[1]
             link_gender=self.get_argument('link_gender','1')
             not_company=self.get_argument('not_company','0')
+            business_type=self.get_argument('business_type','')
             txt=''
             if source_way:
                 source_way_name=source_way.split('|')[1]
@@ -1337,6 +1652,12 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
             else:
                 feedback_type_id=0
                 feedback_type_name=''
+            if business_type:
+                business_type_name=business_type.split('|')[1]
+                business_type_id=business_type.split('|')[0]
+            else:
+                business_type_name=''
+                business_type_id=0
             if business_from_id=='295' and (feedback_type_id!='4' and friend_introduce=='0'):
                 t_customer = self.db_customer.get(
                         "select * from t_customer where company=%s",
@@ -1359,11 +1680,11 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                     feedback_type_name=%s,
                 customer_name=%s,company=%s,phone=%s,project_request=%s,source_keyword=%s,source_way_name=%s,source_way_id=%s,
                     source_place_name=%s,source_place_id=%s,source_port_name=%s,source_port_id=%s,remark=%s,referrer=%s,be_referrer_company=%s,
-                    be_referrer_name=%s,be_referrer_phone=%s,friend_introduce=%s,referrer_id=%s,not_company=%s where id=%s and guid=%s
+                    be_referrer_name=%s,be_referrer_phone=%s,friend_introduce=%s,referrer_id=%s,not_company=%s,business_type_name=%s,business_type_id=%s where id=%s and guid=%s
                 ''',business_from_id,business_from_name,feedback_type_id,feedback_type_name,
                 customer_name,company,phone,project_request[:-1],source_keyword,source_way_name,source_way_id,
                     source_place_name,source_place_id,source_port_name,source_port_id,remark,referrer,be_referrer_company,
-                    be_referrer_name,be_referrer_phone,friend_introduce,referrer_id,not_company,business_id,business_guid)
+                    be_referrer_name,be_referrer_phone,friend_introduce,referrer_id,not_company,business_type_name,business_type_id,business_id,business_guid)
         
             else:
                 if business_from_id=='295' and feedback_type_id in ['2','3']:
@@ -1377,13 +1698,13 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                     customer_name,company,phone,project_request,source_keyword,source_way_name,source_way_id,
                     source_place_name,source_place_id,source_port_name,source_port_id,remark,referrer,be_referrer_company,
                     be_referrer_name,be_referrer_phone,guid,created_at,uid,uid_name,friend_introduce,feedback_type_id,
-                    feedback_type_name,referrer_id,first_link_name,first_link_phone,not_company) 
-                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    feedback_type_name,referrer_id,first_link_name,first_link_phone,not_company,business_type_name,business_type_id) 
+                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ''',business_from_id,business_from_name,
                     customer_name,company,phone,project_request[:-1],source_keyword,source_way_name,source_way_id,
                     source_place_name,source_place_id,source_port_name,source_port_id,remark,referrer,be_referrer_company,
                     be_referrer_name,be_referrer_phone,guid,dt,uid,uid_name,friend_introduce,feedback_type_id,
-                    feedback_type_name,referrer_id,link_name,link_tel,not_company)
+                    feedback_type_name,referrer_id,link_name,link_tel,not_company,business_type_name,business_type_id)
                 if result>0:
                     self.db.execute("""
                                     insert into business_develop_manage_msg(uid,uid_name,message,created_at,business_id,tag_type,btype_id)
@@ -1660,22 +1981,41 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                         values(%s,%s,%s,%s,%s,%s,%s)
                         """, uid, uid_name,message, dt, business_id, "操作记录",'2')
             elif step=='5':
-                be_change_id=self.get_argument('be_change_id')
-                be_change_name=self.get_argument('be_change_name')
+                be_change_id=self.get_argument('be_change_id','')
+                be_change_name=self.get_argument('be_change_name','')
                 change_name=self.get_argument('change_name')
+                business_ids=self.get_argument('business_ids','')
+                milepost_ids=self.get_argument('milepost_ids','')
+                be_change_ids=self.get_argument('be_change_ids','')
                 t_user=self.db.get(''' select * from t_user where name=%s ''',change_name)
+
                 if not t_user:
                     return self.write('-1')
-                result=self.db.execute(''' 
-                    update  business_develop_manage_milepost set  
-                    be_assigner_names=replace(be_assigner_names,%s,%s),be_assigner_ids=replace(be_assigner_ids,%s,%s),
-                    be_assigner_confirm_ids=replace(be_assigner_confirm_ids,%s,'') where id=%s
-                ''',be_change_name+',',t_user.name+',',be_change_id+',',str(t_user.id)+',',be_change_id+'_'+be_change_name+',',business_milepost_id)
-                if result==0:
-                    self.db.execute("""
-                        insert into business_develop_manage_msg(uid,uid_name,message,created_at,business_id,tag_type,btype_id)
-                        values(%s,%s,%s,%s,%s,%s,%s)
-                        """, uid, uid_name,uid_name+'将跟进人'+be_change_name+'更改为'+t_user.name, dt, business_id, "操作记录",'2')
+                if business_ids:
+                    for idx,business_id in enumerate(business_ids.split(',')):
+                        be_change=self.db.get(''' select * from t_user where id=%s ''',be_change_ids.split(',')[idx])
+                        result=self.db.execute(''' 
+                        update  business_develop_manage_milepost set  
+                        be_assigner_names=replace(be_assigner_names,%s,%s),be_assigner_ids=replace(be_assigner_ids,%s,%s),
+                        be_assigner_confirm_ids=replace(be_assigner_confirm_ids,%s,'') where id=%s
+                        ''',be_change.name+',',t_user.name+',',str(be_change.id)+',',str(t_user.id)+',',
+                        str(be_change.id)+'_'+be_change.name+',',milepost_ids.split(',')[idx])
+                        if result==0:
+                            self.db.execute("""
+                                insert into business_develop_manage_msg(uid,uid_name,message,created_at,business_id,tag_type,btype_id)
+                                values(%s,%s,%s,%s,%s,%s,%s)
+                                """, uid, uid_name,uid_name+'将跟进人'+be_change.name+'更改为'+t_user.name, dt, business_id, "操作记录",'2')
+                else:
+                    result=self.db.execute(''' 
+                        update  business_develop_manage_milepost set  
+                        be_assigner_names=replace(be_assigner_names,%s,%s),be_assigner_ids=replace(be_assigner_ids,%s,%s),
+                        be_assigner_confirm_ids=replace(be_assigner_confirm_ids,%s,'') where id=%s
+                    ''',be_change_name+',',t_user.name+',',be_change_id+',',str(t_user.id)+',',be_change_id+'_'+be_change_name+',',business_milepost_id)
+                    if result==0:
+                        self.db.execute("""
+                            insert into business_develop_manage_msg(uid,uid_name,message,created_at,business_id,tag_type,btype_id)
+                            values(%s,%s,%s,%s,%s,%s,%s)
+                            """, uid, uid_name,uid_name+'将跟进人'+be_change_name+'更改为'+t_user.name, dt, business_id, "操作记录",'2')
             elif step=='6':
                 for item in businessid_milepostid_company.split(','):
                     result=self.db.execute('''
@@ -1891,4 +2231,246 @@ if(ff.created_at is not null,datediff(DATE_FORMAT(now(),'%%Y-%%m-%%d'),DATE_FORM
                 self.db.execute('''
                 update business_develop_manage set first_link_name=%s,first_link_phone=%s
                     where id=%s ''',link_name,link_tel,business_id) 
+        
+        elif tag=="add_new_approval_apply":
+            # department_id=self.get_argument('department_id','')
+            department_name=self.get_secure_cookie('department_name')
+            project_type_id=self.get_argument('project_type_id','')
+            project_type_name=self.get_argument('project_type_name','')
+            opposite_company=self.get_argument('opposite_company','')
+            opposite_fz_name=self.get_argument('opposite_fz_name','')
+            approval_names=self.get_argument('approval_names','')
+            approval_ids=self.get_argument('approval_ids','')
+            copy_names=self.get_argument('copy_names','')
+            copy_ids=self.get_argument('copy_ids','')
+            project_type_tag=self.get_argument('project_type_tag','')
+            content=self.get_argument('content','')
+            approval_id=self.get_argument('approval_id','')
+            department=self.db.get(' select id from t_user_department where name=%s ',department_name)
+            file_path=''
+            same_approval_names=''
+            same_copy_names=''
+            last_milepost_msg=''
+            if approval_id:
+                approval_names_exist_edit=self.get_argument('approval_names_exist_edit','')
+                approval_names_exist=self.get_argument('approval_names_exist','')
+                copy_names_exist_edit=self.get_argument('copy_names_exist_edit','')
+                copy_names_exist=self.get_argument('copy_names_exist','')
+                new_approval_names=approval_names_exist.split(',') if approval_names_exist else []
+                new_copy_names=copy_names_exist.split(',') if copy_names_exist else []
+    
+                if approval_names_exist_edit!=approval_names_exist:
+                    print(approval_names_exist_edit.split(','))
+                    for idx,item in enumerate(approval_names_exist_edit.split(',')):
+                                       
+                        if item=='已删':
+                            self.db.execute(''' 
+                            delete from approval_apply_manage_approval where approval_id=%s and approval_name=%s 
+                            ''',approval_id,approval_names_exist.split(',')[idx])
+                            self.db.execute('''
+                        insert into approval_apply_manage_msg values(default,%s,%s,%s,%s,%s)
+                        ''',uid_name,uid,dt,'删除审批人'+approval_names_exist.split(',')[idx],approval_id)
+                            new_approval_names.remove(approval_names_exist.split(',')[idx])
+                            last_milepost_msg+='删除审批人'+approval_names_exist.split(',')[idx]+','
+                
+                if copy_names_exist_edit!=copy_names_exist:
+                    for idx,item in enumerate(copy_names_exist_edit.split(',')):
+                        if item=='已删':
+                            self.db.execute(''' 
+                            delete from approval_apply_manage_copy where approval_id=%s and copy_name=%s 
+                            ''',approval_id,copy_names_exist.split(',')[idx])
+                            self.db.execute('''
+                        insert into approval_apply_manage_msg values(default,%s,%s,%s,%s,%s)
+                        ''',uid_name,uid,dt,'删除抄送人'+copy_names_exist.split(',')[idx],approval_id)
+                            new_copy_names.remove(copy_names_exist.split(',')[idx])
+                            last_milepost_msg+='删除抄送人'+copy_names_exist.split(',')[idx]+','
+                        
+
+                if approval_ids:
+                    for idx,item in enumerate(approval_ids.split(',')):
+                        approval_name=self.db.get(
+                    ' select * from approval_apply_manage_approval where approval_id=%s and approval_uid=%s ',approval_id,item)
+                        if approval_name:
+                            same_approval_names+=approval_names.split(',')[idx]+','
+                            continue
+                        self.db.execute(''' 
+                    insert into approval_apply_manage_approval values(default,%s,%s,%s,default,%s) '''
+                    ,approval_id,approval_names.split(',')[idx],dt,item)
+                        self.db.execute('''
+                        insert into approval_apply_manage_msg values(default,%s,%s,%s,%s,%s)
+                        ''',uid_name,uid,dt,'添加审批人'+approval_names.split(',')[idx],approval_id)
+                        new_approval_names.append(approval_names.split(',')[idx])
+                        last_milepost_msg+='添加审批人'+approval_names.split(',')[idx]+','
+
+                if copy_ids:
+                    for i,item in enumerate(copy_names.split(',')):
+                        copy_name=self.db.get(
+                    ' select * from approval_apply_manage_copy where approval_id=%s and copy_name=%s ',approval_id,item)
+                        if copy_name:
+                            same_copy_names+=item+','
+                            continue
+                        self.db.execute('''
+                    insert into approval_apply_manage_copy values(default,%s,%s,%s,%s)''',copy_ids.split(',')[i],item,approval_id,dt)
+                        self.db.execute('''
+                insert into approval_apply_manage_msg values(default,%s,%s,%s,%s,%s)''',uid_name,uid,dt,'添加抄送人'+item,approval_id)
+                        new_copy_names.append(item)
+                        last_milepost_msg+='添加抄送人'+item+','
+
+
+
+                new_approval_names=','.join(new_approval_names)+','
+                new_copy_names=','.join(new_copy_names)+',' if new_copy_names else ''
+                sql=''
+                if last_milepost_msg:
+                    sql=' ,last_milepost_name="%s",last_milepost_msg="%s",last_milepost_at="%s" '%(uid_name,uid_name+last_milepost_msg[:-1],dt)
+                self.db.execute('''
+                    update approval_apply_manage set
+                    project_type_name=%s,
+                    project_type_id=%s,project_type_tag=%s,opposite_company=%s,
+
+                    opposite_fz_name=%s,content=%s,approval_names=%s,copy_names=%s
+                  '''+sql+'''
+                     where id=%s
+                ''',project_type_name,project_type_id,
+                project_type_tag,opposite_company,opposite_fz_name,
+                content,new_approval_names,new_copy_names,approval_id)
+            else:
+                approval_id=self.db.execute('''
+                    insert into approval_apply_manage
+                    (guid,department_name,department_id,apply_name,apply_id,project_type_name,
+                    project_type_id,project_type_tag,opposite_company,opposite_fz_name,content,
+                    last_milepost_name,last_milepost_msg,last_milepost_at,approval_names,copy_names,created_at
+                    )
+                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ''',uuid.uuid4(),department_name,department.id,uid_name,uid,project_type_name,
+                project_type_id,project_type_tag,opposite_company,opposite_fz_name,content,
+                uid_name,uid_name+'创建审批申请',dt,approval_names+',',copy_names+',' if copy_names else '' ,dt)
+                for i,item in enumerate(approval_names.split(',')):
+                    self.db.execute('''
+                    insert into approval_apply_manage_approval values(default,%s,%s,%s,default,%s)''',approval_id,item,dt,approval_ids.split(',')[i])
+                if copy_ids:
+                    for i,item in enumerate(copy_names.split(',')):
+                        self.db.execute('''
+                    insert into approval_apply_manage_copy values(default,%s,%s,%s,%s)''',copy_ids.split(',')[i],item,approval_id,dt)
+                self.db.execute('''
+                insert into approval_apply_manage_msg values(default,%s,%s,%s,%s,%s)''',uid_name,uid,dt,'创建审批申请',approval_id)
+            if approval_id>0:
+                for k,file1 in self.request.files.items():
+                    is_upload = False
+                    try:
+                        file1 =file1[0]
+                        is_upload = True
+                    except:
+                        pass
+                    if is_upload:
+                        ori_filename = file1["filename"]
+                        filename_full = options.upload_path + "/approval/%s/" % (
+                            approval_id)
+                        url_path = "/static/approval/%s/" % (approval_id)
+                        try:
+                            os.makedirs(filename_full)
+                        except OSError:
+                            if not os.path.isdir(filename_full):
+                                raise
+                        uuid_str = str(uuid.uuid4())
+                        fname = "{0}_{1}".format(uuid_str, ori_filename)
+
+                        save_full_path = filename_full + fname
+                        url_fname = "{0}{1}".format(url_path, fname)
+
+                        output_file = open(save_full_path, 'w')
+                        output_file.write(file1["body"])
+                        file_path += url_fname+'|'
+                self.db.execute(' update approval_apply_manage set file_path=concat(file_path,%s) where id=%s ',file_path,approval_id)
+                self.write({'same_approval_names':same_approval_names,'same_copy_names':same_copy_names})
+
+        elif tag=='add_approval_name':
+            approval_id=self.get_argument('approval_id','')
+            name_type=self.get_argument('name_type','')
+            add_name=self.get_argument('add_name','')
+            add_name_id=self.get_argument('add_name_id','')
+            approval_apply_manage=self.db.get(' select check_at from approval_apply_manage where id=%s '%approval_id)
+            if approval_apply_manage.check_at:
+                return self.write('-3')
+            if name_type=='approval_name':
+                approval_name=self.db.get(
+                    ' select * from approval_apply_manage_approval where approval_id=%s and approval_uid=%s ',
+                    approval_id,add_name_id
+                    )
+                if approval_name:
+                    return self.write('-1')
+                self.db.execute('''
+                    update approval_apply_manage set 
+                    submit_at=null,submit_id=null,submit_name=null
+                    ,approval_names=concat(approval_names,%s),
+                    last_milepost_name=%s,last_milepost_msg=%s,last_milepost_at=%s
+                     where id=%s ''',add_name+',',uid_name,uid_name+'添加'+add_name+'为审批人',dt,approval_id)
+                self.db.execute(''' 
+                    insert into approval_apply_manage_approval values(default,%s,%s,%s,default,%s) '''
+                    ,approval_id,add_name,dt,add_name_id)
+                self.db.execute('''
+                insert into approval_apply_manage_msg values(default,%s,%s,%s,%s,%s)
+                ''',uid_name,uid,dt,'添加'+add_name+'为审批人',approval_id)
+            elif name_type=='copy_name':
+                copy_name=self.db.get(
+                    ' select * from approval_apply_manage_copy where approval_id=%s and copy_uid=%s ',
+                    approval_id,add_name_id)
+                if copy_name:
+                    return self.write('-2')
+                self.db.execute('''
+                    update approval_apply_manage set  copy_names=concat(copy_names,%s),
+                    last_milepost_name=%s,last_milepost_msg=%s,last_milepost_at=%s
+                     where id=%s''',add_name+',',uid_name,uid_name+'添加'+add_name+'为审批人',dt,approval_id)
+                self.db.execute(''' 
+                    insert into approval_apply_manage_copy values(default,%s,%s,%s,%s) '''
+                    ,add_name_id,add_name,approval_id,dt)
+                self.db.execute('''
+                insert into approval_apply_manage_msg values(default,%s,%s,%s,%s,%s)
+                ''',uid_name,uid,dt,'添加'+add_name+'为抄送人',approval_id)
+        
+        elif tag=='approval_milepost':
+            step=self.get_argument('step','')
+            approval_id=self.get_argument('approval_id','')
+            guid=self.get_argument('guid','')
+            if step=='approval_conform':
+                self.db.execute(''' 
+                    update approval_apply_manage_approval  
+                    set confirm_at=%s where approval_id=%s and approval_uid=%s''',
+                    dt,approval_id,uid)
+                self.db.execute('''
+                    update approval_apply_manage set 
+                    last_milepost_name=%s,last_milepost_msg=%s,last_milepost_at=%s where id=%s and guid=%s
+                ''',uid_name,uid_name+'确认审批',dt,approval_id,guid)
+                self.db.execute('''
+                    insert into approval_apply_manage_msg values(default,%s,%s,%s,%s,%s) 
+                ''',uid_name,uid,dt,'确认审批',approval_id)
+            elif step=='approval_submit':
+                self.db.execute('''
+                    update approval_apply_manage set submit_at=%s,submit_id=%s,submit_name=%s,
+                    last_milepost_name=%s,last_milepost_msg=%s,last_milepost_at=%s where id=%s and guid=%s
+                ''',dt,uid,uid_name,uid_name,uid_name+'递交上级审批',dt,approval_id,guid)
+                self.db.execute('''
+                    insert into approval_apply_manage_msg values(default,%s,%s,%s,%s,%s) 
+                ''',uid_name,uid,dt,'递交上级审批',approval_id)
+            elif step=='approval_check':
+                checked_status=self.get_argument('check_status')
+                count_approval=self.db.get('''
+                    select count(*) count from approval_apply_manage_approval 
+                    where approval_id=%s and confirm_at is null
+                ''',approval_id)
+                if count_approval.count==0:
+                    if checked_status=='1':
+                        msg='审核通过'
+                    elif checked_status=='2':
+                        msg='审核不通过'
+                    self.db.execute(''' 
+                    update  approval_apply_manage set check_at=%s,check_id=%s,check_name=%s,
+                    check_status=%s,last_milepost_name=%s,last_milepost_msg=%s,last_milepost_at=%s
+                    where id=%s and guid=%s
+                    ''',dt,uid,uid_name,checked_status,uid_name,uid_name+msg,dt,approval_id,guid)
+                    self.db.execute('''
+                    insert into approval_apply_manage_msg values(default,%s,%s,%s,%s,%s) 
+                ''',uid_name,uid,dt,msg,approval_id)
+                else:
+                    return self.write('-1')
 

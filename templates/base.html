@@ -187,6 +187,11 @@ padding: 5px;
 }
 .faye-btn {padding: 6px; 0.2rem; background-color: #17a2b8; color: #fff;margin-left: 5px; border-radius: 2px;}
 .table_class{background-color:#343a40;color:#fff ; font-size:13px;}
+
+.disappear {overflow: hidden; color: #fff; font-size: 13px; margin: 0; padding: 0; margin-left: 50px;}
+.disappear p {float: left; margin: 0; padding: 0;}
+.disappear ul {float: left; overflow: hidden; margin: 0; padding: 0;list-style:none;}
+.disappear ul li {float: left; margin-left: 25px;}
 </style>
   {%block head%}{%end%}
 </head>
@@ -195,12 +200,34 @@ padding: 5px;
 
   <!-- Navigation-->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav" >
-    <a class="navbar-brand" href="">发业集团管理系统</a> {% raw xsrf_form_html() %}
+    <a class="navbar-brand" href="">发业集团管理系统</a>
+    {%if department_name=='销售部'%}
+    <div class="disappear">
+      <p>本日跟进情况：</p>
+      <ul>
+
+        <li>推广商机<span>{%if business_develop_genjin %}{%if business_develop_genjin[0].business_from_name=='推广商机'%}{{business_develop_genjin[0].count}}{%else%}0{%end%}{%else%}0{%end%}</span>个</li>
+        <li>反馈商机<span>{%if business_develop_genjin %}{%if business_develop_genjin[-1].business_from_name=='反馈商机'%}{{business_develop_genjin[-1].count}}{%else%}0{%end%}{%else%}0{%end%}</span>个</li>
+   
+        <br>
+        <li>记账应收<span>{%if assist_genjin%}{{assist_genjin.count}}{%end%}</span>个</li>
+        <li>业绩<span>{%if ye_ji%}{{ye_ji.all_incomes}}{%end%}</span>元</li>
+      </ul>
+      </div>
+      {%end%}
+    {% raw xsrf_form_html() %}
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav navbar-sidenav" id="exampleAccordion" style="overflow: hidden;">
+        <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="审批申请管理">
+          <a class="nav-link" href="/company?tag=approval_apply_manage"  style="color:#fff">
+            <i class="fa fa-calendar-check-o"></i>
+            <span class="nav-link-text">审批申请管理</span>
+          </a>
+        </li>
+        
         <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="商机开发管理">
           <a class="nav-link" href="/company?tag=business_develop_manage"  style="color:#fff">
             <i class="fa fa-calendar-check-o"></i>
@@ -552,7 +579,7 @@ padding: 5px;
 
 
 
-    {%if role=="7" or role=='8' or name=='陈月娇'%}
+    {%if role=="7" or role=='8' or name=='蔡健全'%}
        <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="订单流转">
           <a class="nav-link" href="/project?tag=projects_state_type"  style="color:#fff">
                <i class="fa fa-user"></i>
@@ -560,7 +587,7 @@ padding: 5px;
           </a>
         </li>
 {%end%}
-    {%if role=="7" or role=='8' or role=='9'%}
+    {%if role=="7" or role=='8' or role=='9' or name=='陈小奋'%}
        <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="地址管理">
           <a class="nav-link" href="/addr?tag=all"  style="color:#fff">
               <i class="fa fa-fw fa-area-chart"></i>
@@ -630,7 +657,7 @@ padding: 5px;
 </li>
     {%end%}
 
- {%if role=='10' or role=="8" or name=='陈月娇' or is_manager=="1"%}
+ {%if role=='10' or role=="8" or name=='蔡健全' or is_manager=="1"%}
        <li class="nav-item fayenav" data-toggle="tooltip" data-placement="right" title="经济普查">
       <a class="nav-link" href="/company?tag=economic_census" style="color:#fff">
         <i class="fa fa-window-restore"></i>
@@ -1002,10 +1029,25 @@ padding: 5px;
           </a>
 
         </li>
+        
       </ul>
 
 
-      <ul class="navbar-nav ml-auto">
+      <ul class="navbar-nav ml-auto">        {%if role not in ['12','14']%}
+          <li class="nav-item" style="width:320px;">
+  
+              <div class="input-group">
+                <input class="form-control" style="height:30px; border-radius: 0.25rem; margin-right:2px;" type="text" id="txt_search_word"  onkeypress="if(event.keyCode==13) {btn_search.click();return false;}" placeholder="客户/电话/项目名/公司/备注" value="{{search_key}}">
+  
+                <span class="input-group-btn">
+                  <button class="btn btn-primary btn-sm" type="button" id="btn_search">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </span>
+              </div>
+  
+          </li>
+          {%end%}
            <!--    <li class="nav-item dropdown no-arrow mx-1">
           <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fa fa-fw fa-bell"></i>
@@ -1016,16 +1058,7 @@ padding: 5px;
             <a class="dropdown-item" href="#">Another action</a>
           </div>
         </li>-->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle mr-lg-2" id="messagesDropdown" href="/msg?tag=list" >
-            <i class="fa fa-fw fa-envelope"></i>
-           <span class="d-lg-none" id="msg_notify_badge1">
-              <span class="badge badge-pill badge-primary">您有新的消息</span>
-          </span>
-            <span class="indicator text-primary d-none " id="msg_notify_badge2">
-              <i class="fa fa-fw fa-circle"></i>
-            </span>
-          </a>
+     
            <!--<div class="dropdown-menu" aria-labelledby="messagesDropdown">
            <h6 class="dropdown-header">没有新消息</h6>
             <div class="dropdown-divider"></div>
@@ -1046,37 +1079,38 @@ padding: 5px;
           </a>
 
         </li>-->
-        {%if role not in ['12','14']%}
-        <li class="nav-item" style="width:320px;">
 
-            <div class="input-group">
-              <input class="form-control" style="height:30px; border-radius: 0.25rem; margin-right:2px;" type="text" id="txt_search_word"  onkeypress="if(event.keyCode==13) {btn_search.click();return false;}" placeholder="客户/电话/项目名/公司/备注" value="{{search_key}}">
-
-              <span class="input-group-btn">
-                <button class="btn btn-primary btn-sm" type="button" id="btn_search">
-                  <i class="fa fa-search"></i>
-                </button>
+        <!-- <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle mr-lg-2" id="messagesDropdown" href="/msg?tag=list" >
+              <i class="fa fa-fw fa-envelope"></i>
+             <span class="d-lg-none" id="msg_notify_badge1">
+                <span class="badge badge-pill badge-primary">您有新的消息</span>
+            </span>
+              <span class="indicator text-primary d-none " id="msg_notify_badge2">
+                <i class="fa fa-fw fa-circle"></i>
               </span>
-            </div>
+            </a> -->
 
-        </li>
-        {%end%}
-        <li class="nav-item">
-          <a class="nav-link" href="/project?tag=upload_file">
-            <i class="fa fa-fw fa-upload"></i>附件</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/changepassword">
-              <i class="fa fa-fw"></i>修改密码</a>
-          </li>
-                 <li class="nav-item">
-          <a class="nav-link" href="/displaylist?tag=list">
-            <i class="fa fa-fw fa-link"></i>帮助中心</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" data-toggle="modal"
- data-target="#exampleModal">
-            <i class="fa fa-fw fa-sign-out"></i>退 出({{name}}{%if department_name%} - {{department_name}}{%end%})</a>
+        <li class="nav-item dropdown no-arrow ">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <i class="fa fa-user"></i> {{name}}{%if department_name%} - {{department_name}}{%end%}
+          </a>
+          <div class="dropdown-menu dropdown-menu-right " aria-labelledby="userDropdown">
+              <a class="dropdown-item" href="/msg?tag=list">收件箱 <span class="indicator text-primary d-none " id="msg_notify_badge2">
+                  <i class="fa fa-fw fa-circle"></i>
+                </span></a>
+              {%if role=='8'%}
+            <a class="dropdown-item" href="/company?tag=sale_current_genjin">本日跟进</a>
+            {%end%}
+            <a class="dropdown-item" href="/changepassword">修改密码</a>
+
+            <a class="dropdown-item" href="/displaylist?tag=list">帮助中心</a>
+            <!-- <a class="dropdown-item" href="/project?tag=upload_file">附件中心</a> -->
+            <div class="dropdown-divider"></div>
+            <a  class="dropdown-item" href="/logout"
+         >
+                       <i class="fa fa-fw fa-sign-out"></i>退出系统</a>
+          </div>
         </li>
       </ul>
     </div>
@@ -1208,7 +1242,12 @@ padding: 5px;
             $('#wrap1').hide(1000)
              })
             
-             
+             {%if forbid_outer_net==1%}
+             location.href='/login{%if error_forbid%}?error_forbid={{error_forbid}}{%end%}{%if mobile%}&mobile={{mobile}}{%end%}'
+             {%end%}
+             {%if user_is_first==1%}
+             location.href='/allchangepassword?is_first=1'             
+             {%end%}
             //  $("#exampleAccordion").hover(function(o){
             //     o.preventDefault()
             //     $("body").toggleClass("sidenav-toggled")

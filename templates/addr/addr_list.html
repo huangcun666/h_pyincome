@@ -150,7 +150,9 @@
 
 
 <input type="submit" class="btn btn-primary btn-sm" value="检索">
+{%if role=='9' or role=='7'%}
 <input type="button" name="" id="export_data" value="导出数据（Excel格式）" class="btn btn-primary btn-sm">
+{%end%}
 </td>
 </tr>
 </tbody>
@@ -250,7 +252,13 @@ class="table faye-table table-bordered fayetable"
 
 
                   <td>{{item.id}}</td>
-                   <td width="160">{%if item.act_id_name%}{{item.act_id_name}}{%if item.act_by_uid_name%}({{item.act_by_uid_name}}){%end%}{%end%}</td> 
+                   <td width="160" >
+                      
+                       <font color='red'></font>
+
+             
+
+                   </td> 
 
                     <td width="90">{%if item.a_follow_uid_name%}{{item.a_follow_uid_name}}{%else%}无{%end%}</td>
 

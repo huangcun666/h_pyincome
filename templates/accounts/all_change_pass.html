@@ -70,20 +70,33 @@
                    {% module xsrf_form_html() %}
                </form>
                {%else%}
-               <form action="/allchangepassword" method="post">
+               <form action="/allchangepassword" method="post"   onsubmit="return formcheck();">
                 <div class="form-group">
                     <div class="col-md-4">
-                        <label for="exampleInputPassword1">当前密码</label>
+                        <label for="exampleInputPassword1">原始密码</label>
                         <input class="form-control" type="password" id="currentpassword1" placeholder="当前密码" name="currentpassword" required>
                     </div>
                     </div>
                <div class="form-group">
                    <div class="col-md-4">
                        <label for="exampleInputPassword1">新密码</label>
-                       <input class="form-control" type="password" id="newpassword" placeholder="新密码" name="newpassword" required>
+                       <input class="form-control" type="password" id="newpassword" placeholder="新密码" name="newpassword" required minlength="6">
                    </div>
                    </div>
-                   <button  type="submit" style="margin: 15px;width: 100px;" class="btn btn-primary btn-block">提交</button>
+                <div class="form-group">
+                    <div class="col-md-4">
+                        <label for="exampleInputPassword1">验证新密码</label>
+                        <input class="form-control" type="password" id="confirmpassword" placeholder="验证密码" name="confirmpassword" required minlength="6">
+                        
+                        <div id="confirm_password_error" class="alert alert-warning alert-dismissible fade hide" role="alert">
+                                <strong>密码不一致!</strong>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                    </div>
+                    </div>
+                   <button type="submit" style="margin: 15px;width: 100px;" class="btn btn-primary btn-block">提交</button>
                        {% module xsrf_form_html() %}
                    </form>
                {%end%}
@@ -102,11 +115,20 @@
 
 
 {%block js%}
+<script src="/static/vendor/jquery/jquery.min.js"></script>
+<script src="/static/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <script>
-$(function () {
-_xsrf =  getCookie("_xsrf")
+function formcheck() { 
+if($("#newpassword").val()!=$("#confirmpassword").val()){
+    $("#confirm_password_error").removeClass('hide').addClass('show')
 
+    return false
+}
+
+ }
+$(function () {
 if($('.changepass_adminrequest').length>0){
     $('.nav-link').attr('href','#');
     $('#btn_search').attr('disabled','disabled')

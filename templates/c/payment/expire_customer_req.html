@@ -1,5 +1,18 @@
  {% extends "../base.html" %} {%block title%}客户管理{%end%} {% block body %}
+ <style>
 
+        body .modal {
+        width: 70%; /* desired relative width */
+        left: 15%; /* (100%-width)/2 */
+        /* place center */
+        margin-left:auto;
+        margin-right:auto;
+        }
+        .modal-body {
+            max-height:600px; 
+            overflow-y: auto;
+        }
+        </style>
 <div class="main">
     <div class="main-inner">
         <div class="container">
@@ -25,7 +38,7 @@
                                     <fieldset>
                                             <form class="form-search" id="query_form">
 
-                                                                      <input type="text" value="{%if company%}{{company}}{%end%}" name="company"  placeholder="公司名称/姓名/信用代码/确认单编号">
+                                                                      <input type="text" value="{%if company%}{{company}}{%end%}" name="company"  placeholder="公司/曾用名/姓名/信用代码/确认单编号">
 
                                             <input type="text" value="{%if kf%}{{kf}}{%end%}" id="kf" name="kf" class="input-medium search-query" placeholder="客服会计">
                                             <input type="text" value="{%if req_uid_name%}{{req_uid_name}}{%end%}" id="req_uid_name" name="req_uid_name" class="input-medium search-query" placeholder="发起人">
@@ -100,7 +113,8 @@
                                             <thead>
                                                 <tr style="background-color: black; color:#fff;">
 
-                                                    <th style="min-width:150px;">公司名称</th>
+                                                    <th style="min-width:150px;">公司名称</th>  
+                                                     <th width="60">客户备注</th>
                                                     <th style="min-width:40px;">会计</th>
                                                     <th style="min-width:40px;">发起人</th>
                                                     {%if show_tag=='2'%}
@@ -223,6 +237,18 @@
 
 
                                                     </td>
+                                                    <td title="{%if item.t_remark%}{{item.t_remark}}{%end%}"> 
+                                                            {%if item.t_remark%}
+                                                            {%if len(item.t_remark)>15%}
+                                                            {{item.t_remark[:15]}}...{%else%} {{item.t_remark}}{%end%}{%end%}
+                                                                  {%if role=='3' or role=='8'%}
+                                                            <a class="handler_remark_modify"
+                                                            type='button'
+                                                             customer_id="{{item.customer_id}}"
+                                                             t_remark="{%if item.t_remark%}{{item.t_remark}}{%end%}"
+                                                                 href="javascript:void(0)"> <img src="/static/images/modify.png" width="20"/></a>
+                                                                 {%end%}
+                                                        </td>
                                                      <td>{{item.acc_uid_name}}</td>
                                                      <td>{{item.req_uid_name}}</td>
                                                      {%if show_tag=='2'%}
@@ -630,61 +656,75 @@ adjusted_option= "{{adjusted_option(item.customer_id).adjusted_option}}"
                     <tr id="curr_expire1">
 
                     </tr>
-                    <!--  <tr style="background:#ccc;">
-            <td colspan="8">本期到款明细</td>
-        </tr>
-        <tr id="curr_payment_detail">
-
-        </tr>
-    -->
+                
+          
                 </table>
+<table>
+    <tr>
+        <td>
+                <div class="control-group">
 
-    <div class="control-group">
+                        <label class="control-label" for="acc_end">记账费到期时间
+                
+                        </label>
+                        <div class="controls">
+                            <input type="text" class="span4 " id="acc_end1" name="acc_end1" value=""><br/>
+                            <p id="msg_acc_end1" class="help-block" style="color:red"></p>
+                        </div>
+                        <!-- /controls -->
+                    </div>
+        </td>
+        <td>
+                <div class="control-group">
 
-        <label class="control-label" for="acc_end">记账费到期时间
+                        <label class="control-label" for="account">账册费到期时间
+                
+                        </label>
+                        <div class="controls">
+                            <input type="text" class="span2" id="acc_book_end1" name="acc_book_end1" value="">
+                            <p id="msg_acc_book_end1" class="help-block" style="color:red"></p>
+                        </div>
+                        <!-- /controls -->
+                    </div>
+                
+            </td>
+<td>
+        <div class="control-group">
+                <label class="control-label" for="lastname">待收金额</label>
+                <div class="controls">
+                    <input type="text" class="span4" id="e_wait_pay_amount" name="e_wait_pay_amount"   />
+                </div>
+                <!-- /controls -->
+            </div>
+        
+</td>
+    </tr>
+</table>
 
-        </label>
-        <div class="controls">
-            <input type="text" class="span4 " id="acc_end1" name="acc_end1" value=""><br/>
-            <p id="msg_acc_end1" class="help-block" style="color:red"></p>
+<table>
+<tr>
+
+    <td>    <div class="control-group">
+            <label class="control-label" for="al_remark">已收明细</label>
+            <div class="controls">
+                <textarea type="text" class="span4" id="al_remark1" name="al_remark1" value="" style="height: 50px;"></textarea>
+            </div>
+            <!-- /controls -->
+        </div></td>
+    <td>    <div class="control-group">
+            <label class="control-label" for="lastname">待收明细</label>
+            <div class="controls">
+                <textarea type="text" class="span4" id="pb_remark1" name="pb_remark1" value="" style="height: 50px;"></textarea>
+            </div>
+            <!-- /controls -->
         </div>
-        <!-- /controls -->
-    </div>
-    <div class="control-group">
+    </td>
+</tr>
 
-        <label class="control-label" for="account">账册费到期时间
-
-        </label>
-        <div class="controls">
-            <input type="text" class="span2" id="acc_book_end1" name="acc_book_end1" value="">
-            <p id="msg_acc_book_end1" class="help-block" style="color:red"></p>
-        </div>
-        <!-- /controls -->
-    </div>
+</table>
 
 
 
-    <div class="control-group">
-        <label class="control-label" for="al_remark">已收明细</label>
-        <div class="controls">
-            <textarea type="text" class="span4" id="al_remark1" name="al_remark1" value="" style="height: 50px;"></textarea>
-        </div>
-        <!-- /controls -->
-    </div>
-    <div class="control-group">
-        <label class="control-label" for="lastname">待收明细</label>
-        <div class="controls">
-            <textarea type="text" class="span4" id="pb_remark1" name="pb_remark1" value="" style="height: 50px;"></textarea>
-        </div>
-        <!-- /controls -->
-    </div>
-    <div class="control-group">
-        <label class="control-label" for="lastname">待收金额</label>
-        <div class="controls">
-            <input type="text" class="span4" id="e_wait_pay_amount" name="e_wait_pay_amount"   />
-        </div>
-        <!-- /controls -->
-    </div>
 
 
     <div class="control-group well">
@@ -735,6 +775,25 @@ adjusted_option= "{{adjusted_option(item.customer_id).adjusted_option}}"
                 <button class="btn btn-primary" id="btn_save_update_acc_end">保存</button>
             </div>
         </div>
+        <div id="a_handler_modal_remark" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel_account">备注
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <div class="control-group">
+                        <div class="controls">
+                            <textarea class="span8" name="t_remark" id="t_remark" rows="5" placeholder="备注"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+        
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                        <button class="btn btn-primary" id="btn_save_remark">保存</button>
+                    </div>
+                </div>
 {%end%} {%block js%}
 <script src="/static/moment.js"></script>
 <script src="/static/combodate.js"></script>
@@ -815,7 +874,23 @@ adjusted_option= "{{adjusted_option(item.customer_id).adjusted_option}}"
                      })
                 }
              })
+             $('#btn_save_remark').click(function () {
+            customer_id=$(this).attr('customer_id')
+            t_remark=$('#t_remark').val()
+            $.post('payment?tag=edit_customer_remark',{
+                '_xsrf':_xsrf,
+                'customer_id':customer_id,
+                't_remark':t_remark
+            },function (data) {
+                location.reload()
+             })
 
+         })
+             $(".handler_remark_modify").click(function () {
+            $('#btn_save_remark').attr('customer_id',$(this).attr('customer_id'))
+            $('#t_remark').val($(this).attr('t_remark'))
+            $("#a_handler_modal_remark").modal('show')
+         })
             $(".modify_customer_detail").on("click",function(){
                     customer_id = $(this).attr("customer_id")
                     acc_end=$(this).attr('acc_end')

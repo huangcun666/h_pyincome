@@ -1,6 +1,6 @@
 {% extends "../mobile_base.html" %} {%block title%}系 统 登 录{%end%} 
 {% block body %}
-<form method="post">
+<form method="post" autocomplete="off">
 <header class="demos-header">
       <h1 class="demos-title">系 统 登 录</h1>
     </header>
@@ -17,6 +17,25 @@
       <input class="weui-input" type="password"  id="password" name="password" placeholder="请输入密码">
     </div>
   </div>
+  {%if show_verification%}
+  <div class="weui-cell weui-cell_vcode">
+      <div class="weui-cell__hd"><label class="weui-label">验证码</label></div>
+      <div class="weui-cell__bd">
+        <input class="weui-input" type="text" placeholder="验证码" id="input_ver_str" name="input_ver_str">
+        <input type="hidden" name="ver_str1" value="{{ver_str}}">
+        <input type="hidden" name="show_verification" value="{{show_verification}}">
+      </div>
+      <div class="weui-cell__ft" style="width:120px;">
+          <img class="weui-vcode-img" src="/static/verify.jpg" alt="" id="ver_img" width="75%" >
+      </div>
+      <a href="javascript:;" id="choose_other" style="font-size:12px;">换一张</a>
+      
+    </div>
+
+
+
+  {%end%}
+  <input type="hidden" id="mobile",value="{{mobile}}"> 
    {% module xsrf_form_html() %}
 <div class="weui-btn-area">
   
@@ -40,7 +59,8 @@
 
  {%if error%}
 $.toast("{{error}}", "forbidden");
-
+{%elif error_forbid%}
+$.toast("{{error_forbid}}", "forbidden");
   {%end%}
 
   {%if log_in_again%}
@@ -52,6 +72,17 @@ $.toast("{{error}}", "forbidden");
 
 
     })
+    $("#choose_other").click(function () {
+      img_src=$("#ver_img").attr('src')
+      $.get('/getnewverify',{
+        'img_src':img_src
+      },function (data) { 
+       
+      $('input[name=ver_str1]').val(data['ver_str1'])
+      $("#ver_img").attr('src',data['img_src']+'?t='+Math.random())
+      
+       })
 
+     })
 </script>
       {%end%}
