@@ -27,8 +27,8 @@ define("mysql_database_company", default="db_company", help="database name")
 
 
 define("mysql_user", default="root", help="database user")
-define("mysql_password", default="deng", help="database password")
-# define("mysql_password", default="123", help="database password")
+# define("mysql_password", default="deng", help="database password")
+define("mysql_password", default="123", help="database password")
 define("login_url", default="/login", help="database password")
 define("upload_path", default=ROOT+"/media", help="upload path")
 
