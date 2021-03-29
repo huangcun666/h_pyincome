@@ -30,7 +30,7 @@ Pillow==6.1.0
 prompt-toolkit==1.0.15
 pycrypto==2.6.1
 pycurl==7.43.0.2
-Pygments==2.3.1
+Pygments==2.7.4
 PyGObject==3.32.0
 pyliblzma==0.5.3
 pylint==1.9.4
